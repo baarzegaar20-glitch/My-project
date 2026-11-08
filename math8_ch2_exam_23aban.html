@@ -1,0 +1,1905 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>آزمون رسمی ریاضی (۲۳ آبان) | مدرسه بهار دانش</title>
+<style>
+:root {
+  --bg-main: #0b1120;
+  --bg-secondary: #1e293b;
+  --glass-bg: rgba(30, 41, 59, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --accent: #38bdf8;
+  --accent-hover: #0284c7;
+  --accent-glow: rgba(56, 189, 248, 0.25);
+  --success: #10b981;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --card-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.45);
+  --input-bg: rgba(15, 23, 42, 0.7);
+}
+
+[data-theme="light"] {
+  --bg-main: #f1f5f9;
+  --bg-secondary: #e2e8f0;
+  --glass-bg: rgba(255, 255, 255, 0.88);
+  --glass-border: rgba(15, 23, 42, 0.12);
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --accent: #0284c7;
+  --accent-hover: #0369a1;
+  --accent-glow: rgba(2, 132, 199, 0.2);
+  --success: #059669;
+  --danger: #dc2626;
+  --warning: #d97706;
+  --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+  --input-bg: rgba(248, 250, 252, 0.95);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, 'Segoe UI', Tahoma, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background: var(--bg-main);
+  background-image: 
+    radial-gradient(at 15% 15%, var(--accent-glow) 0px, transparent 50%),
+    radial-gradient(at 85% 85%, rgba(16, 185, 129, 0.12) 0px, transparent 50%);
+  background-attachment: fixed;
+  color: var(--text-primary);
+  line-height: 1.75;
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.ltr {
+  direction: ltr;
+  display: inline-block;
+  font-family: 'Cambria Math', 'Times New Roman', monospace;
+  font-weight: 700;
+  unicode-bidi: embed;
+}
+
+/* Scroll Progress Bar */
+#scroll-progress {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--accent), var(--success));
+  width: 0%;
+  z-index: 9999;
+  transition: width 0.1s ease-out;
+}
+
+/* Top Sticky Header */
+.top-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: var(--glass-bg);
+  border-bottom: 1px solid var(--glass-border);
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--card-shadow);
+}
+
+.brand-area {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.brand-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent), var(--success));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: bold;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 12px var(--accent-glow);
+}
+
+.brand-text h1 {
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.brand-text p {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.timer-box {
+  background: var(--input-bg);
+  border: 1px solid var(--glass-border);
+  padding: 0.4rem 0.9rem;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--accent);
+}
+
+.timer-box.warning {
+  color: var(--danger);
+  border-color: var(--danger);
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.icon-btn {
+  background: var(--input-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.icon-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-2px);
+}
+
+/* Main Layout */
+.container {
+  max-width: 1180px;
+  margin: 1.5rem auto;
+  padding: 0 1rem;
+  display: grid;
+  grid-template-columns: 1fr 270px;
+  gap: 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .container {
+    grid-template-columns: 1fr;
+  }
+  .side-nav {
+    order: -1;
+    position: static !important;
+  }
+}
+
+/* Glass Card */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: 18px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--card-shadow);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+/* Login Screen */
+#login-screen {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin: 1.1rem 0;
+}
+
+.meta-item {
+  background: var(--input-bg);
+  border: 1px solid var(--glass-border);
+  padding: 0.7rem;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.meta-item span {
+  display: block;
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+}
+
+.meta-item strong {
+  font-size: 0.95rem;
+  color: var(--text-primary);
+}
+
+/* Lock Countdown Box */
+.schedule-box {
+  padding: 1rem;
+  border-radius: 14px;
+  margin-bottom: 1.25rem;
+  text-align: center;
+  border: 1px solid var(--glass-border);
+  background: var(--input-bg);
+}
+
+.schedule-box.locked {
+  border-color: var(--warning);
+  background: rgba(245, 158, 11, 0.1);
+}
+
+.schedule-box.expired {
+  border-color: var(--danger);
+  background: rgba(239, 68, 68, 0.12);
+}
+
+.schedule-box.open {
+  border-color: var(--success);
+  background: rgba(16, 185, 129, 0.12);
+}
+
+.countdown-digits {
+  display: flex;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 0.65rem;
+  direction: ltr;
+}
+
+.cd-unit {
+  background: var(--bg-secondary);
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  padding: 0.4rem 0.7rem;
+  min-width: 62px;
+}
+
+.cd-unit strong {
+  display: block;
+  font-size: 1.2rem;
+  color: var(--accent);
+}
+
+.cd-unit span {
+  font-size: 0.7rem;
+  color: var(--text-secondary);
+}
+
+.form-group {
+  margin-bottom: 1.15rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.45rem;
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+  background: var(--input-bg);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-control:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 0.9rem 1.5rem;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+  box-shadow: 0 6px 20px var(--accent-glow);
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.btn-primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Question Styling */
+.section-banner {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(16, 185, 129, 0.1));
+  border-right: 4px solid var(--accent);
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.section-banner h2 {
+  font-size: 1.12rem;
+  color: var(--accent);
+}
+
+.section-banner p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.q-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px dashed var(--glass-border);
+}
+
+.q-badge {
+  background: var(--accent-glow);
+  color: var(--accent);
+  padding: 0.25rem 0.75rem;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.q-score {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  background: var(--input-bg);
+  padding: 0.25rem 0.65rem;
+  border-radius: 8px;
+  border: 1px solid var(--glass-border);
+}
+
+.q-title {
+  font-size: 1.02rem;
+  font-weight: 600;
+  margin-bottom: 1.1rem;
+}
+
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.75rem;
+}
+
+.option-label {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  background: var(--input-bg);
+  border: 1px solid var(--glass-border);
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.option-label:hover {
+  border-color: var(--accent);
+}
+
+.option-label input[type="radio"] {
+  accent-color: var(--accent);
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+/* Step-by-step Problem Styling */
+.steps-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin-top: 1rem;
+}
+
+.step-box {
+  background: var(--input-bg);
+  border: 1px solid var(--glass-border);
+  border-right: 3px solid var(--accent);
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+}
+
+.step-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: var(--accent);
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.step-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+
+.step-input {
+  min-width: 210px;
+  flex: 1;
+}
+
+/* Side Navigation */
+.side-nav {
+  position: sticky;
+  top: 85px;
+  height: fit-content;
+}
+
+.nav-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+  margin-top: 0.85rem;
+}
+
+.nav-dot {
+  height: 36px;
+  border-radius: 8px;
+  background: var(--input-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.nav-dot.answered {
+  background: var(--accent-glow);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.nav-dot:hover {
+  transform: scale(1.08);
+}
+
+/* Report Card */
+#report-section {
+  display: none;
+  max-width: 960px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.score-circle {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: conic-gradient(var(--accent) var(--pct, 0%), var(--input-bg) 0%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  position: relative;
+}
+
+.score-circle::before {
+  content: '';
+  position: absolute;
+  width: 114px;
+  height: 114px;
+  background: var(--bg-secondary);
+  border-radius: 50%;
+}
+
+.score-circle-inner {
+  position: relative;
+  text-align: center;
+  z-index: 1;
+}
+
+.score-circle-inner strong {
+  font-size: 1.6rem;
+  display: block;
+}
+
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.25rem 0;
+  font-size: 0.9rem;
+}
+
+.report-table th, .report-table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--glass-border);
+  text-align: right;
+}
+
+.report-table th {
+  color: var(--accent);
+  background: var(--input-bg);
+}
+
+.badge-ok {
+  color: var(--success);
+  font-weight: 700;
+}
+
+.badge-err {
+  color: var(--danger);
+  font-weight: 700;
+}
+
+.action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.btn-outline {
+  flex: 1;
+  min-width: 160px;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-outline:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* Modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(6px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1rem;
+}
+
+.modal-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  max-width: 440px;
+  width: 100%;
+  padding: 1.5rem;
+  box-shadow: var(--card-shadow);
+}
+
+@media print {
+  .top-header, .side-nav, .action-row, #exam-wrapper, #login-screen {
+    display: none !important;
+  }
+  #report-section {
+    display: block !important;
+    margin: 0;
+    max-width: 100%;
+  }
+  body {
+    background: #fff;
+    color: #000;
+  }
+  .glass-card {
+    box-shadow: none;
+    border: 1px solid #ccc;
+    background: #fff;
+  }
+}
+</style>
+</head>
+<body>
+
+<div id="scroll-progress"></div>
+
+<!-- Header -->
+<header class="top-header">
+  <div class="brand-area" id="secret-trigger" title="مدرسه بهار دانش">
+    <div class="brand-icon">∑</div>
+    <div class="brand-text">
+      <h1>مدرسه بهار دانش</h1>
+      <p>آزمون رسمی ریاضی | دبیر: برزگری</p>
+    </div>
+  </div>
+
+  <div class="header-controls">
+    <div class="timer-box" id="timer-display">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <polyline points="12 6 12 12 16 14"></polyline>
+      </svg>
+      <span id="time-text">۶۰:۰۰</span>
+    </div>
+    <button class="icon-btn" id="theme-toggle" title="تغییر حالت شب و روز">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<!-- Login Screen -->
+<section id="login-screen">
+  <div class="glass-card">
+    <h2 style="text-align:center; margin-bottom:0.35rem; color:var(--accent);">آزمون رسمی ریاضی (نوبت ۲۳ آبان)</h2>
+    <p style="text-align:center; font-size:0.86rem; color:var(--text-secondary);">ورود به سامانه فقط در بازه زمانی تعیین‌شده مجاز است.</p>
+
+    <div class="meta-grid">
+      <div class="meta-item">
+        <span>نام مدرسه</span>
+        <strong id="meta-school">مدرسه بهار دانش</strong>
+      </div>
+      <div class="meta-item">
+        <span>نام درس</span>
+        <strong id="meta-course">ریاضی</strong>
+      </div>
+      <div class="meta-item">
+        <span>نام دبیر</span>
+        <strong id="meta-teacher">برزگری</strong>
+      </div>
+      <div class="meta-item">
+        <span>زمان برگزاری</span>
+        <strong id="meta-schedule">۲۳ آبان | ساعت ۱۱ تا ۱۲ ظهر</strong>
+      </div>
+    </div>
+
+    <!-- Live Lock / Unlock Status & Countdown -->
+    <div id="schedule-status-box" class="schedule-box">
+      <div id="schedule-status-title" style="font-weight:700; font-size:0.95rem;">در حال بررسی زمان آزمون...</div>
+      <div id="schedule-countdown" class="countdown-digits" style="display:none;">
+        <div class="cd-unit"><strong id="cd-days">۰</strong><span>روز</span></div>
+        <div class="cd-unit"><strong id="cd-hours">۰۰</strong><span>ساعت</span></div>
+        <div class="cd-unit"><strong id="cd-mins">۰۰</strong><span>دقیقه</span></div>
+        <div class="cd-unit"><strong id="cd-secs">۰۰</strong><span>ثانیه</span></div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="student-name">نام و نام خانوادگی دانش‌آموز (الزامی):</label>
+      <input type="text" id="student-name" class="form-control" placeholder="نام کامل خود را بنویسید..." autocomplete="off">
+    </div>
+
+    <div class="form-group">
+      <label for="student-grade">پایه تحصیلی (الزامی):</label>
+      <select id="student-grade" class="form-control">
+        <option value="">-- انتخاب پایه تحصیلی --</option>
+        <option value="هفتم">هفتم</option>
+        <option value="هشتم">هشتم</option>
+        <option value="نهم">نهم</option>
+      </select>
+    </div>
+
+    <button class="btn-primary" id="start-exam-btn">ورود به آزمون و شروع تایمر</button>
+  </div>
+</section>
+
+<!-- Exam Content -->
+<main class="container" id="exam-wrapper" style="display:none;">
+  <div id="questions-column">
+    <!-- Section 1 -->
+    <div class="section-banner">
+      <h2>بخش اول: سوالات مفهومی، چهارگزینه‌ای، صحیح/غلط و جای‌خالی (۱۰ نمره)</h2>
+      <p>پاسخ صحیح را در هر سوال انتخاب کنید. تمامی پاسخ‌های شما به صورت زنده در حافظه مرورگر ذخیره می‌شوند.</p>
+    </div>
+    <div id="part1-container"></div>
+
+    <!-- Section 2 -->
+    <div class="section-banner" style="margin-top:2rem;">
+      <h2>بخش دوم: مسائل تشریحی گام‌به‌گام (۱۰ نمره)</h2>
+      <p>هر مسئله شامل ۵ گام استاندارد حل ریاضی است و هر گام نمره مستقل دارد.</p>
+    </div>
+    <div id="part2-container"></div>
+
+    <!-- Submit Card -->
+    <div class="glass-card" style="text-align:center;">
+      <h3 style="margin-bottom:0.5rem;">پایان سوالات آزمون</h3>
+      <p style="font-size:0.88rem; color:var(--text-secondary); margin-bottom:1.2rem;">پیش از ثبت نهایی، از تکمیل بودن تمام شماره‌های سوالات در پنل کناری مطمئن شوید. ثبت نهایی فقط یک‌بار مجاز است.</p>
+      <button class="btn-primary" id="submit-exam-btn">ثبت نهایی آزمون و صدور کارنامه</button>
+    </div>
+  </div>
+
+  <!-- Side Navigation -->
+  <aside class="side-nav">
+    <div class="glass-card">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <strong style="font-size:0.95rem;">پیشرفت پاسخگویی</strong>
+        <span id="progress-pct" style="font-size:0.85rem; color:var(--accent); font-weight:700;">۰٪</span>
+      </div>
+      <div style="height:8px; background:var(--input-bg); border-radius:4px; margin:0.6rem 0; overflow:hidden;">
+        <div id="answer-progress-bar" style="height:100%; width:0%; background:var(--accent); transition:width 0.3s;"></div>
+      </div>
+      <div style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:0.5rem;">
+        دانش‌آموز: <strong id="nav-student-name" style="color:var(--text-primary);">-</strong> (<span id="nav-student-grade">-</span>)
+      </div>
+      <div class="nav-grid" id="nav-dots"></div>
+    </div>
+  </aside>
+</main>
+
+<!-- Report Card Section -->
+<section id="report-section">
+  <div class="glass-card">
+    <div style="text-align:center; border-bottom:1px solid var(--glass-border); padding-bottom:1.25rem; margin-bottom:1.25rem;">
+      <h2 style="color:var(--accent);">کارنامه رسمی آزمون ریاضی (۲۳ آبان)</h2>
+      <p style="color:var(--text-secondary); font-size:0.9rem;">مدرسه بهار دانش | دبیر: برزگری</p>
+    </div>
+
+    <div class="score-circle" id="score-ring">
+      <div class="score-circle-inner">
+        <strong id="final-score-num">0</strong>
+        <span style="font-size:0.8rem; color:var(--text-secondary);">از ۲۰ نمره</span>
+      </div>
+    </div>
+
+    <div class="meta-grid" id="report-meta"></div>
+
+    <div id="telegram-status" style="text-align:center; padding:0.65rem; border-radius:10px; font-size:0.88rem; margin:1rem 0; background:var(--input-bg); border:1px solid var(--glass-border);">
+      در حال ارسال خودکار کارنامه به تلگرام...
+    </div>
+
+    <div class="glass-card" style="background:var(--input-bg); margin-top:1rem;">
+      <h3 style="font-size:1rem; color:var(--accent); margin-bottom:0.6rem;">تحلیل عملکرد و پیشنهاد مطالعه</h3>
+      <p id="pedagogical-feedback" style="font-size:0.9rem;"></p>
+    </div>
+
+    <h3 style="font-size:1rem; margin:1.5rem 0 0.5rem;">ریز نمرات، علت کسر نمره و پاسخ‌های صحیح:</h3>
+    <div style="overflow-x:auto;">
+      <table class="report-table">
+        <thead>
+          <tr>
+            <th>سوال / گام</th>
+            <th>مبحث</th>
+            <th>پاسخ شما</th>
+            <th>پاسخ صحیح</th>
+            <th>نمره</th>
+          </tr>
+        </thead>
+        <tbody id="report-tbody"></tbody>
+      </table>
+    </div>
+
+    <div class="action-row">
+      <button class="btn-outline" onclick="window.print()">چاپ / دانلود PDF کارنامه</button>
+      <button class="btn-outline" id="copy-whatsapp-btn">کپی خلاصه نتیجه برای واتساپ</button>
+    </div>
+  </div>
+</section>
+
+<!-- Secret Teacher Reset Modal -->
+<div class="modal-backdrop" id="reset-modal">
+  <div class="modal-card">
+    <h3 style="color:var(--accent); margin-bottom:0.5rem;">پنل مدیریت دبیر (برزگری)</h3>
+    <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:1rem;">رمز عبور مدیریت (۹۴۵۱) را جهت ریست کامل آزمون یا باز کردن موقت قفل زمانی وارد کنید:</p>
+    <input type="password" id="reset-pass-input" class="form-control ltr" placeholder="رمز عبور دبیر..." style="text-align:center; margin-bottom:1rem;">
+    <div style="display:flex; flex-direction:column; gap:0.6rem;">
+      <button class="btn-primary" id="confirm-reset-btn" style="background:var(--danger);">ریست کامل آزمون و تایمر</button>
+      <button class="btn-primary" id="bypass-lock-btn" style="background:var(--success);">باز کردن موقت قفل زمانی (تست دبیر)</button>
+      <button class="btn-outline" id="close-reset-btn">انصراف و بستن</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/********************************************************************
+ * ۱. تنظیمات پایه و قفل زمانی (۲۳ آبان ساعت ۱۱:۰۰ تا ۱۲:۰۰ ظهر)
+ ********************************************************************/
+const EXAM_CONFIG = {
+  courseName: "ریاضی",
+  schoolName: "مدرسه بهار دانش",
+  teacherName: "برزگری",
+  topicName: "حساب عددهای طبیعی (اعداد اول و مرکب، غربال، ب.م.م و ک.م.م)",
+  // ۲۳ آبان ۱۴۰۵ معادل ۱۴ نوامبر ۲۰۲۶
+  examDate: "2026-11-14",
+  displayDateFa: "۲۳ آبان",
+  startTime: "11:00",
+  endTime: "12:00",
+  durationMinutes: 60, // مدت زمان آزمون: ۶۰ دقیقه (۱۱ تا ۱۲ ظهر)
+  secretResetCode: "9451",
+  telegramBotToken: "9244182212:AAFO4cYJIWjqr-tl3VtLIuuRqBA7hn9TqpY",
+  telegramChatId: "717358131",
+  storageKey: "BAHAR_DANESH_23ABAN_MAIN_EXAM"
+};
+
+/********************************************************************
+ * ۲. بانک سوالات جدید مستند به جزوه پیوست (متفاوت از نسخه نمونه)
+ ********************************************************************/
+// بخش اول: ۱۰ سوال (هر سوال ۱ نمره = ۱۰ نمره)
+const PART1_QUESTIONS = [
+  {
+    id: "q1",
+    topic: "مقسوم‌علیه‌ها و اعداد مرکب",
+    score: 1,
+    text: "عدد ۲۴ را می‌توان به صورت ۲۴×۱ ، ۱۲×۲ ، ۸×۳ و ۶×۴ نوشت. این عدد در مجموع چند مقسوم‌علیه (شمارنده) طبیعی دارد و چه نوع عددی است؟",
+    type: "radio",
+    options: [
+      "۶ مقسوم‌علیه دارد و عددی مرکب است.",
+      "۸ مقسوم‌علیه دارد (۱، ۲، ۳، ۴، ۶، ۸، ۱۲، ۲۴) و عددی مرکب است.",
+      "۴ مقسوم‌علیه دارد و عددی اول است.",
+      "۸ مقسوم‌علیه دارد و عددی اول است."
+    ],
+    correct: "۸ مقسوم‌علیه دارد (۱، ۲، ۳، ۴، ۶، ۸، ۱۲، ۲۴) و عددی مرکب است.",
+    reason: "طبق صفحه اول جزوه، هر عددی که بیش از دو مقسوم‌علیه داشته باشد مرکب است و عدد ۲۴ دارای ۸ شمارنده است."
+  },
+  {
+    id: "q2",
+    topic: "تشخیص عدد اول با روش مجذور",
+    score: 1,
+    text: "آیا عدد ۵۳ یک عدد اول است؟ برای تشخیص آن، بررسی بخش‌پذیری تا کدام عدد اول کافی است؟",
+    type: "radio",
+    options: [
+      "بله اول است؛ بررسی تا عدد ۷ کافی است (چون ۴۹ < ۵۳ ولی ۱۲۱ = ۱۱×۱۱ از ۵۳ بزرگ‌تر است).",
+      "خیر مرکب است؛ زیرا بر ۷ بخش‌پذیر است.",
+      "بله اول است؛ فقط بررسی بر عدد ۲ و ۳ کافی است.",
+      "خیر مرکب است؛ بررسی تا عدد ۱۳ لازم است."
+    ],
+    correct: "بله اول است؛ بررسی تا عدد ۷ کافی است (چون ۴۹ < ۵۳ ولی ۱۲۱ = ۱۱×۱۱ از ۵۳ بزرگ‌تر است).",
+    reason: "عدد ۵۳ بر ۲، ۳، ۵ و ۷ بخش‌پذیر نیست و مجذور ۱۱ (۱۲۱) از ۵۳ بیشتر است، پس ۵۳ حتماً اول است."
+  },
+  {
+    id: "q3",
+    topic: "تشخیص اعداد اول سه رقمی",
+    score: 1,
+    text: "در بررسی دو عدد سه رقمی ۱۱۳ و ۱۲۷ به روش مجذور، کدام گزینه کاملاً درست است؟",
+    type: "radio",
+    options: [
+      "هر دو عدد ۱۱۳ و ۱۲۷ اول هستند (چون بر ۲، ۳، ۵، ۷ و ۱۱ بخش‌پذیر نیستند و ۱۶۹ = ۱۳×۱۳ از هر دو بزرگ‌تر است).",
+      "عدد ۱۱۳ اول است اما ۱۲۷ بر ۳ بخش‌پذیر و مرکب است.",
+      "عدد ۱۲۷ اول است اما ۱۱۳ بر ۷ بخش‌پذیر و مرکب است.",
+      "هر دو عدد مرکب هستند."
+    ],
+    correct: "هر دو عدد ۱۱۳ و ۱۲۷ اول هستند (چون بر ۲، ۳، ۵، ۷ و ۱۱ بخش‌پذیر نیستند و ۱۶۹ = ۱۳×۱۳ از هر دو بزرگ‌تر است).",
+    reason: "مجذور ۱۳ برابر ۱۶۹ و بزرگ‌تر از ۱۲۷ است؛ هیچ‌یک از دو عدد ۱۱۳ و ۱۲۷ بر ۲، ۳، ۵، ۷ و ۱۱ بخش‌پذیر نیستند، پس هر دو اول هستند."
+  },
+  {
+    id: "q4",
+    topic: "بخش‌پذیری و اعداد مرکب",
+    score: 1,
+    text: "در مجموعه اعداد { ۱۳ ، ۲۱ ، ۲۷ ، ۵۷ ، ۱۱۱ } چند عدد مرکب وجود دارد؟",
+    type: "dropdown",
+    options: ["۲ عدد", "۳ عدد", "۴ عدد (۲۱، ۲۷، ۵۷ و ۱۱۱ همگی بر ۳ بخش‌پذیر و مرکب هستند)", "۵ عدد"],
+    correct: "۴ عدد (۲۱، ۲۷، ۵۷ و ۱۱۱ همگی بر ۳ بخش‌پذیر و مرکب هستند)",
+    reason: "فقط عدد ۱۳ اول است؛ اعداد ۲۱، ۲۷، ۵۷ (۱۹×۳) و ۱۱۱ (۳۷×۳) همگی بر ۳ بخش‌پذیر بوده و مرکب هستند."
+  },
+  {
+    id: "q5",
+    topic: "حاصل‌ضرب دو عدد اول",
+    score: 1,
+    text: "صحیح یا غلط: «حاصل‌ضرب دو عدد اول مانند ۵۹ × ۳۱، عددی اول است.»",
+    type: "radio",
+    options: [
+      "صحیح (چون هر دو عامل ۳۱ و ۵۹ اول هستند)",
+      "غلط (چون حاصل‌ضرب علاوه بر ۱ و خودش، بر ۳۱ و ۵۹ نیز بخش‌پذیر است و مرکب می‌شود)"
+    ],
+    correct: "غلط (چون حاصل‌ضرب علاوه بر ۱ و خودش، بر ۳۱ و ۵۹ نیز بخش‌پذیر است و مرکب می‌شود)",
+    reason: "حاصل‌ضرب هر دو عدد اول، حداقل ۴ مقسوم‌علیه دارد و همواره عددی مرکب است."
+  },
+  {
+    id: "q6",
+    topic: "بررسی بخش‌پذیری و مضرب‌ها",
+    score: 1,
+    text: "کدام‌یک از جملات زیر از نظر ریاضی کاملاً صحیح است؟",
+    type: "radio",
+    options: [
+      "عدد ۲۲۳ بر ۳ بخش‌پذیر است.",
+      "تمام مضرب‌های طبیعی عدد ۷ مرکب هستند.",
+      "عدد ۱۲ را می‌توان به صورت حاصل‌ضرب دو عدد طبیعی بزرگ‌تر از یک (مثلاً ۴ × ۳ یا ۶ × ۲) نوشت.",
+      "کوچک‌ترین عدد طبیعی، عدد صفر است."
+    ],
+    correct: "عدد ۱۲ را می‌توان به صورت حاصل‌ضرب دو عدد طبیعی بزرگ‌تر از یک (مثلاً ۴ × ۳ یا ۶ × ۲) نوشت.",
+    reason: "مجموع ارقام ۲۲۳ برابر ۷ است (بر ۳ بخش‌پذیر نیست)؛ همچنین اولین مضرب ۷ یعنی ۷ = ۱×۷ اول است، نه مرکب. کوچک‌ترین عدد طبیعی نیز ۱ است."
+  },
+  {
+    id: "q7",
+    topic: "مفهوم مقسوم‌علیه اول",
+    score: 1,
+    text: "جای خالی را پر کنید: «عدد ۴۹ (۷×۷) عددی ............... است و تنها مقسوم‌علیه اول هر عدد اول، ............... است.»",
+    type: "dropdown",
+    options: [
+      "مرکب - خود آن عدد",
+      "اول - عدد یک",
+      "مرکب - عدد یک",
+      "اول - خود آن عدد"
+    ],
+    correct: "مرکب - خود آن عدد",
+    reason: "عدد ۴۹ سه شمارنده (۱، ۷، ۴۹) دارد پس مرکب است؛ و هر عدد اول فقط دو شمارنده (۱ و خودش) دارد که ۱ اول نیست، پس تنها شمارنده اولش خودش است."
+  },
+  {
+    id: "q8",
+    topic: "غربال اعداد اول بین ۷۳ و ۹۳",
+    score: 1,
+    text: "بین دو عدد ۷۳ و ۹۳ (یعنی از ۷۴ تا ۹۲) دقیقاً چند عدد اول وجود دارد؟",
+    type: "radio",
+    options: [
+      "۲ عدد (۷۹ و ۸۳)",
+      "۳ عدد (۷۹ ، ۸۳ و ۸۹)",
+      "۴ عدد (۷۷ ، ۷۹ ، ۸۳ و ۹۱)",
+      "۵ عدد"
+    ],
+    correct: "۳ عدد (۷۹ ، ۸۳ و ۸۹)",
+    reason: "بین ۷۳ و ۹۳ اعداد ۷۷ (۱۱×۷)، ۸۱ (۹×۹)، ۸۷ (۲۹×۳) و ۹۱ (۱۳×۷) مرکب هستند و فقط ۳ عدد ۷۹، ۸۳ و ۸۹ اول می‌باشند."
+  },
+  {
+    id: "q9",
+    topic: "محاسبه ب.م.م دو عدد",
+    score: 1,
+    text: "مقدار بزرگ‌ترین مقسوم‌علیه مشترک دو جفت عدد (۱۶ , ۴۸) و (۲۰ , ۳۰) به ترتیب از راست به چپ کدام است؟",
+    type: "dropdown",
+    options: [
+      "۱۶ و ۱۰",
+      "۸ و ۱۰",
+      "۱۶ و ۵",
+      "۴۸ و ۶۰"
+    ],
+    correct: "۱۶ و ۱۰",
+    reason: "چون ۴۸ مضربی از ۱۶ است (۴۸ = ۳ × ۱۶)، ب.م.م آن‌ها ۱۶ می‌شود؛ و بزرگ‌ترین شمارنده مشترک ۲۰ و ۳۰ نیز عدد ۱۰ است."
+  },
+  {
+    id: "q10",
+    topic: "محاسبه ک.م.م دو عدد",
+    score: 1,
+    text: "کوچک‌ترین مضرب مشترک دو جفت عدد [۲۰ , ۱۵] و [۱۲ , ۴] به ترتیب از راست به چپ کدام است؟",
+    type: "radio",
+    options: [
+      "۶۰ و ۱۲",
+      "۳۰ و ۱۲",
+      "۶۰ و ۴۸",
+      "۵ و ۴"
+    ],
+    correct: "۶۰ و ۱۲",
+    reason: "کوچک‌ترین مضرب مشترک ۱۵ و ۲۰ عدد ۶۰ است؛ و چون ۱۲ مضرب ۴ است، ک.م.م [۱۲ , ۴] برابر ۱۲ می‌باشد."
+  }
+];
+
+// بخش دوم: ۴ مسئله تشریحی ۵ مرحله‌ای جدید (هر مسئله ۲.۵ نمره، هر گام ۰.۵ نمره = ۱۰ نمره)
+const PART2_PROBLEMS = [
+  {
+    id: "p1",
+    topic: "تجزیه درختی عدد ۲۰۰",
+    totalScore: 2.5,
+    title: "مسئله ۱: مطابق نمودار درختی جزوه، می‌خواهیم عدد ۲۰۰ را به حاصل‌ضرب عوامل اول تجزیه کنیم. گام‌های زیر را به ترتیب کامل نمایید:",
+    steps: [
+      {
+        id: "p1_s1",
+        label: "گام ۱: تعیین کوچک‌ترین عدد اولی که ۲۰۰ بر آن بخش‌پذیر است و تقسیم اول",
+        type: "dropdown",
+        options: ["200 = 2 × 100", "200 = 4 × 50", "200 = 10 × 20", "200 = 5 × 40"],
+        correct: "200 = 2 × 100",
+        score: 0.5
+      },
+      {
+        id: "p1_s2",
+        label: "گام ۲: ادامه تقسیم خارج‌قسمت (۱۰۰) و سپس (۵۰) بر کوچک‌ترین عامل اول (۲)",
+        type: "dropdown",
+        options: ["100 = 2 × 50  و  50 = 2 × 25", "100 = 5 × 20  و  20 = 2 × 10", "100 = 4 × 25", "100 = 2 × 45"],
+        correct: "100 = 2 × 50  و  50 = 2 × 25",
+        score: 0.5
+      },
+      {
+        id: "p1_s3",
+        label: "گام ۳: خارج‌قسمت باقی‌مانده یعنی عدد ۲۵ بر کدام عدد اول بخش‌پذیر است؟",
+        type: "number",
+        placeholder: "عامل اول عدد ۲۵ را بنویسید...",
+        correct: "5",
+        score: 0.5
+      },
+      {
+        id: "p1_s4",
+        label: "گام ۴: نوشتن عدد ۲۰۰ به صورت حاصل‌ضرب تمام عوامل اول به‌دست‌آمده",
+        type: "dropdown",
+        options: ["2 × 2 × 2 × 5 × 5", "2 × 2 × 5 × 5 × 5", "2 × 2 × 2 × 5", "2 × 5 × 25"],
+        correct: "2 × 2 × 2 × 5 × 5",
+        score: 0.5
+      },
+      {
+        id: "p1_s5",
+        label: "گام ۵: پاسخ نهایی تجزیه عدد ۲۰۰ به صورت توان‌دار",
+        type: "dropdown",
+        options: ["2³ × 5²", "2² × 5³", "2³ × 5³", "2⁴ × 5"],
+        correct: "2³ × 5²",
+        score: 0.5
+      }
+    ]
+  },
+  {
+    id: "p2",
+    topic: "محاسبه ب.م.م و ک.م.م با فرمول",
+    totalScore: 2.5,
+    title: "مسئله ۲: می‌خواهیم ب.م.م و ک.م.م دو عدد ۳۰ و ۵۰ را با استفاده از فرمول رابطه بین آن‌ها محاسبه کنیم:",
+    steps: [
+      {
+        id: "p2_s1",
+        label: "گام ۱: تعیین داده‌های مسئله و تجزیه ۳۰ و ۵۰ به عوامل اول",
+        type: "dropdown",
+        options: ["30 = 2 × 3 × 5  ,  50 = 2 × 5²", "30 = 2² × 5  ,  50 = 3 × 5²", "30 = 6 × 5  ,  50 = 10 × 5", "هر دو عدد اول هستند"],
+        correct: "30 = 2 × 3 × 5  ,  50 = 2 × 5²",
+        score: 0.5
+      },
+      {
+        id: "p2_s2",
+        label: "گام ۲: مقدار بزرگ‌ترین مقسوم‌علیه مشترک یعنی (۵۰ , ۳۰) برابر با چند است؟",
+        type: "number",
+        placeholder: "مقدار ب.م.م را وارد کنید...",
+        correct: "10",
+        score: 0.5
+      },
+      {
+        id: "p2_s3",
+        label: "گام ۳: انتخاب فرمول صحیح ارتباط بین حاصل‌ضرب دو عدد، ب.م.م و ک.م.م",
+        type: "dropdown",
+        options: [
+          "[a , b] × (a , b) = a × b",
+          "[a , b] + (a , b) = a × b",
+          "[a , b] = (a + b) ÷ (a , b)",
+          "[a , b] = (a , b) ÷ (a × b)"
+        ],
+        correct: "[a , b] × (a , b) = a × b",
+        score: 0.5
+      },
+      {
+        id: "p2_s4",
+        label: "گام ۴: جایگذاری مقادیر ۳۰ و ۵۰ و ب.م.م در فرمول ک.م.م",
+        type: "dropdown",
+        options: ["[30 , 50] = (30 × 50) ÷ 10 = 1500 ÷ 10", "[30 , 50] = (30 + 50) ÷ 10 = 80 ÷ 10", "[30 , 50] = 1500 × 10", "[30 , 50] = 50 ÷ 10"],
+        correct: "[30 , 50] = (30 × 50) ÷ 10 = 1500 ÷ 10",
+        score: 0.5
+      },
+      {
+        id: "p2_s5",
+        label: "گام ۵: پاسخ نهایی ک.م.م یعنی [۵۰ , ۳۰] برابر با چند است؟",
+        type: "number",
+        placeholder: "پاسخ نهایی ک.م.م...",
+        correct: "150",
+        score: 0.5
+      }
+    ]
+  },
+  {
+    id: "p3",
+    topic: "ب.م.م و ک.م.م اعداد توان‌دار (تمرین صفحه آخر جزوه)",
+    totalScore: 2.5,
+    title: "مسئله ۳: مطابق تمرین صفحه آخر جزوه، دو عدد D و E به صورت D = 2³ × 7² × 5³ و E = 2² × 7³ × 5² تجزیه شده‌اند. مراحل زیر را کامل کنید:",
+    steps: [
+      {
+        id: "p3_s1",
+        label: "گام ۱: بررسی عوامل اول تشکیل‌دهنده دو عدد D و E",
+        type: "dropdown",
+        options: [
+          "عوامل اول ۲، ۵ و ۷ در هر دو عدد مشترک هستند",
+          "فقط ۲ و ۵ مشترک هستند",
+          "فقط ۵ و ۷ مشترک هستند",
+          "هیچ عامل اول مشترکی ندارند"
+        ],
+        correct: "عوامل اول ۲، ۵ و ۷ در هر دو عدد مشترک هستند",
+        score: 0.5
+      },
+      {
+        id: "p3_s2",
+        label: "گام ۲: در محاسبه ب.م.م (D , E)، توانِ عامل اول ۲ باید چند انتخاب شود؟ (کمترین توان)",
+        type: "number",
+        placeholder: "توان عامل ۲ در ب.م.م...",
+        correct: "2",
+        score: 0.5
+      },
+      {
+        id: "p3_s3",
+        label: "گام ۳: عبارت کامل ب.م.م (D , E) با انتخاب عوامل مشترک با کمترین توان کدام است؟",
+        type: "dropdown",
+        options: ["2² × 5² × 7²", "2³ × 5³ × 7³", "2² × 5³ × 7²", "2 × 5 × 7"],
+        correct: "2² × 5² × 7²",
+        score: 0.5
+      },
+      {
+        id: "p3_s4",
+        label: "گام ۴: در محاسبه ک.م.م [D , E]، کدام قانون را اجرا می‌کنیم؟",
+        type: "dropdown",
+        options: [
+          "حاصل‌ضرب عوامل مشترک و غیرمشترک با بیشترین توان",
+          "حاصل‌ضرب عوامل مشترک با کمترین توان",
+          "جمع توان‌های عوامل مشترک",
+          "تفاضل توان‌های عوامل مشترک"
+        ],
+        correct: "حاصل‌ضرب عوامل مشترک و غیرمشترک با بیشترین توان",
+        score: 0.5
+      },
+      {
+        id: "p3_s5",
+        label: "گام ۵: پاسخ نهایی عبارت ک.م.م [D , E] کدام است؟",
+        type: "dropdown",
+        options: ["2³ × 5³ × 7³", "2² × 5² × 7²", "2⁵ × 5⁵ × 7⁵", "2³ × 5² × 7³"],
+        correct: "2³ × 5³ × 7³",
+        score: 0.5
+      }
+    ]
+  },
+  {
+    id: "p4",
+    topic: "الگوریتم غربال در بازه ۳۵ تا ۶۵",
+    totalScore: 2.5,
+    title: "مسئله ۴: طبق تمرین صفحه ۱۷ جزوه، می‌خواهیم به روش الگوریتم غربال، اعداد اول بین ۳۵ تا ۶۵ را پیدا کنیم:",
+    steps: [
+      {
+        id: "p4_s1",
+        label: "گام ۱: برای غربال اعداد تا ۶۵، مضرب‌های کدام اعداد اول را باید خط بزنیم؟ (مجذورشان ≤ ۶۵)",
+        type: "dropdown",
+        options: [
+          "مضرب‌های ۲، ۳، ۵ و ۷ (چون ۴۹ ≤ ۶۵ ولی ۱۲۱ = ۱۱×۱۱ از ۶۵ بزرگ‌تر است)",
+          "فقط مضرب‌های ۲ و ۳",
+          "مضرب‌های ۲، ۳، ۵، ۷، ۱۱ و ۱۳",
+          "فقط مضرب‌های ۵ و ۷"
+        ],
+        correct: "مضرب‌های ۲، ۳، ۵ و ۷ (چون ۴۹ ≤ ۶۵ ولی ۱۲۱ = ۱۱×۱۱ از ۶۵ بزرگ‌تر است)",
+        score: 0.5
+      },
+      {
+        id: "p4_s2",
+        label: "گام ۲: با خط زدن مضرب‌های ۲، ۳ و ۵، کدام‌یک از اعداد فرد زیر به دلیل بخش‌پذیری بر ۳ خط می‌خورد؟",
+        type: "dropdown",
+        options: ["51 (چون 51 = 3 × 17)", "41", "47", "59"],
+        correct: "51 (چون 51 = 3 × 17)",
+        score: 0.5
+      },
+      {
+        id: "p4_s3",
+        label: "گام ۳: کدام عدد بین ۳۵ تا ۶۵ تنها عددی است که در مرحله خط زدن مضرب‌های ۷ حذف می‌شود (۷×۷)؟",
+        type: "number",
+        placeholder: "عدد را وارد کنید...",
+        correct: "49",
+        score: 0.5
+      },
+      {
+        id: "p4_s4",
+        label: "گام ۴: فهرست کامل اعداد اول باقی‌مانده بین ۳۵ تا ۶۵ کدام است؟",
+        type: "dropdown",
+        options: [
+          "37 , 41 , 43 , 47 , 53 , 59 , 61",
+          "37 , 41 , 49 , 51 , 53 , 57 , 61",
+          "39 , 41 , 43 , 47 , 53 , 59",
+          "37 , 43 , 47 , 51 , 59 , 63"
+        ],
+        correct: "37 , 41 , 43 , 47 , 53 , 59 , 61",
+        score: 0.5
+      },
+      {
+        id: "p4_s5",
+        label: "گام ۵: بنابراین در بازه بین ۳۵ تا ۶۵ در مجموع چند عدد اول وجود دارد؟",
+        type: "number",
+        placeholder: "تعداد اعداد اول...",
+        correct: "7",
+        score: 0.5
+      }
+    ]
+  }
+];
+
+/********************************************************************
+ * ۳. مدیریت وضعیت (State) و ذخیره در LocalStorage
+ ********************************************************************/
+let appState = {
+  studentName: "",
+  studentGrade: "",
+  started: false,
+  submitted: false,
+  teacherBypassLock: false,
+  startTimestamp: null,
+  remainingSeconds: EXAM_CONFIG.durationMinutes * 60,
+  answers: {},
+  theme: "dark"
+};
+
+let timerInterval = null;
+let scheduleCheckInterval = null;
+
+function loadState() {
+  const saved = localStorage.getItem(EXAM_CONFIG.storageKey);
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      appState = { ...appState, ...parsed };
+    } catch (e) {
+      console.error("خطا در بازیابی اطلاعات", e);
+    }
+  }
+}
+
+function saveState() {
+  localStorage.setItem(EXAM_CONFIG.storageKey, JSON.stringify(appState));
+}
+
+function toPersianNum(str) {
+  return String(str).replace(/\d/g, d => "۰۱۲۳۴۵۶۷۸۹"[d]);
+}
+
+function normalizeNumberInput(val) {
+  if (!val) return "";
+  const persianDigits = "۰۱۲۳۴۵۶۷۸۹";
+  const arabicDigits = "٠١٢٣٤٥٦٧٨٩";
+  let out = String(val).trim();
+  for (let i = 0; i < 10; i++) {
+    out = out.replace(new RegExp(persianDigits[i], "g"), i)
+             .replace(new RegExp(arabicDigits[i], "g"), i);
+  }
+  return out;
+}
+
+/********************************************************************
+ * ۴. بررسی قفل زمانی (۲۳ آبان ساعت ۱۱ تا ۱۲ ظهر) و تایمر معکوس ورود
+ ********************************************************************/
+function getExamWindowDates() {
+  const start = new Date(`${EXAM_CONFIG.examDate}T${EXAM_CONFIG.startTime}:00`);
+  const end = new Date(`${EXAM_CONFIG.examDate}T${EXAM_CONFIG.endTime}:00`);
+  return { start, end };
+}
+
+function checkScheduleWindow() {
+  const statusBox = document.getElementById("schedule-status-box");
+  const statusTitle = document.getElementById("schedule-status-title");
+  const cdContainer = document.getElementById("schedule-countdown");
+  const startBtn = document.getElementById("start-exam-btn");
+
+  if (appState.teacherBypassLock || !EXAM_CONFIG.examDate || !EXAM_CONFIG.startTime || !EXAM_CONFIG.endTime) {
+    statusBox.className = "schedule-box open";
+    statusTitle.style.color = "var(--success)";
+    statusTitle.textContent = appState.teacherBypassLock
+      ? "🔓 قفل زمانی توسط دبیر (برزگری) موقتاً باز شده است."
+      : "✅ آزمون هم‌اکنون فعال و آماده ورود است.";
+    cdContainer.style.display = "none";
+    startBtn.disabled = false;
+    return true;
+  }
+
+  const now = new Date();
+  const { start, end } = getExamWindowDates();
+
+  // ۱. قبل از شروع آزمون (نمایش تایمر معکوس تا ساعت ۱۱ ظهر ۲۳ آبان)
+  if (now < start) {
+    const diffSec = Math.max(0, Math.floor((start - now) / 1000));
+    const days = Math.floor(diffSec / 86400);
+    const hours = Math.floor((diffSec % 86400) / 3600);
+    const mins = Math.floor((diffSec % 3600) / 60);
+    const secs = diffSec % 60;
+
+    statusBox.className = "schedule-box locked";
+    statusTitle.style.color = "var(--warning)";
+    statusTitle.textContent = `🔒 آزمون قفل است. زمان باقی‌مانده تا شروع (${EXAM_CONFIG.displayDateFa} ساعت ۱۱:۰۰ ظهر):`;
+    cdContainer.style.display = "flex";
+
+    document.getElementById("cd-days").textContent = toPersianNum(days);
+    document.getElementById("cd-hours").textContent = toPersianNum(String(hours).padStart(2, "0"));
+    document.getElementById("cd-mins").textContent = toPersianNum(String(mins).padStart(2, "0"));
+    document.getElementById("cd-secs").textContent = toPersianNum(String(secs).padStart(2, "0"));
+
+    startBtn.disabled = true;
+    return false;
+  }
+
+  // ۲. بعد از پایان آزمون (بعد از ساعت ۱۲ ظهر ۲۳ آبان)
+  if (now > end) {
+    statusBox.className = "schedule-box expired";
+    statusTitle.style.color = "var(--danger)";
+    statusTitle.textContent = `⛔ مهلت شرکت در آزمون (${EXAM_CONFIG.displayDateFa} ساعت ۱۱ تا ۱۲ ظهر) به پایان رسیده و سامانه قفل شده است.`;
+    cdContainer.style.display = "none";
+    startBtn.disabled = true;
+    return false;
+  }
+
+  // ۳. در حین بازه ۱۱ تا ۱۲ ظهر ۲۳ آبان (آزمون باز است)
+  const leftWindowSec = Math.max(0, Math.floor((end - now) / 1000));
+  const leftMins = Math.floor(leftWindowSec / 60);
+  const leftSecs = leftWindowSec % 60;
+
+  statusBox.className = "schedule-box open";
+  statusTitle.style.color = "var(--success)";
+  statusTitle.textContent = `✅ زمان آزمون فعال است! مهلت باقی‌مانده تا بسته شدن درگاه ساعت ۱۲:۰۰ ظهر:`;
+  cdContainer.style.display = "flex";
+
+  document.getElementById("cd-days").textContent = toPersianNum(0);
+  document.getElementById("cd-hours").textContent = toPersianNum("00");
+  document.getElementById("cd-mins").textContent = toPersianNum(String(leftMins).padStart(2, "0"));
+  document.getElementById("cd-secs").textContent = toPersianNum(String(leftSecs).padStart(2, "0"));
+
+  startBtn.disabled = false;
+  return true;
+}
+
+/********************************************************************
+ * ۵. رندر سوالات و رابط کاربری
+ ********************************************************************/
+function initUI() {
+  document.getElementById("meta-school").textContent = EXAM_CONFIG.schoolName;
+  document.getElementById("meta-course").textContent = EXAM_CONFIG.courseName;
+  document.getElementById("meta-teacher").textContent = EXAM_CONFIG.teacherName;
+  document.getElementById("meta-schedule").textContent = `${EXAM_CONFIG.displayDateFa} | ساعت ${toPersianNum(EXAM_CONFIG.startTime)} تا ${toPersianNum(EXAM_CONFIG.endTime)}`;
+
+  document.documentElement.setAttribute("data-theme", appState.theme);
+  checkScheduleWindow();
+  if (scheduleCheckInterval) clearInterval(scheduleCheckInterval);
+  scheduleCheckInterval = setInterval(checkScheduleWindow, 1000);
+
+  renderQuestions();
+  renderNavDots();
+
+  if (appState.submitted) {
+    document.getElementById("login-screen").style.display = "none";
+    document.getElementById("exam-wrapper").style.display = "none";
+    generateReport(false);
+  } else if (appState.started) {
+    document.getElementById("login-screen").style.display = "none";
+    document.getElementById("exam-wrapper").style.display = "grid";
+    document.getElementById("nav-student-name").textContent = appState.studentName;
+    document.getElementById("nav-student-grade").textContent = appState.studentGrade;
+    restoreAnswersToDOM();
+    startTimer();
+  } else {
+    updateTimerDisplay(EXAM_CONFIG.durationMinutes * 60);
+  }
+}
+
+function renderQuestions() {
+  const p1Container = document.getElementById("part1-container");
+  p1Container.innerHTML = "";
+
+  PART1_QUESTIONS.forEach((q, idx) => {
+    const card = document.createElement("div");
+    card.className = "glass-card";
+    card.id = `card_${q.id}`;
+
+    let inputHTML = "";
+    if (q.type === "radio") {
+      inputHTML = `<div class="options-grid">` + q.options.map((opt, oIdx) => `
+        <label class="option-label" id="lbl_${q.id}_${oIdx}">
+          <input type="radio" name="${q.id}" value="${opt}" onchange="handleAnswer('${q.id}', this.value)">
+          <span>${opt}</span>
+        </label>
+      `).join("") + `</div>`;
+    } else if (q.type === "dropdown") {
+      inputHTML = `
+        <select class="form-control" id="inp_${q.id}" onchange="handleAnswer('${q.id}', this.value)">
+          <option value="">-- انتخاب پاسخ --</option>
+          ${q.options.map(opt => `<option value="${opt}">${opt}</option>`).join("")}
+        </select>
+      `;
+    }
+
+    card.innerHTML = `
+      <div class="q-header">
+        <span class="q-badge">سوال ${toPersianNum(idx + 1)} (${q.topic})</span>
+        <span class="q-score">${toPersianNum(q.score)} نمره</span>
+      </div>
+      <div class="q-title">${q.text}</div>
+      ${inputHTML}
+    `;
+    p1Container.appendChild(card);
+  });
+
+  const p2Container = document.getElementById("part2-container");
+  p2Container.innerHTML = "";
+
+  PART2_PROBLEMS.forEach((prob, pIdx) => {
+    const card = document.createElement("div");
+    card.className = "glass-card";
+    card.id = `card_${prob.id}`;
+
+    const stepsHTML = prob.steps.map(st => {
+      let controlHTML = "";
+      if (st.type === "dropdown") {
+        controlHTML = `
+          <select class="form-control step-input" id="inp_${st.id}" onchange="handleAnswer('${st.id}', this.value)">
+            <option value="">-- انتخاب گام صحیح --</option>
+            ${st.options.map(o => `<option value="${o}">${o}</option>`).join("")}
+          </select>
+        `;
+      } else {
+        controlHTML = `
+          <input type="text" inputmode="numeric" class="form-control step-input ltr" id="inp_${st.id}" placeholder="${st.placeholder}" oninput="handleAnswer('${st.id}', this.value)">
+        `;
+      }
+
+      return `
+        <div class="step-box">
+          <div class="step-header">
+            <span>${st.label}</span>
+            <span>${toPersianNum(st.score)} نمره</span>
+          </div>
+          <div class="step-body">
+            ${controlHTML}
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    card.innerHTML = `
+      <div class="q-header">
+        <span class="q-badge">مسئله تشریحی ${toPersianNum(pIdx + 1)} (${prob.topic})</span>
+        <span class="q-score">${toPersianNum(prob.totalScore)} نمره</span>
+      </div>
+      <div class="q-title">${prob.title}</div>
+      <div class="steps-container">${stepsHTML}</div>
+    `;
+    p2Container.appendChild(card);
+  });
+}
+
+function renderNavDots() {
+  const navGrid = document.getElementById("nav-dots");
+  navGrid.innerHTML = "";
+
+  PART1_QUESTIONS.forEach((q, idx) => {
+    const dot = document.createElement("div");
+    dot.className = "nav-dot";
+    dot.id = `dot_${q.id}`;
+    dot.textContent = toPersianNum(idx + 1);
+    dot.onclick = () => document.getElementById(`card_${q.id}`).scrollIntoView({ behavior: "smooth", block: "center" });
+    navGrid.appendChild(dot);
+  });
+
+  PART2_PROBLEMS.forEach((p, idx) => {
+    const dot = document.createElement("div");
+    dot.className = "nav-dot";
+    dot.id = `dot_${p.id}`;
+    dot.textContent = `م${toPersianNum(idx + 1)}`;
+    dot.onclick = () => document.getElementById(`card_${p.id}`).scrollIntoView({ behavior: "smooth", block: "center" });
+    navGrid.appendChild(dot);
+  });
+}
+
+function handleAnswer(key, val) {
+  if (appState.submitted) return;
+  appState.answers[key] = val;
+  saveState();
+  updateProgressUI();
+}
+
+function restoreAnswersToDOM() {
+  PART1_QUESTIONS.forEach(q => {
+    const val = appState.answers[q.id];
+    if (!val) return;
+    if (q.type === "radio") {
+      const radios = document.getElementsByName(q.id);
+      radios.forEach(r => {
+        if (r.value === val) r.checked = true;
+      });
+    } else {
+      const el = document.getElementById(`inp_${q.id}`);
+      if (el) el.value = val;
+    }
+  });
+
+  PART2_PROBLEMS.forEach(p => {
+    p.steps.forEach(st => {
+      const val = appState.answers[st.id];
+      if (val !== undefined) {
+        const el = document.getElementById(`inp_${st.id}`);
+        if (el) el.value = val;
+      }
+    });
+  });
+
+  updateProgressUI();
+}
+
+function updateProgressUI() {
+  let totalItems = PART1_QUESTIONS.length + PART2_PROBLEMS.length * 5;
+  let answeredItems = 0;
+
+  PART1_QUESTIONS.forEach(q => {
+    const hasAns = Boolean(appState.answers[q.id] && String(appState.answers[q.id]).trim() !== "");
+    if (hasAns) answeredItems++;
+    const dot = document.getElementById(`dot_${q.id}`);
+    if (dot) dot.classList.toggle("answered", hasAns);
+  });
+
+  PART2_PROBLEMS.forEach(p => {
+    let stepsDone = 0;
+    p.steps.forEach(st => {
+      if (appState.answers[st.id] && String(appState.answers[st.id]).trim() !== "") {
+        answeredItems++;
+        stepsDone++;
+      }
+    });
+    const dot = document.getElementById(`dot_${p.id}`);
+    if (dot) dot.classList.toggle("answered", stepsDone === p.steps.length);
+  });
+
+  const pct = Math.round((answeredItems / totalItems) * 100);
+  document.getElementById("progress-pct").textContent = `${toPersianNum(pct)}٪`;
+  document.getElementById("answer-progress-bar").style.width = `${pct}%`;
+}
+
+/********************************************************************
+ * ۶. تایمر معکوس داخل آزمون (با قفل خودکار رأس ساعت ۱۲:۰۰ ظهر)
+ ********************************************************************/
+function startTimer() {
+  if (timerInterval) clearInterval(timerInterval);
+  updateTimerDisplay(appState.remainingSeconds);
+
+  timerInterval = setInterval(() => {
+    if (appState.submitted) {
+      clearInterval(timerInterval);
+      return;
+    }
+
+    // اگر در حالت عادی (بدون بای‌پس دبیر) ساعت از ۱۲:۰۰ ظهر گذشت، آزمون خودکار ثبت و قفل شود
+    if (!appState.teacherBypassLock && EXAM_CONFIG.examDate && EXAM_CONFIG.endTime) {
+      const { end } = getExamWindowDates();
+      const now = new Date();
+      if (now >= end) {
+        clearInterval(timerInterval);
+        finalizeExam(true);
+        return;
+      }
+    }
+
+    appState.remainingSeconds--;
+    saveState();
+    updateTimerDisplay(appState.remainingSeconds);
+
+    if (appState.remainingSeconds <= 0) {
+      clearInterval(timerInterval);
+      finalizeExam(true);
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay(sec) {
+  const safeSec = Math.max(0, sec);
+  const m = String(Math.floor(safeSec / 60)).padStart(2, "0");
+  const s = String(safeSec % 60).padStart(2, "0");
+  document.getElementById("time-text").textContent = toPersianNum(`${m}:${s}`);
+
+  const box = document.getElementById("timer-display");
+  if (safeSec < 300) {
+    box.classList.add("warning");
+  } else {
+    box.classList.remove("warning");
+  }
+}
+
+/********************************************************************
+ * ۷. تصحیح خودکار، تولید کارنامه و ارسال به تلگرام
+ ********************************************************************/
+function finalizeExam(autoByTimer = false) {
+  if (appState.submitted) return;
+  if (!autoByTimer) {
+    const confirmSubmit = confirm("آیا از ثبت نهایی آزمون اطمینان دارید؟ پس از ثبت، پاسخ‌ها قفل شده و قابل تغییر نیستند.");
+    if (!confirmSubmit) return;
+  }
+
+  appState.submitted = true;
+  if (timerInterval) clearInterval(timerInterval);
+  saveState();
+
+  document.getElementById("exam-wrapper").style.display = "none";
+  generateReport(true);
+}
+
+function evaluateExam() {
+  let totalScore = 0;
+  let details = [];
+  let weakTopics = new Set();
+  let strongTopics = new Set();
+
+  PART1_QUESTIONS.forEach((q, idx) => {
+    const userAns = appState.answers[q.id] || "بدون پاسخ";
+    const isCorrect = userAns === q.correct;
+    const earned = isCorrect ? q.score : 0;
+    totalScore += earned;
+
+    if (isCorrect) strongTopics.add(q.topic);
+    else weakTopics.add(q.topic);
+
+    details.push({
+      title: `سوال ${toPersianNum(idx + 1)}`,
+      topic: q.topic,
+      userAns,
+      correctAns: q.correct,
+      earned,
+      maxScore: q.score,
+      isCorrect
+    });
+  });
+
+  PART2_PROBLEMS.forEach((prob, pIdx) => {
+    prob.steps.forEach((st, sIdx) => {
+      const rawUser = appState.answers[st.id] || "";
+      const userAns = rawUser ? rawUser : "بدون پاسخ";
+      let isCorrect = false;
+
+      if (st.type === "number") {
+        isCorrect = normalizeNumberInput(rawUser) === normalizeNumberInput(st.correct);
+      } else {
+        isCorrect = rawUser === st.correct;
+      }
+
+      const earned = isCorrect ? st.score : 0;
+      totalScore += earned;
+
+      if (isCorrect) strongTopics.add(prob.topic);
+      else weakTopics.add(prob.topic);
+
+      details.push({
+        title: `مسئله ${toPersianNum(pIdx + 1)} - گام ${toPersianNum(sIdx + 1)}`,
+        topic: prob.topic,
+        userAns,
+        correctAns: st.correct,
+        earned,
+        maxScore: st.score,
+        isCorrect
+      });
+    });
+  });
+
+  return {
+    totalScore: Number(totalScore.toFixed(2)),
+    percentage: Math.round((totalScore / 20) * 100),
+    details,
+    weakTopics: Array.from(weakTopics),
+    strongTopics: Array.from(strongTopics)
+  };
+}
+
+function generateReport(sendToTelegram = false) {
+  const result = evaluateExam();
+  const reportSec = document.getElementById("report-section");
+  reportSec.style.display = "block";
+
+  const spentSeconds = (EXAM_CONFIG.durationMinutes * 60) - appState.remainingSeconds;
+  const spentMin = Math.max(1, Math.round(spentSeconds / 60));
+
+  document.getElementById("final-score-num").textContent = toPersianNum(result.totalScore);
+  document.getElementById("score-ring").style.setProperty("--pct", `${result.percentage}%`);
+
+  document.getElementById("report-meta").innerHTML = `
+    <div class="meta-item"><span>نام دانش‌آموز</span><strong>${appState.studentName}</strong></div>
+    <div class="meta-item"><span>پایه تحصیلی</span><strong>${appState.studentGrade}</strong></div>
+    <div class="meta-item"><span>نمره کل (از ۲۰)</span><strong>${toPersianNum(result.totalScore)} (${toPersianNum(result.percentage)}٪)</strong></div>
+    <div class="meta-item"><span>زمان صرف‌شده</span><strong>${toPersianNum(spentMin)} دقیقه</strong></div>
+  `;
+
+  let feedbackText = "";
+  if (result.totalScore >= 18) {
+    feedbackText = "آفرین! تسلط شما بر مفاهیم اعداد اول و مرکب، تجزیه درختی، الگوریتم غربال و محاسبه ب.م.م و ک.م.م عالی است.";
+  } else if (result.totalScore >= 14) {
+    feedbackText = "عملکرد خوبی داشتید، اما برای رسیدن به نمره کامل نیاز به دقت بیشتر در گام‌های حل مسئله دارید.";
+  } else {
+    feedbackText = "پیشنهاد می‌شود جزوه فصل دوم (تشخیص اعداد اول با مجذور، الگوریتم غربال و فرمول‌های ب.م.م و ک.م.م) را دوباره با دقت مطالعه و تمرین کنید.";
+  }
+  if (result.weakTopics.length > 0) {
+    feedbackText += ` مباحث نیازمند تمرین بیشتر: «${result.weakTopics.join("، ")}».`;
+  }
+  document.getElementById("pedagogical-feedback").textContent = feedbackText;
+
+  const tbody = document.getElementById("report-tbody");
+  tbody.innerHTML = result.details.map(d => `
+    <tr>
+      <td>${d.title}</td>
+      <td>${d.topic}</td>
+      <td class="${d.isCorrect ? 'badge-ok' : 'badge-err'}">${d.userAns}</td>
+      <td>${d.correctAns}</td>
+      <td>${toPersianNum(d.earned)} از ${toPersianNum(d.maxScore)}</td>
+    </tr>
+  `).join("");
+
+  if (sendToTelegram) {
+    sendResultToTelegram(result, spentMin);
+  } else {
+    document.getElementById("telegram-status").textContent = "این کارنامه قبلاً ثبت و به تلگرام دبیر ارسال شده است.";
+  }
+}
+
+async function sendResultToTelegram(result, spentMin) {
+  const statusEl = document.getElementById("telegram-status");
+  const textMsg = [
+    `📊 *کارنامه آزمون رسمی ریاضی (۲۳ آبان)*`,
+    `🏫 مدرسه: ${EXAM_CONFIG.schoolName}`,
+    `👨‍🏫 دبیر: ${EXAM_CONFIG.teacherName}`,
+    `👤 دانش‌آموز: *${appState.studentName}*`,
+    `🎓 پایه: ${appState.studentGrade}`,
+    `📚 مبحث: ${EXAM_CONFIG.topicName}`,
+    `🏆 نمره کسب شده: *${result.totalScore} از 20* (${result.percentage}%)`,
+    `⏱ زمان صرف شده: ${spentMin} دقیقه`,
+    `📌 نقاط ضعف: ${result.weakTopics.length ? result.weakTopics.join("، ") : "ندارد (تسلط کامل)"}`
+  ].join("\n");
+
+  try {
+    const url = `https://api.telegram.org/bot${EXAM_CONFIG.telegramBotToken}/sendMessage`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chat_id: EXAM_CONFIG.telegramChatId,
+        text: textMsg,
+        parse_mode: "Markdown"
+      })
+    });
+    if (res.ok) {
+      statusEl.style.color = "var(--success)";
+      statusEl.textContent = "✅ کارنامه با موفقیت به تلگرام ارسال شد.";
+    } else {
+      throw new Error("Telegram API Error");
+    }
+  } catch (err) {
+    statusEl.style.color = "var(--warning)";
+    statusEl.textContent = "⚠️ کارنامه در سیستم ثبت شد (عدم اتصال لحظه‌ای به تلگرام).";
+  }
+}
+
+/********************************************************************
+ * ۸. رویدادها، اسکرول، کپی واتساپ و پنل ریست مخفی دبیر (9451)
+ ********************************************************************/
+document.getElementById("start-exam-btn").addEventListener("click", () => {
+  if (!checkScheduleWindow()) {
+    alert("آزمون در حال حاضر قفل است و فقط در تاریخ ۲۳ آبان ساعت ۱۱ تا ۱۲ ظهر باز می‌شود.");
+    return;
+  }
+
+  const nameVal = document.getElementById("student-name").value.trim();
+  const gradeVal = document.getElementById("student-grade").value;
+
+  if (!nameVal || !gradeVal) {
+    alert("لطفاً نام و نام خانوادگی و پایه تحصیلی خود را به صورت کامل وارد نمایید.");
+    return;
+  }
+
+  // تنظیم زمان باقی‌مانده متناسب با ساعت ۱۲:۰۰ ظهر (اگر دانش‌آموز دیرتر از ۱۱ وارد شد)
+  if (!appState.teacherBypassLock && EXAM_CONFIG.examDate && EXAM_CONFIG.endTime) {
+    const { end } = getExamWindowDates();
+    const now = new Date();
+    const secUntilEnd = Math.max(60, Math.floor((end - now) / 1000));
+    appState.remainingSeconds = Math.min(EXAM_CONFIG.durationMinutes * 60, secUntilEnd);
+  } else {
+    appState.remainingSeconds = EXAM_CONFIG.durationMinutes * 60;
+  }
+
+  appState.studentName = nameVal;
+  appState.studentGrade = gradeVal;
+  appState.started = true;
+  appState.startTimestamp = Date.now();
+  saveState();
+
+  document.getElementById("login-screen").style.display = "none";
+  document.getElementById("exam-wrapper").style.display = "grid";
+  document.getElementById("nav-student-name").textContent = nameVal;
+  document.getElementById("nav-student-grade").textContent = gradeVal;
+  startTimer();
+});
+
+document.getElementById("submit-exam-btn").addEventListener("click", () => finalizeExam(false));
+
+document.getElementById("theme-toggle").addEventListener("click", () => {
+  appState.theme = appState.theme === "dark" ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", appState.theme);
+  saveState();
+});
+
+window.addEventListener("scroll", () => {
+  const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+  const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+  const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+  document.getElementById("scroll-progress").style.width = scrolled + "%";
+});
+
+document.getElementById("copy-whatsapp-btn").addEventListener("click", () => {
+  const result = evaluateExam();
+  const text = `کارنامه آزمون رسمی ریاضی ۲۳ آبان (${EXAM_CONFIG.schoolName})\nدبیر: ${EXAM_CONFIG.teacherName}\nنام دانش‌آموز: ${appState.studentName} | پایه: ${appState.studentGrade}\nنمره: ${result.totalScore} از ۲۰ (${result.percentage}٪)`;
+  navigator.clipboard.writeText(text).then(() => {
+    alert("خلاصه کارنامه کپی شد و آماده ارسال در واتساپ است.");
+  });
+});
+
+// مکانیزم مخفی باز کردن پنل مدیریت دبیر (۵ کلیک روی لوگوی مدرسه بهار دانش یا Ctrl+Shift+R)
+let secretClickCount = 0;
+let secretClickTimer = null;
+
+document.getElementById("secret-trigger").addEventListener("click", () => {
+  secretClickCount++;
+  clearTimeout(secretClickTimer);
+  if (secretClickCount >= 5) {
+    secretClickCount = 0;
+    openResetModal();
+  } else {
+    secretClickTimer = setTimeout(() => { secretClickCount = 0; }, 1800);
+  }
+});
+
+window.addEventListener("keydown", (e) => {
+  if (e.ctrlKey && e.shiftKey && (e.key === "R" || e.key === "r")) {
+    e.preventDefault();
+    openResetModal();
+  }
+});
+
+function openResetModal() {
+  document.getElementById("reset-pass-input").value = "";
+  document.getElementById("reset-modal").style.display = "flex";
+  document.getElementById("reset-pass-input").focus();
+}
+
+document.getElementById("close-reset-btn").addEventListener("click", () => {
+  document.getElementById("reset-modal").style.display = "none";
+});
+
+document.getElementById("confirm-reset-btn").addEventListener("click", () => {
+  const pass = normalizeNumberInput(document.getElementById("reset-pass-input").value);
+  if (pass === EXAM_CONFIG.secretResetCode) {
+    localStorage.removeItem(EXAM_CONFIG.storageKey);
+    location.reload();
+  } else {
+    alert("رمز عبور دبیر اشتباه است!");
+  }
+});
+
+document.getElementById("bypass-lock-btn").addEventListener("click", () => {
+  const pass = normalizeNumberInput(document.getElementById("reset-pass-input").value);
+  if (pass === EXAM_CONFIG.secretResetCode) {
+    appState.teacherBypassLock = true;
+    saveState();
+    document.getElementById("reset-modal").style.display = "none";
+    checkScheduleWindow();
+  } else {
+    alert("رمز عبور دبیر اشتباه است!");
+  }
+});
+
+// راه‌اندازی اولیه
+loadState();
+initUI();
+</script>
+</body>
+</html>
