@@ -1,0 +1,1606 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>سامانه تمرین و آشنایی با سوالات ریاضی | مدرسه بهار دانش</title>
+<style>
+:root {
+  --bg-main: #0f172a;
+  --bg-secondary: #1e293b;
+  --glass-bg: rgba(30, 41, 59, 0.78);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --accent: #38bdf8;
+  --accent-hover: #0284c7;
+  --accent-glow: rgba(56, 189, 248, 0.25);
+  --success: #10b981;
+  --danger: #ef4444;
+  --warning: #f59e0b;
+  --card-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.4);
+  --input-bg: rgba(15, 23, 42, 0.65);
+}
+
+[data-theme="light"] {
+  --bg-main: #f1f5f9;
+  --bg-secondary: #e2e8f0;
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(15, 23, 42, 0.1);
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --accent: #0284c7;
+  --accent-hover: #0369a1;
+  --accent-glow: rgba(2, 132, 199, 0.2);
+  --success: #059669;
+  --danger: #dc2626;
+  --warning: #d97706;
+  --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+  --input-bg: rgba(248, 250, 252, 0.9);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: system-ui, -apple-system, 'Segoe UI', Tahoma, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  background: var(--bg-main);
+  background-image: 
+    radial-gradient(at 10% 10%, var(--accent-glow) 0px, transparent 50%),
+    radial-gradient(at 90% 90%, rgba(16, 185, 129, 0.12) 0px, transparent 50%);
+  background-attachment: fixed;
+  color: var(--text-primary);
+  line-height: 1.7;
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.ltr {
+  direction: ltr;
+  display: inline-block;
+  font-family: 'Cambria Math', 'Times New Roman', monospace;
+  font-weight: 600;
+  unicode-bidi: embed;
+}
+
+/* Scroll Progress Bar */
+#scroll-progress {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--accent), var(--success));
+  width: 0%;
+  z-index: 9999;
+  transition: width 0.1s ease-out;
+}
+
+/* Top Sticky Header */
+.top-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: var(--glass-bg);
+  border-bottom: 1px solid var(--glass-border);
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--card-shadow);
+}
+
+.brand-area {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  user-select: none;
+}
+
+.brand-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent), var(--success));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: bold;
+  box-shadow: 0 4px 12px var(--accent-glow);
+}
+
+.brand-text h1 {
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.brand-text p {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.timer-box {
+  background: var(--input-bg);
+  border: 1px solid var(--glass-border);
+  padding: 0.4rem 0.9rem;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--accent);
+}
+
+.timer-box.warning {
+  color: var(--danger);
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.icon-btn {
+  background: var(--input-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.icon-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-2px);
+}
+
+/* Main Layout */
+.container {
+  max-width: 1180px;
+  margin: 1.5rem auto;
+  padding: 0 1rem;
+  display: grid;
+  grid-template-columns: 1fr 270px;
+  gap: 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .container {
+    grid-template-columns: 1fr;
+  }
+  .side-nav {
+    order: -1;
+    position: static !important;
+  }
+}
+
+/* Glass Card */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: 18px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--card-shadow);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+/* Login Screen */
+#login-screen {
+  max-width: 580px;
+  margin: 2.5rem auto;
+  padding: 0 1rem;
+}
+
+.meta-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.75rem;
+  margin: 1.25rem 0;
+}
+
+.meta-item {
+  background: var(--input-bg);
+  border: 1px solid var(--glass-border);
+  padding: 0.75rem;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.meta-item span {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+}
+
+.meta-item strong {
+  font-size: 0.98rem;
+  color: var(--text-primary);
+}
+
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  font-size: 0.92rem;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--glass-border);
+  background: var(--input-bg);
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-control:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-glow);
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 0.9rem 1.5rem;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-hover));
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 6px 20px var(--accent-glow);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Question Styling */
+.section-banner {
+  background: linear-gradient(135deg, rgba(56, 189, 248, 0.15), rgba(16, 185, 129, 0.1));
+  border-right: 4px solid var(--accent);
+  padding: 1rem 1.25rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.section-banner h2 {
+  font-size: 1.15rem;
+  color: var(--accent);
+}
+
+.section-banner p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.q-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px dashed var(--glass-border);
+}
+
+.q-badge {
+  background: var(--accent-glow);
+  color: var(--accent);
+  padding: 0.25rem 0.75rem;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+.q-score {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  background: var(--input-bg);
+  padding: 0.25rem 0.65rem;
+  border-radius: 8px;
+  border: 1px solid var(--glass-border);
+}
+
+.q-title {
+  font-size: 1.02rem;
+  font-weight: 600;
+  margin-bottom: 1.1rem;
+}
+
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.75rem;
+}
+
+.option-label {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  background: var(--input-bg);
+  border: 1px solid var(--glass-border);
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.option-label:hover {
+  border-color: var(--accent);
+}
+
+.option-label input[type="radio"] {
+  accent-color: var(--accent);
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.option-label.selected {
+  border-color: var(--accent);
+  background: var(--accent-glow);
+}
+
+/* Step-by-step Problem Styling */
+.steps-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  margin-top: 1rem;
+}
+
+.step-box {
+  background: var(--input-bg);
+  border: 1px solid var(--glass-border);
+  border-right: 3px solid var(--accent);
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+}
+
+.step-header {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: var(--accent);
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.step-body {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  justify-content: space-between;
+}
+
+.step-input {
+  min-width: 210px;
+  flex: 1;
+}
+
+/* Side Navigation */
+.side-nav {
+  position: sticky;
+  top: 85px;
+  height: fit-content;
+}
+
+.nav-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+  margin-top: 0.85rem;
+}
+
+.nav-dot {
+  height: 36px;
+  border-radius: 8px;
+  background: var(--input-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.nav-dot.answered {
+  background: var(--accent-glow);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.nav-dot:hover {
+  transform: scale(1.08);
+}
+
+/* Report Card */
+#report-section {
+  display: none;
+  max-width: 960px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.score-circle {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: conic-gradient(var(--accent) var(--pct, 0%), var(--input-bg) 0%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1rem;
+  position: relative;
+}
+
+.score-circle::before {
+  content: '';
+  position: absolute;
+  width: 114px;
+  height: 114px;
+  background: var(--bg-secondary);
+  border-radius: 50%;
+}
+
+.score-circle-inner {
+  position: relative;
+  text-align: center;
+  z-index: 1;
+}
+
+.score-circle-inner strong {
+  font-size: 1.6rem;
+  display: block;
+}
+
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.25rem 0;
+  font-size: 0.9rem;
+}
+
+.report-table th, .report-table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--glass-border);
+  text-align: right;
+}
+
+.report-table th {
+  color: var(--accent);
+  background: var(--input-bg);
+}
+
+.badge-ok {
+  color: var(--success);
+  font-weight: 700;
+}
+
+.badge-err {
+  color: var(--danger);
+  font-weight: 700;
+}
+
+.action-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.btn-outline {
+  flex: 1;
+  min-width: 160px;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-outline:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+@media print {
+  .top-header, .side-nav, .action-row, #exam-wrapper, #login-screen {
+    display: none !important;
+  }
+  #report-section {
+    display: block !important;
+    margin: 0;
+    max-width: 100%;
+  }
+  body {
+    background: #fff;
+    color: #000;
+  }
+  .glass-card {
+    box-shadow: none;
+    border: 1px solid #ccc;
+    background: #fff;
+  }
+}
+</style>
+</head>
+<body>
+
+<div id="scroll-progress"></div>
+
+<!-- Header -->
+<header class="top-header">
+  <div class="brand-area" title="مدرسه بهار دانش">
+    <div class="brand-icon">∑</div>
+    <div class="brand-text">
+      <h1>مدرسه بهار دانش</h1>
+      <p>آزمون ریاضی | دبیر: برزگری</p>
+    </div>
+  </div>
+
+  <div class="header-controls">
+    <div class="timer-box" id="timer-display">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"></circle>
+        <polyline points="12 6 12 12 16 14"></polyline>
+      </svg>
+      <span id="time-text">۴۰:۰۰</span>
+    </div>
+    <button class="icon-btn" id="theme-toggle" title="تغییر پوسته">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<!-- Login Screen -->
+<section id="login-screen">
+  <div class="glass-card">
+    <h2 style="text-align:center; margin-bottom:0.5rem; color:var(--accent);">سامانه تمرین و آشنایی با سوالات ریاضی</h2>
+    <p style="text-align:center; font-size:0.88rem; color:var(--text-secondary);">لطفاً مشخصات خود را وارد نموده و آزمون تمرینی را آغاز کنید.</p>
+
+    <div class="meta-grid">
+      <div class="meta-item">
+        <span>نام مدرسه</span>
+        <strong id="meta-school">مدرسه بهار دانش</strong>
+      </div>
+      <div class="meta-item">
+        <span>نام درس</span>
+        <strong id="meta-course">ریاضی</strong>
+      </div>
+      <div class="meta-item">
+        <span>نام دبیر</span>
+        <strong id="meta-teacher">برزگری</strong>
+      </div>
+      <div class="meta-item">
+        <span>مبحث آزمون</span>
+        <strong id="meta-topic">حساب عددهای طبیعی (اعداد اول، ب.م.م و ک.م.م)</strong>
+      </div>
+    </div>
+
+    <div id="schedule-alert" style="display:none; background:rgba(239,68,68,0.15); border:1px solid var(--danger); color:var(--danger); padding:0.75rem; border-radius:10px; margin-bottom:1rem; text-align:center; font-weight:600;"></div>
+
+    <div class="form-group">
+      <label for="student-name">نام و نام خانوادگی دانش‌آموز (الزامی):</label>
+      <input type="text" id="student-name" class="form-control" placeholder="مثال: محمد محمدی" autocomplete="off">
+    </div>
+
+    <div class="form-group">
+      <label for="student-grade">پایه تحصیلی (الزامی):</label>
+      <select id="student-grade" class="form-control">
+        <option value="">-- انتخاب پایه تحصیلی --</option>
+        <option value="هفتم">هفتم</option>
+        <option value="هشتم" selected>هشتم</option>
+        <option value="نهم">نهم</option>
+      </select>
+    </div>
+
+    <button class="btn-primary" id="start-exam-btn">شروع آزمون و مشاهده سوالات</button>
+  </div>
+</section>
+
+<!-- Exam Content -->
+<main class="container" id="exam-wrapper" style="display:none;">
+  <div id="questions-column">
+    <!-- Section 1 -->
+    <div class="section-banner">
+      <h2>بخش اول: سوالات مفهومی، چهارگزینه‌ای، صحیح/غلط و جای‌خالی (۱۰ نمره)</h2>
+      <p>پاسخ صحیح را در هر سوال انتخاب کنید. تمامی پاسخ‌ها به صورت خودکار ذخیره می‌شوند.</p>
+    </div>
+    <div id="part1-container"></div>
+
+    <!-- Section 2 -->
+    <div class="section-banner" style="margin-top:2rem;">
+      <h2>بخش دوم: مسائل تشریحی گام‌به‌گام (۱۰ نمره)</h2>
+      <p>هر مسئله شامل ۵ گام استاندارد حل ریاضی است. هر گام نمره مستقل دارد.</p>
+    </div>
+    <div id="part2-container"></div>
+
+    <!-- Submit Card -->
+    <div class="glass-card" style="text-align:center;">
+      <h3 style="margin-bottom:0.5rem;">پایان سوالات آزمون</h3>
+      <p style="font-size:0.88rem; color:var(--text-secondary); margin-bottom:1.2rem;">پس از اطمینان از پاسخگویی به سوالات، دکمه زیر را بزنید تا کارنامه و پاسخ‌های صحیح را مشاهده کنید. (امکان تمرین مجدد نیز وجود دارد)</p>
+      <button class="btn-primary" id="submit-exam-btn">مشاهده کارنامه و بررسی پاسخ‌ها</button>
+    </div>
+  </div>
+
+  <!-- Side Navigation -->
+  <aside class="side-nav">
+    <div class="glass-card">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <strong style="font-size:0.95rem;">وضعیت پاسخگویی</strong>
+        <span id="progress-pct" style="font-size:0.85rem; color:var(--accent); font-weight:700;">۰٪</span>
+      </div>
+      <div style="height:8px; background:var(--input-bg); border-radius:4px; margin:0.6rem 0; overflow:hidden;">
+        <div id="answer-progress-bar" style="height:100%; width:0%; background:var(--accent); transition:width 0.3s;"></div>
+      </div>
+      <div style="font-size:0.8rem; color:var(--text-secondary); margin-bottom:0.5rem;">
+        دانش‌آموز: <strong id="nav-student-name" style="color:var(--text-primary);">-</strong> (<span id="nav-student-grade">-</span>)
+      </div>
+      <div class="nav-grid" id="nav-dots"></div>
+    </div>
+  </aside>
+</main>
+
+<!-- Report Card Section -->
+<section id="report-section">
+  <div class="glass-card">
+    <div style="text-align:center; border-bottom:1px solid var(--glass-border); padding-bottom:1.25rem; margin-bottom:1.25rem;">
+      <h2 style="color:var(--accent);">کارنامه آزمون ریاضی</h2>
+      <p style="color:var(--text-secondary); font-size:0.9rem;">مدرسه بهار دانش | دبیر: برزگری</p>
+    </div>
+
+    <div class="score-circle" id="score-ring">
+      <div class="score-circle-inner">
+        <strong id="final-score-num">0</strong>
+        <span style="font-size:0.8rem; color:var(--text-secondary);">از ۲۰ نمره</span>
+      </div>
+    </div>
+
+    <div class="meta-grid" id="report-meta"></div>
+
+    <div class="glass-card" style="background:var(--input-bg); margin-top:1rem;">
+      <h3 style="font-size:1rem; color:var(--accent); margin-bottom:0.6rem;">تحلیل هوشمند عملکرد و پیشنهاد مطالعه</h3>
+      <p id="pedagogical-feedback" style="font-size:0.9rem;"></p>
+    </div>
+
+    <h3 style="font-size:1rem; margin:1.5rem 0 0.5rem;">ریز نمرات و بررسی پاسخ‌ها:</h3>
+    <div style="overflow-x:auto;">
+      <table class="report-table">
+        <thead>
+          <tr>
+            <th>سوال / گام</th>
+            <th>مبحث</th>
+            <th>پاسخ شما</th>
+            <th>پاسخ صحیح</th>
+            <th>نمره</th>
+          </tr>
+        </thead>
+        <tbody id="report-tbody"></tbody>
+      </table>
+    </div>
+
+    <div class="action-row">
+      <button class="btn-outline" onclick="window.print()">چاپ / دانلود PDF کارنامه</button>
+      <button class="btn-outline" id="copy-whatsapp-btn">کپی خلاصه نتیجه برای واتساپ</button>
+      <button class="btn-outline" id="retry-exam-btn" style="border-color:var(--success); color:var(--success);">تمرین مجدد آزمون</button>
+    </div>
+  </div>
+</section>
+
+<script>
+/********************************************************************
+ * ۱. تنظیمات پایه، زمان‌بندی و اطلاعات آزمون (قابل ویرایش توسط دبیر)
+ ********************************************************************/
+const EXAM_CONFIG = {
+  courseName: "ریاضی",
+  schoolName: "مدرسه بهار دانش",
+  teacherName: "برزگری",
+  topicName: "فصل ۲: حساب عددهای طبیعی (اعداد اول، ب.م.م و ک.م.م)",
+  examDate: "",        // مثال: "2026-11-10" (اگر خالی باشد آزمون آزاد است)
+  startTime: "",       // مثال: "08:00"
+  endTime: "",         // مثال: "10:00"
+  durationMinutes: 40, // مدت زمان تایمر آزمون به دقیقه
+  storageKey: "BAHAR_DANESH_MATH8_PRACTICE_V1"
+};
+
+/********************************************************************
+ * ۲. بانک سوالات استاندارد (مجموع: ۲۰ نمره)
+ ********************************************************************/
+// بخش اول: ۱۰ سوال (هر کدام ۱ نمره = ۱۰ نمره)
+const PART1_QUESTIONS = [
+  {
+    id: "q1",
+    topic: "تعریف اعداد اول و مرکب",
+    score: 1,
+    text: "کدام‌یک از گزینه‌های زیر درباره اعداد طبیعی، اول و مرکب کاملاً صحیح است؟",
+    type: "radio",
+    options: [
+      "عدد ۱ کوچک‌ترین عدد اول است.",
+      "تنها عدد اول زوج، عدد ۲ است و بقیه اعداد اول فرد هستند.",
+      "تمام اعداد فرد، اول هستند.",
+      "هر عدد اول حداقل سه مقسوم‌علیه (شمارنده) دارد."
+    ],
+    correct: "تنها عدد اول زوج، عدد ۲ است و بقیه اعداد اول فرد هستند.",
+    reason: "عدد ۱ نه اول است و نه مرکب، و عدد ۲ تنها عدد اول زوج است که فقط دو شمارنده (۱ و ۲) دارد."
+  },
+  {
+    id: "q2",
+    topic: "تشخیص عدد اول با مجذور",
+    score: 1,
+    text: "برای تشخیص اول یا مرکب بودن عدد ۸۳، بخش‌پذیری آن را بر اعداد اول بررسی می‌کنیم. آخرین عدد اولی که لازم است بررسی کنیم کدام است؟ (زیرا مجذور عدد اول بعدی از ۸۳ بزرگ‌تر می‌شود)",
+    type: "radio",
+    options: [
+      "عدد ۵ (چون ۲۵ < ۸۳)",
+      "عدد ۷ (چون ۴۹ < ۸۳ ولی ۱۲۱ = ۱۱×۱۱ از ۸۳ بزرگ‌تر است)",
+      "عدد ۱۱ (چون ۱۲۱ > ۸۳)",
+      "عدد ۱۳ (چون ۱۶۹ > ۸۳)"
+    ],
+    correct: "عدد ۷ (چون ۴۹ < ۸۳ ولی ۱۲۱ = ۱۱×۱۱ از ۸۳ بزرگ‌تر است)",
+    reason: "طبق نکته جزوه، کافیست بخش‌پذیری را بر اعداد اولی که مجذورشان کوچک‌تر یا مساوی ۸۳ است (۲، ۳، ۵، ۷) بررسی کنیم."
+  },
+  {
+    id: "q3",
+    topic: "خواص مجموع اعداد اول",
+    score: 1,
+    text: "هرگاه مجموع دو عدد اول، عددی فرد باشد، یکی از آن دو عدد اول حتماً کدام عدد است؟",
+    type: "dropdown",
+    options: ["۱", "۲", "۳", "۵"],
+    correct: "۲",
+    reason: "مجموع دو عدد زمانی فرد می‌شود که یکی زوج و دیگری فرد باشد؛ تنها عدد اول زوج نیز ۲ است."
+  },
+  {
+    id: "q4",
+    topic: "تشخیص اعداد مرکب فریبنده",
+    score: 1,
+    text: "در مجموعه اعداد { ۲۹ ، ۳۱ ، ۹۱ ، ۹۷ } کدام عدد مرکب است؟",
+    type: "radio",
+    options: [
+      "۲۹",
+      "۳۱",
+      "۹۱ (چون ۹۱ = ۱۳ × ۷)",
+      "۹۷"
+    ],
+    correct: "۹۱ (چون ۹۱ = ۱۳ × ۷)",
+    reason: "عدد ۹۱ بر ۷ و ۱۳ بخش‌پذیر است (۹۱ = ۱۳ × ۷)، بنابراین بیش از دو شمارنده دارد و مرکب است."
+  },
+  {
+    id: "q5",
+    topic: "بررسی عدد ۱۴۳",
+    score: 1,
+    text: "صحیح یا غلط: «عدد ۱۴۳ یک عدد اول است زیرا بر ۲، ۳، ۵ و ۷ بخش‌پذیر نیست.»",
+    type: "radio",
+    options: [
+      "صحیح",
+      "غلط (چون ۱۴۳ = ۱۳ × ۱۱ و بر ۱۱ و ۱۳ بخش‌پذیر است)"
+    ],
+    correct: "غلط (چون ۱۴۳ = ۱۳ × ۱۱ و بر ۱۱ و ۱۳ بخش‌پذیر است)",
+    reason: "مجذور ۱۱ برابر ۱۲۱ و کوچک‌تر از ۱۴۳ است؛ با بررسی ۱۱ متوجه می‌شویم ۱۴۳ = ۱۳ × ۱۱ عددی مرکب است."
+  },
+  {
+    id: "q6",
+    topic: "الگوریتم غربال",
+    score: 1,
+    text: "در روش الگوریتم غربال برای پیدا کردن اعداد اول ۱ تا ۳۰، پس از خط زدن عدد ۱ و مضرب‌های ۲، ۳ و ۵ (به‌جز خودشان)، اولین مضرب عدد ۷ که هنوز خط نخورده است کدام است؟",
+    type: "dropdown",
+    options: ["۱۴", "۲۱", "۳۵", "هیچ مضربی از ۷ تا ۳۰ باقی نمانده است (۴۹ خارج از جدول است)"],
+    correct: "هیچ مضربی از ۷ تا ۳۰ باقی نمانده است (۴۹ خارج از جدول است)",
+    reason: "مضرب‌های ۷ تا ۳۰ عبارتند از ۱۴ (خط‌خورده در مضارب ۲)، ۲۱ (خط‌خورده در مضارب ۳) و ۲۸ (خط‌خورده در مضارب ۲)."
+  },
+  {
+    id: "q7",
+    topic: "مفهوم اعداد اول و مرکب",
+    score: 1,
+    text: "صحیح یا غلط: «عدد ۵۱ عددی اول است و عدد ۱ تنها عددی است که نه اول است و نه مرکب.»",
+    type: "radio",
+    options: [
+      "بخش اول صحیح، بخش دوم غلط",
+      "بخش اول غلط (۵۱ = ۱۷ × ۳ مرکب است)، بخش دوم صحیح",
+      "هر دو بخش صحیح است",
+      "هر دو بخش غلط است"
+    ],
+    correct: "بخش اول غلط (۵۱ = ۱۷ × ۳ مرکب است)، بخش دوم صحیح",
+    reason: "مجموع ارقام ۵۱ برابر ۶ است پس بر ۳ بخش‌پذیر بوده (۵۱ = ۱۷ × ۳) و مرکب است؛ اما عدد ۱ واقعاً نه اول است و نه مرکب."
+  },
+  {
+    id: "q8",
+    topic: "ب.م.م دو عدد اول",
+    score: 1,
+    text: "بزرگ‌ترین مقسوم‌علیه مشترک (ب.م.م) دو عدد اول متمایز مانند (۷ , ۵) همیشه برابر با چند است؟",
+    type: "dropdown",
+    options: ["۱", "۵", "۷", "۳۵"],
+    correct: "۱",
+    reason: "طبق نکته مهم جزوه، ب.م.م دو عدد اول همیشه برابر با ۱ است."
+  },
+  {
+    id: "q9",
+    topic: "محاسبه ب.م.م و ک.م.م",
+    score: 1,
+    text: "مقدار ب.م.م (۲۴ , ۱۶) و ک.م.م [۳۰۰ , ۱۵۰] به ترتیب از راست به چپ کدام است؟",
+    type: "radio",
+    options: [
+      "۸ و ۳۰۰",
+      "۴ و ۱۵۰",
+      "۸ و ۱۵۰",
+      "۱۶ و ۶۰۰"
+    ],
+    correct: "۸ و ۳۰۰",
+    reason: "بزرگ‌ترین شمارنده مشترک ۱۶ و ۲۴ عدد ۸ است؛ همچنین چون ۳۰۰ مضرب ۱۵۰ است، ک.م.م آن‌ها ۳۰۰ می‌شود."
+  },
+  {
+    id: "q10",
+    topic: "کوچک‌ترین عدد اول سه رقمی",
+    score: 1,
+    text: "کوچک‌ترین عدد اول سه رقمی کدام عدد است؟",
+    type: "dropdown",
+    options: ["۱۰۰", "۱۰۱", "۱۰۳", "۱۱۱"],
+    correct: "۱۰۱",
+    reason: "عدد ۱۰۰ زوج است و عدد ۱۰۱ بر هیچ‌یک از اعداد اول ۲، ۳، ۵ و ۷ بخش‌پذیر نیست، پس کوچک‌ترین عدد اول سه‌رقمی ۱۰۱ است."
+  }
+];
+
+// بخش دوم: ۴ مسئله تشریحی ۵ مرحله‌ای (هر مسئله ۲.۵ نمره، هر گام ۰.۵ نمره = ۱۰ نمره)
+const PART2_PROBLEMS = [
+  {
+    id: "p1",
+    topic: "تجزیه درختی به عوامل اول",
+    totalScore: 2.5,
+    title: "مسئله ۱: می‌خواهیم عدد ۲۲۵ را به کمک نمودار درختی به حاصل‌ضرب عوامل اول تجزیه کنیم. گام‌های زیر را تکمیل نمایید:",
+    steps: [
+      {
+        id: "p1_s1",
+        label: "گام ۱: تعیین داده‌ها و کوچک‌ترین مقسوم‌علیه اول عدد ۲۲۵",
+        type: "dropdown",
+        options: ["۲ (چون زوج است)", "۳ (چون مجموع ارقام ۲+۲+۵=۹ بر ۳ بخش‌پذیر است)", "۷", "۱۱"],
+        correct: "۳ (چون مجموع ارقام ۲+۲+۵=۹ بر ۳ بخش‌پذیر است)",
+        score: 0.5
+      },
+      {
+        id: "p1_s2",
+        label: "گام ۲: تشکیل رابطه تقسیم مرحله اول (۲۲۵ تقسیم بر ۳)",
+        type: "dropdown",
+        options: ["225 = 3 × 75", "225 = 3 × 65", "225 = 5 × 45", "225 = 3 × 85"],
+        correct: "225 = 3 × 75",
+        score: 0.5
+      },
+      {
+        id: "p1_s3",
+        label: "گام ۳: جایگذاری خارج‌قسمت مرحله دوم (تقسیم ۷۵ بر ۳ برابر با چند می‌شود؟)",
+        type: "number",
+        placeholder: "عدد را وارد کنید...",
+        correct: "25",
+        score: 0.5
+      },
+      {
+        id: "p1_s4",
+        label: "گام ۴: تجزیه عدد ۲۵ به عوامل اول و نوشتن کل عوامل",
+        type: "dropdown",
+        options: ["3 × 3 × 5 × 5", "2 × 3 × 5 × 5", "3 × 5 × 5 × 5", "3 × 3 × 3 × 5"],
+        correct: "3 × 3 × 5 × 5",
+        score: 0.5
+      },
+      {
+        id: "p1_s5",
+        label: "گام ۵: پاسخ نهایی تجزیه ۲۲۵ به صورت توان‌دار",
+        type: "dropdown",
+        options: ["3² × 5²", "3³ × 5", "2² × 5³", "3 × 5²"],
+        correct: "3² × 5²",
+        score: 0.5
+      }
+    ]
+  },
+  {
+    id: "p2",
+    topic: "رابطه ب.م.م و ک.م.م دو عدد",
+    totalScore: 2.5,
+    title: "مسئله ۲: مطلوب است محاسبه (ب.م.م) و [ک.م.م] دو عدد ۳۵ و ۴۲ به روش فرمول ارتباط ب.م.م و ک.م.م:",
+    steps: [
+      {
+        id: "p2_s1",
+        label: "گام ۱: تعیین داده‌های مسئله و تجزیه مقدماتی ۳۵ و ۴۲",
+        type: "dropdown",
+        options: ["35 = 5 × 7 , 42 = 6 × 7", "35 = 3 × 7 , 42 = 4 × 7", "35 = 5 × 5 , 42 = 2 × 21", "هر دو اول هستند"],
+        correct: "35 = 5 × 7 , 42 = 6 × 7",
+        score: 0.5
+      },
+      {
+        id: "p2_s2",
+        label: "گام ۲: انتخاب فرمول اصلی محاسبه ک.م.م با داشتن ب.م.م",
+        type: "dropdown",
+        options: ["[a , b] = (a × b) ÷ (a , b)", "[a , b] = (a + b) ÷ (a , b)", "[a , b] = (a × b) × (a , b)", "[a , b] = a - b"],
+        correct: "[a , b] = (a × b) ÷ (a , b)",
+        score: 0.5
+      },
+      {
+        id: "p2_s3",
+        label: "گام ۳: مقدار ب.م.م دو عدد یعنی (۴۲ , ۳۵) برابر با کدام عدد است؟",
+        type: "number",
+        placeholder: "مقدار ب.م.م را بنویسید...",
+        correct: "7",
+        score: 0.5
+      },
+      {
+        id: "p2_s4",
+        label: "گام ۴: جایگذاری در فرمول و انجام محاسبه جبری",
+        type: "dropdown",
+        options: ["(35 × 42) ÷ 7 = 1470 ÷ 7", "(35 + 42) ÷ 7 = 77 ÷ 7", "(35 × 42) ÷ 5 = 1470 ÷ 5", "42 ÷ 7 = 6"],
+        correct: "(35 × 42) ÷ 7 = 1470 ÷ 7",
+        score: 0.5
+      },
+      {
+        id: "p2_s5",
+        label: "گام ۵: پاسخ نهایی ک.م.م یعنی [۴۲ , ۳۵] برابر با چند است؟",
+        type: "number",
+        placeholder: "پاسخ نهایی ک.م.م...",
+        correct: "210",
+        score: 0.5
+      }
+    ]
+  },
+  {
+    id: "p3",
+    topic: "ب.م.م و ک.م.م اعداد تجزیه‌شده توان‌دار",
+    totalScore: 2.5,
+    title: "مسئله ۳: دو عدد A و B به صورت A = 2³ × 5 × 7² و B = 2² × 5³ × 3 × 7 به عوامل اول تجزیه شده‌اند. مراحل محاسبه ب.م.م و ک.م.م را کامل کنید:",
+    steps: [
+      {
+        id: "p3_s1",
+        label: "گام ۱: تعیین عوامل اول مشترک بین دو عدد A و B",
+        type: "dropdown",
+        options: ["فقط ۲، ۵ و ۷", "۲، ۳، ۵ و ۷", "فقط ۲ و ۵", "فقط ۳ و ۷"],
+        correct: "فقط ۲، ۵ و ۷",
+        score: 0.5
+      },
+      {
+        id: "p3_s2",
+        label: "گام ۲: قانون اصلی محاسبه ب.م.م در اعداد تجزیه‌شده به عوامل اول",
+        type: "dropdown",
+        options: [
+          "حاصل‌ضرب عوامل مشترک با کمترین توان",
+          "حاصل‌ضرب عوامل مشترک با بیشترین توان",
+          "حاصل‌ضرب عوامل مشترک و غیرمشترک با کمترین توان",
+          "حاصل‌ضرب تمام عوامل موجود"
+        ],
+        correct: "حاصل‌ضرب عوامل مشترک با کمترین توان",
+        score: 0.5
+      },
+      {
+        id: "p3_s3",
+        label: "گام ۳: عبارت صحیح ب.م.م (A , B) پس از انتخاب کمترین توان‌ها کدام است؟",
+        type: "dropdown",
+        options: ["2² × 5 × 7", "2³ × 5³ × 7²", "2² × 3 × 5 × 7", "2 × 5 × 7²"],
+        correct: "2² × 5 × 7",
+        score: 0.5
+      },
+      {
+        id: "p3_s4",
+        label: "گام ۴: حاصل عددی ب.م.م (2² × 5 × 7) برابر با چند می‌شود؟",
+        type: "number",
+        placeholder: "حاصل عددی ب.م.م...",
+        correct: "140",
+        score: 0.5
+      },
+      {
+        id: "p3_s5",
+        label: "گام ۵: پاسخ نهایی عبارت ک.م.م [A , B] (عوامل مشترک و غیرمشترک با بیشترین توان)",
+        type: "dropdown",
+        options: ["2³ × 5³ × 7² × 3", "2² × 5³ × 7²", "2³ × 5 × 7 × 3", "2⁵ × 5⁴ × 7³ × 3"],
+        correct: "2³ × 5³ × 7² × 3",
+        score: 0.5
+      }
+    ]
+  },
+  {
+    id: "p4",
+    topic: "الگوریتم تجزیه عدد ۱۰۰۰",
+    totalScore: 2.5,
+    title: "مسئله ۴: می‌خواهیم عدد ۱۰۰۰ را به حاصل‌ضرب عوامل اول تجزیه کرده و مجموع عوامل اول متمایز آن را بیابیم:",
+    steps: [
+      {
+        id: "p4_s1",
+        label: "گام ۱: نوشتن عدد ۱۰۰۰ به صورت حاصل‌ضرب توانی از ۱۰",
+        type: "dropdown",
+        options: ["1000 = 10 × 10 × 10 = 10³", "1000 = 100 × 2", "1000 = 10²", "1000 = 50 × 2"],
+        correct: "1000 = 10 × 10 × 10 = 10³",
+        score: 0.5
+      },
+      {
+        id: "p4_s2",
+        label: "گام ۲: تجزیه هر عدد ۱۰ به عوامل اول سازنده آن",
+        type: "dropdown",
+        options: ["10 = 2 × 5", "10 = 1 × 10", "10 = 3 + 7", "10 = 2 × 3"],
+        correct: "10 = 2 × 5",
+        score: 0.5
+      },
+      {
+        id: "p4_s3",
+        label: "گام ۳: در تجزیه کامل عدد ۱۰۰۰، عامل اول ۲ چند بار در خودش ضرب می‌شود؟ (توان عدد ۲)",
+        type: "number",
+        placeholder: "توان عدد ۲ را وارد کنید...",
+        correct: "3",
+        score: 0.5
+      },
+      {
+        id: "p4_s4",
+        label: "گام ۴: نمایش استاندارد تجزیه عدد ۱۰۰۰ به صورت توان‌دار",
+        type: "dropdown",
+        options: ["2³ × 5³", "2² × 5³", "2³ × 5²", "2 × 5³"],
+        correct: "2³ × 5³",
+        score: 0.5
+      },
+      {
+        id: "p4_s5",
+        label: "گام ۵: مجموع مقسوم‌علیه‌های اول متمایز عدد ۱۰۰۰ (یعنی ۲ + ۵) برابر با چند است؟",
+        type: "number",
+        placeholder: "پاسخ نهایی...",
+        correct: "7",
+        score: 0.5
+      }
+    ]
+  }
+];
+
+/********************************************************************
+ * ۳. مدیریت وضعیت (State) و ذخیره در LocalStorage
+ ********************************************************************/
+let appState = {
+  studentName: "",
+  studentGrade: "هشتم",
+  started: false,
+  submitted: false,
+  startTimestamp: null,
+  remainingSeconds: EXAM_CONFIG.durationMinutes * 60,
+  answers: {},
+  theme: "dark"
+};
+
+let timerInterval = null;
+
+function loadState() {
+  const saved = localStorage.getItem(EXAM_CONFIG.storageKey);
+  if (saved) {
+    try {
+      const parsed = JSON.parse(saved);
+      appState = { ...appState, ...parsed };
+    } catch (e) {
+      console.error("خطا در خواندن اطلاعات ذخیره شده", e);
+    }
+  }
+}
+
+function saveState() {
+  localStorage.setItem(EXAM_CONFIG.storageKey, JSON.stringify(appState));
+}
+
+function toPersianNum(str) {
+  return String(str).replace(/\d/g, d => "۰۱۲۳۴۵۶۷۸۹"[d]);
+}
+
+function normalizeNumberInput(val) {
+  if (!val) return "";
+  const persianDigits = "۰۱۲۳۴۵۶۷۸۹";
+  const arabicDigits = "٠١٢٣٤٥٦٧٨٩";
+  let out = String(val).trim();
+  for (let i = 0; i < 10; i++) {
+    out = out.replace(new RegExp(persianDigits[i], "g"), i)
+             .replace(new RegExp(arabicDigits[i], "g"), i);
+  }
+  return out;
+}
+
+/********************************************************************
+ * ۴. رندر سوالات و رابط کاربری
+ ********************************************************************/
+function initUI() {
+  document.getElementById("meta-school").textContent = EXAM_CONFIG.schoolName;
+  document.getElementById("meta-course").textContent = EXAM_CONFIG.courseName;
+  document.getElementById("meta-teacher").textContent = EXAM_CONFIG.teacherName;
+  document.getElementById("meta-topic").textContent = EXAM_CONFIG.topicName;
+
+  document.documentElement.setAttribute("data-theme", appState.theme);
+  checkScheduleWindow();
+  renderQuestions();
+  renderNavDots();
+
+  if (appState.studentName) {
+    document.getElementById("student-name").value = appState.studentName;
+  }
+  if (appState.studentGrade) {
+    document.getElementById("student-grade").value = appState.studentGrade;
+  }
+
+  if (appState.submitted) {
+    document.getElementById("login-screen").style.display = "none";
+    document.getElementById("exam-wrapper").style.display = "none";
+    generateReport();
+  } else if (appState.started) {
+    document.getElementById("login-screen").style.display = "none";
+    document.getElementById("exam-wrapper").style.display = "grid";
+    document.getElementById("nav-student-name").textContent = appState.studentName;
+    document.getElementById("nav-student-grade").textContent = appState.studentGrade;
+    restoreAnswersToDOM();
+    startTimer();
+  } else {
+    updateTimerDisplay(EXAM_CONFIG.durationMinutes * 60);
+  }
+}
+
+function checkScheduleWindow() {
+  const alertBox = document.getElementById("schedule-alert");
+  const startBtn = document.getElementById("start-exam-btn");
+
+  if (!EXAM_CONFIG.examDate || !EXAM_CONFIG.startTime || !EXAM_CONFIG.endTime) {
+    alertBox.style.display = "none";
+    return true;
+  }
+
+  const now = new Date();
+  const start = new Date(`${EXAM_CONFIG.examDate}T${EXAM_CONFIG.startTime}:00`);
+  const end = new Date(`${EXAM_CONFIG.examDate}T${EXAM_CONFIG.endTime}:00`);
+
+  if (now < start) {
+    alertBox.style.display = "block";
+    alertBox.textContent = `آزمون هنوز شروع نشده است. زمان شروع: ${EXAM_CONFIG.examDate} ساعت ${EXAM_CONFIG.startTime}`;
+    startBtn.disabled = true;
+    return false;
+  }
+  if (now > end) {
+    alertBox.style.display = "block";
+    alertBox.textContent = `مهلت شرکت در این آزمون در ساعت ${EXAM_CONFIG.endTime} به پایان رسیده است.`;
+    startBtn.disabled = true;
+    return false;
+  }
+  alertBox.style.display = "none";
+  startBtn.disabled = false;
+  return true;
+}
+
+function renderQuestions() {
+  const p1Container = document.getElementById("part1-container");
+  p1Container.innerHTML = "";
+
+  PART1_QUESTIONS.forEach((q, idx) => {
+    const card = document.createElement("div");
+    card.className = "glass-card";
+    card.id = `card_${q.id}`;
+
+    let inputHTML = "";
+    if (q.type === "radio") {
+      inputHTML = `<div class="options-grid">` + q.options.map((opt, oIdx) => `
+        <label class="option-label" id="lbl_${q.id}_${oIdx}">
+          <input type="radio" name="${q.id}" value="${opt}" onchange="handleAnswer('${q.id}', this.value)">
+          <span>${opt}</span>
+        </label>
+      `).join("") + `</div>`;
+    } else if (q.type === "dropdown") {
+      inputHTML = `
+        <select class="form-control" id="inp_${q.id}" onchange="handleAnswer('${q.id}', this.value)">
+          <option value="">-- انتخاب پاسخ --</option>
+          ${q.options.map(opt => `<option value="${opt}">${opt}</option>`).join("")}
+        </select>
+      `;
+    }
+
+    card.innerHTML = `
+      <div class="q-header">
+        <span class="q-badge">سوال ${toPersianNum(idx + 1)} (${q.topic})</span>
+        <span class="q-score">${toPersianNum(q.score)} نمره</span>
+      </div>
+      <div class="q-title">${q.text}</div>
+      ${inputHTML}
+    `;
+    p1Container.appendChild(card);
+  });
+
+  const p2Container = document.getElementById("part2-container");
+  p2Container.innerHTML = "";
+
+  PART2_PROBLEMS.forEach((prob, pIdx) => {
+    const card = document.createElement("div");
+    card.className = "glass-card";
+    card.id = `card_${prob.id}`;
+
+    const stepsHTML = prob.steps.map(st => {
+      let controlHTML = "";
+      if (st.type === "dropdown") {
+        controlHTML = `
+          <select class="form-control step-input" id="inp_${st.id}" onchange="handleAnswer('${st.id}', this.value)">
+            <option value="">-- انتخاب گام صحیح --</option>
+            ${st.options.map(o => `<option value="${o}">${o}</option>`).join("")}
+          </select>
+        `;
+      } else {
+        controlHTML = `
+          <input type="text" inputmode="numeric" class="form-control step-input ltr" id="inp_${st.id}" placeholder="${st.placeholder}" oninput="handleAnswer('${st.id}', this.value)">
+        `;
+      }
+
+      return `
+        <div class="step-box">
+          <div class="step-header">
+            <span>${st.label}</span>
+            <span>${toPersianNum(st.score)} نمره</span>
+          </div>
+          <div class="step-body">
+            ${controlHTML}
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    card.innerHTML = `
+      <div class="q-header">
+        <span class="q-badge">مسئله تشریحی ${toPersianNum(pIdx + 1)} (${prob.topic})</span>
+        <span class="q-score">${toPersianNum(prob.totalScore)} نمره</span>
+      </div>
+      <div class="q-title">${prob.title}</div>
+      <div class="steps-container">${stepsHTML}</div>
+    `;
+    p2Container.appendChild(card);
+  });
+}
+
+function renderNavDots() {
+  const navGrid = document.getElementById("nav-dots");
+  navGrid.innerHTML = "";
+
+  PART1_QUESTIONS.forEach((q, idx) => {
+    const dot = document.createElement("div");
+    dot.className = "nav-dot";
+    dot.id = `dot_${q.id}`;
+    dot.textContent = toPersianNum(idx + 1);
+    dot.onclick = () => document.getElementById(`card_${q.id}`).scrollIntoView({ behavior: "smooth", block: "center" });
+    navGrid.appendChild(dot);
+  });
+
+  PART2_PROBLEMS.forEach((p, idx) => {
+    const dot = document.createElement("div");
+    dot.className = "nav-dot";
+    dot.id = `dot_${p.id}`;
+    dot.textContent = `م${toPersianNum(idx + 1)}`;
+    dot.onclick = () => document.getElementById(`card_${p.id}`).scrollIntoView({ behavior: "smooth", block: "center" });
+    navGrid.appendChild(dot);
+  });
+}
+
+function handleAnswer(key, val) {
+  if (appState.submitted) return;
+  appState.answers[key] = val;
+  saveState();
+  updateProgressUI();
+}
+
+function restoreAnswersToDOM() {
+  PART1_QUESTIONS.forEach(q => {
+    const val = appState.answers[q.id];
+    if (q.type === "radio") {
+      const radios = document.getElementsByName(q.id);
+      radios.forEach(r => {
+        r.checked = (r.value === val);
+      });
+    } else {
+      const el = document.getElementById(`inp_${q.id}`);
+      if (el) el.value = val || "";
+    }
+  });
+
+  PART2_PROBLEMS.forEach(p => {
+    p.steps.forEach(st => {
+      const val = appState.answers[st.id];
+      const el = document.getElementById(`inp_${st.id}`);
+      if (el) el.value = val !== undefined ? val : "";
+    });
+  });
+
+  updateProgressUI();
+}
+
+function updateProgressUI() {
+  let totalItems = PART1_QUESTIONS.length + PART2_PROBLEMS.length * 5;
+  let answeredItems = 0;
+
+  PART1_QUESTIONS.forEach(q => {
+    const hasAns = Boolean(appState.answers[q.id] && String(appState.answers[q.id]).trim() !== "");
+    if (hasAns) answeredItems++;
+    const dot = document.getElementById(`dot_${q.id}`);
+    if (dot) dot.classList.toggle("answered", hasAns);
+  });
+
+  PART2_PROBLEMS.forEach(p => {
+    let stepsDone = 0;
+    p.steps.forEach(st => {
+      if (appState.answers[st.id] && String(appState.answers[st.id]).trim() !== "") {
+        answeredItems++;
+        stepsDone++;
+      }
+    });
+    const dot = document.getElementById(`dot_${p.id}`);
+    if (dot) dot.classList.toggle("answered", stepsDone === p.steps.length);
+  });
+
+  const pct = Math.round((answeredItems / totalItems) * 100);
+  document.getElementById("progress-pct").textContent = `${toPersianNum(pct)}٪`;
+  document.getElementById("answer-progress-bar").style.width = `${pct}%`;
+}
+
+/********************************************************************
+ * ۵. تایمر آزمون
+ ********************************************************************/
+function startTimer() {
+  if (timerInterval) clearInterval(timerInterval);
+  updateTimerDisplay(appState.remainingSeconds);
+
+  timerInterval = setInterval(() => {
+    if (appState.submitted) {
+      clearInterval(timerInterval);
+      return;
+    }
+    appState.remainingSeconds--;
+    saveState();
+    updateTimerDisplay(appState.remainingSeconds);
+
+    if (appState.remainingSeconds <= 0) {
+      clearInterval(timerInterval);
+      finalizeExam();
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay(sec) {
+  const safeSec = Math.max(0, sec);
+  const m = String(Math.floor(safeSec / 60)).padStart(2, "0");
+  const s = String(safeSec % 60).padStart(2, "0");
+  document.getElementById("time-text").textContent = toPersianNum(`${m}:${s}`);
+
+  const box = document.getElementById("timer-display");
+  if (safeSec < 180) {
+    box.classList.add("warning");
+  } else {
+    box.classList.remove("warning");
+  }
+}
+
+/********************************************************************
+ * ۶. تصحیح خودکار و تولید کارنامه
+ ********************************************************************/
+function finalizeExam() {
+  appState.submitted = true;
+  if (timerInterval) clearInterval(timerInterval);
+  saveState();
+
+  document.getElementById("exam-wrapper").style.display = "none";
+  generateReport();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function evaluateExam() {
+  let totalScore = 0;
+  let details = [];
+  let weakTopics = new Set();
+  let strongTopics = new Set();
+
+  // ارزیابی بخش اول
+  PART1_QUESTIONS.forEach((q, idx) => {
+    const userAns = appState.answers[q.id] || "بدون پاسخ";
+    const isCorrect = userAns === q.correct;
+    const earned = isCorrect ? q.score : 0;
+    totalScore += earned;
+
+    if (isCorrect) strongTopics.add(q.topic);
+    else weakTopics.add(q.topic);
+
+    details.push({
+      title: `سوال ${toPersianNum(idx + 1)}`,
+      topic: q.topic,
+      userAns,
+      correctAns: q.correct,
+      earned,
+      maxScore: q.score,
+      isCorrect
+    });
+  });
+
+  // ارزیابی بخش دوم (گام‌به‌گام)
+  PART2_PROBLEMS.forEach((prob, pIdx) => {
+    prob.steps.forEach((st, sIdx) => {
+      const rawUser = appState.answers[st.id] || "";
+      const userAns = rawUser ? rawUser : "بدون پاسخ";
+      let isCorrect = false;
+
+      if (st.type === "number") {
+        isCorrect = normalizeNumberInput(rawUser) === normalizeNumberInput(st.correct);
+      } else {
+        isCorrect = rawUser === st.correct;
+      }
+
+      const earned = isCorrect ? st.score : 0;
+      totalScore += earned;
+
+      if (isCorrect) strongTopics.add(prob.topic);
+      else weakTopics.add(prob.topic);
+
+      details.push({
+        title: `مسئله ${toPersianNum(pIdx + 1)} - گام ${toPersianNum(sIdx + 1)}`,
+        topic: prob.topic,
+        userAns,
+        correctAns: st.correct,
+        earned,
+        maxScore: st.score,
+        isCorrect
+      });
+    });
+  });
+
+  return {
+    totalScore: Number(totalScore.toFixed(2)),
+    percentage: Math.round((totalScore / 20) * 100),
+    details,
+    weakTopics: Array.from(weakTopics),
+    strongTopics: Array.from(strongTopics)
+  };
+}
+
+function generateReport() {
+  const result = evaluateExam();
+  const reportSec = document.getElementById("report-section");
+  reportSec.style.display = "block";
+
+  const spentSeconds = (EXAM_CONFIG.durationMinutes * 60) - appState.remainingSeconds;
+  const spentMin = Math.max(1, Math.round(spentSeconds / 60));
+
+  document.getElementById("final-score-num").textContent = toPersianNum(result.totalScore);
+  document.getElementById("score-ring").style.setProperty("--pct", `${result.percentage}%`);
+
+  document.getElementById("report-meta").innerHTML = `
+    <div class="meta-item"><span>نام دانش‌آموز</span><strong>${appState.studentName}</strong></div>
+    <div class="meta-item"><span>پایه تحصیلی</span><strong>${appState.studentGrade}</strong></div>
+    <div class="meta-item"><span>نمره کل (از ۲۰)</span><strong>${toPersianNum(result.totalScore)} (${toPersianNum(result.percentage)}٪)</strong></div>
+    <div class="meta-item"><span>زمان صرف‌شده</span><strong>${toPersianNum(spentMin)} دقیقه</strong></div>
+  `;
+
+  // تحلیل آموزشی
+  let feedbackText = "";
+  if (result.totalScore >= 18) {
+    feedbackText = "عملکرد شما بسیار عالی و دقیق است! تسلط کاملی بر مفاهیم اعداد اول، تجزیه درختی و محاسبه ب.م.م و ک.م.م دارید.";
+  } else if (result.totalScore >= 14) {
+    feedbackText = "عملکرد خوبی داشتید، اما در برخی گام‌های محاسباتی نیاز به تمرین بیشتر دارید.";
+  } else {
+    feedbackText = "نیاز به مرور مجدد جزوه فصل دوم (تشخیص اعداد اول، الگوریتم غربال و فرمول‌های ب.م.م و ک.م.م) دارید.";
+  }
+  if (result.weakTopics.length > 0) {
+    feedbackText += ` مباحث نیازمند مرور: «${result.weakTopics.join("، ")}».`;
+  }
+  document.getElementById("pedagogical-feedback").textContent = feedbackText;
+
+  // جدول ریز نمرات
+  const tbody = document.getElementById("report-tbody");
+  tbody.innerHTML = result.details.map(d => `
+    <tr>
+      <td>${d.title}</td>
+      <td>${d.topic}</td>
+      <td class="${d.isCorrect ? 'badge-ok' : 'badge-err'}">${d.userAns}</td>
+      <td>${d.correctAns}</td>
+      <td>${toPersianNum(d.earned)} از ${toPersianNum(d.maxScore)}</td>
+    </tr>
+  `).join("");
+}
+
+/********************************************************************
+ * ۷. رویدادها، اسکرول، کپی واتساپ و تمرین مجدد
+ ********************************************************************/
+document.getElementById("start-exam-btn").addEventListener("click", () => {
+  if (!checkScheduleWindow()) return;
+  const nameVal = document.getElementById("student-name").value.trim();
+  const gradeVal = document.getElementById("student-grade").value;
+
+  if (!nameVal || !gradeVal) {
+    alert("لطفاً نام و نام خانوادگی و پایه تحصیلی خود را به صورت کامل وارد نمایید.");
+    return;
+  }
+
+  appState.studentName = nameVal;
+  appState.studentGrade = gradeVal;
+  appState.started = true;
+  appState.submitted = false;
+  appState.startTimestamp = Date.now();
+  saveState();
+
+  document.getElementById("login-screen").style.display = "none";
+  document.getElementById("exam-wrapper").style.display = "grid";
+  document.getElementById("nav-student-name").textContent = nameVal;
+  document.getElementById("nav-student-grade").textContent = gradeVal;
+  startTimer();
+});
+
+document.getElementById("submit-exam-btn").addEventListener("click", () => finalizeExam());
+
+document.getElementById("retry-exam-btn").addEventListener("click", () => {
+  appState.answers = {};
+  appState.submitted = false;
+  appState.started = true;
+  appState.remainingSeconds = EXAM_CONFIG.durationMinutes * 60;
+  saveState();
+
+  restoreAnswersToDOM();
+  document.getElementById("report-section").style.display = "none";
+  document.getElementById("exam-wrapper").style.display = "grid";
+  startTimer();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+document.getElementById("theme-toggle").addEventListener("click", () => {
+  appState.theme = appState.theme === "dark" ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", appState.theme);
+  saveState();
+});
+
+window.addEventListener("scroll", () => {
+  const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+  const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+  const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+  document.getElementById("scroll-progress").style.width = scrolled + "%";
+});
+
+document.getElementById("copy-whatsapp-btn").addEventListener("click", () => {
+  const result = evaluateExam();
+  const text = `کارنامه آزمون ریاضی (${EXAM_CONFIG.schoolName})\nدبیر: ${EXAM_CONFIG.teacherName}\nنام دانش‌آموز: ${appState.studentName} | پایه: ${appState.studentGrade}\nنمره: ${result.totalScore} از ۲۰ (${result.percentage}٪)`;
+  navigator.clipboard.writeText(text).then(() => {
+    alert("خلاصه کارنامه کپی شد و آماده ارسال در واتساپ است.");
+  });
+});
+
+// راه‌اندازی اولیه
+loadState();
+initUI();
+</script>
+</body>
+</html>
