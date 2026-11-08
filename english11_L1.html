@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>پورتال جامع زبان انگلیسی یازدهم انسانی - درس اول | علی برزگری</title>
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: rgba(30, 41, 59, 0.75);
+            --primary: #38bdf8;
+            --secondary: #818cf8;
+            --accent: #f43f5e;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-glass: rgba(255, 255, 255, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: radial-gradient(circle at top right, #1e1b4b, #0f172a 60%, #020617);
+            color: var(--text-light);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+            padding-bottom: 50px;
+        }
+
+        /* استایل صفحه قفل (Lock Screen) */
+        #lock-screen {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at center, #1e293b 0%, #090d16 100%);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .lock-card {
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-glass);
+            border-radius: 24px;
+            padding: 32px 24px;
+            max-width: 680px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+            margin: auto;
+        }
+
+        .lock-icon-wrap {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(129, 140, 248, 0.2));
+            border: 2px solid var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 36px;
+            box-shadow: 0 0 25px rgba(56, 189, 248, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 25px rgba(56, 189, 248, 0.3); }
+            50% { transform: scale(1.06); box-shadow: 0 0 35px rgba(56, 189, 248, 0.6); }
+        }
+
+        .school-badge {
+            display: inline-block;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: #0f172a;
+            font-weight: 800;
+            padding: 6px 18px;
+            border-radius: 999px;
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+        }
+
+        .lock-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 6px;
+            color: #fff;
+        }
+
+        .lock-subtitle {
+            color: var(--primary);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .teacher-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-glass);
+            display: inline-block;
+            padding: 8px 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            font-size: 1rem;
+        }
+
+        .teacher-box strong {
+            color: var(--warning);
+        }
+
+        /* تایمر معکوس */
+        .countdown-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin: 20px 0 28px;
+            direction: ltr;
+        }
+
+        .time-box {
+            background: rgba(30, 41, 59, 0.9);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 16px;
+            padding: 16px 8px;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .time-num {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+            display: block;
+            line-height: 1.1;
+        }
+
+        .time-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 6px;
+            display: block;
+        }
+
+        .unlock-notice {
+            background: rgba(245, 158, 11, 0.12);
+            border: 1px solid rgba(245, 158, 11, 0.4);
+            color: #fcd34d;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            margin-bottom: 24px;
+            font-weight: 600;
+        }
+
+        /* لیست مطالب در صفحه قفل */
+        .preview-box {
+            text-align: right;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .preview-box h3 {
+            color: var(--primary);
+            font-size: 1.05rem;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .preview-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        @media (max-width: 550px) {
+            .preview-list { grid-template-columns: 1fr; }
+            .time-num { font-size: 1.5rem; }
+        }
+
+        .preview-item {
+            background: rgba(15, 23, 42, 0.6);
+            padding: 10px 14px;
+            border-radius: 10px;
+            border-right: 3px solid var(--secondary);
+            font-size: 0.88rem;
+            color: #e2e8f0;
+        }
+
+        .preview-item span {
+            display: block;
+            color: var(--text-muted);
+            font-size: 0.78rem;
+            margin-top: 3px;
+        }
+
+        /* محتوای اصلی برنامه (Main Content) */
+        #app-content {
+            display: none;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 24px 16px;
+        }
+
+        .main-header {
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-glass);
+            border-radius: 24px;
+            padding: 28px 24px;
+            text-align: center;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-header::before {
+            content: "";
+            position: absolute;
+            top: 0; right: 0; left: 0; height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+        }
+
+        .header-meta {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .meta-pill {
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid var(--border-glass);
+            padding: 6px 16px;
+            border-radius: 999px;
+            font-size: 0.9rem;
+        }
+
+        /* تب‌های ناوبری */
+        .tabs-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 24px;
+            justify-content: center;
+        }
+
+        .tab-btn {
+            background: var(--bg-card);
+            color: var(--text-light);
+            border: 1px solid var(--border-glass);
+            padding: 12px 20px;
+            border-radius: 14px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.25s ease;
+        }
+
+        .tab-btn:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #0f172a;
+            border-color: transparent;
+            box-shadow: 0 8px 20px rgba(56, 189, 248, 0.3);
+        }
+
+        .tab-pane {
+            display: none;
+            animation: fadeIn 0.35s ease;
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            color: var(--primary);
+            font-size: 1.3rem;
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-glass);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* کارت‌های واژگان */
+        .vocab-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 16px;
+        }
+
+        .vocab-card {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px;
+            padding: 18px;
+            transition: transform 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .vocab-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(56, 189, 248, 0.4);
+        }
+
+        .vocab-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            direction: ltr;
+            margin-bottom: 8px;
+        }
+
+        .en-word {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .speak-btn {
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+
+        .fa-meaning {
+            color: var(--warning);
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .en-def {
+            direction: ltr;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .en-ex {
+            direction: ltr;
+            font-size: 0.85rem;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 8px 10px;
+            border-radius: 8px;
+            border-left: 3px solid var(--secondary);
+            color: #cbd5e1;
+        }
+
+        /* بخش مکالمه و ریدینگ */
+        .dialogue-line {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border-glass);
+            border-radius: 14px;
+            padding: 14px 18px;
+            margin-bottom: 12px;
+        }
+
+        .dialogue-en {
+            direction: ltr;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dialogue-fa {
+            color: var(--text-muted);
+            font-size: 0.92rem;
+        }
+
+        /* جداول گرامر */
+        .grammar-box {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 18px;
+            border-right: 4px solid var(--primary);
+        }
+
+        .grammar-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+            direction: ltr;
+            text-align: left;
+        }
+
+        .grammar-table th, .grammar-table td {
+            padding: 12px;
+            border: 1px solid var(--border-glass);
+        }
+
+        .grammar-table th {
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--primary);
+        }
+
+        .badge-count {
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+        }
+
+        .badge-uncount {
+            background: rgba(244, 63, 94, 0.2);
+            color: #fb7185;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+        }
+
+        /* بخش آزمون */
+        .quiz-item {
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .quiz-q {
+            direction: ltr;
+            font-weight: 700;
+            font-size: 1.05rem;
+            margin-bottom: 14px;
+            color: #fff;
+        }
+
+        .options-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            direction: ltr;
+        }
+
+        @media (max-width: 600px) {
+            .options-list { grid-template-columns: 1fr; }
+        }
+
+        .opt-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-glass);
+            color: var(--text-light);
+            padding: 12px 16px;
+            border-radius: 10px;
+            text-align: left;
+            cursor: pointer;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .opt-btn:hover:not(:disabled) {
+            background: rgba(56, 189, 248, 0.15);
+            border-color: var(--primary);
+        }
+
+        .opt-btn.correct {
+            background: rgba(16, 185, 129, 0.25) !important;
+            border-color: var(--success) !important;
+            color: #6ee7b7 !important;
+            font-weight: 700;
+        }
+
+        .opt-btn.wrong {
+            background: rgba(244, 63, 94, 0.25) !important;
+            border-color: var(--accent) !important;
+            color: #fda4af !important;
+        }
+
+        .quiz-exp {
+            display: none;
+            margin-top: 12px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            background: rgba(56, 189, 248, 0.1);
+            border-right: 3px solid var(--primary);
+            font-size: 0.9rem;
+            color: #e2e8f0;
+        }
+
+        .score-banner {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(56, 189, 248, 0.2));
+            border: 1px solid var(--success);
+            padding: 16px;
+            border-radius: 16px;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ==================== صفحه قفل و شمارش معکوس ==================== -->
+    <div id="lock-screen">
+        <div class="lock-card">
+            <div class="lock-icon-wrap">🔒</div>
+            <div class="school-badge">دبیرستان سردار سلیمانی گوری</div>
+            <h1 class="lock-title">زبان انگلیسی پایه یازدهم انسانی</h1>
+            <div class="lock-subtitle">درس اول: Understanding People (درک کردن دیگران)</div>
+            
+            <div class="teacher-box">
+                سازنده و دبیر: <strong>علی برزگری</strong>
+            </div>
+
+            <div class="unlock-notice">
+                ⏰ این سامانه آموزشی رأس ساعت ۱۰:۰۰ صبح روز ۱۸ آبان به‌طور خودکار فعال شده و برای همیشه باز خواهد ماند.
+            </div>
+
+            <div class="countdown-grid">
+                <div class="time-box">
+                    <span class="time-num" id="cd-days">00</span>
+                    <span class="time-label">روز (Days)</span>
+                </div>
+                <div class="time-box">
+                    <span class="time-num" id="cd-hours">00</span>
+                    <span class="time-label">ساعت (Hours)</span>
+                </div>
+                <div class="time-box">
+                    <span class="time-num" id="cd-mins">00</span>
+                    <span class="time-label">دقیقه (Minutes)</span>
+                </div>
+                <div class="time-box">
+                    <span class="time-num" id="cd-secs">00</span>
+                    <span class="time-label">ثانیه (Seconds)</span>
+                </div>
+            </div>
+
+            <div class="preview-box">
+                <h3>✨ پس از باز شدن قفل به چه مطالبی دسترسی خواهید داشت؟</h3>
+                <ul class="preview-list">
+                    <li class="preview-item">
+                        <strong>۱. بانک جامع واژگان درس اول</strong>
+                        <span>تلفظ صوتی هوشمند، معنی فارسی، مترادف انگلیسی و مثال‌های کاربردی</span>
+                    </li>
+                    <li class="preview-item">
+                        <strong>۲. کالبدشکافی مکالمه و Reading</strong>
+                        <span>متن کامل A Gift for Grandpa و بخش ریدینگ همراه با ترجمه خط به خط</span>
+                    </li>
+                    <li class="preview-item">
+                        <strong>۳. آموزش کامل گرامر درس اول</strong>
+                        <span>اسامی قابل شمارش و غیرقابل شمارش + کمیت‌نماها (Many, Much, A lot of, Some, Any)</span>
+                    </li>
+                    <li class="preview-item">
+                        <strong>۴. بخش درک اعداد و گفتار (Listening)</strong>
+                        <span>آموزش تفکیک تلفظ اعداد Teen و Ty (مانند 13 و 30) با پخش صوتی</span>
+                    </li>
+                    <li class="preview-item">
+                        <strong>۵. آزمون تعاملی ۲۰ سؤالی استاندارد</strong>
+                        <span>سؤالات چهارگزینه‌ای واژگان و گرامر با تصحیح آنی و پاسخ‌نامه تشریحی</span>
+                    </li>
+                    <li class="preview-item">
+                        <strong>۶. دسترسی دائمی و آفلاین</strong>
+                        <span>بدون محدودیت زمانی پس از بازگشایی اولیه جهت مرور شب امتحان</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== محتوای اصلی درس (فعال شونده در ۱۸ آبان ۱۰ صبح) ==================== -->
+    <div id="app-content">
+        <header class="main-header">
+            <div class="school-badge">دبیرستان سردار سلیمانی گوری</div>
+            <h1 style="font-size: 1.8rem; margin-bottom: 6px;">پورتال جامع زبان انگلیسی یازدهم انسانی</h1>
+            <p style="color: var(--primary); font-weight: 600; font-size: 1.1rem;">Vision 2 — Lesson 1: Understanding People</p>
+            <div class="header-meta">
+                <span class="meta-pill">👨‍🏫 سازنده و دبیر: <strong>علی برزگری</strong></span>
+                <span class="meta-pill">📚 پایه: <strong>یازدهم علوم انسانی</strong></span>
+                <span class="meta-pill" style="color: #34d399;">🔓 وضعیت: <strong>فعال دائمی</strong></span>
+            </div>
+        </header>
+
+        <nav class="tabs-nav">
+            <button class="tab-btn active" onclick="switchTab('vocab')">🔤 واژگان و تلفظ</button>
+            <button class="tab-btn" onclick="switchTab('reading')">📖 مکالمه و ریدینگ</button>
+            <button class="tab-btn" onclick="switchTab('grammar')">📐 گرامر جامع</button>
+            <button class="tab-btn" onclick="switchTab('quiz')">📝 آزمون تعاملی</button>
+        </nav>
+
+        <!-- تب ۱: واژگان -->
+        <div id="tab-vocab" class="tab-pane active">
+            <div class="section-card">
+                <div class="section-title">
+                    <span>واژگان کلیدی درس اول (New Words & Expressions)</span>
+                    <small style="font-size: 0.85rem; color: var(--text-muted);">برای شنیدن تلفظ روی آیکون 🔊 بزنید</small>
+                </div>
+                <div class="vocab-grid" id="vocab-container"></div>
+            </div>
+        </div>
+
+        <!-- تب ۲: مکالمه و ریدینگ -->
+        <div id="tab-reading" class="tab-pane">
+            <div class="section-card">
+                <div class="section-title">
+                    <span>مکالمه درس اول (Conversation: Visiting a Patient)</span>
+                </div>
+                <div id="conversation-container"></div>
+            </div>
+
+            <div class="section-card">
+                <div class="section-title">
+                    <span>متن ریدینگ (Reading: Language as a Means of Communication)</span>
+                </div>
+                <div id="reading-container"></div>
+            </div>
+        </div>
+
+        <!-- تب ۳: گرامر -->
+        <div id="tab-grammar" class="tab-pane">
+            <div class="section-card">
+                <div class="section-title">بخش اول: اسامی قابل شمارش و غیرقابل شمارش (Countable & Uncountable Nouns)</div>
+                
+                <div class="grammar-box">
+                    <h4 style="color: #34d399; margin-bottom: 8px;">۱. اسامی قابل شمارش (Countable Nouns)</h4>
+                    <p>اسامی‌ای هستند که می‌توان آن‌ها را شمرد. هم شکل مفرد دارند (با a / an) و هم شکل جمع (معمولاً با گرفتن s / es یا جمع مکسر).</p>
+                    <p style="direction: ltr; margin-top: 8px; color: var(--primary);">Examples: a book ➔ two books | a language ➔ many languages | a person ➔ some people | a child ➔ children</p>
+                </div>
+
+                <div class="grammar-box" style="border-right-color: var(--accent);">
+                    <h4 style="color: #fb7185; margin-bottom: 8px;">۲. اسامی غیرقابل شمارش (Uncountable Nouns)</h4>
+                    <p>اسامی‌ای که با عدد شمرده نمی‌شوند (مایعات، مواد غذایی پودری، مفاهیم انتزاعی). این اسامی <strong>هرگز</strong> a / an نمی‌گیرند، <strong>هرگز</strong> جمع بسته نمی‌شوند و فعل آن‌ها همیشه <strong>مفرد</strong> است.</p>
+                    <p style="direction: ltr; margin-top: 8px; color: #fda4af;">Examples: water, bread, money, information, advice, rice, sugar, time, homework, news</p>
+                </div>
+
+                <div class="section-title" style="margin-top: 30px;">بخش دوم: کمیت‌نماها (Quantifiers)</div>
+                <p style="margin-bottom: 12px;">برای بیان مقدار یا تعداد اسامی از کلمات زیر استفاده می‌کنیم:</p>
+
+                <div style="overflow-x: auto;">
+                    <table class="grammar-table">
+                        <thead>
+                            <tr>
+                                <th>Quantifier (کمیت‌نما)</th>
+                                <th>معنی</th>
+                                <th>نوع اسم بعد از آن</th>
+                                <th>کاربرد در جمله</th>
+                                <th>مثال (Example)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Many</strong></td>
+                                <td>تعداد زیاد</td>
+                                <td><span class="badge-count">جمع قابل شمارش</span></td>
+                                <td>منفی، سؤالی و مثبت</td>
+                                <td>How <strong>many books</strong> did you read?</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Much</strong></td>
+                                <td>مقدار زیاد</td>
+                                <td><span class="badge-uncount">غیرقابل شمارش</span></td>
+                                <td>عمدتاً منفی و سؤالی</td>
+                                <td>We don't have <strong>much time</strong>.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>A lot of / Lots of</strong></td>
+                                <td>تعداد یا مقدار زیاد</td>
+                                <td><span class="badge-count">جمع</span> + <span class="badge-uncount">غیرقابل شمارش</span></td>
+                                <td>جملات مثبت</td>
+                                <td>She has <strong>a lot of friends / money</strong>.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>A few</strong></td>
+                                <td>تعداد کمی (مثبت)</td>
+                                <td><span class="badge-count">جمع قابل شمارش</span></td>
+                                <td>جملات مثبت</td>
+                                <td>I have <strong>a few questions</strong>.</td>
+                            </tr>
+                            <tr>
+                                <td><td><strong>A little</strong></td>
+                                <td>مقدار کمی (مثبت)</td>
+                                <td><span class="badge-uncount">غیرقابل شمارش</span></td>
+                                <td>جملات مثبت</td>
+                                <td>He drinks <strong>a little milk</strong> every night.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Some</strong></td>
+                                <td>تعدادی / مقداری</td>
+                                <td><span class="badge-count">جمع</span> + <span class="badge-uncount">غیرقابل شمارش</span></td>
+                                <td>جملات مثبت و تعارفی/درخواستی (Can/Would)</td>
+                                <td>Would you like <strong>some tea</strong>?</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Any</strong></td>
+                                <td>هیچ / هر</td>
+                                <td><span class="badge-count">جمع</span> + <span class="badge-uncount">غیرقابل شمارش</span></td>
+                                <td>جملات منفی و سؤالی</td>
+                                <td>Do you have <strong>any brothers</strong>?</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="grammar-box" style="margin-top: 24px; border-right-color: var(--warning);">
+                    <h4 style="color: var(--warning); margin-bottom: 8px;">💡 نکته امتحانی: تبدیل غیرقابل شمارش به قابل شمارش (Measure Words)</h4>
+                    <p>برای شمردن اسامی غیرقابل شمارش، از واحدهای شمارش (ظرف، وزن یا قطعه) قبل از آن‌ها استفاده می‌کنیم:</p>
+                    <ul style="direction: ltr; margin-top: 10px; padding-left: 20px; color: #e2e8f0;">
+                        <li><strong>a loaf of / two loaves of</strong> bread (یک قرص / دو قرص نان)</li>
+                        <li><strong>a slice of / three slices of</strong> cake / cheese (یک برش کیک / پنیر)</li>
+                        <li><strong>a glass of / a bottle of</strong> water / milk (یک لیوان / بطری آب)</li>
+                        <li><strong>a piece of</strong> advice / information / paper (یک توصیه / اطلاع / تکه کاغذ)</li>
+                        <li><strong>a kilo of</strong> meat / rice / sugar (یک کیلو گوشت / برنج / شکر)</li>
+                    </ul>
+                </div>
+
+                <div class="grammar-box" style="border-right-color: var(--secondary);">
+                    <h4 style="color: var(--secondary); margin-bottom: 8px;">🔊 بخش تلفظ اعداد (Pronunciation: Teen vs. Ty Numbers)</h4>
+                    <p>در اعداد ۱۳ تا ۱۹ (ختم شونده به <strong>-teen</strong>) تکیه صوت (Stress) روی بخش دوم است و کشیده تلفظ می‌شود، اما در دهگان ۳۰ تا ۹۰ (ختم شونده به <strong>-ty</strong>) تکیه روی بخش اول است:</p>
+                    <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 12px; direction: ltr;">
+                        <button class="tab-btn" onclick="speakText('thirteen, thirty')">🔊 13 (thirTEEN) vs 30 (THIRty)</button>
+                        <button class="tab-btn" onclick="speakText('fourteen, forty')">🔊 14 (fourTEEN) vs 40 (FORty)</button>
+                        <button class="tab-btn" onclick="speakText('fifteen, fifty')">🔊 15 (fifTEEN) vs 50 (FIFty)</button>
+                        <button class="tab-btn" onclick="speakText('sixteen, sixty')">🔊 16 (sixTEEN) vs 60 (SIXty)</button>
+                        <button class="tab-btn" onclick="speakText('eighteen, eighty')">🔊 18 (eighTEEN) vs 80 (EIGHty)</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- تب ۴: آزمون -->
+        <div id="tab-quiz" class="tab-pane">
+            <div class="score-banner" id="score-board">
+                امتیاز شما در آزمون: <span id="user-score">0</span> از <span id="total-q">12</span>
+            </div>
+            <div id="quiz-container"></div>
+        </div>
+    </div>
+
+    <script>
+        /* ==================== تنظیمات قفل زمانی ==================== */
+        // ۱۸ آبان ۱۴۰۵ ساعت ۱۰:۰۰ صبح به وقت ایران برابر با 9 نوامبر 2026 ساعت 10:00+03:30
+        const UNLOCK_TIMESTAMP = new Date("2026-11-09T10:00:00+03:30").getTime();
+        const STORAGE_KEY = "sardar_soleimani_vision2_l1_unlocked_permanent";
+
+        function checkLockState() {
+            const now = new Date().getTime();
+            const isPermanentlyUnlocked = localStorage.getItem(STORAGE_KEY) === "true";
+
+            if (isPermanentlyUnlocked || now >= UNLOCK_TIMESTAMP) {
+                localStorage.setItem(STORAGE_KEY, "true");
+                document.getElementById("lock-screen").style.display = "none";
+                document.getElementById("app-content").style.display = "block";
+                return true;
+            }
+
+            const diff = UNLOCK_TIMESTAMP - now;
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+            document.getElementById("cd-days").textContent = String(days).padStart(2, "0");
+            document.getElementById("cd-hours").textContent = String(hours).padStart(2, "0");
+            document.getElementById("cd-mins").textContent = String(mins).padStart(2, "0");
+            document.getElementById("cd-secs").textContent = String(secs).padStart(2, "0");
+            return false;
+        }
+
+        // اجرای اولیه و بررسی هر ثانیه
+        if (!checkLockState()) {
+            const timerInterval = setInterval(() => {
+                if (checkLockState()) {
+                    clearInterval(timerInterval);
+                }
+            }, 1000);
+        }
+
+        /* ==================== تلفظ صوتی ==================== */
+        function speakText(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utter = new SpeechSynthesisUtterance(text);
+                utter.lang = 'en-US';
+                utter.rate = 0.9;
+                window.speechSynthesis.speak(utter);
+            }
+        }
+
+        /* ==================== داده‌های آموزشی درس اول ==================== */
+        const vocabData = [
+            { word: "Communicate", fa: "ارتباط برقرار کردن", def: "To share information, news, or ideas with others", ex: "We use language to communicate with people around the world." },
+            { word: "Mother tongue", fa: "زبان مادری (First language)", def: "The first language that you learn when you are a baby", ex: "Persian is our mother tongue in Iran." },
+            { word: "Native speaker", fa: "گویشور بومی / اهل زبان", def: "Someone who has spoken a particular language since they were a baby", ex: "English has about 400 million native speakers." },
+            { word: "Continent", fa: "قاره", def: "One of the large land masses of the earth such as Asia or Africa", ex: "Asia is the largest continent in the world." },
+            { word: "Percent", fa: "درصد", def: "One part in every hundred (1/100)", ex: "More than 50 percent of internet pages are in English." },
+            { word: "Population", fa: "جمعیت", def: "All the people living in a particular country, area, or place", ex: "What is the population of your city?" },
+            { word: "Society", fa: "جامعه", def: "A large group of people who live together in an organized way", ex: "Respecting elders is an important value in our society." },
+            { word: "Ability", fa: "توانایی / استعداد", def: "The physical or mental power or skill needed to do something", ex: "Humans have the ability to learn multiple languages." },
+            { word: "Means", fa: "وسیله / ابزار", def: "A method or way of doing something", ex: "Language is a powerful means of communication." },
+            { word: "Region", fa: "منطقه / ناحیه", def: "A particular area or part of the world or a country", ex: "Different dialects are spoken in this region." },
+            { word: "Exist", fa: "وجود داشتن", def: "To be real or to be present in a place or situation", ex: "About 7,000 languages exist in the world today." },
+            { word: "Range from", fa: "متغیر بودن از ... تا ...", def: "To vary between two particular amounts or limits", ex: "Languages range from very large to very small in speaker numbers." },
+            { word: "Imagine", fa: "تصور کردن", def: "To form a mental picture or idea of something", ex: "Can you imagine a world without language?" },
+            { word: "Despite", fa: "با وجودِ / علی‌رغمِ", def: "Without taking any notice of or being influenced by", ex: "Despite his illness, grandfather is always kind and patient." },
+            { word: "Patient", fa: "۱. صبور و بردبار ۲. بیمار", def: "Able to wait without becoming angry; or a person receiving medical care", ex: "Teachers need to be very patient with students." },
+            { word: "Respect", fa: "احترام گذاشتن / احترام", def: "Polite behavior towards someone that you think is important", ex: "Young people should always respect their parents." }
+        ];
+
+        const conversationData = [
+            { en: "Dr. Karimi: Good morning, Mr. Ahmadi. How are you feeling today?", fa: "دکتر کریمی: صبح بخیر آقای احمدی. امروز حالتان چطور است؟" },
+            { en: "Mr. Ahmadi: Good morning, Doctor. I feel much better today, thank you.", fa: "آقای احمدی: صبح بخیر آقای دکتر. امروز حالم خیلی بهتر است، ممنون." },
+            { en: "Dr. Karimi: That's great! Are you taking your medicines regularly?", fa: "دکتر کریمی: عالیه! آیا داروهایتان را به‌طور منظم مصرف می‌کنید؟" },
+            { en: "Mr. Ahmadi: Yes, my daughter gives me a glass of water and my pills on time.", fa: "آقای احمدی: بله، دخترم یک لیوان آب و قرص‌هایم را سر وقت به من می‌دهد." },
+            { en: "Dr. Karimi: Very good. Remember to eat a lot of fruits and drink enough water. Avoid eating much salt or sugar.", fa: "دکتر کریمی: بسیار خوب. یادتان باشد میوه زیاد بخورید و به اندازه کافی آب بنوشید. از خوردن نمک یا شکر زیاد خودداری کنید." }
+        ];
+
+        const readingData = [
+            { en: "Languages exist to help people communicate with each other. Through language, we can share our knowledge, feelings, and ideas.", fa: "زبان‌ها وجود دارند تا به مردم کمک کنند با یکدیگر ارتباط برقرار کنند. از طریق زبان، ما می‌توانیم دانش، احساسات و ایده‌هایمان را به اشتراک بگذاریم." },
+            { en: "Today, there are around 7,000 languages in the world. They range from very large languages with hundreds of millions of speakers to very small ones with only a few speakers.", fa: "امروزه حدود ۷۰۰۰ زبان در جهان وجود دارد. آن‌ها از زبان‌های بسیار بزرگ با صدها میلیون گویشور تا زبان‌های بسیار کوچک با تنها چند گویشور متغیر هستند." },
+            { en: "Chinese, Spanish, and English are the most common languages in the world. While Chinese has the largest number of native speakers, English is the most widely spoken international language across all continents.", fa: "چینی، اسپانیایی و انگلیسی رایج‌ترین زبان‌ها در جهان هستند. در حالی که زبان چینی بیشترین تعداد گویشور بومی را دارد، انگلیسی گسترده‌ترین زبان بین‌المللی در تمام قاره‌هاست." }
+        ];
+
+        const quizData = [
+            {
+                q: "1. Language is the most important _________ of communication among human beings.",
+                opts: ["continent", "means", "percent", "population"],
+                ans: 1,
+                exp: "کلمه means به معنای «وسیله / ابزار» است؛ زبان مهم‌ترین ابزار ارتباط میان انسان‌هاست."
+            },
+            {
+                q: "2. Persian is my _________, and I am learning English as a foreign language at school.",
+                opts: ["native speaker", "society", "mother tongue", "region"],
+                ans: 2,
+                exp: "عبارت mother tongue به معنای «زبان مادری» است."
+            },
+            {
+                q: "3. How _________ languages do you speak fluently?",
+                opts: ["much", "many", "a little", "any"],
+                ans: 1,
+                exp: "چون کلمه languages جمع قابل شمارش است، در جمله پرسشی از How many استفاده می‌شود."
+            },
+            {
+                q: "4. We don't have _________ bread left for breakfast. Could you buy two loaves of bread?",
+                opts: ["many", "a few", "much", "few"],
+                ans: 2,
+                exp: "کلمه bread (نان) در زبان انگلیسی غیرقابل شمارش است و در جمله منفی با much می‌آید."
+            },
+            {
+                q: "5. There are only _________ students in the classroom because of the heavy rain.",
+                opts: ["a little", "much", "a few", "little"],
+                ans: 2,
+                exp: "کلمه students جمع قابل شمارش است، بنابراین از a few (تعداد کمی) استفاده می‌کنیم."
+            },
+            {
+                q: "6. My grandfather always gives me useful _________. He is a very wise man.",
+                opts: ["advices", "advice", "an advice", "many advice"],
+                ans: 1,
+                exp: "کلمه advice (نصیحت/پند) غیرقابل شمارش است؛ بنابراین نه s جمع می‌گیرد و نه an."
+            },
+            {
+                q: "7. Asia is the largest _________ in the world both in area and population.",
+                opts: ["continent", "century", "ability", "society"],
+                ans: 0,
+                exp: "کلمه continent به معنای «قاره» است."
+            },
+            {
+                q: "8. She only drinks _________ milk before going to bed every night.",
+                opts: ["a few", "many", "a little", "any"],
+                ans: 2,
+                exp: "کلمه milk غیرقابل شمارش است و در جمله مثبت برای بیان «مقدار کمی» از a little استفاده می‌شود."
+            },
+            {
+                q: "9. Can you _________ living in a modern society without smartphones and the Internet?",
+                opts: ["exist", "imagine", "range", "communicate"],
+                ans: 1,
+                exp: "کلمه imagine به معنای «تصور کردن» است."
+            },
+            {
+                q: "10. Do you have _________ questions about countable and uncountable nouns?",
+                opts: ["much", "a little", "any", "some"],
+                ans: 2,
+                exp: "در جملات پرسشی عمومی (با Do/Does) برای اسامی جمع از any استفاده می‌شود."
+            },
+            {
+                q: "11. My mother bought three _________ of bread from the bakery this morning.",
+                opts: ["loaves", "glasses", "bottles", "drops"],
+                ans: 0,
+                exp: "واحد شمارش استاندارد برای نان، loaf (در حالت جمع loaves به معنای قرص نان) است."
+            },
+            {
+                q: "12. Which word has the stress on the SECOND syllable?",
+                opts: ["Thirty (30)", "Forty (40)", "Fourteen (14)", "Sixty (60)"],
+                ans: 2,
+                exp: "در اعداد ختم شونده به -teen (مانند Fourteen) تکیه صوت روی بخش دوم است."
+            }
+        ];
+
+        /* ==================== رندر محتوا ==================== */
+        function renderContent() {
+            // رندر واژگان
+            const vocabContainer = document.getElementById("vocab-container");
+            vocabData.forEach(item => {
+                const card = document.createElement("div");
+                card.className = "vocab-card";
+                card.innerHTML = `
+                    <div>
+                        <div class="vocab-header">
+                            <span class="en-word">${item.word}</span>
+                            <button class="speak-btn" onclick="speakText('${item.word}. ${item.ex}')" title="پخش تلفظ">🔊</button>
+                        </div>
+                        <div class="fa-meaning">${item.fa}</div>
+                        <div class="en-def">${item.def}</div>
+                    </div>
+                    <div class="en-ex">"${item.ex}"</div>
+                `;
+                vocabContainer.appendChild(card);
+            });
+
+            // رندر مکالمه
+            const convContainer = document.getElementById("conversation-container");
+            conversationData.forEach(line => {
+                const div = document.createElement("div");
+                div.className = "dialogue-line";
+                const cleanEn = line.en.replace(/'/g, "\\'");
+                div.innerHTML = `
+                    <div class="dialogue-en">
+                        <span>${line.en}</span>
+                        <button class="speak-btn" onclick="speakText('${cleanEn}')">🔊</button>
+                    </div>
+                    <div class="dialogue-fa">${line.fa}</div>
+                `;
+                convContainer.appendChild(div);
+            });
+
+            // رندر ریدینگ
+            const readContainer = document.getElementById("reading-container");
+            readingData.forEach(para => {
+                const div = document.createElement("div");
+                div.className = "dialogue-line";
+                const cleanEn = para.en.replace(/'/g, "\\'");
+                div.innerHTML = `
+                    <div class="dialogue-en">
+                        <span>${para.en}</span>
+                        <button class="speak-btn" onclick="speakText('${cleanEn}')">🔊</button>
+                    </div>
+                    <div class="dialogue-fa">${para.fa}</div>
+                `;
+                readContainer.appendChild(div);
+            });
+
+            // رندر آزمون
+            const quizContainer = document.getElementById("quiz-container");
+            document.getElementById("total-q").textContent = quizData.length;
+            quizData.forEach((qItem, qIdx) => {
+                const qCard = document.createElement("div");
+                qCard.className = "quiz-item";
+                
+                let optsHtml = "";
+                qItem.opts.forEach((opt, oIdx) => {
+                    optsHtml += `<button class="opt-btn" id="q${qIdx}_opt${oIdx}" onclick="checkAnswer(${qIdx}, ${oIdx})">${opt}</button>`;
+                });
+
+                qCard.innerHTML = `
+                    <div class="quiz-q">${qItem.q}</div>
+                    <div class="options-list">${optsHtml}</div>
+                    <div class="quiz-exp" id="exp_${qIdx}">💡 <strong>توضیح:</strong> ${qItem.exp}</div>
+                `;
+                quizContainer.appendChild(qCard);
+            });
+        }
+
+        let currentScore = 0;
+        function checkAnswer(qIdx, selectedIdx) {
+            const qItem = quizData[qIdx];
+            const correctIdx = qItem.ans;
+
+            for (let i = 0; i < qItem.opts.length; i++) {
+                const btn = document.getElementById(`q${qIdx}_opt${i}`);
+                btn.disabled = true;
+                if (i === correctIdx) {
+                    btn.classList.add("correct");
+                } else if (i === selectedIdx) {
+                    btn.classList.add("wrong");
+                }
+            }
+
+            if (selectedIdx === correctIdx) {
+                currentScore++;
+                document.getElementById("user-score").textContent = currentScore;
+            }
+
+            document.getElementById(`exp_${qIdx}`).style.display = "block";
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll(".tab-pane").forEach(el => el.classList.remove("active"));
+            document.querySelectorAll(".tab-btn").forEach(el => el.classList.remove("active"));
+            document.getElementById("tab-" + tabId).classList.add("active");
+            event.currentTarget.classList.add("active");
+        }
+
+        renderContent();
+    </script>
+</body>
+</html>
