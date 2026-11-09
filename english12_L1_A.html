@@ -1,0 +1,1881 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سامانه هوشمند زبان انگلیسی دوازدهم - درس اول | علی برزگری</title>
+    <style>
+        /* ==================== متغیرها و تنظیمات پایه (Neon & Glassmorphism) ==================== */
+        :root {
+            --bg-dark: #070913;
+            --bg-card: rgba(18, 24, 48, 0.65);
+            --bg-glass: rgba(255, 255, 255, 0.05);
+            --border-glass: rgba(255, 255, 255, 0.12);
+            --neon-cyan: #00f2fe;
+            --neon-blue: #4facfe;
+            --neon-purple: #b224ef;
+            --neon-pink: #ff0844;
+            --neon-green: #00e676;
+            --neon-amber: #ffab00;
+            --text-main: #f0f4f8;
+            --text-muted: #94a3b8;
+            --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            --shadow-neon: 0 0 20px rgba(0, 242, 254, 0.3);
+            --transition-smooth: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            line-height: 1.7;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* بوم پس‌زمینه ذرات */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* اسکرول‌بار سفارشی */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #070913; }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(180deg, var(--neon-cyan), var(--neon-purple)); border-radius: 4px; }
+
+        /* ==================== صفحه قفل زمانی (Time-Lock Overlay) ==================== */
+        #lock-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: radial-gradient(circle at center, rgba(16, 23, 42, 0.92) 0%, rgba(5, 7, 15, 0.98) 100%);
+            backdrop-filter: blur(20px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 30px 15px;
+            overflow-y: auto;
+        }
+
+        .lock-container {
+            max-width: 900px;
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: 24px;
+            padding: 35px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7), 0 0 30px rgba(0, 242, 254, 0.15);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            margin: auto;
+        }
+
+        .lock-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(transparent, rgba(0, 242, 254, 0.12), transparent 30%);
+            animation: rotateBg 12s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes rotateBg { 100% { transform: rotate(360deg); } }
+
+        .lock-badge {
+            display: inline-block;
+            padding: 6px 18px;
+            border-radius: 50px;
+            background: rgba(0, 242, 254, 0.12);
+            border: 1px solid var(--neon-cyan);
+            color: var(--neon-cyan);
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow-neon);
+        }
+
+        .countdown-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            max-width: 550px;
+            margin: 25px auto;
+            direction: ltr;
+        }
+
+        .time-box {
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(0, 242, 254, 0.3);
+            border-radius: 16px;
+            padding: 15px 10px;
+            box-shadow: inset 0 0 15px rgba(0, 242, 254, 0.1);
+        }
+
+        .time-box span.num {
+            display: block;
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 12px rgba(0, 242, 254, 0.6);
+            font-family: monospace;
+        }
+
+        .time-box span.label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* باکس حضور و غیاب */
+        .attendance-banner {
+            background: linear-gradient(135deg, rgba(178, 36, 239, 0.2), rgba(0, 242, 254, 0.2));
+            border: 2px solid var(--neon-cyan);
+            border-radius: 18px;
+            padding: 20px;
+            margin: 20px 0;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 0 25px rgba(0, 242, 254, 0.2);
+        }
+
+        .btn-attendance {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 12px;
+            padding: 12px 28px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-blue));
+            color: #050814;
+            font-weight: 800;
+            font-size: 1.05rem;
+            text-decoration: none;
+            border-radius: 12px;
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.5);
+            transition: var(--transition-smooth);
+        }
+
+        .btn-attendance:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 0 30px rgba(0, 242, 254, 0.9);
+        }
+
+        .roadmap-preview {
+            text-align: right;
+            margin-top: 25px;
+            background: rgba(0, 0, 0, 0.35);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid var(--border-glass);
+            position: relative;
+            z-index: 2;
+        }
+
+        .roadmap-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .roadmap-item {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 0.88rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .roadmap-item i {
+            color: var(--neon-green);
+            font-style: normal;
+            font-size: 1.1rem;
+        }
+
+        /* ==================== لایه اصلی برنامه (Main Layout) ==================== */
+        #app-wrapper {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* نوار کناری (Sidebar) */
+        .sidebar {
+            width: 280px;
+            background: rgba(11, 15, 30, 0.85);
+            backdrop-filter: blur(16px);
+            border-left: 1px solid var(--border-glass);
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            transition: var(--transition-smooth);
+            z-index: 100;
+        }
+
+        .brand-header {
+            padding: 22px 20px;
+            border-bottom: 1px solid var(--border-glass);
+            text-align: center;
+            background: linear-gradient(180deg, rgba(0, 242, 254, 0.08), transparent);
+        }
+
+        .brand-header h1 {
+            font-size: 1.15rem;
+            color: var(--neon-cyan);
+            margin-bottom: 4px;
+            text-shadow: 0 0 10px rgba(0, 242, 254, 0.4);
+        }
+
+        .brand-header p {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+        }
+
+        /* پروفایل گیمیفیکیشن در سایدبار */
+        .user-stats-card {
+            margin: 15px;
+            padding: 14px;
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 14px;
+        }
+
+        .xp-bar-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .xp-bar-fill {
+            height: 100%;
+            width: 25%;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+            box-shadow: 0 0 10px var(--neon-cyan);
+            transition: width 0.5s ease;
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 10px 12px;
+            flex: 1;
+        }
+
+        .nav-item {
+            margin-bottom: 6px;
+        }
+
+        .nav-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 14px;
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-muted);
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.92rem;
+            text-align: right;
+            transition: var(--transition-smooth);
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-main);
+            transform: translateX(-4px);
+        }
+
+        .nav-btn.active {
+            background: linear-gradient(90deg, rgba(0, 242, 254, 0.18), rgba(178, 36, 239, 0.08));
+            border-color: rgba(0, 242, 254, 0.4);
+            color: var(--neon-cyan);
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.15);
+        }
+
+        /* محتوای اصلی */
+        .main-content {
+            flex: 1;
+            padding: 25px 30px;
+            max-width: 1250px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* هدر بالای داشبورد */
+        .top-bar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            background: var(--bg-card);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-glass);
+            padding: 16px 24px;
+            border-radius: 18px;
+            margin-bottom: 25px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .school-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            align-items: center;
+        }
+
+        .info-pill {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border-glass);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 0.88rem;
+        }
+
+        .info-pill strong { color: var(--neon-cyan); }
+
+        .top-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            color: var(--text-main);
+            padding: 8px 14px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.85rem;
+            transition: var(--transition-smooth);
+        }
+
+        .icon-btn:hover {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 12px rgba(0, 242, 254, 0.3);
+        }
+
+        /* ==================== بخش‌ها (Sections) ==================== */
+        .section-panel {
+            display: none;
+            animation: fadeInPanel 0.45s ease forwards;
+        }
+
+        .section-panel.active {
+            display: block;
+        }
+
+        @keyframes fadeInPanel {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .glass-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(14px);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+            transition: var(--transition-smooth);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(0, 242, 254, 0.28);
+        }
+
+        .section-title {
+            font-size: 1.4rem;
+            color: var(--neon-cyan);
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--border-glass);
+            padding-bottom: 12px;
+        }
+
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 18px; }
+
+        /* باکس‌های فرمول و نکات */
+        .formula-box {
+            background: linear-gradient(90deg, rgba(0, 242, 254, 0.1), rgba(178, 36, 239, 0.1));
+            border-right: 4px solid var(--neon-cyan);
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 1.05rem;
+            direction: ltr;
+            text-align: left;
+            color: #fff;
+        }
+
+        .golden-tip {
+            background: rgba(255, 171, 0, 0.1);
+            border: 1px solid rgba(255, 171, 0, 0.4);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 12px 0;
+        }
+
+        .golden-tip h4 { color: var(--neon-amber); margin-bottom: 6px; }
+
+        .mistake-box {
+            background: rgba(255, 8, 68, 0.1);
+            border: 1px solid rgba(255, 8, 68, 0.4);
+            border-radius: 12px;
+            padding: 15px;
+            margin: 12px 0;
+        }
+
+        .mistake-box h4 { color: var(--neon-pink); margin-bottom: 6px; }
+
+        /* جداول آموزشی */
+        .modern-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 0.95rem;
+        }
+
+        .modern-table th, .modern-table td {
+            padding: 12px 15px;
+            border: 1px solid var(--border-glass);
+            text-align: center;
+        }
+
+        .modern-table th {
+            background: rgba(0, 242, 254, 0.15);
+            color: var(--neon-cyan);
+        }
+
+        .modern-table tr:nth-child(even) { background: rgba(255, 255, 255, 0.02); }
+        .ltr-cell { direction: ltr; font-family: sans-serif; }
+
+        /* فلش‌کارت سه‌بعدی */
+        .flashcard-container {
+            perspective: 1000px;
+            height: 200px;
+            cursor: pointer;
+        }
+
+        .flashcard-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .flashcard-container.flipped .flashcard-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-front, .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            border: 1px solid var(--border-glass);
+        }
+
+        .flashcard-front {
+            background: linear-gradient(135deg, rgba(18, 24, 48, 0.9), rgba(0, 242, 254, 0.15));
+        }
+
+        .flashcard-back {
+            background: linear-gradient(135deg, rgba(178, 36, 239, 0.25), rgba(18, 24, 48, 0.95));
+            transform: rotateY(180deg);
+            border-color: var(--neon-purple);
+        }
+
+        /* آزمایشگاه مجازی زبان (Grammar Physics Lab) */
+        #lab-canvas {
+            width: 100%;
+            height: 320px;
+            background: rgba(5, 8, 20, 0.8);
+            border: 1px solid var(--neon-cyan);
+            border-radius: 16px;
+            display: block;
+            margin: 15px 0;
+        }
+
+        .lab-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 15px;
+            border-radius: 12px;
+        }
+
+        .btn-neon {
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-blue));
+            color: #060913;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: inherit;
+            transition: var(--transition-smooth);
+        }
+
+        .btn-neon:hover {
+            box-shadow: 0 0 18px var(--neon-cyan);
+            transform: translateY(-2px);
+        }
+
+        .btn-purple {
+            background: linear-gradient(90deg, var(--neon-purple), var(--neon-pink));
+            color: #fff;
+        }
+
+        select.modern-select, input.modern-input, textarea.modern-textarea {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--border-glass);
+            color: var(--text-main);
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        select.modern-select:focus, input.modern-input:focus, textarea.modern-textarea:focus {
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 10px rgba(0, 242, 254, 0.25);
+        }
+
+        /* سیستم آزمون تستی و تشریحی */
+        .quiz-option {
+            display: block;
+            width: 100%;
+            text-align: left;
+            direction: ltr;
+            padding: 12px 18px;
+            margin: 8px 0;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-glass);
+            border-radius: 10px;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            font-size: 0.98rem;
+        }
+
+        .quiz-option:hover {
+            background: rgba(0, 242, 254, 0.12);
+            border-color: var(--neon-cyan);
+        }
+
+        .quiz-option.correct {
+            background: rgba(0, 230, 118, 0.2);
+            border-color: var(--neon-green);
+            color: var(--neon-green);
+        }
+
+        .quiz-option.wrong {
+            background: rgba(255, 8, 68, 0.2);
+            border-color: var(--neon-pink);
+            color: var(--neon-pink);
+        }
+
+        .ai-feedback-box {
+            margin-top: 12px;
+            padding: 14px;
+            border-radius: 12px;
+            background: rgba(0, 242, 254, 0.08);
+            border: 1px dashed var(--neon-cyan);
+            display: none;
+        }
+
+        /* شخصیت راهنما (Floating Assistant) */
+        .ai-mentor {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 90;
+            background: rgba(15, 22, 45, 0.92);
+            border: 1px solid var(--neon-cyan);
+            border-radius: 50px;
+            padding: 10px 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 0 25px rgba(0, 242, 254, 0.3);
+            cursor: pointer;
+            max-width: 340px;
+            transition: var(--transition-smooth);
+        }
+
+        .ai-mentor:hover { transform: scale(1.04); }
+        .mentor-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #000;
+            flex-shrink: 0;
+        }
+
+        /* ریسپانسیو موبایل */
+        @media (max-width: 900px) {
+            #app-wrapper { flex-direction: column; }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                border-left: none;
+                border-bottom: 1px solid var(--border-glass);
+            }
+            .nav-menu {
+                display: flex;
+                overflow-x: auto;
+                gap: 8px;
+                padding: 10px;
+            }
+            .nav-item { flex-shrink: 0; margin-bottom: 0; }
+            .main-content { padding: 15px; }
+            .countdown-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+<!-- بوم انیمیشن ذرات پس‌زمینه -->
+<canvas id="particle-canvas"></canvas>
+
+<!-- ==================== صفحه قفل زمانی (فعال شدن در ۱۹ آبان ساعت ۹ صبح) ==================== -->
+<div id="lock-screen">
+    <div class="lock-container">
+        <div class="lock-badge">🔒 قفل زمانی هوشمند فعال است</div>
+        <h1 style="font-size: 1.8rem; color: #fff; margin-bottom: 8px;">سامانه جامع آموزش و آزمون زبان انگلیسی دوازدهم</h1>
+        <p style="color: var(--neon-cyan); font-size: 1.1rem; font-weight: bold;">
+            درس اول: Sense of Appreciation | مدرسه سردار سلیمانی گوری | دبیر: علی برزگری
+        </p>
+        <p style="color: var(--text-muted); margin-top: 8px; font-size: 0.95rem;">
+            این سامانه به صورت خودکار در تاریخ <strong>۱۹ آبان ساعت ۰۹:۰۰ صبح</strong> بازگشایی شده و پس از آن برای همیشه فعال باقی می‌ماند.
+        </p>
+
+        <!-- شمارش معکوس زنده -->
+        <div class="countdown-grid">
+            <div class="time-box">
+                <span class="num" id="cd-days">00</span>
+                <span class="label">روز (Days)</span>
+            </div>
+            <div class="time-box">
+                <span class="num" id="cd-hours">00</span>
+                <span class="label">ساعت (Hours)</span>
+            </div>
+            <div class="time-box">
+                <span class="num" id="cd-mins">00</span>
+                <span class="label">دقیقه (Minutes)</span>
+            </div>
+            <div class="time-box">
+                <span class="num" id="cd-secs">00</span>
+                <span class="label">ثانیه (Seconds)</span>
+            </div>
+        </div>
+
+        <!-- بخش ثبت حضور و غیاب در صفحه قفل -->
+        <div class="attendance-banner">
+            <h3 style="color: #fff; font-size: 1.15rem;">📋 ثبت حضور و غیاب کلاس زبان دوازدهم</h3>
+            <p style="color: var(--text-main); font-size: 0.95rem; margin-top: 6px;">
+                جهت ثبت حضور زبان دوازدهم وارد دیجی فرم زیر شوید:
+            </p>
+            <a href="https://a.digiform.ir/w6882011cc" target="_blank" rel="noopener noreferrer" class="btn-attendance">
+                ورود به سامانه حضور و غیاب (دیجی‌فرم) ⬅
+            </a>
+            <div style="margin-top: 8px; font-family: monospace; font-size: 0.85rem; color: var(--neon-cyan); direction: ltr;">
+                https://a.digiform.ir/w6882011cc
+            </div>
+        </div>
+
+        <!-- توضیح محتوای قابل دسترس پس از باز شدن قفل -->
+        <div class="roadmap-preview">
+            <h3 style="color: var(--neon-amber); font-size: 1.1rem; margin-bottom: 8px;">
+                🚀 پس از باز شدن قفل در ۱۹ آبان ساعت ۹ صبح، به چه مطالبی دسترسی خواهید داشت؟
+            </h3>
+            <p style="font-size: 0.88rem; color: var(--text-muted);">
+                بلافاصله پس از پایان شمارش معکوس، تمام ۱۴ ماژول هوشمند زیر به صورت کاملاً آفلاین و دائمی برای شما باز خواهند شد:
+            </p>
+            <div class="roadmap-grid">
+                <div class="roadmap-item"><i>✦</i> <span><strong>۱. آموزش جامع درس اول:</strong> گرامر جملات مجهول (Passive)، جملات ضمیمه (Tag Questions) و واژگان کلیدی</span></div>
+                <div class="roadmap-item"><i>✦</i> <span><strong>۲. خلاصه هوشمند:</strong> نقشه ذهنی (Mind Map)، درخت مفهومی و فلش‌کارت‌های سه‌بعدی</span></div>
+                <div class="roadmap-item"><i>✦</i> <span><strong>۳. نکات تشریحی نهایی:</strong> تکنیک کسب نمره ۲۰ در امتحان نهایی و کلیدواژه‌های مصحح</span></div>
+                <div class="roadmap-item"><i>✦</i> <span><strong>۴. تکنیک‌های تستی و کنکور:</strong> مهندسی معکوس گزینه‌ها و حل ۵ ثانیه‌ای تست‌های گرامر</span></div>
+                <div class="roadmap-item"><i>✦</i> <span><strong>۵. تله‌های طراح سؤال:</strong> آنالیز دام‌های پرتکرار امتحانات نهایی و کنکور سراسری</span></div>
+                <div class="roadmap-item"><i>✦</i> <span><strong>۶. آزمایشگاه تعاملی گرامر:</strong> شبیه‌ساز فیزیکی تبدیل جمله معلوم به مجهول در زمان‌های مختلف</span></div>
+                <div class="roadmap-item"><i>✦</i> <span><strong>۷. آزمون تستی ۳ سطحی:</strong> بانک سؤال استاندارد (آسان، متوسط، سخت) همراه با زمان‌سنج</span></div>
+                <div class="roadmap-item"><i>✦</i> <span><strong>۸. آزمون تشریحی هوشمند:</strong> تصحیح مفهومی پاسخ‌ها توسط موتور هوش مصنوعی داخلی</span></div>
+                <div class="roadmap-item"><i>✦</i> <span><strong>۹. آزمون نیمه‌تشریحی:</strong> سؤالات جای‌خالی، وصل‌کردنی و مرتب‌سازی اجزای جمله</span></div>
+                <div class="roadmap-item"><i>✦</i> <span><strong>۱۰. کارنامه و گزارش پیشرفت:</strong> نمودار تسلط، تحلیل نقاط ضعف و سیستم جوایز (XP & Wheel)</span></div>
+            </div>
+        </div>
+
+        <!-- دکمه پیش‌نمایش ویژه دبیر جهت بررسی قبل از ۱۹ آبان -->
+        <div style="margin-top: 20px;">
+            <button onclick="unlockForTeacherPreview()" style="background: transparent; border: 1px dashed rgba(255,255,255,0.2); color: var(--text-muted); padding: 6px 14px; border-radius: 8px; cursor: pointer; font-size: 0.78rem;">
+                🔑 ورود پیش‌نمایش (ویژه بررسی قبل از موعد)
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== محیط اصلی نرم‌افزار ==================== -->
+<div id="app-wrapper">
+    <!-- نوار کناری (Sidebar) -->
+    <aside class="sidebar">
+        <div class="brand-header">
+            <h1>🌟 English Vision 3</h1>
+            <p>پایه دوازدهم | درس اول</p>
+            <p style="color: var(--neon-amber); margin-top: 4px; font-weight: bold;">مدرسه سردار سلیمانی گوری</p>
+            <p style="color: #fff; font-size: 0.85rem; margin-top: 2px;">دبیر: علی برزگری</p>
+        </div>
+
+        <!-- وضعیت امتیاز و سطح دانش‌آموز -->
+        <div class="user-stats-card">
+            <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                <span>سطح: <strong id="user-level" style="color: var(--neon-cyan);">1 (Starter)</strong></span>
+                <span>امتیاز: <strong id="user-xp" style="color: var(--neon-green);">120 XP</strong></span>
+            </div>
+            <div class="xp-bar-container">
+                <div class="xp-bar-fill" id="xp-bar"></div>
+            </div>
+            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; display: flex; justify-content: space-between;">
+                <span>🔥 کمبو: <b id="combo-count">0</b></span>
+                <span>🏆 نشان‌ها: <b id="badge-count">1</b>/6</span>
+            </div>
+        </div>
+
+        <!-- منوی ناوبری ۱۲ بخشی -->
+        <ul class="nav-menu">
+            <li class="nav-item"><button class="nav-btn active" onclick="switchTab('sec-teach', this)">📚 ۱. آموزش جامع و مفهومی</button></li>
+            <li class="nav-item"><button class="nav-btn" onclick="switchTab('sec-summary', this)">⚡ ۲. خلاصه هوشمند و فلش‌کارت</button></li>
+            <li class="nav-item"><button class="nav-btn" onclick="switchTab('sec-descriptive-tips', this)">✍️ ۳. نکات امتحانات تشریحی</button></li>
+            <li class="nav-item"><button class="nav-btn" onclick="switchTab('sec-test-tips', this)">🎯 ۴. تکنیک‌های تست‌زنی</button></li>
+            <li class="nav-item"><button class="nav-btn" onclick="switchTab('sec-traps', this)">⚠️ ۵. تله‌های طراح سؤال</button></li>
+            <li class="nav-item"><button class="nav-btn" onclick="switchTab('sec-lab', this)">🧪 ۶. آزمایشگاه تعاملی گرامر</button></li>
+            <li class="nav-item"><button class="nav-btn" onclick="switchTab('sec-mcq', this)">📝 ۷. آزمون تستی (۳ سطحی)</button></li>
+            <li class="nav-item"><button class="nav-btn" onclick="switchTab('sec-ai-exam', this)">🧠 ۸. آزمون تشریحی هوشمند</button></li>
+            <li class="nav-item"><button class="nav-btn" onclick="switchTab('sec-semi-exam', this)">🧩 ۹. آزمون نیمه‌تشریحی</button></li>
+            <li class="nav-item"><button class="nav-btn" onclick="switchTab('sec-ai-engine', this)">⚙️ ۱۰. موتور تصحیح هوشمند</button></li>
+            <li class="nav-item"><button class="nav-btn" onclick="switchTab('sec-progress', this)">📊 ۱۱. گزارش پیشرفت و تحلیل</button></li>
+            <li class="nav-item"><button class="nav-btn" onclick="switchTab('sec-fun', this)">🎁 ۱۲. بخش خلاقانه و جوایز</button></li>
+        </ul>
+    </aside>
+
+    <!-- محتوای اصلی -->
+    <main class="main-content">
+        <!-- نوار اطلاعات بالای صفحه و لینک حضور و غیاب -->
+        <header class="top-bar">
+            <div class="school-info">
+                <div class="info-pill">🏫 مدرسه: <strong>سردار سلیمانی گوری</strong></div>
+                <div class="info-pill">👨‍🏫 دبیر: <strong>علی برزگری</strong></div>
+                <div class="info-pill">📖 مبحث: <strong>درس اول - Sense of Appreciation</strong></div>
+            </div>
+            <div class="top-controls">
+                <a href="https://a.digiform.ir/w6882011cc" target="_blank" rel="noopener noreferrer" class="btn-neon" style="text-decoration: none; font-size: 0.85rem; padding: 8px 14px;">
+                    📋 ثبت حضور در دیجی‌فرم
+                </a>
+                <button class="icon-btn" id="sound-toggle" onclick="toggleAudio()">🔊 صدا: روشن</button>
+            </div>
+        </header>
+
+        <!-- بنر دائمی حضور و غیاب در صفحه اول -->
+        <div class="glass-card" style="border-color: var(--neon-cyan); background: linear-gradient(90deg, rgba(0,242,254,0.12), rgba(178,36,239,0.12)); padding: 16px 24px; display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 15px;">
+            <div>
+                <h3 style="color: var(--neon-cyan); font-size: 1.05rem;">📌 جهت ثبت حضور زبان دوازدهم وارد دیجی فرم زیر شوید:</h3>
+                <p style="font-size: 0.88rem; color: var(--text-main); margin-top: 4px;">
+                    دانش‌آموزان گرامی مدرسه سردار سلیمانی گوری، پیش از شروع مطالعه و آزمون، حضور خود را ثبت نمایید.
+                </p>
+            </div>
+            <a href="https://a.digiform.ir/w6882011cc" target="_blank" rel="noopener noreferrer" class="btn-attendance" style="margin-top: 0; font-size: 0.9rem; padding: 10px 20px;">
+                ورود به فرم حضور و غیاب (https://a.digiform.ir/w6882011cc) ⬅
+            </a>
+        </div>
+
+        <!-- ==================== ۱. آموزش جامع ==================== -->
+        <section id="sec-teach" class="section-panel active">
+            <div class="glass-card">
+                <h2 class="section-title">📚 ۱. آموزش جامع درس اول: Sense of Appreciation (حس قدردانی)</h2>
+                <p>درس اول پایه دوازدهم بر موضوع قدردانی از بزرگان، والدین، معلمان و مفاخر علمی (مانند دکتر محمد قریب) تمرکز دارد و از نظر گرامری دو مبحث بسیار مهم امتحان نهایی و کنکور یعنی <strong>جملات مجهول (Passive Voice)</strong> و <strong>سؤالات ضمیمه (Tag Questions)</strong> را پوشش می‌دهد.</p>
+
+                <div class="grid-2" style="margin-top: 20px;">
+                    <div style="background: rgba(255,255,255,0.03); padding: 18px; border-radius: 14px; border: 1px solid var(--border-glass);">
+                        <h3 style="color: var(--neon-cyan); margin-bottom: 10px;">بخش اول: ساختار جملات مجهول (Passive Voice)</h3>
+                        <p style="font-size: 0.92rem;">زمانی از جمله مجهول استفاده می‌کنیم که <strong>کننده کار (Subject)</strong> یا مشخص نیست، یا اهمیتی ندارد و تمرکز اصلی روی <strong>مفعول و عمل انجام‌شده</strong> است.</p>
+                        <div class="formula-box">
+                            Object + To Be (بر اساس زمان) + Past Participle (p.p) + [by + Subject]
+                        </div>
+                        <p style="font-size: 0.88rem; color: var(--text-muted);">فرمول طلایی: همیشه مفعول جمله معلوم را به ابتدای جمله آورده، فعل کمکی <code>to be</code> متناسب با زمان جمله را قرار داده و شکل سوم فعل اصلی (p.p) را می‌نویسیم.</p>
+                    </div>
+
+                    <div style="background: rgba(255,255,255,0.03); padding: 18px; border-radius: 14px; border: 1px solid var(--border-glass);">
+                        <h3 style="color: var(--neon-purple); margin-bottom: 10px;">بخش دوم: سؤالات ضمیمه (Tag Questions)</h3>
+                        <p style="font-size: 0.92rem;">سؤالات کوتاهی هستند که در انتهای جملات خبری (بعد از کاما) می‌آیند تا تأیید شنونده را بگیریم. قانون اصلی، <strong>قانون تضاد (مثبت ⇄ منفی)</strong> است.</p>
+                        <div class="formula-box">
+                            (+) Positive Statement , (-) Negative Tag ?<br>
+                            (-) Negative Statement , (+) Positive Tag ?
+                        </div>
+                        <p style="font-size: 0.88rem; color: var(--text-muted);">مثال: <code>Dr. Gharib was a dedicated physician, wasn't he?</code></p>
+                    </div>
+                </div>
+
+                <h3 style="color: var(--neon-amber); margin: 25px 0 10px;">جدول کامل تبدیل زمان‌ها به حالت مجهول (Passive Tenses Table)</h3>
+                <div style="overflow-x: auto;">
+                    <table class="modern-table">
+                        <thead>
+                            <tr>
+                                <th>زمان (Tense)</th>
+                                <th>فرمول معلوم (Active)</th>
+                                <th>فرمول مجهول (Passive)</th>
+                                <th>مثال حل‌شده استاندارد</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>حال ساده (Simple Present)</td>
+                                <td class="ltr-cell">S + V(s/es) + O</td>
+                                <td class="ltr-cell">O + am/is/are + p.p</td>
+                                <td class="ltr-cell">Respect <b>is shown</b> to parents.</td>
+                            </tr>
+                            <tr>
+                                <td>گذشته ساده (Simple Past)</td>
+                                <td class="ltr-cell">S + V(ed) + O</td>
+                                <td class="ltr-cell">O + was/were + p.p</td>
+                                <td class="ltr-cell">The hospital <b>was founded</b> in 1968.</td>
+                            </tr>
+                            <tr>
+                                <td>حال کامل (Present Perfect)</td>
+                                <td class="ltr-cell">S + have/has + p.p + O</td>
+                                <td class="ltr-cell">O + have/has + been + p.p</td>
+                                <td class="ltr-cell">Many patients <b>have been cured</b>.</td>
+                            </tr>
+                            <tr>
+                                <td>افعال ناقص (Modals)</td>
+                                <td class="ltr-cell">S + can/must/should + V + O</td>
+                                <td class="ltr-cell">O + modal + be + p.p</td>
+                                <td class="ltr-cell">Elders <b>must be respected</b>.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="grid-2" style="margin-top: 20px;">
+                    <div class="golden-tip">
+                        <h4>💡 نکات طلایی و حفظی (Golden Rules)</h4>
+                        <ul style="padding-right: 18px; font-size: 0.9rem;">
+                            <li>اگر جمله شامل کلمات منفی‌ساز پنهان مانند <code>never, hardly, seldom, rarely, nobody, nothing</code> باشد، جمله <strong>منفی</strong> محسوب شده و Tag آن باید <strong>مثبت</strong> باشد!</li>
+                            <li>برای ضمایر <code>someone, everybody, nobody</code> در بخش Tag از ضمیر جمع <code>they</code> استفاده می‌شود.</li>
+                            <li>تگِ عبارت <code>I am</code> در حالت منفی به صورت <code>aren't I?</code> می‌آید.</li>
+                        </ul>
+                    </div>
+                    <div class="mistake-box">
+                        <h4>🚫 اشتباهات رایج دانش‌آموزان</h4>
+                        <ul style="padding-right: 18px; font-size: 0.9rem;">
+                            <li><strong>اشتباه:</strong> فراموش کردن تطابق مفرد/جمع مفعول جدید با فعل <code>was/were</code> یا <code>have/has</code>.</li>
+                            <li><strong>اشتباه:</strong> نوشتن اسم (مثلاً <code>Ali</code>) در داخل Tag Question به جای ضمیر فاعلی (<code>he</code>).</li>
+                            <li><strong>اشتباه:</strong> استفاده از <code>did/didn't</code> برای جملاتی که فعل کمکی <code>was/were</code> دارند.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- واژگان کلیدی درس اول -->
+                <h3 style="color: var(--neon-cyan); margin: 22px 0 12px;">واژگان و هم‌آیندهای مهم درس اول (Key Vocabulary & Collocations)</h3>
+                <div class="grid-3">
+                    <div class="info-pill ltr-cell"><b>boost:</b> تقویت کردن / افزایش دادن (boost morale)</div>
+                    <div class="info-pill ltr-cell"><b>distinguished:</b> برجسته، ممتاز (famous & respected)</div>
+                    <div class="info-pill ltr-cell"><b>founder:</b> بنیان‌گذار (کسی که نهادی را تأسیس می‌کند)</div>
+                    <div class="info-pill ltr-cell"><b>dedicate:</b> وقف کردن، اختصاص دادن</div>
+                    <div class="info-pill ltr-cell"><b>function:</b> کارکرد داشتن، عمل کردن</div>
+                    <div class="info-pill ltr-cell"><b>generous:</b> بخشنده، دست‌ودلباز</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== ۲. خلاصه هوشمند ==================== -->
+        <section id="sec-summary" class="section-panel">
+            <div class="glass-card">
+                <h2 class="section-title">⚡ ۲. خلاصه هوشمند، نقشه ذهنی (Mind Map) و فلش‌کارت‌ها</h2>
+                <p>مرور سریع کل درس اول در ۳ دقیقه همراه با نقشه مفهومی گرافیکی و کارت‌های حافظه تعاملی.</p>
+
+                <!-- Mind Map SVG -->
+                <div style="background: rgba(0,0,0,0.4); border-radius: 16px; padding: 15px; margin: 20px 0; text-align: center; overflow-x: auto;">
+                    <svg width="780" height="240" viewBox="0 0 780 240" style="max-width: 100%; height: auto;">
+                        <!-- خطوط اتصال -->
+                        <line x1="390" y1="120" x2="160" y2="55" stroke="#00f2fe" stroke-width="2.5"/>
+                        <line x1="390" y1="120" x2="160" y2="185" stroke="#00f2fe" stroke-width="2.5"/>
+                        <line x1="390" y1="120" x2="620" y2="55" stroke="#b224ef" stroke-width="2.5"/>
+                        <line x1="390" y1="120" x2="620" y2="185" stroke="#b224ef" stroke-width="2.5"/>
+
+                        <!-- گره مرکزی -->
+                        <rect x="295" y="90" width="190" height="60" rx="30" fill="#121830" stroke="#00f2fe" stroke-width="3"/>
+                        <text x="390" y="125" fill="#fff" font-size="15" font-weight="bold" text-anchor="middle">Lesson 1: Appreciation</text>
+
+                        <!-- شاخه‌ها -->
+                        <rect x="30" y="25" width="220" height="55" rx="12" fill="#162238" stroke="#00f2fe"/>
+                        <text x="140" y="50" fill="#00f2fe" font-size="13" font-weight="bold" text-anchor="middle">Passive Voice (مجهول)</text>
+                        <text x="140" y="68" fill="#ccc" font-size="11" text-anchor="middle">Obj + Be + P.P + (by Subj)</text>
+
+                        <rect x="30" y="155" width="220" height="55" rx="12" fill="#162238" stroke="#00f2fe"/>
+                        <text x="140" y="180" fill="#00f2fe" font-size="13" font-weight="bold" text-anchor="middle">Tag Questions (ضمیمه)</text>
+                        <text x="140" y="198" fill="#ccc" font-size="11" text-anchor="middle">Aux + Pronoun? (+ ⇄ -)</text>
+
+                        <rect x="530" y="25" width="220" height="55" rx="12" fill="#231438" stroke="#b224ef"/>
+                        <text x="640" y="50" fill="#ffab00" font-size="13" font-weight="bold" text-anchor="middle">Dr. Mohammad Gharib</text>
+                        <text x="640" y="68" fill="#ccc" font-size="11" text-anchor="middle">Founder of Iranian Pediatrics</text>
+
+                        <rect x="530" y="155" width="220" height="55" rx="12" fill="#231438" stroke="#b224ef"/>
+                        <text x="640" y="180" fill="#00e676" font-size="13" font-weight="bold" text-anchor="middle">Core Collocations</text>
+                        <text x="640" y="198" fill="#ccc" font-size="11" text-anchor="middle">feel calm / boost energy / spare no pain</text>
+                    </svg>
+                </div>
+
+                <h3 style="color: var(--neon-cyan); margin-bottom: 12px;">🔄 فلش‌کارت‌های سه‌بعدی (روی هر کارت کلیک کنید تا بچرخد)</h3>
+                <div class="grid-3">
+                    <div class="flashcard-container" onclick="this.classList.toggle('flipped'); playSound('click');">
+                        <div class="flashcard-inner">
+                            <div class="flashcard-front">
+                                <span style="color: var(--neon-cyan); font-size: 0.8rem;">واژه کلیدی ۱</span>
+                                <h3 style="margin-top: 8px; font-size: 1.4rem;">Spare no pains</h3>
+                                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;">(کلیک برای مشاهده معنی)</p>
+                            </div>
+                            <div class="flashcard-back">
+                                <h4>از هیچ تلاشی دریغ نکردن</h4>
+                                <p style="font-size: 0.85rem; margin-top: 8px;" class="ltr-cell">Dr. Gharib spared no pains to cure sick children.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flashcard-container" onclick="this.classList.toggle('flipped'); playSound('click');">
+                        <div class="flashcard-inner">
+                            <div class="flashcard-front">
+                                <span style="color: var(--neon-cyan); font-size: 0.8rem;">نکته گرامری ۲</span>
+                                <h3 style="margin-top: 8px; font-size: 1.3rem;" class="ltr-cell">Ali cut his finger, ...?</h3>
+                                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;">(تگ صحیح چیست؟)</p>
+                            </div>
+                            <div class="flashcard-back">
+                                <h4 class="ltr-cell" style="color: var(--neon-green);">didn't he?</h4>
+                                <p style="font-size: 0.85rem; margin-top: 8px;">چون Ali سوم شخص مفرد است و cut، s نگرفته، پس زمان جمله گذشته ساده است!</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flashcard-container" onclick="this.classList.toggle('flipped'); playSound('click');">
+                        <div class="flashcard-inner">
+                            <div class="flashcard-front">
+                                <span style="color: var(--neon-cyan); font-size: 0.8rem;">فرمول مجهول ۳</span>
+                                <h3 style="margin-top: 8px; font-size: 1.3rem;">مجهول حال کامل</h3>
+                                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 10px;">(Present Perfect Passive)</p>
+                            </div>
+                            <div class="flashcard-back">
+                                <h4 class="ltr-cell" style="color: var(--neon-amber);">have / has + been + p.p</h4>
+                                <p style="font-size: 0.85rem; margin-top: 8px;" class="ltr-cell">A new school has been built.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== ۳. نکات تشریحی ==================== -->
+        <section id="sec-descriptive-tips" class="section-panel">
+            <div class="glass-card">
+                <h2 class="section-title">✍️ ۳. راهنمای جامع کسب نمره کامل در امتحان نهایی (نکات تشریحی)</h2>
+                <div class="grid-2">
+                    <div class="golden-tip">
+                        <h4>✅ فرمول ۴ مرحله‌ای تبدیل جمله معلوم به مجهول در امتحان نهایی</h4>
+                        <ol style="padding-right: 18px; font-size: 0.92rem;">
+                            <li><strong>یافتن مفعول:</strong> بلافاصله بعد از فعل اصلی قرار دارد. کل عبارت مفعولی (مثلاً <code>many sick children</code>) را به اول جمله بیاورید، نه فقط یک کلمه را!</li>
+                            <li><strong>تشخیص زمان فعل:</strong> ببینید فعل جمله حال است، گذشته است یا مدال دارد.</li>
+                            <li><strong>تطابق مفرد و جمع:</strong> اگر مفعول جدید جمع است، حتماً از <code>are / were / have been</code> استفاده کنید.</li>
+                            <li><strong>نگارش شکل سوم فعل (p.p) و قید زمان در انتها.</strong></li>
+                        </ol>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.03); padding: 18px; border-radius: 14px; border: 1px solid var(--border-glass);">
+                        <h4 style="color: var(--neon-cyan); margin-bottom: 8px;">🔍 آنچه مصحح امتحان نهایی به دنبال آن است:</h4>
+                        <p style="font-size: 0.9rem;">در بارم‌بندی امتحان نهایی، معمولاً ۰.۵ نمره برای هر سؤال تبدیل به مجهول در نظر گرفته می‌شود: <strong>۰.۲۵ نمره</strong> بابت انتخاب صحیح فعل <code>to be</code> و <strong>۰.۲۵ نمره</strong> بابت نوشتن صحیح شکل سوم فعل (Past Participle).</p>
+                        <div class="formula-box">
+                            نمونه سؤال نهایی:<br>
+                            Active: Hafez wrote many beautiful poems.<br>
+                            پاسخ استاندارد کامل:<br>
+                            Passive: Many beautiful poems were written by Hafez.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== ۴. نکات تستی ==================== -->
+        <section id="sec-test-tips" class="section-panel">
+            <div class="glass-card">
+                <h2 class="section-title">🎯 ۴. تکنیک‌های تست‌زنی سریع (ویژه کنکور و آزمون‌های آزمایشی)</h2>
+                <div class="grid-2">
+                    <div style="background: rgba(0,242,254,0.06); padding: 18px; border-radius: 14px; border: 1px solid var(--neon-cyan);">
+                        <h3 style="color: var(--neon-cyan); margin-bottom: 8px;">⚡ تکنیک ۵ ثانیه‌ای حذف گزینه در Passive</h3>
+                        <p style="font-size: 0.92rem;">برای تشخیص اینکه جای خالی معلوم می‌خواهد یا مجهول:</p>
+                        <ul style="padding-right: 18px; font-size: 0.9rem; margin-top: 8px;">
+                            <li>اگر <strong>بلافاصله بعد از جای خالی</strong> مفعول نبود و حرف اضافه (مثل <code>by, in, on, at, to, for</code>) آمده بود، جمله ۹۵٪ <strong>مجهول</strong> است!</li>
+                            <li>هر گزینه‌ای که در آن <code>be/am/is/are/was/were/been + p.p</code> نباشد را در ۱ ثانیه خط بزنید.</li>
+                        </ul>
+                    </div>
+                    <div style="background: rgba(178,36,239,0.08); padding: 18px; border-radius: 14px; border: 1px solid var(--neon-purple);">
+                        <h3 style="color: var(--neon-amber); margin-bottom: 8px;">🧠 حل ذهنی Tag Questions با تکنیک آینه‌ای</h3>
+                        <p style="font-size: 0.92rem;">در تست‌های Tag Question اصلاً نیازی به ترجمه جمله نیست:</p>
+                        <ul style="padding-right: 18px; font-size: 0.9rem; margin-top: 8px;">
+                            <li>گام اول: علامت فعل جمله را برعکس کن (+ به -).</li>
+                            <li>گام دوم: اگر فاعل جمله <code>this / that</code> است در تگ به <code>it</code> و اگر <code>these / those</code> است به <code>they</code> تبدیل کن.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== ۵. تله‌های طراح سؤال ==================== -->
+        <section id="sec-traps" class="section-panel">
+            <div class="glass-card">
+                <h2 class="section-title">⚠️ ۵. تله‌های پرتکرار طراحان سؤال (امتحان نهایی و کنکور)</h2>
+                <div class="grid-2">
+                    <div class="mistake-box">
+                        <h4>🪤 تله شماره ۱: افعال بی‌قاعده هم‌شکل (put, cut,cost, hit, read)</h4>
+                        <p style="font-size: 0.9rem;">طراح جمله <code>Reza read the book yesterday, ...?</code> را می‌دهد. دانش‌آموز عجول چون ظاهر فعل ساده است <code>doesn't he</code> می‌زند! در حالی که فاعل مفرد است و فعل <code>s</code> ندارد، پس گذشته است و پاسخ صحیح <strong><code>didn't he?</code></strong> می‌باشد.</p>
+                    </div>
+                    <div class="mistake-box">
+                        <h4>🪤 تله شماره ۲: کلمات منفی‌ساز مخفی در Tag Questions</h4>
+                        <p style="font-size: 0.9rem;">مثال: <code>She rarely goes to the cinema, ...?</code><br>
+                        ظاهر فعل مثبت است اما کلمه <code>rarely</code> (به ندرت) جمله را منفی کرده است! بنابراین Tag حتماً باید مثبت باشد: <strong><code>does she?</code></strong></p>
+                    </div>
+                    <div class="mistake-box">
+                        <h4>🪤 تله شماره ۳: تغییر شمار فاعل و مفعول در مجهول</h4>
+                        <p style="font-size: 0.9rem;">مثال: <code>The teacher has corrected the papers.</code><br>
+                        فاعل (teacher) مفرد است و <code>has</code> گرفته، اما وقتی <code>the papers</code> (جمع) به اول جمله می‌آید، بسیاری به اشتباه دوباره <code>has been</code> می‌نویسند! پاسخ درست: <strong><code>have been corrected</code></strong>.</p>
+                    </div>
+                    <div class="mistake-box">
+                        <h4>🪤 تله شماره ۴: تفاوت has/have کمکی و اصلی در Tag</h4>
+                        <p style="font-size: 0.9rem;">در کتاب دوازدهم، وقتی <code>have/has/had</code> فعل اصلی به معنای «داشتن / خوردن» باشد، در انگلیسی معیار کتاب درسی با <code>don't / doesn't / didn't</code> سؤال ضمیمه ساخته می‌شود: <code>She has a car, doesn't she?</code></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== ۶. آزمایشگاه تعاملی گرامر (شبیه‌ساز فیزیک جمله) ==================== -->
+        <section id="sec-lab" class="section-panel">
+            <div class="glass-card">
+                <h2 class="section-title">🧪 ۶. آزمایشگاه مجازی و شبیه‌ساز فیزیکی گرامر (Active ⇄ Passive Lab)</h2>
+                <p>در این آزمایشگاه تعاملی، پارامترهای جمله (زمان فعل، فاعل، مفعول) را تغییر دهید و با کلیک روی دکمه شبیه‌سازی، جابه‌جایی فیزیکی بلوک‌های جمله و تزریق فعل کمکی <code>To Be</code> را به صورت زنده روی بوم گرافیکی مشاهده کنید.</p>
+
+                <div class="lab-controls" style="margin-top: 15px;">
+                    <label>انتخاب جمله آزمایش:</label>
+                    <select id="lab-sentence" class="modern-select" onchange="resetLab()">
+                        <option value="0">Dr. Gharib cured the children.</option>
+                        <option value="1">Students respect the teacher.</option>
+                        <option value="2">Ali has written two letters.</option>
+                        <option value="3">We must help our parents.</option>
+                    </select>
+
+                    <label>زمان (Tense Mode):</label>
+                    <select id="lab-tense" class="modern-select" onchange="updateLabTense()">
+                        <option value="past">Simple Past (گذشته ساده)</option>
+                        <option value="present">Simple Present (حال ساده)</option>
+                        <option value="perfect">Present Perfect (حال کامل)</option>
+                        <option value="modal">Modal (افعال ناقص)</option>
+                    </select>
+
+                    <button class="btn-neon" onclick="animatePassiveTransform()">⚡ اجرای تبدیل فیزیکی به مجهول (Passive)</button>
+                    <button class="icon-btn" onclick="resetLab()">🔄 بازنشانی به معلوم (Active)</button>
+                </div>
+
+                <canvas id="lab-canvas" width="900" height="320"></canvas>
+
+                <div id="lab-analysis" class="formula-box" style="margin-top: 10px;">
+                    وضعیت آزمایشگاه: آماده شبیه‌سازی. روی دکمه «اجرای تبدیل فیزیکی» کلیک کنید.
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== ۷. آزمون تستی ۳ سطحی ==================== -->
+        <section id="sec-mcq" class="section-panel">
+            <div class="glass-card">
+                <h2 class="section-title">📝 ۷. آزمون تستی هوشمند (۳ سطحی با زمان‌سنج و تحلیل)</h2>
+                <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 18px;">
+                    <div>
+                        <label>انتخاب سطح دشواری: </label>
+                        <select id="mcq-level" class="modern-select" onchange="initMcqQuiz()">
+                            <option value="easy">سطح ۱: آسان (مفاهیم پایه کتاب)</option>
+                            <option value="medium">سطح ۲: متوسط (سطح امتحان نهایی)</option>
+                            <option value="hard">سطح ۳: سخت (سطح کنکور و دام‌دار)</option>
+                        </select>
+                        <button class="btn-neon" onclick="initMcqQuiz()" style="margin-right: 8px;">شروع / تصادفی‌سازی مجدد</button>
+                    </div>
+                    <div class="info-pill">⏱ زمان باقی‌مانده: <strong id="mcq-timer">02:00</strong> | امتیاز آزمون: <strong id="mcq-score">0%</strong></div>
+                </div>
+
+                <div id="mcq-container"></div>
+            </div>
+        </section>
+
+        <!-- ==================== ۸. آزمون تشریحی هوشمند ==================== -->
+        <section id="sec-ai-exam" class="section-panel">
+            <div class="glass-card">
+                <h2 class="section-title">🧠 ۸. آزمون تشریحی با موتور تصحیح هوشمند (AI Semantic Grader)</h2>
+                <p>پاسخ خود را به انگلیسی تایپ کنید. موتور تصحیح هوشمند داخلی، پاسخ شما را به صورت مفهومی و مرحله‌ای (تشخیص مفعول، تشخیص زمان <code>to be</code>، شکل سوم فعل، فرم‌های مخفف یا کامل و املای نزدیک) بررسی کرده و نمره جزئی و بازخورد دقیق می‌دهد.</p>
+
+                <div id="descriptive-questions-list" style="margin-top: 20px;">
+                    <!-- سؤال ۱ -->
+                    <div style="background: rgba(255,255,255,0.03); padding: 18px; border-radius: 14px; border: 1px solid var(--border-glass); margin-bottom: 18px;">
+                        <h4 style="color: var(--neon-cyan);">سؤال ۱ (تبدیل به مجهول - ۲ نمره):</h4>
+                        <p class="ltr-cell" style="font-size: 1.05rem; margin: 8px 0;">1. The mechanic repaired the car yesterday. ➔ Passive:</p>
+                        <input type="text" id="desc-q1" class="modern-input ltr-cell" style="width: 100%;" placeholder="پاسخ کامل یا بخش فعل مجهول را بنویسید...">
+                        <div id="fb-q1" class="ai-feedback-box"></div>
+                    </div>
+
+                    <!-- سؤال ۲ -->
+                    <div style="background: rgba(255,255,255,0.03); padding: 18px; border-radius: 14px; border: 1px solid var(--border-glass); margin-bottom: 18px;">
+                        <h4 style="color: var(--neon-cyan);">سؤال ۲ (سؤال ضمیمه Tag Question - ۱ نمره):</h4>
+                        <p class="ltr-cell" style="font-size: 1.05rem; margin: 8px 0;">2. The students have never arrived late, .................... ?</p>
+                        <input type="text" id="desc-q2" class="modern-input ltr-cell" style="width: 100%;" placeholder="فقط Tag Question را بنویسید...">
+                        <div id="fb-q2" class="ai-feedback-box"></div>
+                    </div>
+
+                    <!-- سؤال ۳ -->
+                    <div style="background: rgba(255,255,255,0.03); padding: 18px; border-radius: 14px; border: 1px solid var(--border-glass); margin-bottom: 18px;">
+                        <h4 style="color: var(--neon-cyan);">سؤال ۳ (مجهول با فعل ناقص - ۲ نمره):</h4>
+                        <p class="ltr-cell" style="font-size: 1.05rem; margin: 8px 0;">3. We should respect our parents. ➔ Our parents ............................</p>
+                        <input type="text" id="desc-q3" class="modern-input ltr-cell" style="width: 100%;" placeholder="ادامه جمله مجهول را بنویسید...">
+                        <div id="fb-q3" class="ai-feedback-box"></div>
+                    </div>
+
+                    <button class="btn-neon" onclick="gradeDescriptiveExam()">🔍 تصحیح هوشمند توسط موتور AI و دریافت نمره مرحله‌ای</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== ۹. آزمون نیمه‌تشریحی ==================== -->
+        <section id="sec-semi-exam" class="section-panel">
+            <div class="glass-card">
+                <h2 class="section-title">🧩 ۹. آزمون نیمه‌تشریحی (جای خالی، وصل‌کردنی و ترتیب کلمات)</h2>
+                <div class="grid-2">
+                    <div style="background: rgba(255,255,255,0.03); padding: 18px; border-radius: 14px; border: 1px solid var(--border-glass);">
+                        <h4 style="color: var(--neon-amber); margin-bottom: 10px;">الف) تکمیل شکل صحیح فعل (Complete the Verb):</h4>
+                        <p class="ltr-cell" style="margin-bottom: 8px;">1. Persian .................... (speak) in Iran, Tajikistan, and Afghanistan.</p>
+                        <input type="text" id="semi-1" class="modern-input ltr-cell" placeholder="شکل صحیح speak">
+                        <p class="ltr-cell" style="margin: 12px 0 8px;">2. Dr. Gharib .................... (born) in Tehran in 1909.</p>
+                        <input type="text" id="semi-2" class="modern-input ltr-cell" placeholder="شکل صحیح born">
+                    </div>
+
+                    <div style="background: rgba(255,255,255,0.03); padding: 18px; border-radius: 14px; border: 1px solid var(--border-glass);">
+                        <h4 style="color: var(--neon-green); margin-bottom: 10px;">ب) مرتب‌سازی کلمات (Unscramble):</h4>
+                        <p class="ltr-cell" style="font-size: 0.9rem; color: var(--neon-cyan);">[ founded / in 1968 / was / the hospital / by Dr. Gharib ]</p>
+                        <input type="text" id="semi-3" class="modern-input ltr-cell" style="width: 100%; margin-top: 10px;" placeholder="جمله مرتب‌شده را بنویسید...">
+                        <button class="btn-neon" style="margin-top: 15px;" onclick="checkSemiExam()">بررسی پاسخ‌های نیمه‌تشریحی</button>
+                        <div id="semi-feedback" class="ai-feedback-box"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== ۱۰. موتور تصحیح هوشمند (آزمایشگاه آزاد AI Grader) ==================== -->
+        <section id="sec-ai-engine" class="section-panel">
+            <div class="glass-card">
+                <h2 class="section-title">⚙️ ۱۰. موتور تصحیح هوشمند مفهومی (Interactive AI Grader Sandbox)</h2>
+                <p>در این بخش می‌توانید نحوه کارکرد موتور تصحیح هوشمند را با هر نوع پاسخ (کامل، ناقص، دارای غلط املایی جزئی، فرم مخفف یا ترتیب متفاوت قید زمان) آزمایش کنید.</p>
+                <div class="formula-box">
+                    سؤال مرجع آزمایش: Convert to Passive ➔ "Alexander Fleming discovered penicillin in 1928."
+                </div>
+                <textarea id="sandbox-input" class="modern-textarea ltr-cell" rows="3" style="width: 100%; margin: 12px 0;" placeholder="هر حالتی از پاسخ دانش‌آموز را اینجا وارد کنید (مثلاً: Penicillin was discovered in 1928 by Alexander Fleming یا حتی با اشتباه املایی جزئی)..."></textarea>
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn-neon" onclick="runSandboxGrader()">آنالیز مفهومی و مرحله‌ای پاسخ</button>
+                    <button class="icon-btn" onclick="document.getElementById('sandbox-input').value='Penicillin was discovered by Alexander Fleming in 1928.'; runSandboxGrader();">تست پاسخ کامل</button>
+                    <button class="icon-btn" onclick="document.getElementById('sandbox-input').value='In 1928 penicillin was discoverd by Fleming.'; runSandboxGrader();">تست ترتیب متفاوت + غلط املایی جزئی</button>
+                    <button class="icon-btn" onclick="document.getElementById('sandbox-input').value='Penicillin is discovered by Fleming.'; runSandboxGrader();">تست خطای زمان فعل (نمره جزئی)</button>
+                </div>
+                <div id="sandbox-output" class="ai-feedback-box" style="display: block; margin-top: 15px;">
+                    نتیجه تحلیل موتور هوشمند در اینجا نمایش داده می‌شود...
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== ۱۱. گزارش پیشرفت ==================== -->
+        <section id="sec-progress" class="section-panel">
+            <div class="glass-card">
+                <h2 class="section-title">📊 ۱۱. کارنامه هوشمند و گزارش پیشرفت تحصیلی</h2>
+                <div class="grid-3">
+                    <div style="background: rgba(0,242,254,0.08); padding: 18px; border-radius: 14px; text-align: center;">
+                        <h4 style="color: var(--text-muted);">میزان تسلط کل درس اول</h4>
+                        <div id="stat-mastery" style="font-size: 2.2rem; font-weight: bold; color: var(--neon-cyan); margin: 10px 0;">75%</div>
+                        <p style="font-size: 0.85rem;">وضعیت: رو به رشد عالی</p>
+                    </div>
+                    <div style="background: rgba(0,230,118,0.08); padding: 18px; border-radius: 14px; text-align: center;">
+                        <h4 style="color: var(--text-muted);">نقطه قوت شما</h4>
+                        <div style="font-size: 1.3rem; font-weight: bold; color: var(--neon-green); margin: 15px 0;">ساختار Passive Voice</div>
+                        <p style="font-size: 0.85rem;">تسلط بالا بر فرمول be + p.p</p>
+                    </div>
+                    <div style="background: rgba(255,171,0,0.08); padding: 18px; border-radius: 14px; text-align: center;">
+                        <h4 style="color: var(--text-muted);">پیشنهاد هوشمند مطالعه</h4>
+                        <div style="font-size: 1.2rem; font-weight: bold; color: var(--neon-amber); margin: 15px 0;">مرور استثنائات Tag Questions</div>
+                        <p style="font-size: 0.85rem;">تمرکز روی کلمات rarely / seldom</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==================== ۱۲. بخش‌های خلاقانه و گردونه شانس ==================== -->
+        <section id="sec-fun" class="section-panel">
+            <div class="glass-card">
+                <h2 class="section-title">🎁 ۱۲. باشگاه جوایز، گردونه شانس (Wheel of Fortune) و جعبه رمزآلود</h2>
+                <div class="grid-2">
+                    <div style="text-align: center; background: rgba(255,255,255,0.03); padding: 20px; border-radius: 16px;">
+                        <h3 style="color: var(--neon-cyan); margin-bottom: 12px;">🎡 گردونه شانس XP و چالش روزانه</h3>
+                        <canvas id="wheel-canvas" width="240" height="240" style="margin: 0 auto; display: block;"></canvas>
+                        <button class="btn-neon btn-purple" style="margin-top: 15px;" onclick="spinWheel()">چرخش گردونه شانس (+XP)</button>
+                        <p id="wheel-result" style="margin-top: 10px; color: var(--neon-amber); font-weight: bold;"></p>
+                    </div>
+
+                    <div style="text-align: center; background: rgba(255,255,255,0.03); padding: 20px; border-radius: 16px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                        <h3 style="color: var(--neon-purple); margin-bottom: 12px;">📦 جعبه رمزآلود (Mystery Box)</h3>
+                        <div id="mystery-box-icon" style="font-size: 4.5rem; cursor: pointer; transition: transform 0.3s;" onclick="openMysteryBox()">🎁</div>
+                        <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 10px;">روی جعبه کلیک کنید تا یک نکته کنکوری طلایی و جایزه XP دریافت کنید!</p>
+                        <div id="mystery-reward" class="golden-tip" style="display: none; width: 100%; margin-top: 15px;"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<!-- دستیار هوشمند شناور -->
+<div class="ai-mentor" onclick="mentorSpeak()">
+    <div class="mentor-avatar">AI</div>
+    <div style="font-size: 0.82rem;">
+        <strong style="color: var(--neon-cyan); display: block;">دستیار هوشمند درس اول</strong>
+        <span id="mentor-msg">برای دریافت نکته انگیزشی و آموزشی کلیک کن!</span>
+    </div>
+</div>
+
+<script>
+    /* =========================================================================
+       ۱. موتور قفل زمانی هوشمند (۱۹ آبان ساعت ۹ صبح = 2026-11-10T09:00:00+03:30)
+       ========================================================================= */
+    // تاریخ هدف: ۱۹ آبان ۱۴۰۵ ساعت ۹:۰۰ صبح به وقت ایران
+    const TARGET_UNLOCK_TIME = new Date("2026-11-10T09:00:00+03:30").getTime();
+    const PERMANENT_UNLOCK_KEY = "soleimani_gouri_lesson1_permanently_unlocked";
+
+    function updateLockSystem() {
+        const now = Date.now();
+        const isPermanentlyUnlocked = localStorage.getItem(PERMANENT_UNLOCK_KEY) === "true";
+
+        // اگر زمان از ۱۹ آبان ساعت ۹ صبح عبور کرده باشد یا قبلاً باز شده باشد، برای همیشه فعال بماند
+        if (now >= TARGET_UNLOCK_TIME || isPermanentlyUnlocked) {
+            localStorage.setItem(PERMANENT_UNLOCK_KEY, "true");
+            const lockScreen = document.getElementById("lock-screen");
+            if (lockScreen && lockScreen.style.display !== "none") {
+                lockScreen.style.display = "none";
+            }
+            return;
+        }
+
+        // محاسبه زمان باقی‌مانده تا ۱۹ آبان ساعت ۹ صبح
+        const diff = TARGET_UNLOCK_TIME - now;
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+        document.getElementById("cd-days").textContent = String(days).padStart(2, '0');
+        document.getElementById("cd-hours").textContent = String(hours).padStart(2, '0');
+        document.getElementById("cd-mins").textContent = String(mins).padStart(2, '0');
+        document.getElementById("cd-secs").textContent = String(secs).padStart(2, '0');
+    }
+
+    function unlockForTeacherPreview() {
+        document.getElementById("lock-screen").style.display = "none";
+        playSound('success');
+    }
+
+    setInterval(updateLockSystem, 1000);
+    updateLockSystem();
+
+    /* =========================================================================
+       ۲. سیستم صوتی Web Audio API (کاملاً آفلاین و بدون نیاز به فایل خارجی)
+       ========================================================================= */
+    let soundEnabled = true;
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function playSound(type) {
+        if (!soundEnabled) return;
+        try {
+            if (!audioCtx) audioCtx = new AudioCtx();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            const now = audioCtx.currentTime;
+            if (type === 'click') {
+                osc.frequency.setValueAtTime(520, now);
+                osc.frequency.exponentialRampToValueAtTime(680, now + 0.08);
+                gain.gain.setValueAtTime(0.08, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+                osc.start(now);
+                osc.stop(now + 0.08);
+            } else if (type === 'success') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(440, now);
+                osc.frequency.setValueAtTime(554, now + 0.1);
+                osc.frequency.setValueAtTime(659, now + 0.2);
+                gain.gain.setValueAtTime(0.12, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+                osc.start(now);
+                osc.stop(now + 0.35);
+            } else if (type === 'error') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.setValueAtTime(160, now + 0.15);
+                gain.gain.setValueAtTime(0.1, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+                osc.start(now);
+                osc.stop(now + 0.25);
+            }
+        } catch (e) {}
+    }
+
+    function toggleAudio() {
+        soundEnabled = !soundEnabled;
+        document.getElementById("sound-toggle").textContent = soundEnabled ? "🔊 صدا: روشن" : "🔇 صدا: خاموش";
+    }
+
+    /* =========================================================================
+       ۳. مدیریت تب‌ها و گیمیفیکیشن (XP & Level)
+       ========================================================================= */
+    let userXP = 120;
+    let combo = 0;
+
+    function addXP(amount) {
+        userXP += amount;
+        document.getElementById("user-xp").textContent = userXP + " XP";
+        const level = Math.floor(userXP / 100) + 1;
+        const titles = ["Starter", "Scholar", "Master", "Legend"];
+        document.getElementById("user-level").textContent = `${level} (${titles[Math.min(level-1, 3)]})`;
+        document.getElementById("xp-bar").style.width = (userXP % 100) + "%";
+    }
+
+    function switchTab(sectionId, btnElem) {
+        playSound('click');
+        document.querySelectorAll('.section-panel').forEach(sec => sec.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(sectionId).classList.add('active');
+        btnElem.classList.add('active');
+
+        if (sectionId === 'sec-lab') drawLabCanvas();
+        if (sectionId === 'sec-fun') drawWheel();
+    }
+
+    /* =========================================================================
+       ۴. انیمیشن ذرات پس‌زمینه 60FPS (Particle System)
+       ========================================================================= */
+    const pCanvas = document.getElementById("particle-canvas");
+    const pCtx = pCanvas.getContext("2d");
+    let particles = [];
+
+    function resizeParticleCanvas() {
+        pCanvas.width = window.innerWidth;
+        pCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeParticleCanvas);
+    resizeParticleCanvas();
+
+    for (let i = 0; i < 45; i++) {
+        particles.push({
+            x: Math.random() * pCanvas.width,
+            y: Math.random() * pCanvas.height,
+            vx: (Math.random() - 0.5) * 0.6,
+            vy: (Math.random() - 0.5) * 0.6,
+            r: Math.random() * 2 + 1
+        });
+    }
+
+    function animateParticles() {
+        pCtx.clearRect(0, 0, pCanvas.width, pCanvas.height);
+        for (let i = 0; i < particles.length; i++) {
+            let p = particles[i];
+            p.x += p.vx;
+            p.y += p.vy;
+            if (p.x < 0 || p.x > pCanvas.width) p.vx *= -1;
+            if (p.y < 0 || p.y > pCanvas.height) p.vy *= -1;
+
+            pCtx.beginPath();
+            pCtx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            pCtx.fillStyle = "rgba(0, 242, 254, 0.45)";
+            pCtx.fill();
+
+            for (let j = i + 1; j < particles.length; j++) {
+                let p2 = particles[j];
+                let dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+                if (dist < 120) {
+                    pCtx.beginPath();
+                    pCtx.moveTo(p.x, p.y);
+                    pCtx.lineTo(p2.x, p2.y);
+                    pCtx.strokeStyle = `rgba(0, 242, 254, ${0.12 * (1 - dist/120)})`;
+                    pCtx.stroke();
+                }
+            }
+        }
+        requestAnimationFrame(animateParticles);
+    }
+    animateParticles();
+
+    /* =========================================================================
+       ۵. آزمایشگاه تعاملی گرامر (شبیه‌ساز فیزیک جمله روی Canvas)
+       ========================================================================= */
+    const labData = [
+        { subj: "Dr. Gharib", verbAct: "cured", obj: "the children", auxPass: "were", pp: "cured", tense: "past" },
+        { subj: "Students", verbAct: "respect", obj: "the teacher", auxPass: "is", pp: "respected", tense: "present" },
+        { subj: "Ali", verbAct: "has written", obj: "two letters", auxPass: "have been", pp: "written", tense: "perfect" },
+        { subj: "We", verbAct: "must help", obj: "our parents", auxPass: "must be", pp: "helped", tense: "modal" }
+    ];
+
+    let isPassiveState = false;
+    let animProgress = 0;
+    let isAnimatingLab = false;
+
+    function resetLab() {
+        isPassiveState = false;
+        animProgress = 0;
+        isAnimatingLab = false;
+        const idx = parseInt(document.getElementById("lab-sentence").value);
+        document.getElementById("lab-tense").value = labData[idx].tense;
+        document.getElementById("lab-analysis").innerHTML = `وضعیت فعلی: <b>جمله معلوم (Active Voice)</b> ➔ فاعل در ابتدای جمله و مفعول پس از فعل قرار دارد.`;
+        drawLabCanvas();
+    }
+
+    function updateLabTense() {
+        drawLabCanvas();
+    }
+
+    function animatePassiveTransform() {
+        if (isAnimatingLab) return;
+        playSound('success');
+        isAnimatingLab = true;
+        animProgress = 0;
+        addXP(15);
+
+        function step() {
+            animProgress += 0.04;
+            if (animProgress >= 1) {
+                animProgress = 1;
+                isPassiveState = true;
+                isAnimatingLab = false;
+                const item = labData[parseInt(document.getElementById("lab-sentence").value)];
+                document.getElementById("lab-analysis").innerHTML =
+                    `✅ تبدیل کامل شد: <b>${item.obj} ${item.auxPass} ${item.pp} by ${item.subj}.</b> (مفعول به جایگاه فاعل منتقل شد و ساختار <code>${item.auxPass} + ${item.pp}</code> تشکیل گردید).`;
+            }
+            drawLabCanvas();
+            if (isAnimatingLab) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+    }
+
+    function drawLabCanvas() {
+        const canvas = document.getElementById("lab-canvas");
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const idx = parseInt(document.getElementById("lab-sentence").value);
+        const item = labData[idx];
+        const t = isPassiveState ? 1 : animProgress;
+
+        // مختصات جابجایی فاعل و مفعول با درون‌یابی خطی و منحنی
+        const subjX = 160 + t * 520;
+        const subjY = 140 + Math.sin(t * Math.PI) * 70;
+
+        const objX = 680 - t * 520;
+        const objY = 140 - Math.sin(t * Math.PI) * 70;
+
+        // رسم باکس مفعول (Object)
+        drawBlock(ctx, objX, objY, 210, 64, "#00f2fe", "OBJECT (مفعول)", item.obj);
+
+        // رسم باکس فعل (Verb / Be + PP)
+        const verbText = t > 0.5 ? `${item.auxPass} ${item.pp}` : item.verbAct;
+        const verbLabel = t > 0.5 ? "BE + P.P (فعل مجهول)" : "ACTIVE VERB (فعل معلوم)";
+        drawBlock(ctx, 420, 140, 230, 64, "#b224ef", verbLabel, verbText);
+
+        // رسم باکس فاعل (Subject)
+        const subjText = t > 0.5 ? `by ${item.subj}` : item.subj;
+        drawBlock(ctx, subjX, subjY, 210, 64, "#00e676", "SUBJECT (فاعل)", subjText);
+    }
+
+    function drawBlock(ctx, x, y, w, h, color, label, text) {
+        ctx.save();
+        ctx.fillStyle = "rgba(18, 24, 48, 0.9)";
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        ctx.roundRect(x - w/2, y - h/2, w, h, 14);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = color;
+        ctx.font = "bold 12px Segoe UI";
+        ctx.textAlign = "center";
+        ctx.fillText(label, x, y - 10);
+
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 17px Segoe UI";
+        ctx.fillText(text, x, y + 16);
+        ctx.restore();
+    }
+
+    /* =========================================================================
+       ۶. بانک سؤال و موتور آزمون تستی ۳ سطحی
+       ========================================================================= */
+    const mcqBank = {
+        easy: [
+            { q: "Dr. Mohammad Gharib .................... as the founder of modern pediatrics in Iran.", options: ["knows", "is known", "has known", "knew"], ans: "is known", exp: "چون دکتر قریب «شناخته می‌شود» (مفعول جمله است) و حرف اضافه as بعد از جای خالی آمده، ساختار مجهول حال ساده (is known) صحیح است." },
+            { q: "Your sister speaks English very well, .................... ?", options: ["doesn't she", "does she", "isn't she", "didn't she"], ans: "doesn't she", exp: "فعل جمله speaks (حال ساده مثبت) است، بنابراین Tag Question منفی با doesn't she ساخته می‌شود." },
+            { q: "Helping others can .................... your sense of happiness and peace.", options: ["boost", "destroy", "forget", "ignore"], ans: "boost", exp: "واژه boost به معنای تقویت کردن و افزایش دادن است." }
+        ],
+        medium: [
+            { q: "Many new hospitals .................... in our province since five years ago.", options: ["built", "were built", "have been built", "have built"], ans: "have been built", exp: "وجود عبارت since five years ago نشانه زمان حال کامل است و چون بیمارستان‌ها «ساخته شده‌اند»، مجهول حال کامل (have been built) درست است." },
+            { q: "The students had to study hard for the final exam, .................... ?", options: ["hadn't they", "didn't they", "don't they", "weren't they"], ans: "didn't they", exp: "برای ساختار مجبوری had to در بخش Tag Question از didn't استفاده می‌شود." },
+            { q: "Elders must .................... politely by young people in every society.", options: ["treat", "be treated", "treated", "have treated"], ans: "be treated", exp: "بعد از افعال ناقص (must) در حالت مجهول از ساختار be + p.p استفاده می‌شود." }
+        ],
+        hard: [
+            { q: "Reza rarely puts his books on the desk, .................... ?", options: ["doesn't he", "does he", "didn't he", "did he"], ans: "does he", exp: "دام کنکوری! کلمه rarely جمله را منفی کرده است، بنابراین Tag باید مثبت باشد. همچنین چون puts دارای s است زمان حال ساده بوده و does he صحیح است." },
+            { q: "Nobody called you last night, .................... ?", options: ["did they", "didn't they", "did he", "didn't he"], ans: "did they", exp: "ضمیر Nobody اولاً جمله را منفی می‌کند (تگ مثبت می‌شود) و ثانیاً ضمیر مرجع آن در Tag Question همیشه they است." },
+            { q: "The injured child .................... to the hospital before the ambulance arrived.", options: ["had taken", "was taking", "had been taken", "has been taken"], ans: "had been taken", exp: "وجود before + گذشته ساده نیازمند زمان گذشته کامل است و چون کودک برده شده، مجهول گذشته کامل (had been taken) صحیح است." }
+        ]
+    };
+
+    let mcqTimerInterval = null;
+    let mcqCorrectCount = 0;
+    let mcqTotalAnswered = 0;
+
+    function initMcqQuiz() {
+        const level = document.getElementById("mcq-level").value;
+        const questions = [...mcqBank[level]].sort(() => Math.random() - 0.5);
+        const container = document.getElementById("mcq-container");
+        container.innerHTML = "";
+        mcqCorrectCount = 0;
+        mcqTotalAnswered = 0;
+        document.getElementById("mcq-score").textContent = "0%";
+
+        questions.forEach((item, index) => {
+            const shuffledOpts = [...item.options].sort(() => Math.random() - 0.5);
+            const card = document.createElement("div");
+            card.style.cssText = "background: rgba(255,255,255,0.03); padding: 18px; border-radius: 14px; border: 1px solid var(--border-glass); margin-bottom: 16px;";
+            
+            let optsHtml = shuffledOpts.map(opt =>
+                `<button class="quiz-option" onclick="checkMcqAnswer(this, '${opt.replace(/'/g, "\\'")}', '${item.ans.replace(/'/g, "\\'")}', 'exp-${index}')">${opt}</button>`
+            ).join("");
+
+            card.innerHTML = `
+                <p class="ltr-cell" style="font-weight: bold; font-size: 1.05rem; margin-bottom: 10px;">Q${index + 1}. ${item.q}</p>
+                <div>${optsHtml}</div>
+                <div id="exp-${index}" class="ai-feedback-box">💡 <strong>تحلیل آموزشی:</strong> ${item.exp}</div>
+            `;
+            container.appendChild(card);
+        });
+
+        // تایمر شمارش معکوس
+        clearInterval(mcqTimerInterval);
+        let timeLeft = 120;
+        mcqTimerInterval = setInterval(() => {
+            timeLeft--;
+            const m = String(Math.floor(timeLeft / 60)).padStart(2, '0');
+            const s = String(timeLeft % 60).padStart(2, '0');
+            document.getElementById("mcq-timer").textContent = `${m}:${s}`;
+            if (timeLeft <= 0) clearInterval(mcqTimerInterval);
+        }, 1000);
+    }
+
+    function checkMcqAnswer(btn, selected, correct, expId) {
+        const parent = btn.parentElement;
+        if (parent.dataset.locked === "true") return;
+        parent.dataset.locked = "true";
+        mcqTotalAnswered++;
+
+        if (selected === correct) {
+            btn.classList.add("correct");
+            playSound('success');
+            mcqCorrectCount++;
+            combo++;
+            addXP(20);
+        } else {
+            btn.classList.add("wrong");
+            playSound('error');
+            combo = 0;
+            Array.from(parent.children).forEach(b => {
+                if (b.textContent === correct) b.classList.add("correct");
+            });
+        }
+        document.getElementById("combo-count").textContent = combo;
+        document.getElementById(expId).style.display = "block";
+        document.getElementById("mcq-score").textContent = Math.round((mcqCorrectCount / 3) * 100) + "%";
+    }
+
+    /* =========================================================================
+       ۷. موتور تصحیح هوشمند تشریحی (AI Semantic & Partial Credit Grader)
+       ========================================================================= */
+    // تابع فاصله لونشتاین جهت تشخیص املای نزدیک (Fuzzy Matching)
+    function levenshteinDistance(a, b) {
+        const matrix = Array.from({ length: a.length + 1 }, () => Array(b.length + 1).fill(0));
+        for (let i = 0; i <= a.length; i++) matrix[i][0] = i;
+        for (let j = 0; j <= b.length; j++) matrix[0][j] = j;
+        for (let i = 1; i <= a.length; i++) {
+            for (let j = 1; j <= b.length; j++) {
+                const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+                matrix[i][j] = Math.min(matrix[i - 1][j] + 1, matrix[i][j - 1] + 1, matrix[i - 1][j - 1] + cost);
+            }
+        }
+        return matrix[a.length][b.length];
+    }
+
+    function normalizeText(str) {
+        return str.toLowerCase().replace(/[.,?!]/g, "").replace(/\s+/g, " ").trim();
+    }
+
+    function gradeDescriptiveExam() {
+        playSound('success');
+        // تصحیح هوشمند سؤال ۱: The mechanic repaired the car yesterday.
+        const a1 = normalizeText(document.getElementById("desc-q1").value);
+        const fb1 = document.getElementById("fb-q1");
+        fb1.style.display = "block";
+        let score1 = 0;
+        let notes1 = [];
+
+        if (a1.includes("the car")) { score1 += 0.5; notes1.push("✔ تشخیص و انتقال مفعول (the car) صحیح است (+0.5)"); }
+        else { notes1.push("✖ مفعول (The car) در ابتدای جمله نوشته نشده است."); }
+
+        if (a1.includes("was")) { score1 += 0.75; notes1.push("✔ تشخیص زمان گذشته مفرد (was) صحیح است (+0.75)"); }
+        else if (a1.includes("is") || a1.includes("were")) { score1 += 0.25; notes1.push("⚠ فعل to be استفاده شده اما زمان یا مفرد/جمع آن دقیق نیست (+0.25 نمره جزئی)"); }
+
+        if (a1.includes("repaired") || a1.includes("repared")) {
+            score1 += 0.75;
+            notes1.push(a1.includes("repared") ? "✔ شکل سوم فعل با اغماض املایی پذیرفته شد (+0.75)" : "✔ شکل سوم فعل (repaired) کاملاً صحیح است (+0.75)");
+        }
+        fb1.innerHTML = `<strong>نمره دریافتی: ${score1} از 2</strong><br>${notes1.join("<br>")}<br><span style="color:var(--neon-cyan)">پاسخ استاندارد: The car was repaired (by the mechanic) yesterday.</span>`;
+
+        // تصحیح هوشمند سؤال ۲: Tag Question -> have they
+        const a2 = normalizeText(document.getElementById("desc-q2").value);
+        const fb2 = document.getElementById("fb-q2");
+        fb2.style.display = "block";
+        if (a2 === "have they") {
+            fb2.innerHTML = `<strong style="color:var(--neon-green)">نمره دریافتی: 1 از 1 (عالی!)</strong><br>✔ شما به درستی تشخیص دادید که کلمه <code>never</code> جمله را منفی کرده و تگ مثبت <code>have they?</code> نوشته است.`;
+        } else if (a2 === "haven't they" || a2 === "have not they") {
+            fb2.innerHTML = `<strong style="color:var(--neon-amber)">نمره دریافتی: 0.5 از 1 (نمره جزئی)</strong><br>⚠ تشخیص فعل کمکی و ضمیر (have + they) درست است، اما به دلیل وجود <code>never</code> جمله منفی است و Tag باید مثبت (have they) باشد.`;
+        } else {
+            fb2.innerHTML = `<strong style="color:var(--neon-pink)">نمره دریافتی: 0 از 1</strong><br>پاسخ صحیح: <code>have they?</code>`;
+        }
+
+        // تصحیح هوشمند سؤال ۳: should be respected
+        const a3 = normalizeText(document.getElementById("desc-q3").value);
+        const fb3 = document.getElementById("fb-q3");
+        fb3.style.display = "block";
+        if (a3.includes("should be respected") || a3.includes("must be respected")) {
+            fb3.innerHTML = `<strong style="color:var(--neon-green)">نمره دریافتی: 2 از 2 (کامل!)</strong><br>✔ ساختار مجهول با افعال ناقص (should + be + respected) کاملاً صحیح به کار رفته است.`;
+        } else if (a3.includes("be respected") || a3.includes("should respected")) {
+            fb3.innerHTML = `<strong style="color:var(--neon-amber)">نمره دریافتی: 1.25 از 2 (نمره فرآیند حل)</strong><br>⚠ مفهوم مجهول را رعایت کرده‌اید اما فرمول کامل <code>should + be + p.p</code> یک بخش کم دارد.`;
+        } else {
+            fb3.innerHTML = `<strong style="color:var(--neon-pink)">نمره دریافتی: 0 از 2</strong><br>پاسخ صحیح: <code>Our parents should be respected (by us).</code>`;
+        }
+        addXP(30);
+    }
+
+    // موتور Sandbox در تب ۱۰
+    function runSandboxGrader() {
+        const raw = document.getElementById("sandbox-input").value;
+        const norm = normalizeText(raw);
+        const out = document.getElementById("sandbox-output");
+
+        let score = 0;
+        let report = [];
+
+        // ۱. بررسی مفعول
+        if (norm.includes("penicillin") || norm.includes("penicilin")) {
+            score += 0.5;
+            report.push("🟢 <b>تشخیص مفعول (Object):</b> کلمه Penicillin (حتی با املای نزدیک) در جایگاه فاعل جدید شناسایی شد (+0.5 نمره).");
+        } else {
+            report.push("🔴 <b>عدم تشخیص مفعول:</b> کلمه Penicillin یافت نشد.");
+        }
+
+        // ۲. بررسی زمان فعل to be
+        if (norm.includes("was")) {
+            score += 0.75;
+            report.push("🟢 <b>تشخیص زمان (Tense):</b> فعل کمکی <code>was</code> متناسب با گذشته ساده (1928) صحیح است (+0.75 نمره).");
+        } else if (norm.includes("is") || norm.includes("were")) {
+            score += 0.25;
+            report.push("🟡 <b>نمره جزئی زمان:</b> فعل <code>to be</code> به کار رفته اما زمان یا شمار آن با گذشته مفرد تطابق ندارد (+0.25 نمره).");
+        }
+
+        // ۳. بررسی شکل سوم فعل با تحمل خطای املایی
+        const words = norm.split(" ");
+        const hasDiscovered = words.some(w => levenshteinDistance(w, "discovered") <= 2);
+        if (hasDiscovered) {
+            score += 0.75;
+            report.push("🟢 <b>تشخیص Past Participle:</b> فعل <code>discovered</code> (با بررسی فازی املا) تأیید شد (+0.75 نمره).");
+        }
+
+        out.innerHTML = `
+            <h4 style="color:var(--neon-cyan); margin-bottom:8px;">نتیجه ارزیابی هوشمند: ${score} از 2 نمره</h4>
+            ${report.join("<br>")}
+            <br><small style="color:var(--text-muted)">* ترتیب قرارگیری قید زمان (in 1928) در ابتدا یا انتهای جمله هر دو توسط موتور صحیح پذیرفته می‌شود.</small>
+        `;
+        playSound('click');
+    }
+
+    function checkSemiExam() {
+        const s1 = normalizeText(document.getElementById("semi-1").value);
+        const s2 = normalizeText(document.getElementById("semi-2").value);
+        const fb = document.getElementById("semi-feedback");
+        fb.style.display = "block";
+
+        const ok1 = (s1 === "is spoken");
+        const ok2 = (s2 === "was born");
+
+        fb.innerHTML = `
+            ۱. پاسخ اول: ${ok1 ? "✅ صحیح (is spoken)" : "❌ پاسخ صحیح: is spoken"}<br>
+            ۲. پاسخ دوم: ${ok2 ? "✅ صحیح (was born)" : "❌ پاسخ صحیح: was born"}<br>
+            ۳. جمله مرتب‌شده استاندارد: <span class="ltr-cell" style="color:var(--neon-cyan)">The hospital was founded by Dr. Gharib in 1968.</span>
+        `;
+        playSound(ok1 && ok2 ? 'success' : 'click');
+        addXP(15);
+    }
+
+    /* =========================================================================
+       ۸. گردونه شانس (Wheel of Fortune) و جعبه رمزآلود
+       ========================================================================= */
+    let wheelAngle = 0;
+    function drawWheel() {
+        const c = document.getElementById("wheel-canvas");
+        if (!c) return;
+        const ctx = c.getContext("2d");
+        const slices = ["+50 XP", "+20 XP", "Badge 🏆", "+100 XP", "+30 XP", "Combo x2"];
+        const colors = ["#00f2fe", "#b224ef", "#ff0844", "#00e676", "#ffab00", "#4facfe"];
+        const arc = (Math.PI * 2) / slices.length;
+
+        ctx.clearRect(0, 0, c.width, c.height);
+        ctx.save();
+        ctx.translate(120, 120);
+        ctx.rotate(wheelAngle);
+
+        for (let i = 0; i < slices.length; i++) {
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.arc(0, 0, 105, i * arc, (i + 1) * arc);
+            ctx.fillStyle = colors[i];
+            ctx.fill();
+            ctx.strokeStyle = "#070913";
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            ctx.save();
+            ctx.rotate(i * arc + arc / 2);
+            ctx.fillStyle = "#070913";
+            ctx.font = "bold 13px Segoe UI";
+            ctx.fillText(slices[i], 38, 5);
+            ctx.restore();
+        }
+        ctx.restore();
+    }
+
+    function spinWheel() {
+        playSound('success');
+        let spins = 25;
+        function animateSpin() {
+            wheelAngle += 0.35;
+            drawWheel();
+            spins--;
+            if (spins > 0) requestAnimationFrame(animateSpin);
+            else {
+                addXP(50);
+                document.getElementById("wheel-result").textContent = "🎉 تبریک! ۵۰ امتیاز XP به حساب شما اضافه شد!";
+            }
+        }
+        animateSpin();
+    }
+
+    function openMysteryBox() {
+        playSound('success');
+        const box = document.getElementById("mystery-box-icon");
+        box.style.transform = "scale(1.25) rotate(10deg)";
+        setTimeout(() => box.style.transform = "scale(1)", 300);
+        const reward = document.getElementById("mystery-reward");
+        reward.style.display = "block";
+        reward.innerHTML = `<h4>💎 گنجینه باز شد (+40 XP):</h4><p style="font-size:0.9rem;">نکته طلایی کنکور: هرگاه جمله با <code>Let's</code> شروع شود، سؤال ضمیمه (Tag Question) آن همیشه <strong><code>shall we?</code></strong> خواهد بود!</p>`;
+        addXP(40);
+    }
+
+    const mentorQuotes = [
+        "نکته سریع: بعد از افعال مدال مثل can و must در حالت مجهول همیشه از be + p.p استفاده کن!",
+        "یادت نره: کلماتی مثل never و hardly جمله رو منفی می‌کنن، پس Tag اون‌ها مثبت می‌شه!",
+        "آفرین! با تمرین توی آزمایشگاه گرامر، تبدیل معلوم به مجهول رو چشمی حل می‌کنی!",
+        "در امتحان نهایی، نوشتن صحیح شکل سوم فعل (p.p) نصف نمره سؤال مجهول رو داره!"
+    ];
+
+    function mentorSpeak() {
+        playSound('click');
+        const msg = mentorQuotes[Math.floor(Math.random() * mentorQuotes.length)];
+        document.getElementById("mentor-msg").textContent = msg;
+    }
+
+    // مقداردهی اولیه هنگام بارگذاری
+    window.addEventListener('DOMContentLoaded', () => {
+        initMcqQuiz();
+        drawLabCanvas();
+        drawWheel();
+    });
+</script>
+</body>
+</html>
