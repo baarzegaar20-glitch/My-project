@@ -1,0 +1,1922 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>سامانه آزمون آنلاین فیزیک | برزگری</title>
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #f0f4f8 0%, #d9e2ec 100%);
+      --glass-bg: rgba(255, 255, 255, 0.82);
+      --glass-border: rgba(255, 255, 255, 0.6);
+      --card-bg: rgba(255, 255, 255, 0.92);
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --primary: #1e40af;
+      --primary-hover: #1d4ed8;
+      --secondary: #0ea5e9;
+      --accent: #f59e0b;
+      --success: #10b981;
+      --danger: #ef4444;
+      --shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.08);
+      --input-bg: #f8fafc;
+      --input-border: #cbd5e1;
+      --radius-lg: 18px;
+      --radius-md: 12px;
+    }
+
+    [data-theme="dark"] {
+      --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      --glass-bg: rgba(30, 41, 59, 0.82);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --card-bg: rgba(30, 41, 59, 0.9);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --primary: #3b82f6;
+      --primary-hover: #60a5fa;
+      --secondary: #38bdf8;
+      --input-bg: #0f172a;
+      --input-border: #334155;
+      --shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.4);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      line-height: 1.7;
+      overflow-x: hidden;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    /* نوار پیشرفت اسکرول و پاسخگویی */
+    .top-progress-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: rgba(148, 163, 184, 0.2);
+      z-index: 2000;
+    }
+    .top-progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--secondary), var(--primary));
+      transition: width 0.15s ease-out;
+    }
+
+    /* هدر چسبان */
+    .app-header {
+      position: sticky;
+      top: 5px;
+      z-index: 1000;
+      max-width: 1100px;
+      margin: 10px auto;
+      padding: 12px 20px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .brand-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-weight: bold;
+      box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+    }
+
+    .brand-text h1 {
+      font-size: 1.05rem;
+      font-weight: 800;
+    }
+    .brand-text p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .timer-pill {
+      background: rgba(239, 68, 68, 0.12);
+      color: var(--danger);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: 0.95rem;
+      display: none;
+      align-items: center;
+      gap: 6px;
+      direction: ltr;
+    }
+
+    .icon-btn {
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      color: var(--text-main);
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .icon-btn:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    /* کانتینر اصلی */
+    .main-wrapper {
+      max-width: 1100px;
+      margin: 20px auto 60px;
+      padding: 0 15px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    @media (min-width: 960px) {
+      .main-wrapper.exam-active {
+        grid-template-columns: 260px 1fr;
+        align-items: start;
+      }
+    }
+
+    /* کارت ورود */
+    .auth-card {
+      max-width: 580px;
+      margin: 25px auto;
+      background: var(--card-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: 30px 25px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+    }
+
+    .exam-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin: 18px 0;
+    }
+
+    .meta-box {
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+    }
+    .meta-box span {
+      display: block;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-bottom: 2px;
+    }
+    .meta-box strong {
+      color: var(--primary);
+      font-size: 0.92rem;
+    }
+
+    /* باکس تایمر قفل زمانی */
+    .schedule-banner {
+      background: linear-gradient(135deg, rgba(30, 64, 175, 0.08), rgba(14, 165, 233, 0.12));
+      border: 1px solid rgba(14, 165, 233, 0.35);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .schedule-status-title {
+      font-weight: 800;
+      font-size: 0.95rem;
+      margin-bottom: 8px;
+      color: var(--primary);
+    }
+    .countdown-boxes {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      direction: ltr;
+      margin-top: 8px;
+    }
+    .cd-unit {
+      background: var(--card-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 10px;
+      min-width: 58px;
+      padding: 6px 8px;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    }
+    .cd-unit .num {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--primary);
+      display: block;
+      line-height: 1.2;
+    }
+    .cd-unit .lbl {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+    .form-group label {
+      display: block;
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+    }
+    .form-control {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      border: 1.5px solid var(--input-border);
+      background: var(--input-bg);
+      color: var(--text-main);
+      font-size: 0.95rem;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: var(--radius-md);
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+      box-shadow: 0 6px 18px rgba(30, 64, 175, 0.25);
+    }
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 22px rgba(30, 64, 175, 0.35);
+    }
+    .btn-primary:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+      box-shadow: none;
+      opacity: 0.75;
+    }
+
+    /* پنل کناری ناوبری */
+    .sidebar-nav {
+      background: var(--card-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      box-shadow: var(--shadow);
+      position: sticky;
+      top: 85px;
+      display: none;
+    }
+    .exam-active .sidebar-nav {
+      display: block;
+    }
+    .sidebar-title {
+      font-size: 0.9rem;
+      font-weight: 800;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .nav-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .nav-dot {
+      height: 36px;
+      border-radius: 10px;
+      border: 1px solid var(--input-border);
+      background: var(--input-bg);
+      color: var(--text-main);
+      font-weight: 700;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .nav-dot:hover {
+      border-color: var(--primary);
+    }
+    .nav-dot.answered {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+    .progress-summary {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 8px;
+    }
+    .answer-bar-bg {
+      height: 8px;
+      background: var(--input-bg);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-top: 6px;
+      border: 1px solid var(--input-border);
+    }
+    .answer-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--success);
+      transition: width 0.3s ease;
+    }
+
+    /* لیست سوالات */
+    .questions-container {
+      display: none;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .exam-active .questions-container {
+      display: flex;
+    }
+
+    .section-banner {
+      background: linear-gradient(135deg, var(--primary), #1e3a8a);
+      color: #fff;
+      padding: 16px 20px;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+    }
+    .section-banner h2 {
+      font-size: 1.1rem;
+      margin-bottom: 4px;
+    }
+    .section-banner p {
+      font-size: 0.85rem;
+      opacity: 0.9;
+    }
+
+    .question-card {
+      background: var(--card-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: 22px;
+      box-shadow: var(--shadow);
+      transition: transform 0.2s ease, border-color 0.2s ease;
+      scroll-margin-top: 95px;
+    }
+    .question-card:hover {
+      border-color: rgba(59, 130, 246, 0.35);
+    }
+
+    .q-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px dashed var(--input-border);
+    }
+    .q-badge {
+      background: rgba(30, 64, 175, 0.12);
+      color: var(--primary);
+      padding: 4px 12px;
+      border-radius: 99px;
+      font-weight: 800;
+      font-size: 0.85rem;
+    }
+    .q-score {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      background: var(--input-bg);
+      padding: 4px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--input-border);
+    }
+
+    .q-title {
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      text-align: justify;
+    }
+
+    /* گزینه‌های رادیویی */
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    @media (min-width: 640px) {
+      .options-grid.two-col {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .option-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 15px;
+      background: var(--input-bg);
+      border: 1.5px solid var(--input-border);
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      font-size: 0.93rem;
+      transition: all 0.2s ease;
+    }
+    .option-label:hover {
+      border-color: var(--secondary);
+    }
+    .option-label input[type="radio"] {
+      accent-color: var(--primary);
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+    .option-label.selected {
+      background: rgba(30, 64, 175, 0.08);
+      border-color: var(--primary);
+      font-weight: 700;
+    }
+
+    /* بخش تشریحی مرحله‌ای */
+    .steps-wrapper {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .step-row {
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: var(--radius-md);
+      padding: 12px 15px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      align-items: center;
+    }
+    @media (min-width: 640px) {
+      .step-row {
+        grid-template-columns: 220px 1fr 75px;
+      }
+    }
+    .step-title {
+      font-weight: 700;
+      font-size: 0.88rem;
+      color: var(--primary);
+    }
+    .step-mark {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-align: left;
+      font-weight: 700;
+    }
+    .ltr-num {
+      direction: ltr;
+      text-align: left;
+      font-family: Consolas, monospace;
+      font-weight: 700;
+    }
+
+    /* کارت نتیجه و ثبت */
+    .submit-card {
+      background: var(--card-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      text-align: center;
+      box-shadow: var(--shadow);
+    }
+
+    .result-box {
+      display: none;
+      margin-top: 20px;
+      padding: 20px;
+      border-radius: var(--radius-md);
+      background: rgba(16, 185, 129, 0.1);
+      border: 1.5px solid var(--success);
+      text-align: right;
+    }
+    .result-score-big {
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: var(--success);
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    /* مودال مخفی دبیر */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(5px);
+      z-index: 3000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+    }
+    .modal-card {
+      background: var(--card-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      max-width: 420px;
+      width: 100%;
+      padding: 24px;
+      box-shadow: var(--shadow);
+    }
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .btn-danger {
+      background: var(--danger);
+      color: #fff;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      flex: 1;
+    }
+    .btn-secondary {
+      background: var(--input-bg);
+      color: var(--text-main);
+      border: 1px solid var(--input-border);
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      flex: 1;
+    }
+
+    /* افکت ریپل */
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      transform: scale(0);
+      animation: ripple-anim 0.6s linear;
+      background-color: rgba(255, 255, 255, 0.45);
+      pointer-events: none;
+    }
+    @keyframes ripple-anim {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+
+    .feedback-tag {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 6px;
+    }
+    .feedback-ok { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+    .feedback-err { background: rgba(239, 68, 68, 0.15); color: var(--danger); }
+  </style>
+</head>
+<body>
+
+  <!-- نوار پیشرفت اسکرول بالا -->
+  <div class="top-progress-container">
+    <div class="top-progress-bar" id="scroll-progress"></div>
+  </div>
+
+  <!-- هدر اصلی -->
+  <header class="app-header">
+    <div class="brand-info">
+      <div class="brand-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <circle cx="12" cy="12" r="3"></circle>
+          <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(30 12 12)"></ellipse>
+          <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(-30 12 12)"></ellipse>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <h1 id="header-title">آزمون فیزیک | رستمانی طبل</h1>
+        <p id="teacher-secret-trigger" title="طراح و دبیر">دبیر: برزگری | مبحث: فصل دوم (تا اصل پاسکال)</p>
+      </div>
+    </div>
+
+    <div class="header-controls">
+      <div class="timer-pill" id="exam-timer-pill">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+        <span id="exam-remaining-clock">60:00</span>
+      </div>
+
+      <button class="icon-btn" id="theme-toggle-btn" title="تغییر حالت شب و روز">
+        <svg id="theme-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- بخش اصلی -->
+  <main class="main-wrapper" id="main-wrapper">
+
+    <!-- کارت صفحه ورود -->
+    <section class="auth-card" id="login-section">
+      <h2 style="font-size: 1.25rem; font-weight: 800; text-align: center; margin-bottom: 6px;">ورود به سامانه آزمون رسمی</h2>
+      <p style="text-align: center; color: var(--text-muted); font-size: 0.88rem;">مشخصات خود را با دقت تکمیل کرده و آزمون را آغاز نمایید</p>
+
+      <div class="exam-meta-grid">
+        <div class="meta-box">
+          <span>نام درس</span>
+          <strong id="meta-course">فیزیک</strong>
+        </div>
+        <div class="meta-box">
+          <span>نام مدرسه</span>
+          <strong id="meta-school">رستمانی طبل</strong>
+        </div>
+        <div class="meta-box">
+          <span>نام دبیر</span>
+          <strong id="meta-teacher">برزگری</strong>
+        </div>
+        <div class="meta-box">
+          <span>مبحث آزمون</span>
+          <strong id="meta-topic">فصل ۲: تا اصل پاسکال</strong>
+        </div>
+      </div>
+
+      <!-- بنر وضعیت زمان آزمون و تایمر معکوس تا شروع -->
+      <div class="schedule-banner" id="schedule-banner">
+        <div class="schedule-status-title" id="schedule-status-text">در حال بررسی زمان آزمون...</div>
+        <div style="font-size: 0.82rem; color: var(--text-muted);" id="schedule-window-label"></div>
+        <div class="countdown-boxes" id="pre-exam-countdown" style="display: none;">
+          <div class="cd-unit"><span class="num" id="cd-days">00</span><span class="lbl">روز</span></div>
+          <div class="cd-unit"><span class="num" id="cd-hours">00</span><span class="lbl">ساعت</span></div>
+          <div class="cd-unit"><span class="num" id="cd-mins">00</span><span class="lbl">دقیقه</span></div>
+          <div class="cd-unit"><span class="num" id="cd-secs">00</span><span class="lbl">ثانیه</span></div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="student-fullname">نام و نام خانوادگی (الزامی):</label>
+        <input type="text" id="student-fullname" class="form-control" placeholder="مثال: علی رضایی" autocomplete="off">
+      </div>
+
+      <div class="form-group">
+        <label for="student-grade">پایه و رشته تحصیلی (الزامی):</label>
+        <select id="student-grade" class="form-control">
+          <option value="">-- انتخاب پایه تحصیلی --</option>
+          <option value="دهم تجربی">دهم تجربی</option>
+          <option value="دهم ریاضی">دهم ریاضی</option>
+          <option value="یازدهم تجربی">یازدهم تجربی</option>
+          <option value="دوازدهم تجربی">دوازدهم تجربی</option>
+        </select>
+      </div>
+
+      <button class="btn-primary" id="start-exam-btn" onclick="startExam(event)">ورود و شروع آزمون</button>
+      <div id="login-error-msg" style="color: var(--danger); font-size: 0.85rem; font-weight: 700; text-align: center; margin-top: 12px;"></div>
+    </section>
+
+    <!-- پنل ناوبری کناری -->
+    <aside class="sidebar-nav" id="sidebar-nav">
+      <div class="sidebar-title">
+        <span>ناوبری سریع سوالات</span>
+        <span id="student-badge-sidebar" style="font-size: 0.78rem; color: var(--primary);"></span>
+      </div>
+      <div class="nav-grid" id="nav-grid"></div>
+      <div class="progress-summary">
+        <div style="display: flex; justify-content: space-between;">
+          <span>پیشرفت پاسخگویی:</span>
+          <strong id="answered-percent-text">0%</strong>
+        </div>
+        <div class="answer-bar-bg">
+          <div class="answer-bar-fill" id="answered-bar-fill"></div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- لیست یکپارچه سوالات -->
+    <section class="questions-container" id="questions-container">
+      
+      <div class="section-banner">
+        <h2>بخش اول: سوالات مفهومی، تستی، صحیح/غلط و جای‌خالی (۱۲ نمره)</h2>
+        <p>ویژه پایه دهم تجربی و ریاضی | فصل دوم: ویژگی‌های فیزیکی مواد (از ابتدای فصل تا پایان اصل پاسکال)</p>
+      </div>
+
+      <div id="part1-questions-list" style="display: flex; flex-direction: column; gap: 18px;"></div>
+
+      <div class="section-banner" style="margin-top: 10px;">
+        <h2>بخش دوم: مسائل تشریحی مرحله‌ای (۸ نمره)</h2>
+        <p>در این بخش نیازی به تایپ فرمول‌های پیچیده نیست؛ هر مرحله را به ترتیب انتخاب یا عدد نهایی را وارد کنید. هر مرحله بارم مستقل دارد.</p>
+      </div>
+
+      <div id="part2-questions-list" style="display: flex; flex-direction: column; gap: 18px;"></div>
+
+      <!-- کارت ثبت نهایی -->
+      <div class="submit-card">
+        <h3 style="margin-bottom: 8px; font-size: 1.1rem;">پایان و ثبت نهایی آزمون</h3>
+        <p style="font-size: 0.86rem; color: var(--text-muted); margin-bottom: 16px;">
+          پس از ثبت نهایی، پاسخ‌های شما قفل شده و نمره به همراه ریز پاسخ‌ها مستقیماً برای دبیر (برزگری) ارسال می‌گردد.
+        </p>
+        <button class="btn-primary" id="final-submit-btn" onclick="confirmAndSubmitExam(event)">ثبت نهایی و ارسال نمره</button>
+        <div id="submit-status-msg" style="margin-top: 12px; font-weight: 700; font-size: 0.9rem;"></div>
+
+        <div class="result-box" id="final-result-box">
+          <div class="result-score-big" id="final-score-display"></div>
+          <div id="final-details-summary" style="font-size: 0.88rem; line-height: 1.8;"></div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- مودال مدیریت ریست مخفی دبیر -->
+  <div class="modal-backdrop" id="teacher-modal">
+    <div class="modal-card">
+      <h3 style="margin-bottom: 8px; color: var(--primary);">پنل مدیریت محرمانه (مختص برزگری)</h3>
+      <p style="font-size: 0.84rem; color: var(--text-muted); margin-bottom: 14px;">
+        برای ریست کامل آزمون، پاک‌سازی حافظه و تایمر یا باز کردن قفل زمانی جهت تست، رمز عبور دبیر را وارد کنید:
+      </p>
+      <input type="password" id="teacher-pass-input" class="form-control ltr-num" placeholder="رمز عبور ۴ رقمی">
+      <div id="teacher-modal-err" style="color: var(--danger); font-size: 0.8rem; margin-top: 6px; font-weight: 700;"></div>
+      <div class="modal-actions">
+        <button class="btn-danger" onclick="executeTeacherAction('reset')">ریست کل آزمون و تایمر</button>
+        <button class="btn-secondary" onclick="executeTeacherAction('unlock')">آزادسازی قفل زمان</button>
+      </div>
+      <button class="btn-secondary" style="width: 100%; margin-top: 8px;" onclick="closeTeacherModal()">بستن</button>
+    </div>
+  </div>
+
+  <script>
+    /* =========================================================================
+       ۱. تنظیمات پایه، زمان‌بندی آزمون و دیتابیس (قابل ویرایش توسط دبیر)
+       ========================================================================= */
+    const EXAM_CONFIG = {
+      courseName: "فیزیک",
+      schoolName: "رستمانی طبل",
+      teacherName: "برزگری", // بدون هیچ پیشوند یا پسوند
+      topicName: "فصل دوم: از ابتدای فصل تا اصل پاسکال",
+
+      // تاریخ ۲۴ آبان ۱۴۰۵ معادل 2026-11-15 (یا ۲۴ آبان ۱۴۰۴ معادل 2025-11-15)
+      // نکته: اگر EXAM_DATE خالی "" گذاشته شود، آزمون بدون محدودیت زمانی و آزاد خواهد بود.
+      examDateShamsiLabel: "۲۴ آبان",
+      examTargetMonthDay: { month: 8, day: 24 }, // ماه ۸ شمسی (آبان)، روز ۲۴
+      startTime: "08:55",
+      endTime: "09:55",
+      durationMinutes: 60,
+
+      // کلیدهای اتصال به Supabase
+      supabaseUrl: "https://tpwdrzwfzdbmwqlblntu.supabase.co",
+      supabaseKey: "sb_publishable_ASPIzP1XV1iSweCV43Oy9Q_PCkz5htN",
+
+      // رمز عبور محرمانه ریست
+      secretResetCode: "9162",
+      storageKey: "BARZEGARI_PHYSICS10_ROSTAMANI_F2_V1"
+    };
+
+    /* =========================================================================
+       ۲. تبدیل تاریخ میلادی به شمسی (بدون کتابخانه خارجی) برای کنترل دقیق ۲۴ آبان
+       ========================================================================= */
+    function gregorianToJalali(gy, gm, gd) {
+      const g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+      let gy2 = (gm > 2) ? (gy + 1) : gy;
+      let days = 355666 + (365 * gy) + Math.floor((gy2 + 3) / 4) - Math.floor((gy2 + 99) / 100) + Math.floor((gy2 + 399) / 400) + gd + g_d_m[gm - 1];
+      let jy = -1595 + (33 * Math.floor(days / 12053));
+      days %= 12053;
+      jy += 4 * Math.floor(days / 1461);
+      days %= 1461;
+      if (days > 365) {
+        jy += Math.floor((days - 1) / 365);
+        days = (days - 1) % 365;
+      }
+      let jm = (days < 186) ? 1 + Math.floor(days / 31) : 7 + Math.floor((days - 186) / 30);
+      let jd = 1 + ((days < 186) ? (days % 31) : ((days - 186) % 30));
+      return { jy, jm, jd };
+    }
+
+    function jalaliToGregorian(jy, jm, jd) {
+      jy += 1595;
+      let days = -355668 + (365 * jy) + (Math.floor(jy / 33) * 8) + Math.floor(((jy % 33) + 3) / 4) + jd + ((jm < 7) ? (jm - 1) * 31 : ((jm - 7) * 30) + 186);
+      let gy = 400 * Math.floor(days / 146097);
+      days %= 146097;
+      if (days > 36524) {
+        gy += 100 * Math.floor(--days / 36524);
+        days %= 36524;
+        if (days >= 365) days++;
+      }
+      gy += 4 * Math.floor(days / 1461);
+      days %= 1461;
+      if (days > 365) {
+        gy += Math.floor((days - 1) / 365);
+        days = (days - 1) % 365;
+      }
+      let gd = days + 1;
+      const sal_a = [0, 31, ((gy % 4 === 0 && gy % 100 !== 0) || (gy % 400 === 0)) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+      let gm;
+      for (gm = 0; gm < 13 && gd > sal_a[gm]; gm++) gd -= sal_a[gm];
+      return new Date(gy, gm - 1, gd);
+    }
+
+    /* =========================================================================
+       ۳. بانک سوالات استاندارد فیزیک دهم (فصل دوم: از ابتدا تا اصل پاسکال) - ۲۰ نمره
+       ========================================================================= */
+    const PART1_QUESTIONS = [
+      {
+        id: "q1",
+        type: "mcq",
+        score: 1,
+        title: "کدام‌یک از عبارت‌های زیر درباره ویژگی‌های میکروسکوپی حالات مختلف ماده (جامد، مایع و گاز) و شاره بودن آن‌ها درست است؟",
+        options: [
+          "مایع‌ها و گازها هر دو شاره (سیال) محسوب می‌شوند، زیرا با اعمال کوچک‌ترین تنش برشی جاری می‌شوند.",
+          "فاصله میانگین مولکول‌ها در مایع‌ها بسیار بیشتر از جامدهاست و به همین دلیل مایع‌ها به راحتی متراکم می‌شوند.",
+          "در جامدهای بلوری، اتم‌ها در طرح‌های نامنظم قرار می‌گیرند اما در جامدهای بی‌شکل (آمورف) نظم هندسی تکرارشونده وجود دارد.",
+          "جنبش مولکول‌های گاز فقط از نوع ارتعاشی در جای خود است."
+        ],
+        answer: 0
+      },
+      {
+        id: "q2",
+        type: "mcq",
+        score: 1,
+        title: "تشکیل قطرات کروی شبنم روی برگ گیاهان و همچنین ایستادن حشرات سبک روی سطح آب، نتیجه‌ی مستقیم کدام پدیده فیزیکی و کدام نوع نیروی بین‌مولکولی است؟",
+        options: [
+          "خاصیت مویینگی - نیروی دگرچسبی",
+          "کشش سطحی مایع - نیروی هم‌چسبی بین مولکول‌های آب",
+          "فشار پیمانه‌ای شاره - نیروی وزن",
+          "پدیده ترشوندگی - نیروی جاذبه بین آب و هوا"
+        ],
+        answer: 1
+      },
+      {
+        id: "q3",
+        type: "dropdown",
+        score: 1,
+        title: "وقتی لوله باریک شیشه‌ای (مویین) را درون ظرف محتوی جیوه قرار می‌دهیم، به دلیل بزرگ‌تر بودن نیروی ________ نسبت به نیروی ________، سطح جیوه درون لوله پایین‌تر از سطح ظرف قرار گرفته و رویه آن ________ می‌شود.",
+        options: [
+          "-- انتخاب گزینه صحیح برای تکمیل جاهای خالی --",
+          "هم‌چسبی - دگرچسبی - برآمده (محدب)",
+          "دگرچسبی - هم‌چسبی - فرورفته (مقعر)",
+          "هم‌چسبی - دگرچسبی - فرورفته (مقعر)",
+          "دگرچسبی - هم‌چسبی - برآمده (محدب)"
+        ],
+        answer: 1
+      },
+      {
+        id: "q4",
+        type: "tf",
+        score: 1,
+        title: "درستی یا نادرستی گزاره زیر را مشخص کنید: «افزودن مایع ظرف‌شویی یا بالا بردن دمای آب، نیروی هم‌چسبی و کشش سطحی آب را کاهش داده و باعث افزایش خاصیت ترشوندگی آب می‌شود.»",
+        options: [
+          "صحیح (درست)",
+          "غلط (نادرست)"
+        ],
+        answer: 0
+      },
+      {
+        id: "q5",
+        type: "mcq",
+        score: 1,
+        title: "یکای فشار در دستگاه بین‌المللی یکاها (SI) پاسکال (Pa) است. کدام‌یک از ترکیب یکاهای اصلی زیر معادل یک پاسکال است؟",
+        options: [
+          "kg / (m . s²)",
+          "kg . m / s²",
+          "kg . m² / s²",
+          "N . m²"
+        ],
+        answer: 0
+      },
+      {
+        id: "q6",
+        type: "mcq",
+        score: 1,
+        title: "سه ظرف با شکل‌های هندسی کاملاً متفاوت (استوانه‌ای، مخروطی دهانه‌گشاد و مخروطی دهانه‌تنگ) دارای مساحت کف یکسان هستند. اگر در هر سه ظرف، آب تا ارتفاع یکسان h بریزیم، کدام مقایسه درباره فشار ناشی از آب در کف ظرف‌ها (P) و اندازه نیروی وارد از طرف آب به کف ظرف‌ها (F) صحیح است؟",
+        options: [
+          "فشار و نیروی وارد بر کف در ظرفی که جرم آب بیشتری دارد، بزرگ‌تر است.",
+          "فشار آب در کف هر سه ظرف برابر است و اندازه نیروی وارد بر کف هر سه ظرف نیز با هم برابر است.",
+          "فشار آب در کف هر سه ظرف برابر است، اما نیروی وارد بر کف متفاوت است.",
+          "نیروی وارد بر کف هر سه ظرف همواره با وزن کل آب درون همان ظرف برابر است."
+        ],
+        answer: 1
+      },
+      {
+        id: "q7",
+        type: "mcq",
+        score: 1,
+        title: "با توجه به رابطه فشار در شاره‌ها (P = P₀ + ρgh)، در یک مایع همگن و در حال تعادل، کدام‌یک از نقاط زیر فشار کل یکسانی دارند؟",
+        options: [
+          "نقاطی که با کف ظرف فاصله یکسانی دارند (حتی اگر کف ظرف شیب‌دار باشد).",
+          "تمامی نقاطی که در یک تراز افقی (هم‌عمق نسبت به سطح آزاد مایع) قرار دارند.",
+          "فقط نقاطی که روی محور تقارن ظرف قرار گرفته‌اند.",
+          "نقاطی که در دو مایع غیرقابل امتزاج با چگالی‌های متفاوت در یک ارتفاع قرار دارند، بدون توجه به مایع بالایی."
+        ],
+        answer: 1
+      },
+      {
+        id: "q8",
+        type: "dropdown",
+        score: 1,
+        title: "اگر آزمایش توریچلی (بارومتر جیوه‌ای) را از سطح دریا به قله یک کوه مرتفع ببریم، به دلیل ________ فشار هوا، ستون جیوه درون لوله بارومتر ________ می‌یابد. همچنین اگر لوله را کمی کج کنیم، ارتفاع قائم ستون جیوه ________.",
+        options: [
+          "-- انتخاب گزینه صحیح --",
+          "کاهش - کاهش - ثابت می‌ماند",
+          "افزایش - کاهش - افزایش می‌یابد",
+          "کاهش - افزایش - ثابت می‌ماند",
+          "کاهش - کاهش - کاهش می‌یابد"
+        ],
+        answer: 1
+      },
+      {
+        id: "q9",
+        type: "tf",
+        score: 1,
+        title: "درستی یا نادرستی گزاره زیر را مشخص کنید: «فشار پیمانه‌ای (P_g) یک گاز محبوس که توسط فشارسنج (مانومتر) لوله باز اندازه‌گیری می‌شود، تنها در صورتی منفی است که فشار مطلق گاز درون مخزن کمتر از فشار هوای محیط (P₀) باشد.»",
+        options: [
+          "صحیح (درست)",
+          "غلط (نادرست)"
+        ],
+        answer: 0
+      },
+      {
+        id: "q10",
+        type: "mcq",
+        score: 1,
+        title: "در یک مانومتر (فشارسنج لوله U شکل دهانه‌باز) محتوی مایعی به چگالی ρ، یک سر لوله به مخزن گاز وصل است و سطح مایع در شاخه متصل به هوا به اندازه h بالاتر از شاخه متصل به مخزن گاز قرار گرفته است. فشار پیمانه‌ای گاز کدام است؟",
+        options: [
+          "P₀ + ρgh",
+          "مثبت ρgh (+ρgh)",
+          "منفی ρgh (-ρgh)",
+          "P₀ - ρgh"
+        ],
+        answer: 1
+      },
+      {
+        id: "q11",
+        type: "mcq",
+        score: 1,
+        title: "بر اساس «اصل پاسکال»، اگر بر بخشی از یک مایع محبوس و تراکم‌ناپذیر در ظرف، تغییر فشاری (ΔP) اعمال شود، این تغییر فشار چگونه به سایر نقاط مایع و دیواره‌های ظرف منتقل می‌شود؟",
+        options: [
+          "تغییر فشار بدون هیچ کاهشی به تمام نقاط مایع و دیواره‌های ظرف عیناً منتقل می‌شود.",
+          "فقط در راستای قائم و به سمت کف ظرف منتقل می‌شود.",
+          "نیروی واردشده (F) بدون تغییر به تمام سطوح با هر مساحتی منتقل می‌شود.",
+          "در پیستون بزرگ‌تر، تغییر فشار به نسبت مساحت پیستون‌ها افزایش می‌یابد."
+        ],
+        answer: 0
+      },
+      {
+        id: "q12",
+        type: "mcq",
+        score: 1,
+        title: "در یک بالابر هیدرولیکی که بر اساس اصل پاسکال کار می‌کند، مساحت پیستون بزرگ ۲۰ برابر مساحت پیستون کوچک است (A₂ = 20 A₁). اگر از اصطکاک صرف‌نظر کنیم و پیستون‌ها هم‌تراز باشند، کدام گزینه صحیح است؟",
+        options: [
+          "فشار مایع در زیر پیستون بزرگ ۲۰ برابر فشار مایع در زیر پیستون کوچک است.",
+          "نیروی خروجی در پیستون بزرگ ۲۰ برابر نیروی ورودی در پیستون کوچک است (F₂ = 20 F₁).",
+          "جابهجایی پیستون بزرگ ۲۰ برابر جابهجایی پیستون کوچک است.",
+          "کار انجام‌شده در پیستون بزرگ ۲۰ برابر کار انجام‌شده در پیستون کوچک است."
+        ],
+        answer: 1
+      }
+    ];
+
+    const PART2_PROBLEMS = [
+      {
+        id: "p1",
+        score: 4,
+        title: "مسئله اول (فشار در شاره‌ها): استخری به عمق 5 متر به طور کامل از آب با چگالی ρ = 1000 kg/m³ پر شده است. اگر فشار هوای محیط در سطح استخر P₀ = 10⁵ Pa و شتاب گرانش g = 10 N/kg باشد، فشار کل در کف استخر را برحسب کیلوپاسکال (kPa) به دست آورید.",
+        steps: [
+          {
+            stepId: "s1",
+            label: "۱. استخراج داده‌های مسئله",
+            mark: 0.5,
+            type: "select",
+            options: [
+              "-- انتخاب داده‌های معلوم --",
+              "h = 5 m , ρ = 1000 kg/m³ , g = 10 N/kg , P₀ = 10⁵ Pa",
+              "h = 500 m , ρ = 1 g/cm³ , P₀ = 10 Pa",
+              "A = 5 m² , F = 1000 N , P₀ = 10⁵ Pa"
+            ],
+            correct: 1
+          },
+          {
+            stepId: "s2",
+            label: "۲. تعیین مجهول مسئله",
+            mark: 0.5,
+            type: "select",
+            options: [
+              "-- انتخاب مجهول --",
+              "فشار کل در کف استخر (P) برحسب کیلوپاسکال (kPa)",
+              "نیروی کل وارد بر دیواره استخر (F)",
+              "چگالی نسبی مایع (ρ)"
+            ],
+            correct: 1
+          },
+          {
+            stepId: "s3",
+            label: "۳. انتخاب فرمول فیزیکی",
+            mark: 0.75,
+            type: "select",
+            options: [
+              "-- انتخاب فرمول اصلی --",
+              "P = P₀ + ρgh",
+              "P = F / A",
+              "F₂ / F₁ = A₂ / A₁",
+              "P = P₀ - ρgh"
+            ],
+            correct: 1
+          },
+          {
+            stepId: "s4",
+            label: "۴. انتخاب تبدیل واحد لازم",
+            mark: 0.5,
+            type: "select",
+            options: [
+              "-- بررسی تبدیل واحد --",
+              "تمام مقادیر در SI هستند؛ در پایان هر 1000 Pa برابر 1 kPa است (10⁵ Pa = 100 kPa)",
+              "باید عمق 5 متر را در 100 ضرب کنیم تا سانتی‌متر شود",
+              "چگالی باید بر 1000 تقسیم شود"
+            ],
+            correct: 1
+          },
+          {
+            stepId: "s5",
+            label: "۵. جایگذاری اعداد در رابطه فشار مایع (ρgh برحسب پاسکال)",
+            mark: 0.5,
+            type: "select",
+            options: [
+              "-- انتخاب جایگذاری صحیح --",
+              "P = 100000 + (1000 × 10 × 5)",
+              "P = 100000 × (1000 + 10 + 5)",
+              "P = (1000 × 5) / 10"
+            ],
+            correct: 1
+          },
+          {
+            stepId: "s6",
+            label: "۶. محاسبه فشار پیمانه‌ای آب (ρgh) برحسب کیلوپاسکال (عدد وارد کنید)",
+            mark: 0.75,
+            type: "number",
+            placeholder: "مقدار عددی ρgh به kPa (مثلاً 50)",
+            correctNumber: 50
+          },
+          {
+            stepId: "s7",
+            label: "۷. جواب نهایی و واحد (فشار کل P)",
+            mark: 0.5,
+            type: "select",
+            options: [
+              "-- انتخاب جواب نهایی و یکا --",
+              "150 kPa (کیلوپاسکال)",
+              "50 kPa (کیلوپاسکال)",
+              "150 N (نیوتون)",
+              "105 kPa (کیلوپاسکال)"
+            ],
+            correct: 1
+          }
+        ]
+      },
+      {
+        id: "p2",
+        score: 4,
+        title: "مسئله دوم (اصل پاسکال و بالابر هیدرولیکی): در یک بالابر هیدرولیکی، مساحت پیستون کوچک A₁ = 20 cm² و مساحت پیستون بزرگ A₂ = 0.4 m² است. اگر خودرویی به جرم m = 1200 kg روی پیستون بزرگ قرار گیرد، حداقل چه نیرویی (F₁) برحسب نیوتون (N) باید به پیستون کوچک وارد شود تا خودرو در حالت تعادل در یک تراز افقی نگه داشته شود؟ (g = 10 N/kg)",
+        steps: [
+          {
+            stepId: "s1",
+            label: "۱. استخراج داده‌های مسئله",
+            mark: 0.5,
+            type: "select",
+            options: [
+              "-- انتخاب داده‌های معلوم --",
+              "A₁ = 20 cm² , A₂ = 0.4 m² , m₂ = 1200 kg , g = 10 N/kg",
+              "A₁ = 0.4 m² , A₂ = 20 cm² , F₁ = 1200 N",
+              "h₁ = 20 cm , h₂ = 0.4 m , ρ = 1200 kg/m³"
+            ],
+            correct: 1
+          },
+          {
+            stepId: "s2",
+            label: "۲. تعیین مجهول مسئله",
+            mark: 0.5,
+            type: "select",
+            options: [
+              "-- انتخاب مجهول --",
+              "اندازه نیروی وارد بر پیستون کوچک (F₁) برحسب نیوتون (N)",
+              "مساحت پیستون بزرگ (A₂)",
+              "فشار هوا در محیط (P₀)"
+            ],
+            correct: 1
+          },
+          {
+            stepId: "s3",
+            label: "۳. انتخاب فرمول فیزیکی (اصل پاسکال)",
+            mark: 0.75,
+            type: "select",
+            options: [
+              "-- انتخاب فرمول اصلی --",
+              "F₁ / A₁ = F₂ / A₂  (که در آن F₂ = m.g)",
+              "F₁ × A₁ = F₂ × A₂",
+              "P = P₀ + ρgh",
+              "F₁ / F₂ = A₂ / A₁"
+            ],
+            correct: 1
+          },
+          {
+            stepId: "s4",
+            label: "۴. انتخاب تبدیل واحد مساحت‌ها (هم‌واحد کردن A₁ و A₂)",
+            mark: 0.5,
+            type: "select",
+            options: [
+              "-- انتخاب تبدیل واحد صحیح --",
+              "تبدیل A₂ به سانتی‌مترمربع: A₂ = 0.4 × 10⁴ = 4000 cm² (و وزن خودرو F₂ = 1200 × 10 = 12000 N)",
+              "A₂ = 0.4 × 100 = 40 cm²",
+              "نیازی به تبدیل واحد بین cm² و m² در کسر مساحت‌ها نیست"
+            ],
+            correct: 1
+          },
+          {
+            stepId: "s5",
+            label: "۵. جایگذاری اعداد در رابطه اصل پاسکال",
+            mark: 0.5,
+            type: "select",
+            options: [
+              "-- انتخاب جایگذاری صحیح --",
+              "F₁ / 20 = 12000 / 4000",
+              "F₁ / 4000 = 12000 / 20",
+              "F₁ / 20 = 1200 / 40"
+            ],
+            correct: 1
+          },
+          {
+            stepId: "s6",
+            label: "۶. محاسبه مقدار عددی نیروی پیستون کوچک F₁ (عدد وارد کنید)",
+            mark: 0.75,
+            type: "number",
+            placeholder: "حاصل عددی F₁ برحسب نیوتون",
+            correctNumber: 60
+          },
+          {
+            stepId: "s7",
+            label: "۷. جواب نهایی و واحد (یکا)",
+            mark: 0.5,
+            type: "select",
+            options: [
+              "-- انتخاب جواب نهایی و یکا --",
+              "60 N (نیوتون)",
+              "600 N (نیوتون)",
+              "60 Pa (پاسکال)",
+              "6 N (نیوتون)"
+            ],
+            correct: 1
+          }
+        ]
+      }
+    ];
+
+    /* =========================================================================
+       ۴. وضعیت سامانه، تایمرها و ذخیره‌سازی در LocalStorage
+       ========================================================================= */
+    let appState = {
+      studentName: "",
+      studentGrade: "",
+      started: false,
+      submitted: false,
+      startTimeMs: null,
+      remainingSeconds: EXAM_CONFIG.durationMinutes * 60,
+      part1Answers: {}, // { q1: 0, q2: 1, ... }
+      part2Answers: {}, // { p1_s1: 1, p1_s6: "50", ... }
+      teacherBypassLock: false,
+      finalScore: null,
+      finalDetailsText: ""
+    };
+
+    let examClockInterval = null;
+    let scheduleClockInterval = null;
+
+    function loadSavedState() {
+      try {
+        const raw = localStorage.getItem(EXAM_CONFIG.storageKey);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          appState = { ...appState, ...parsed };
+        }
+      } catch (e) {
+        console.warn("خطا در خواندن حافظه محلی:", e);
+      }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(EXAM_CONFIG.storageKey, JSON.stringify(appState));
+      } catch (e) {
+        console.warn("خطا در ذخیره حافظه محلی:", e);
+      }
+    }
+
+    /* =========================================================================
+       ۵. محاسبه پنجره زمانی ۲۴ آبان ساعت ۸:۵۵ تا ۹:۵۵
+       ========================================================================= */
+    function getExamWindowTimestamps() {
+      if (!EXAM_CONFIG.examDateShamsiLabel || !EXAM_CONFIG.startTime || !EXAM_CONFIG.endTime) {
+        return { isFree: true };
+      }
+
+      const now = new Date();
+      const currentJalali = gregorianToJalali(now.getFullYear(), now.getMonth() + 1, now.getDate());
+      const targetGregorianDate = jalaliToGregorian(
+        currentJalali.jy,
+        EXAM_CONFIG.examTargetMonthDay.month,
+        EXAM_CONFIG.examTargetMonthDay.day
+      );
+
+      const [sh, sm] = EXAM_CONFIG.startTime.split(":").map(Number);
+      const [eh, em] = EXAM_CONFIG.endTime.split(":").map(Number);
+
+      const startDateObj = new Date(
+        targetGregorianDate.getFullYear(),
+        targetGregorianDate.getMonth(),
+        targetGregorianDate.getDate(),
+        sh, sm, 0, 0
+      );
+
+      const endDateObj = new Date(
+        targetGregorianDate.getFullYear(),
+        targetGregorianDate.getMonth(),
+        targetGregorianDate.getDate(),
+        eh, em, 0, 0
+      );
+
+      return {
+        isFree: false,
+        startMs: startDateObj.getTime(),
+        endMs: endDateObj.getTime()
+      };
+    }
+
+    function updateScheduleGateUI() {
+      const statusText = document.getElementById("schedule-status-text");
+      const windowLabel = document.getElementById("schedule-window-label");
+      const cdBox = document.getElementById("pre-exam-countdown");
+      const startBtn = document.getElementById("start-exam-btn");
+
+      windowLabel.textContent = `زمان برگزاری: ${EXAM_CONFIG.examDateShamsiLabel} | ساعت ${EXAM_CONFIG.startTime} تا ${EXAM_CONFIG.endTime}`;
+
+      if (appState.teacherBypassLock) {
+        statusText.textContent = "🔓 قفل زمانی توسط دبیر (برزگری) باز شده است";
+        statusText.style.color = "var(--success)";
+        cdBox.style.display = "none";
+        startBtn.disabled = false;
+        return true;
+      }
+
+      const win = getExamWindowTimestamps();
+      if (win.isFree) {
+        statusText.textContent = "آزمون در حالت آزاد قرار دارد";
+        cdBox.style.display = "none";
+        startBtn.disabled = false;
+        return true;
+      }
+
+      const nowMs = Date.now();
+
+      if (nowMs < win.startMs) {
+        // هنوز زمان شروع نرسیده
+        const diffSec = Math.max(0, Math.floor((win.startMs - nowMs) / 1000));
+        const d = Math.floor(diffSec / 86400);
+        const h = Math.floor((diffSec % 86400) / 3600);
+        const m = Math.floor((diffSec % 3600) / 60);
+        const s = diffSec % 60;
+
+        statusText.textContent = "🔒 آزمون هنوز شروع نشده است (زمان باقی‌مانده تا باز شدن):";
+        statusText.style.color = "var(--primary)";
+        cdBox.style.display = "flex";
+
+        document.getElementById("cd-days").textContent = String(d).padStart(2, "0");
+        document.getElementById("cd-hours").textContent = String(h).padStart(2, "0");
+        document.getElementById("cd-mins").textContent = String(m).padStart(2, "0");
+        document.getElementById("cd-secs").textContent = String(s).padStart(2, "0");
+
+        startBtn.disabled = true;
+        return false;
+      } else if (nowMs > win.endMs) {
+        // زمان آزمون به پایان رسیده
+        statusText.textContent = "⛔ مهلت زمانی این آزمون (۲۴ آبان ساعت ۸:۵۵ تا ۹:۵۵) به پایان رسیده است.";
+        statusText.style.color = "var(--danger)";
+        cdBox.style.display = "none";
+        startBtn.disabled = !appState.submitted;
+        return false;
+      } else {
+        // در بازه مجاز آزمون
+        statusText.textContent = "✅ آزمون هم‌اکنون فعال است؛ می‌توانید وارد شوید";
+        statusText.style.color = "var(--success)";
+        cdBox.style.display = "none";
+        startBtn.disabled = false;
+        return true;
+      }
+    }
+
+    /* =========================================================================
+       ۶. رندر کردن سوالات و پنل ناوبری
+       ========================================================================= */
+    function renderAllQuestions() {
+      const p1Container = document.getElementById("part1-questions-list");
+      const p2Container = document.getElementById("part2-questions-list");
+      const navGrid = document.getElementById("nav-grid");
+
+      p1Container.innerHTML = "";
+      p2Container.innerHTML = "";
+      navGrid.innerHTML = "";
+
+      let globalIndex = 1;
+
+      // رندر بخش اول
+      PART1_QUESTIONS.forEach((q, idx) => {
+        const card = document.createElement("div");
+        card.className = "question-card";
+        card.id = `card-${q.id}`;
+
+        const savedVal = appState.part1Answers[q.id];
+
+        let inputHTML = "";
+        if (q.type === "mcq" || q.type === "tf") {
+          const gridClass = q.type === "tf" ? "options-grid two-col" : "options-grid";
+          inputHTML = `<div class="${gridClass}">` + q.options.map((optText, optIdx) => {
+            const isChecked = (savedVal !== undefined && Number(savedVal) === optIdx);
+            return `
+              <label class="option-label ${isChecked ? 'selected' : ''}" id="lbl-${q.id}-${optIdx}">
+                <input type="radio" name="radio-${q.id}" value="${optIdx}"
+                  ${isChecked ? "checked" : ""}
+                  ${appState.submitted ? "disabled" : ""}
+                  onchange="handlePart1Change('${q.id}', ${optIdx})">
+                <span>${optText}</span>
+              </label>
+            `;
+          }).join("") + `</div>`;
+        } else if (q.type === "dropdown") {
+          inputHTML = `
+            <select class="form-control" id="sel-${q.id}"
+              ${appState.submitted ? "disabled" : ""}
+              onchange="handlePart1Change('${q.id}', this.value)">
+              ${q.options.map((optText, optIdx) => `
+                <option value="${optIdx === 0 ? '' : optIdx}" ${Number(savedVal) === optIdx && optIdx !== 0 ? 'selected' : ''}>
+                  ${optText}
+                </option>
+              `).join("")}
+            </select>
+          `;
+        }
+
+        card.innerHTML = `
+          <div class="q-header">
+            <span class="q-badge">سوال ${globalIndex}</span>
+            <span class="q-score">${q.score} نمره</span>
+          </div>
+          <div class="q-title">${q.title}</div>
+          ${inputHTML}
+          <div id="feedback-${q.id}"></div>
+        `;
+
+        p1Container.appendChild(card);
+
+        // دکمه ناوبری
+        const dot = document.createElement("button");
+        dot.className = "nav-dot";
+        dot.id = `nav-${q.id}`;
+        dot.textContent = globalIndex;
+        dot.onclick = () => document.getElementById(`card-${q.id}`).scrollIntoView({ behavior: "smooth" });
+        navGrid.appendChild(dot);
+
+        globalIndex++;
+      });
+
+      // رندر بخش دوم (تشریحی مرحله‌ای)
+      PART2_PROBLEMS.forEach((prob) => {
+        const card = document.createElement("div");
+        card.className = "question-card";
+        card.id = `card-${prob.id}`;
+
+        const stepsHTML = prob.steps.map((st) => {
+          const key = `${prob.id}_${st.stepId}`;
+          const savedVal = appState.part2Answers[key] ?? "";
+
+          let controlHTML = "";
+          if (st.type === "select") {
+            controlHTML = `
+              <select class="form-control" id="input-${key}"
+                ${appState.submitted ? "disabled" : ""}
+                onchange="handlePart2Change('${key}', this.value, '${prob.id}')">
+                ${st.options.map((opt, oIdx) => `
+                  <option value="${oIdx === 0 ? '' : oIdx}" ${String(savedVal) === String(oIdx) && oIdx !== 0 ? 'selected' : ''}>
+                    ${opt}
+                  </option>
+                `).join("")}
+              </select>
+            `;
+          } else if (st.type === "number") {
+            controlHTML = `
+              <input type="number" step="any" class="form-control ltr-num" id="input-${key}"
+                placeholder="${st.placeholder}"
+                value="${savedVal}"
+                ${appState.submitted ? "disabled" : ""}
+                oninput="handlePart2Change('${key}', this.value, '${prob.id}')">
+            `;
+          }
+
+          return `
+            <div class="step-row">
+              <div class="step-title">${st.label}</div>
+              <div>
+                ${controlHTML}
+                <div id="feedback-${key}"></div>
+              </div>
+              <div class="step-mark">${st.mark} نمره</div>
+            </div>
+          `;
+        }).join("");
+
+        card.innerHTML = `
+          <div class="q-header">
+            <span class="q-badge">سوال ${globalIndex} (مسئله مرحله‌ای)</span>
+            <span class="q-score">${prob.score} نمره</span>
+          </div>
+          <div class="q-title">${prob.title}</div>
+          <div class="steps-wrapper">${stepsHTML}</div>
+        `;
+
+        p2Container.appendChild(card);
+
+        const dot = document.createElement("button");
+        dot.className = "nav-dot";
+        dot.id = `nav-${prob.id}`;
+        dot.textContent = globalIndex;
+        dot.onclick = () => document.getElementById(`card-${prob.id}`).scrollIntoView({ behavior: "smooth" });
+        navGrid.appendChild(dot);
+
+        globalIndex++;
+      });
+
+      updateProgressAndNavDots();
+    }
+
+    function handlePart1Change(qId, val) {
+      if (appState.submitted) return;
+      if (val === "" || val === null) {
+        delete appState.part1Answers[qId];
+      } else {
+        appState.part1Answers[qId] = Number(val);
+      }
+
+      // آپدیت استایل رادیوها
+      const qObj = PART1_QUESTIONS.find(x => x.id === qId);
+      if (qObj && (qObj.type === "mcq" || qObj.type === "tf")) {
+        qObj.options.forEach((_, idx) => {
+          const lbl = document.getElementById(`lbl-${qId}-${idx}`);
+          if (lbl) lbl.classList.toggle("selected", idx === Number(val));
+        });
+      }
+
+      saveState();
+      updateProgressAndNavDots();
+    }
+
+    function handlePart2Change(key, val, probId) {
+      if (appState.submitted) return;
+      if (String(val).trim() === "") {
+        delete appState.part2Answers[key];
+      } else {
+        appState.part2Answers[key] = String(val).trim();
+      }
+      saveState();
+      updateProgressAndNavDots();
+    }
+
+    function updateProgressAndNavDots() {
+      let totalItems = PART1_QUESTIONS.length + PART2_PROBLEMS.length;
+      let answeredCount = 0;
+
+      PART1_QUESTIONS.forEach(q => {
+        const isAns = appState.part1Answers[q.id] !== undefined;
+        if (isAns) answeredCount++;
+        const dot = document.getElementById(`nav-${q.id}`);
+        if (dot) dot.classList.toggle("answered", isAns);
+      });
+
+      PART2_PROBLEMS.forEach(prob => {
+        const allStepsDone = prob.steps.every(st => {
+          const v = appState.part2Answers[`${prob.id}_${st.stepId}`];
+          return v !== undefined && String(v).trim() !== "";
+        });
+        if (allStepsDone) answeredCount++;
+        const dot = document.getElementById(`nav-${prob.id}`);
+        if (dot) dot.classList.toggle("answered", allStepsDone);
+      });
+
+      const pct = Math.round((answeredCount / totalItems) * 100);
+      document.getElementById("answered-percent-text").textContent = `${pct}%`;
+      document.getElementById("answered-bar-fill").style.width = `${pct}%`;
+    }
+
+    /* =========================================================================
+       ۷. شروع آزمون و تایمر معکوس حین آزمون
+       ========================================================================= */
+    function startExam(e) {
+      if (e) createRipple(e);
+      const errEl = document.getElementById("login-error-msg");
+      errEl.textContent = "";
+
+      if (!updateScheduleGateUI()) {
+        errEl.textContent = "در حال حاضر خارج از بازه زمانی مجاز آزمون هستید.";
+        return;
+      }
+
+      const nameVal = document.getElementById("student-fullname").value.trim();
+      const gradeVal = document.getElementById("student-grade").value.trim();
+
+      if (!nameVal || nameVal.length < 3) {
+        errEl.textContent = "لطفاً نام و نام خانوادگی خود را به صورت کامل وارد کنید.";
+        return;
+      }
+      if (!gradeVal) {
+        errEl.textContent = "لطفاً پایه تحصیلی خود را انتخاب نمایید.";
+        return;
+      }
+
+      appState.studentName = nameVal;
+      appState.studentGrade = gradeVal;
+      appState.started = true;
+      if (!appState.startTimeMs) {
+        appState.startTimeMs = Date.now();
+      }
+      saveState();
+      enterExamView();
+    }
+
+    function enterExamView() {
+      document.getElementById("login-section").style.display = "none";
+      document.getElementById("main-wrapper").classList.add("exam-active");
+      document.getElementById("exam-timer-pill").style.display = "flex";
+      document.getElementById("student-badge-sidebar").textContent = `${appState.studentName} (${appState.studentGrade})`;
+
+      renderAllQuestions();
+
+      if (appState.submitted) {
+        showLockedResultUI();
+      } else {
+        startActiveExamTimer();
+      }
+    }
+
+    function startActiveExamTimer() {
+      if (examClockInterval) clearInterval(examClockInterval);
+
+      const updateClock = () => {
+        if (appState.submitted) {
+          clearInterval(examClockInterval);
+          return;
+        }
+
+        // محاسبه زمان باقی‌مانده بر اساس پایان بازه ۹:۵۵ یا مدت زمان آزمون
+        const win = getExamWindowTimestamps();
+        let secLeft = appState.remainingSeconds;
+
+        if (!win.isFree && !appState.teacherBypassLock) {
+          const untilEndSec = Math.max(0, Math.floor((win.endMs - Date.now()) / 1000));
+          secLeft = Math.min(secLeft, untilEndSec);
+        }
+
+        appState.remainingSeconds = Math.max(0, secLeft - 1);
+        saveState();
+
+        const m = Math.floor(appState.remainingSeconds / 60);
+        const s = appState.remainingSeconds % 60;
+        document.getElementById("exam-remaining-clock").textContent =
+          `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+
+        if (appState.remainingSeconds <= 0) {
+          clearInterval(examClockInterval);
+          finalizeAndGradeExam(true);
+        }
+      };
+
+      updateClock();
+      examClockInterval = setInterval(updateClock, 1000);
+    }
+
+    /* =========================================================================
+       ۸. تصحیح هوشمند، ثبت نهایی و ارسال مستقیم به Supabase
+       ========================================================================= */
+    function confirmAndSubmitExam(e) {
+      if (e) createRipple(e);
+      if (appState.submitted) return;
+
+      const confirmed = confirm("آیا از ثبت نهایی آزمون اطمینان دارید؟ پس از ثبت، امکان تغییر پاسخ‌ها وجود ندارد.");
+      if (!confirmed) return;
+
+      finalizeAndGradeExam(false);
+    }
+
+    async function finalizeAndGradeExam(isAutoTimeout) {
+      if (appState.submitted) return;
+
+      let totalEarned = 0;
+      const totalMax = 20;
+      let detailParts = [];
+
+      // ۱. تصحیح بخش اول (۱۲ نمره)
+      PART1_QUESTIONS.forEach((q, idx) => {
+        const userAns = appState.part1Answers[q.id];
+        const isCorrect = (userAns !== undefined && Number(userAns) === q.answer);
+        const earned = isCorrect ? q.score : 0;
+        totalEarned += earned;
+
+        detailParts.push(`س${idx + 1}:${isCorrect ? "✅" : "❌"}(${earned}/${q.score})`);
+      });
+
+      // ۲. تصحیح مرحله‌ای بخش دوم (۸ نمره)
+      PART2_PROBLEMS.forEach((prob, pIdx) => {
+        let probEarned = 0;
+        prob.steps.forEach((st) => {
+          const key = `${prob.id}_${st.stepId}`;
+          const rawVal = appState.part2Answers[key];
+          let stepOk = false;
+
+          if (st.type === "select") {
+            stepOk = (rawVal !== undefined && Number(rawVal) === st.correct);
+          } else if (st.type === "number") {
+            const numVal = parseFloat(rawVal);
+            stepOk = (!isNaN(numVal) && Math.abs(numVal - st.correctNumber) < 0.01);
+          }
+
+          if (stepOk) probEarned += st.mark;
+        });
+
+        totalEarned += probEarned;
+        detailParts.push(`مسئله${pIdx + 1}:${probEarned}/${prob.score}`);
+      });
+
+      totalEarned = Math.round(totalEarned * 100) / 100;
+      const fullDetailsString = `پایه: ${appState.studentGrade} | ${isAutoTimeout ? "[ثبت خودکار پایان وقت] " : ""}` + detailParts.join(" | ");
+
+      appState.submitted = true;
+      appState.finalScore = totalEarned;
+      appState.finalDetailsText = fullDetailsString;
+      saveState();
+
+      renderAllQuestions();
+      showLockedResultUI();
+
+      await dispatchScoreToSupabase();
+    }
+
+    function showLockedResultUI() {
+      const btn = document.getElementById("final-submit-btn");
+      btn.disabled = true;
+      btn.textContent = "آزمون ثبت و قفل شده است";
+
+      // نمایش بازخورد روی هر سوال
+      PART1_QUESTIONS.forEach(q => {
+        const fbEl = document.getElementById(`feedback-${q.id}`);
+        if (!fbEl) return;
+        const userAns = appState.part1Answers[q.id];
+        const isCorrect = (userAns !== undefined && Number(userAns) === q.answer);
+        fbEl.innerHTML = isCorrect
+          ? `<span class="feedback-tag feedback-ok">✔ پاسخ صحیح (+${q.score} نمره)</span>`
+          : `<span class="feedback-tag feedback-err">✖ نادرست یا بدون پاسخ (گزینه درست: «${q.options[q.answer]}»)</span>`;
+      });
+
+      PART2_PROBLEMS.forEach(prob => {
+        prob.steps.forEach(st => {
+          const key = `${prob.id}_${st.stepId}`;
+          const fbEl = document.getElementById(`feedback-${key}`);
+          if (!fbEl) return;
+          const rawVal = appState.part2Answers[key];
+          let stepOk = false;
+          if (st.type === "select") {
+            stepOk = (rawVal !== undefined && Number(rawVal) === st.correct);
+          } else {
+            const numVal = parseFloat(rawVal);
+            stepOk = (!isNaN(numVal) && Math.abs(numVal - st.correctNumber) < 0.01);
+          }
+          fbEl.innerHTML = stepOk
+            ? `<span class="feedback-tag feedback-ok">✔ مرحله صحیح (+${st.mark})</span>`
+            : `<span class="feedback-tag feedback-err">✖ نادرست (پاسخ صحیح: ${st.type === 'select' ? st.options[st.correct] : st.correctNumber})</span>`;
+        });
+      });
+
+      const resBox = document.getElementById("final-result-box");
+      resBox.style.display = "block";
+      document.getElementById("final-score-display").textContent = `نمره نهایی شما: ${appState.finalScore} از 20`;
+      document.getElementById("final-details-summary").textContent = `دانش‌آموز: ${appState.studentName} (${appState.studentGrade}) | دبیر: ${EXAM_CONFIG.teacherName} | مدرسه: ${EXAM_CONFIG.schoolName}`;
+    }
+
+    async function dispatchScoreToSupabase() {
+      const statusMsg = document.getElementById("submit-status-msg");
+      statusMsg.style.color = "var(--primary)";
+      statusMsg.textContent = "در حال ارسال و ثبت نمره در سرور...";
+
+      const payload = {
+        Student_name: `${appState.studentName} (${appState.studentGrade})`,
+        School_name: `${appState.studentGrade} - ${EXAM_CONFIG.schoolName}`,
+        Subject: `${EXAM_CONFIG.courseName} - ${EXAM_CONFIG.topicName}`,
+        Score: parseFloat(appState.finalScore),
+        Total_score: 20,
+        Details: appState.finalDetailsText
+      };
+
+      try {
+        const response = await fetch(`${EXAM_CONFIG.supabaseUrl}/rest/v1/Students`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": EXAM_CONFIG.supabaseKey,
+            "Authorization": `Bearer ${EXAM_CONFIG.supabaseKey}`,
+            "Prefer": "return=minimal"
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        statusMsg.style.color = "var(--success)";
+        statusMsg.textContent = "✅ نمره و ریز پاسخ‌های شما با موفقیت در سامانه ثبت شد.";
+      } catch (err) {
+        statusMsg.style.color = "var(--danger)";
+        statusMsg.innerHTML = `❌ خطا در ارتباط با اینترنت هنگام ارسال نمره. نمره شما در دستگاه ذخیره شده است. <button onclick="dispatchScoreToSupabase()" style="margin-right:8px; padding:4px 10px; border-radius:6px; border:none; background:var(--primary); color:#fff; cursor:pointer;">تلاش مجدد ارسال</button>`;
+      }
+    }
+
+    /* =========================================================================
+       ۹. مدیریت ریست مخفی دبیر (رمز 9162) و امکانات UI
+       ========================================================================= */
+    let secretClickCount = 0;
+    let secretClickTimer = null;
+
+    document.getElementById("teacher-secret-trigger").addEventListener("click", () => {
+      secretClickCount++;
+      clearTimeout(secretClickTimer);
+      if (secretClickCount >= 3) {
+        secretClickCount = 0;
+        openTeacherModal();
+      } else {
+        secretClickTimer = setTimeout(() => { secretClickCount = 0; }, 900);
+      }
+    });
+
+    window.addEventListener("keydown", (e) => {
+      if (e.ctrlKey && e.shiftKey && (e.key === "R" || e.key === "r" || e.key === "ផ")) {
+        e.preventDefault();
+        openTeacherModal();
+      }
+    });
+
+    function openTeacherModal() {
+      document.getElementById("teacher-pass-input").value = "";
+      document.getElementById("teacher-modal-err").textContent = "";
+      document.getElementById("teacher-modal").style.display = "flex";
+      document.getElementById("teacher-pass-input").focus();
+    }
+
+    function closeTeacherModal() {
+      document.getElementById("teacher-modal").style.display = "none";
+    }
+
+    function executeTeacherAction(actionType) {
+      const pass = document.getElementById("teacher-pass-input").value.trim();
+      const errEl = document.getElementById("teacher-modal-err");
+
+      if (pass !== EXAM_CONFIG.secretResetCode) {
+        errEl.textContent = "رمز عبور نامعتبر است!";
+        return;
+      }
+
+      if (actionType === "reset") {
+        localStorage.removeItem(EXAM_CONFIG.storageKey);
+        location.reload();
+      } else if (actionType === "unlock") {
+        appState.teacherBypassLock = true;
+        saveState();
+        updateScheduleGateUI();
+        closeTeacherModal();
+      }
+    }
+
+    // افکت Ripple روی دکمه‌ها
+    function createRipple(event) {
+      const button = event.currentTarget;
+      const circle = document.createElement("span");
+      const diameter = Math.max(button.clientWidth, button.clientHeight);
+      const radius = diameter / 2;
+      const rect = button.getBoundingClientRect();
+      circle.style.width = circle.style.height = `${diameter}px`;
+      circle.style.left = `${event.clientX - rect.left - radius}px`;
+      circle.style.top = `${event.clientY - rect.top - radius}px`;
+      circle.classList.add("ripple");
+      const existing = button.getElementsByClassName("ripple")[0];
+      if (existing) existing.remove();
+      button.appendChild(circle);
+    }
+
+    // تغییر حالت شب و روز
+    document.getElementById("theme-toggle-btn").addEventListener("click", () => {
+      const current = document.documentElement.getAttribute("data-theme");
+      const next = current === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", next);
+      localStorage.setItem("BARZEGARI_THEME", next);
+    });
+
+    // نوار پیشرفت اسکرول صفحه
+    window.addEventListener("scroll", () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = height > 0 ? (winScroll / height) * 100 : 0;
+      document.getElementById("scroll-progress").style.width = scrolled + "%";
+    });
+
+    /* =========================================================================
+       ۱۰. مقداردهی اولیه هنگام بارگذاری صفحه
+       ========================================================================= */
+    window.addEventListener("DOMContentLoaded", () => {
+      const savedTheme = localStorage.getItem("BARZEGARI_THEME") || "light";
+      document.documentElement.setAttribute("data-theme", savedTheme);
+
+      // جایگذاری مقادیر پایه
+      document.getElementById("meta-course").textContent = EXAM_CONFIG.courseName;
+      document.getElementById("meta-school").textContent = EXAM_CONFIG.schoolName;
+      document.getElementById("meta-teacher").textContent = EXAM_CONFIG.teacherName;
+      document.getElementById("meta-topic").textContent = EXAM_CONFIG.topicName;
+
+      loadSavedState();
+
+      if (appState.studentName) {
+        document.getElementById("student-fullname").value = appState.studentName;
+      }
+      if (appState.studentGrade) {
+        document.getElementById("student-grade").value = appState.studentGrade;
+      }
+
+      updateScheduleGateUI();
+      scheduleClockInterval = setInterval(updateScheduleGateUI, 1000);
+
+      if (appState.started) {
+        enterExamView();
+      }
+    });
+  </script>
+</body>
+</html>
