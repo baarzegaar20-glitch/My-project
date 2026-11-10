@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>آزمون آنلاین فیزیک دهم | دهم - استاد شهریار دولاب</title>
+  <style>
+    :root {
+      --primary: #0f172a;
+      --accent: #2563eb;
+      --accent-hover: #1d4ed8;
+      --bg: #f1f5f9;
+      --card: #ffffff;
+      --text: #1e293b;
+      --border: #cbd5e1;
+      --success: #16a34a;
+      --danger: #dc2626;
+    }
+    * { box-sizing: border-box; font-family: Tahoma, Arial, sans-serif; }
+    body {
+      background: linear-gradient(135deg, #e2e8f0 0%, #f8fafc 100%);
+      color: var(--text);
+      margin: 0;
+      padding: 20px 12px;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+    .app-container {
+      background: var(--card);
+      max-width: 680px;
+      width: 100%;
+      border-radius: 18px;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.1);
+      overflow: hidden;
+      border: 1px solid #e2e8f0;
+    }
+    .header {
+      background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%);
+      color: #ffffff;
+      padding: 24px 20px;
+      text-align: center;
+    }
+    .header h1 {
+      margin: 0 0 10px 0;
+      font-size: 21px;
+    }
+    .header .meta {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    .badge {
+      background: rgba(255, 255, 255, 0.15);
+      color: #f8fafc;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: bold;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+    .content {
+      padding: 24px 20px;
+    }
+    .student-box {
+      background: #f8fafc;
+      border: 2px solid #cbd5e1;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 24px;
+    }
+    .student-box label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 10px;
+      color: var(--primary);
+      font-size: 14px;
+    }
+    select {
+      width: 100%;
+      padding: 12px 14px;
+      font-size: 15px;
+      border-radius: 10px;
+      border: 1px solid #94a3b8;
+      background: #ffffff;
+      color: var(--text);
+      font-weight: bold;
+      cursor: pointer;
+    }
+    select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+    .question-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 18px;
+      transition: all 0.2s ease;
+    }
+    .question-card:hover {
+      border-color: #94a3b8;
+    }
+    .q-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      border-bottom: 1px dashed #e2e8f0;
+      padding-bottom: 8px;
+    }
+    .q-number {
+      font-weight: bold;
+      color: var(--accent);
+      font-size: 14px;
+    }
+    .q-points {
+      background: #eff6ff;
+      color: var(--accent);
+      font-size: 12px;
+      padding: 3px 9px;
+      border-radius: 12px;
+      font-weight: bold;
+    }
+    .q-title {
+      font-size: 15px;
+      font-weight: bold;
+      line-height: 1.7;
+      margin-bottom: 14px;
+      color: #0f172a;
+    }
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .option-item {
+      display: flex;
+      align-items: center;
+      padding: 11px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      background: #f8fafc;
+      font-size: 14px;
+    }
+    .option-item:hover {
+      background: #eff6ff;
+      border-color: #93c5fd;
+    }
+    .option-item input[type="radio"] {
+      margin-left: 10px;
+      transform: scale(1.2);
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+    .submit-btn {
+      width: 100%;
+      padding: 15px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #ffffff;
+      background: var(--accent);
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-top: 10px;
+    }
+    .submit-btn:hover {
+      background: var(--accent-hover);
+    }
+    .submit-btn:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+    }
+    .status-box {
+      margin-top: 18px;
+      padding: 14px;
+      border-radius: 12px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 14px;
+      display: none;
+      line-height: 1.7;
+    }
+    .result-card {
+      background: #f0fdf4;
+      border: 2px solid #86efac;
+      color: #14532d;
+      padding: 20px;
+      border-radius: 14px;
+      margin-top: 20px;
+      display: none;
+      text-align: center;
+    }
+    .result-score {
+      font-size: 26px;
+      font-weight: bold;
+      color: #15803d;
+      margin: 10px 0;
+    }
+    .correct-opt {
+      background-color: #dcfce7 !important;
+      border-color: #22c55e !important;
+      color: #14532d;
+      font-weight: bold;
+    }
+    .wrong-opt {
+      background-color: #fee2e2 !important;
+      border-color: #ef4444 !important;
+      color: #7f1d1d;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+  <div class="header">
+    <h1>آزمون فیزیک دهم (فصل اول: فیزیک و اندازه‌گیری)</h1>
+    <div class="meta">
+      <span class="badge">طراح و دبیر: برزگری</span>
+      <span class="badge">کلاس: دهم - استاد شهریار دولاب</span>
+      <span class="badge">بارم کل: ۲۰ نمره</span>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="student-box">
+      <label for="student-select">نام و نام خانوادگی خود را از لیست زیر انتخاب کنید:</label>
+      <select id="student-select">
+        <option value="">-- انتخاب نام دانش‌آموز --</option>
+      </select>
+    </div>
+
+    <div id="questions-container"></div>
+
+    <button id="submit-btn" class="submit-btn" onclick="finishExam()">ثبت نهایی و ارسال نمره</button>
+
+    <div id="status-box" class="status-box"></div>
+    <div id="result-card" class="result-card"></div>
+  </div>
+</div>
+
+<script>
+  // مشخصات دیتابیس Supabase
+  const SUPABASE_URL = "https://tpwdrzwfzdbmwqlblntu.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_ASPIzP1XV1iSweCV43Oy9Q_PCkz5htN";
+
+  // تنظیمات ثابت این آزمون (بدون نمایش لیست سایر کلاس‌ها)
+  const ACTIVE_SCHOOL = "دهم - استاد شهریار دولاب";
+  const ACTIVE_SUBJECT = "فیزیک دهم";
+  const TOTAL_SCORE = 20;
+
+  // فقط لیست دانش‌آموزان کلاس دهم - استاد شهریار دولاب
+  const STUDENTS = [
+    "آرمین آبادی دولابی",
+    "شمس الدین آزاده",
+    "زعیم آزادی چاهونی",
+    "شایان اسلامی دولابی",
+    "احسان صالحی زاده",
+    "عارف نژادباسعیدو",
+    "بنیامین نعمتی نژاد",
+    "محمدعرفان نیک خو"
+  ];
+
+  // سوالات آزمون فیزیک دهم (۱۰ سوال ۲ نمره‌ای = ۲۰ نمره)
+  const QUESTIONS = [
+    {
+      id: 1,
+      q: "کدام‌یک از کمیت‌های زیر در دستگاه بین‌المللی یکاها (SI) یک کمیت «اصلی» محسوب می‌شود؟",
+      options: [
+        "نیرو",
+        "شدت جریان الکتریکی",
+        "تندی",
+        "انرژی"
+      ],
+      answer: 1,
+      points: 2
+    },
+    {
+      id: 2,
+      q: "کدام‌یک از کمیت‌های زیر یک کمیت «برداری» است؟",
+      options: [
+        "جرم",
+        "دما",
+        "جابه‌جایی",
+        "زمان"
+      ],
+      answer: 2,
+      points: 2
+    },
+    {
+      id: 3,
+      q: "یکای چگالی در دستگاه بین‌المللی یکاها (SI) کدام است؟",
+      options: [
+        "گرم بر سانتی‌متر مکعب (g/cm³)",
+        "کیلوگرم بر متر مکعب (kg/m³)",
+        "کیلوگرم بر لیتر (kg/L)",
+        "گرم بر میلی‌لیتر (g/mL)"
+      ],
+      answer: 1,
+      points: 2
+    },
+    {
+      id: 4,
+      q: "پیشوند «میکرو» (µ) نشان‌دهنده کدام ضریب توانی از ۱۰ است؟",
+      options: [
+        "۱۰ به توان منفی ۳",
+        "۱۰ به توان منفی ۶",
+        "۱۰ به توان منفی ۹",
+        "۱۰ به توان مثبت ۶"
+      ],
+      answer: 1,
+      points: 2
+    },
+    {
+      id: 5,
+      q: "تندی متحرکی ۷۲ کیلومتر بر ساعت (72 km/h) است. این تندی برحسب متر بر ثانیه (m/s) چقدر است؟",
+      options: [
+        "۱۵ متر بر ثانیه",
+        "۲۰ متر بر ثانیه",
+        "۲۵ متر بر ثانیه",
+        "۳۶ متر بر ثانیه"
+      ],
+      answer: 1,
+      points: 2
+    },
+    {
+      id: 6,
+      q: "دقت اندازه‌گیری یک خط‌کش که کمترین درجه روی آن ۱ میلی‌متر است، چقدر می‌باشد؟",
+      options: [
+        "۰/۵ میلی‌متر",
+        "۱ میلی‌متر",
+        "۱ سانتی‌متر",
+        "۰/۱ میلی‌متر"
+      ],
+      answer: 1,
+      points: 2
+    },
+    {
+      id: 7,
+      q: "جرم جسمی ۴۰۰ گرم و حجم آن ۵۰ سانتی‌متر مکعب است. چگالی این جسم چند گرم بر سانتی‌متر مکعب است؟",
+      options: [
+        "۴",
+        "۸",
+        "۱۲",
+        "۲۰"
+      ],
+      answer: 1,
+      points: 2
+    },
+    {
+      id: 8,
+      q: "کدام گزینه عدد 0.00045 را به صورت «نماد علمی» درست نشان می‌دهد؟",
+      options: [
+        "45 × 10⁻⁵",
+        "4.5 × 10⁻⁴",
+        "0.45 × 10⁻³",
+        "4.5 × 10⁴"
+      ],
+      answer: 1,
+      points: 2
+    },
+    {
+      id: 9,
+      q: "حجم ۲ لیتر آب معادل چند سانتی‌متر مکعب (cm³) است؟",
+      options: [
+        "۲۰۰ سانتی‌متر مکعب",
+        "۲۰۰۰ سانتی‌متر مکعب",
+        "۲۰ سانتی‌متر مکعب",
+        "۲۰۰۰۰ سانتی‌متر مکعب"
+      ],
+      answer: 1,
+      points: 2
+    },
+    {
+      id: 10,
+      q: "چگالی طلا 19.3 g/cm³ است. این چگالی برحسب کیلوگرم بر متر مکعب (kg/m³) کدام است؟",
+      options: [
+        "193",
+        "1930",
+        "19300",
+        "1.93"
+      ],
+      answer: 2,
+      points: 2
+    }
+  ];
+
+  // بارگذاری اولیه صفحه
+  window.onload = () => {
+    const selectEl = document.getElementById("student-select");
+    STUDENTS.forEach(name => {
+      const opt = document.createElement("option");
+      opt.value = name;
+      opt.textContent = name;
+      selectEl.appendChild(opt);
+    });
+
+    const container = document.getElementById("questions-container");
+    QUESTIONS.forEach((item, index) => {
+      const card = document.createElement("div");
+      card.className = "question-card";
+      card.id = `q-card-${index}`;
+
+      let optionsHTML = "";
+      item.options.forEach((optText, optIndex) => {
+        optionsHTML += `
+          <label class="option-item" id="label-${index}-${optIndex}">
+            <input type="radio" name="q_${index}" value="${optIndex}">
+            <span>${optText}</span>
+          </label>
+        `;
+      });
+
+      card.innerHTML = `
+        <div class="q-header">
+          <span class="q-number">سوال ${index + 1}</span>
+          <span class="q-points">${item.points} نمره</span>
+        </div>
+        <div class="q-title">${item.q}</div>
+        <div class="options-list">${optionsHTML}</div>
+      `;
+      container.appendChild(card);
+    });
+  };
+
+  // ارسال اطلاعات به جدول Students در Supabase
+  async function sendToSupabase(studentName, score, totalScore, detailsText) {
+    const payload = {
+      Student_name: studentName,
+      School_name: ACTIVE_SCHOOL,
+      Subject: ACTIVE_SUBJECT,
+      Score: parseFloat(score),
+      Total_score: parseFloat(totalScore),
+      Details: detailsText
+    };
+
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/Students`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_KEY,
+        "Authorization": `Bearer ${SUPABASE_KEY}`,
+        "Prefer": "return=minimal"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP Error: ${response.status}`);
+    }
+    return true;
+  }
+
+  // تصحیح و ثبت آزمون
+  async function finishExam() {
+    const studentName = document.getElementById("student-select").value;
+    const statusBox = document.getElementById("status-box");
+    const resultCard = document.getElementById("result-card");
+    const submitBtn = document.getElementById("submit-btn");
+
+    if (!studentName) {
+      statusBox.style.display = "block";
+      statusBox.style.background = "#fee2e2";
+      statusBox.style.color = "#dc2626";
+      statusBox.textContent = "⚠️ لطفاً ابتدا نام خود را از بالای صفحه انتخاب کنید.";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
+    // بررسی پاسخ به تمام سوالات
+    let unanswered = [];
+    QUESTIONS.forEach((_, idx) => {
+      const selected = document.querySelector(`input[name="q_${idx}"]:checked`);
+      if (!selected) unanswered.push(idx + 1);
+    });
+
+    if (unanswered.length > 0) {
+      const confirmSubmit = confirm(`شما به سوال‌های شماره (${unanswered.join("، ")}) پاسخ نداده‌اید. آیا مایل به ثبت نهایی هستید؟`);
+      if (!confirmSubmit) return;
+    }
+
+    // محاسبه نمره و ریز پاسخ‌ها
+    let earnedScore = 0;
+    let correctCount = 0;
+    let detailsArray = [];
+
+    QUESTIONS.forEach((item, idx) => {
+      const selected = document.querySelector(`input[name="q_${idx}"]:checked`);
+      const allRadios = document.querySelectorAll(`input[name="q_${idx}"]`);
+      allRadios.forEach(r => r.disabled = true);
+
+      const correctLabel = document.getElementById(`label-${idx}-${item.answer}`);
+      correctLabel.classList.add("correct-opt");
+
+      if (selected) {
+        const userChoice = parseInt(selected.value);
+        if (userChoice === item.answer) {
+          earnedScore += item.points;
+          correctCount++;
+          detailsArray.push(`س${idx + 1}: درست`);
+        } else {
+          const wrongLabel = document.getElementById(`label-${idx}-${userChoice}`);
+          wrongLabel.classList.add("wrong-opt");
+          detailsArray.push(`س${idx + 1}: غلط`);
+        }
+      } else {
+        detailsArray.push(`س${idx + 1}: نزده`);
+      }
+    });
+
+    document.getElementById("student-select").disabled = true;
+    submitBtn.disabled = true;
+
+    statusBox.style.display = "block";
+    statusBox.style.background = "#eff6ff";
+    statusBox.style.color = "#1d4ed8";
+    statusBox.textContent = "⏳ در حال ثبت نمره در سامانه...";
+
+    const detailsSummary = `تعداد صحیح: ${correctCount} از ${QUESTIONS.length} | ` + detailsArray.join(" ، ");
+
+    try {
+      await sendToSupabase(studentName, earnedScore, TOTAL_SCORE, detailsSummary);
+      statusBox.style.background = "#dcfce7";
+      statusBox.style.color = "#15803d";
+      statusBox.textContent = "✅ نمره و جزئیات آزمون شما با موفقیت در سامانه ثبت شد.";
+    } catch (err) {
+      submitBtn.disabled = false;
+      statusBox.style.background = "#fee2e2";
+      statusBox.style.color = "#dc2626";
+      statusBox.textContent = "❌ خطا در ارسال به سرور. اینترنت خود را بررسی کرده و دوباره دکمه ثبت را بزنید.";
+    }
+
+    resultCard.style.display = "block";
+    resultCard.innerHTML = `
+      <div>دانش‌آموز: <strong>${studentName}</strong></div>
+      <div class="result-score">نمره کسب‌شده: ${earnedScore} از ${TOTAL_SCORE}</div>
+      <div>پاسخ‌های صحیح: ${correctCount} از ${QUESTIONS.length} سوال</div>
+    `;
+  }
+</script>
+
+</body>
+</html>
