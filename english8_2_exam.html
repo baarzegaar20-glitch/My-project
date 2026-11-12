@@ -1,0 +1,2731 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>سامانه هوشمند آزمون آنلاین | زبان انگلیسی هشتم - درس دوم</title>
+  <style>
+    /* ==========================================================================
+       1. CSS VARIABLES & THEME ARCHITECTURE (LIGHT / DARK / GLASSMORPHISM)
+       ========================================================================== */
+    :root {
+      --primary: #1e40af;
+      --primary-light: #3b82f6;
+      --primary-dark: #1e3a8a;
+      --secondary: #0ea5e9;
+      --accent: #f59e0b;
+      --success: #10b981;
+      --success-bg: rgba(16, 185, 129, 0.12);
+      --danger: #ef4444;
+      --danger-bg: rgba(239, 68, 68, 0.12);
+      --warning: #f59e0b;
+      --warning-bg: rgba(245, 158, 11, 0.15);
+      --bg-gradient: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 50%, #f8fafc 100%);
+      --surface: rgba(255, 255, 255, 0.85);
+      --surface-solid: #ffffff;
+      --surface-hover: rgba(241, 245, 249, 0.9);
+      --border: rgba(148, 163, 184, 0.3);
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --text-light: #64748b;
+      --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 10px 30px rgba(15, 23, 42, 0.08);
+      --shadow-lg: 0 20px 40px rgba(15, 23, 42, 0.12);
+      --glass-blur: blur(16px);
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 22px;
+      --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      --font-fa: 'Vazirmatn', 'IRANSans', 'Segoe UI', Tahoma, Arial, sans-serif;
+      --font-en: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    [data-theme="dark"] {
+      --primary: #3b82f6;
+      --primary-light: #60a5fa;
+      --primary-dark: #2563eb;
+      --secondary: #38bdf8;
+      --bg-gradient: linear-gradient(135deg, #090d16 0%, #0f172a 50%, #1e1b4b 100%);
+      --surface: rgba(30, 41, 59, 0.82);
+      --surface-solid: #1e293b;
+      --surface-hover: rgba(51, 65, 85, 0.85);
+      --border: rgba(148, 163, 184, 0.2);
+      --text-main: #f8fafc;
+      --text-muted: #cbd5e1;
+      --text-light: #94a3b8;
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
+      --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.6);
+    }
+
+    /* ==========================================================================
+       2. RESET & BASE STYLES
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-size: 16px;
+    }
+
+    body {
+      font-family: var(--font-fa);
+      background: var(--bg-gradient);
+      background-attachment: fixed;
+      color: var(--text-main);
+      min-height: 100vh;
+      line-height: 1.7;
+      overflow-x: hidden;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    /* Bidirectional Text Support for English Content */
+    .ltr {
+      direction: ltr;
+      text-align: left;
+      font-family: var(--font-en);
+      unicode-bidi: embed;
+    }
+
+    .en-inline {
+      direction: ltr;
+      display: inline-block;
+      font-family: var(--font-en);
+      font-weight: 600;
+      padding: 0 4px;
+    }
+
+    /* ==========================================================================
+       3. TOP SCROLL & PROGRESS BAR & STICKY HEADER
+       ========================================================================== */
+    .top-bars-wrapper {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: var(--surface);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+
+    .scroll-indicator-track {
+      height: 4px;
+      width: 100%;
+      background: rgba(148, 163, 184, 0.2);
+      overflow: hidden;
+    }
+
+    .scroll-indicator-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--secondary), var(--primary), var(--accent));
+      transition: width 0.1s linear;
+    }
+
+    .app-header {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .brand-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+      flex-shrink: 0;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .brand-titles h1 {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--text-main);
+      line-height: 1.3;
+    }
+
+    .brand-titles p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Timer Pill */
+    .timer-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: var(--surface-solid);
+      border: 1.5px solid var(--border);
+      font-weight: 800;
+      font-size: 0.95rem;
+      color: var(--primary);
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition);
+    }
+
+    .timer-pill.warning {
+      background: var(--warning-bg);
+      border-color: var(--warning);
+      color: #b45309;
+      animation: pulseWarning 1.5s infinite;
+    }
+
+    .timer-pill.danger {
+      background: var(--danger-bg);
+      border-color: var(--danger);
+      color: var(--danger);
+      animation: pulseDanger 0.8s infinite;
+    }
+
+    @keyframes pulseWarning {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+    }
+
+    @keyframes pulseDanger {
+      0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+      50% { transform: scale(1.05); box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+    }
+
+    /* Exam Progress Bar inside Header */
+    .exam-progress-strip {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 18px 8px 18px;
+      display: none;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    .exam-progress-strip.active {
+      display: flex;
+    }
+
+    .progress-bar-container {
+      flex: 1;
+      height: 8px;
+      background: rgba(148, 163, 184, 0.25);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--success));
+      border-radius: 999px;
+      transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ==========================================================================
+       4. BUTTONS & INTERACTIVE ELEMENTS (WITH RIPPLE EFFECT)
+       ========================================================================== */
+    .btn {
+      position: relative;
+      overflow: hidden;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px 20px;
+      border-radius: var(--radius-md);
+      font-family: var(--font-fa);
+      font-weight: 700;
+      font-size: 0.92rem;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: var(--transition);
+      user-select: none;
+      outline: none;
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: #ffffff;
+      box-shadow: 0 6px 18px rgba(37, 99, 235, 0.28);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #059669, var(--success));
+      color: #ffffff;
+      box-shadow: 0 6px 18px rgba(16, 185, 129, 0.28);
+    }
+
+    .btn-outline {
+      background: var(--surface-solid);
+      color: var(--text-main);
+      border-color: var(--border);
+    }
+
+    .btn-outline:hover:not(:disabled) {
+      background: var(--surface-hover);
+      border-color: var(--primary-light);
+    }
+
+    .btn-icon {
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      border-radius: 12px;
+      background: var(--surface-solid);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+    }
+
+    .btn-icon:hover {
+      border-color: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .ripple-span {
+      position: absolute;
+      border-radius: 50%;
+      transform: scale(0);
+      animation: rippleAnim 0.6s linear;
+      background-color: rgba(255, 255, 255, 0.45);
+      pointer-events: none;
+    }
+
+    @keyframes rippleAnim {
+      to {
+        transform: scale(4);
+        opacity: 0;
+      }
+    }
+
+    /* ==========================================================================
+       5. MAIN LAYOUT & GLASS CARDS
+       ========================================================================== */
+    .main-wrapper {
+      max-width: 1020px;
+      margin: 105px auto 90px auto;
+      padding: 0 16px;
+    }
+
+    .glass-card {
+      background: var(--surface);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 26px;
+      box-shadow: var(--shadow-md);
+      margin-bottom: 24px;
+      transition: var(--transition);
+    }
+
+    /* ==========================================================================
+       6. LOGIN & GATEKEEPER SCREEN
+       ========================================================================== */
+    .login-container {
+      max-width: 640px;
+      margin: 20px auto;
+    }
+
+    .official-banner {
+      text-align: center;
+      padding-bottom: 20px;
+      margin-bottom: 22px;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    .official-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(59, 130, 246, 0.12);
+      color: var(--primary);
+      padding: 5px 14px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .official-banner h2 {
+      font-size: 1.5rem;
+      font-weight: 900;
+      margin-bottom: 6px;
+      color: var(--text-main);
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .meta-item {
+      background: var(--surface-solid);
+      border: 1px solid var(--border);
+      padding: 12px 14px;
+      border-radius: var(--radius-md);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .meta-label {
+      font-size: 0.76rem;
+      color: var(--text-light);
+      font-weight: 600;
+    }
+
+    .meta-value {
+      font-size: 0.93rem;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .gate-status-box {
+      padding: 18px;
+      border-radius: var(--radius-md);
+      margin-bottom: 22px;
+      text-align: center;
+      border: 1.5px solid var(--border);
+      background: var(--surface-solid);
+    }
+
+    .gate-status-box.locked-before {
+      border-color: var(--warning);
+      background: var(--warning-bg);
+    }
+
+    .gate-status-box.locked-after {
+      border-color: var(--danger);
+      background: var(--danger-bg);
+    }
+
+    .gate-status-box.open {
+      border-color: var(--success);
+      background: var(--success-bg);
+    }
+
+    .countdown-digits {
+      font-size: 1.6rem;
+      font-weight: 900;
+      font-family: var(--font-en);
+      direction: ltr;
+      margin-top: 8px;
+      color: var(--primary);
+      letter-spacing: 1px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-label {
+      display: block;
+      font-weight: 700;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+      color: var(--text-main);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 15px;
+      border-radius: var(--radius-md);
+      border: 1.5px solid var(--border);
+      background: var(--surface-solid);
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.95rem;
+      transition: var(--transition);
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+    }
+
+    /* ==========================================================================
+       7. EXAM TOOLBAR (SEARCH, FILTER, CURRENT QUESTION INDICATOR)
+       ========================================================================== */
+    .exam-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+    }
+
+    .search-box {
+      position: relative;
+      flex: 1;
+      min-width: 220px;
+    }
+
+    .search-box input {
+      padding-right: 40px;
+    }
+
+    .search-box svg {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-light);
+      pointer-events: none;
+    }
+
+    .toolbar-filters {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .chip-btn {
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      border: 1px solid var(--border);
+      background: var(--surface-solid);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .chip-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    /* ==========================================================================
+       8. QUESTION CARDS & TYPES STYLING
+       ========================================================================== */
+    .question-card {
+      position: relative;
+      scroll-margin-top: 125px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
+    .question-card:hover {
+      border-color: rgba(59, 130, 246, 0.45);
+    }
+
+    .question-card.answered {
+      border-right: 5px solid var(--success);
+    }
+
+    .question-card.flagged {
+      border-right: 5px solid var(--warning);
+    }
+
+    .q-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-bottom: 14px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+
+    .q-badges {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .q-num-badge {
+      background: var(--primary);
+      color: #fff;
+      font-weight: 800;
+      font-size: 0.85rem;
+      padding: 4px 12px;
+      border-radius: 999px;
+    }
+
+    .q-type-badge {
+      background: rgba(14, 165, 233, 0.12);
+      color: var(--secondary);
+      font-weight: 700;
+      font-size: 0.78rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+
+    .q-diff-badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 3px 9px;
+      border-radius: 999px;
+    }
+
+    .diff-easy { background: rgba(16, 185, 129, 0.12); color: var(--success); }
+    .diff-medium { background: rgba(245, 158, 11, 0.15); color: #d97706; }
+    .diff-hard { background: rgba(239, 68, 68, 0.12); color: var(--danger); }
+
+    .q-actions-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .q-points {
+      font-size: 0.85rem;
+      font-weight: 800;
+      color: var(--text-muted);
+      background: var(--surface-solid);
+      padding: 4px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .flag-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 5px 10px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: var(--font-fa);
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      transition: var(--transition);
+    }
+
+    .flag-btn.active {
+      background: var(--warning-bg);
+      border-color: var(--warning);
+      color: #b45309;
+    }
+
+    .q-instruction-fa {
+      font-size: 0.92rem;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .q-prompt-en {
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: var(--text-main);
+      background: var(--surface-solid);
+      padding: 14px 18px;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      margin-bottom: 16px;
+      line-height: 1.65;
+    }
+
+    .reading-passage {
+      background: linear-gradient(to right, rgba(59, 130, 246, 0.05), rgba(14, 165, 233, 0.05));
+      border-left: 4px solid var(--primary);
+      padding: 16px 20px;
+      border-radius: var(--radius-md);
+      margin-bottom: 18px;
+      font-size: 1rem;
+      line-height: 1.8;
+    }
+
+    /* Options Grid (MCQ & True/False) */
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+      direction: ltr;
+    }
+
+    .option-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 16px;
+      border-radius: var(--radius-md);
+      background: var(--surface-solid);
+      border: 1.5px solid var(--border);
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: var(--font-en);
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .option-label:hover {
+      border-color: var(--primary-light);
+      background: var(--surface-hover);
+    }
+
+    .option-label input[type="radio"] {
+      accent-color: var(--primary);
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    .option-label.selected {
+      border-color: var(--primary);
+      background: rgba(59, 130, 246, 0.1);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.15);
+    }
+
+    /* Matching Grid */
+    .matching-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 10px;
+      direction: ltr;
+    }
+
+    .matching-left {
+      background: var(--surface-solid);
+      padding: 11px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      font-family: var(--font-en);
+      font-weight: 600;
+    }
+
+    /* Word Ordering / Unscramble */
+    .word-bank {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+      direction: ltr;
+      padding: 12px;
+      background: rgba(148, 163, 184, 0.1);
+      border-radius: var(--radius-md);
+    }
+
+    .word-chip {
+      padding: 7px 14px;
+      background: var(--surface-solid);
+      border: 1.5px solid var(--primary-light);
+      color: var(--primary);
+      border-radius: 999px;
+      font-family: var(--font-en);
+      font-weight: 700;
+      font-size: 0.92rem;
+      cursor: pointer;
+      transition: var(--transition);
+      user-select: none;
+    }
+
+    .word-chip:hover {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    /* Sub-questions (Reading / Dialogue / Multi-part) */
+    .sub-question-block {
+      background: rgba(148, 163, 184, 0.07);
+      padding: 14px;
+      border-radius: var(--radius-md);
+      margin-bottom: 12px;
+      border: 1px solid var(--border);
+    }
+
+    /* Post-Submission Review Box */
+    .review-feedback {
+      margin-top: 16px;
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    .review-feedback.visible {
+      display: block;
+    }
+
+    .review-feedback.correct {
+      background: var(--success-bg);
+      border: 1px solid var(--success);
+      color: var(--text-main);
+    }
+
+    .review-feedback.partial {
+      background: var(--warning-bg);
+      border: 1px solid var(--warning);
+      color: var(--text-main);
+    }
+
+    .review-feedback.wrong {
+      background: var(--danger-bg);
+      border: 1px solid var(--danger);
+      color: var(--text-main);
+    }
+
+    /* ==========================================================================
+       9. FLOATING NAVIGATION PANEL
+       ========================================================================== */
+    .floating-nav-toggle {
+      position: fixed;
+      bottom: 22px;
+      left: 22px;
+      z-index: 990;
+      border-radius: 999px;
+      padding: 12px 18px;
+      background: var(--primary);
+      color: #fff;
+      font-weight: 800;
+      box-shadow: var(--shadow-lg);
+      border: none;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-fa);
+    }
+
+    .floating-nav-drawer {
+      position: fixed;
+      bottom: 80px;
+      left: 22px;
+      z-index: 995;
+      width: 300px;
+      max-width: calc(100vw - 44px);
+      background: var(--surface);
+      backdrop-filter: var(--glass-blur);
+      -webkit-backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 18px;
+      box-shadow: var(--shadow-lg);
+      display: none;
+    }
+
+    .floating-nav-drawer.open {
+      display: block;
+      animation: fadeUp 0.25s ease;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .nav-grid-numbers {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .nav-num-btn {
+      height: 38px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: var(--surface-solid);
+      color: var(--text-main);
+      font-weight: 800;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: var(--font-fa);
+    }
+
+    .nav-num-btn.answered {
+      background: var(--success);
+      color: #fff;
+      border-color: var(--success);
+    }
+
+    .nav-num-btn.flagged {
+      background: var(--warning);
+      color: #fff;
+      border-color: var(--warning);
+    }
+
+    .nav-num-btn.current {
+      outline: 3px solid var(--primary-light);
+    }
+
+    /* ==========================================================================
+       10. RESULTS REPORT CARD & MODALS
+       ========================================================================== */
+    .result-hero {
+      text-align: center;
+      padding: 20px 10px;
+    }
+
+    .score-circle {
+      width: 145px;
+      height: 145px;
+      border-radius: 50%;
+      margin: 0 auto 18px auto;
+      background: conic-gradient(var(--primary) var(--deg, 0deg), rgba(148, 163, 184, 0.2) 0deg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-md);
+    }
+
+    .score-circle-inner {
+      width: 118px;
+      height: 118px;
+      border-radius: 50%;
+      background: var(--surface-solid);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .score-big {
+      font-size: 1.75rem;
+      font-weight: 900;
+      color: var(--primary);
+      line-height: 1.1;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(135px, 1fr));
+      gap: 12px;
+      margin: 20px 0;
+    }
+
+    .stat-card {
+      background: var(--surface-solid);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      text-align: center;
+    }
+
+    .stat-card .val {
+      font-size: 1.35rem;
+      font-weight: 900;
+      display: block;
+    }
+
+    .stat-card .lbl {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    /* Modals */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(6px);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-backdrop.active {
+      display: flex;
+    }
+
+    .modal-box {
+      background: var(--surface-solid);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      max-width: 520px;
+      width: 100%;
+      padding: 26px;
+      box-shadow: var(--shadow-lg);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 640px) {
+      .glass-card { padding: 18px; }
+      .matching-row { grid-template-columns: 1fr; }
+      .app-header { padding: 8px 12px; }
+      .brand-titles h1 { font-size: 0.95rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ========================================================================
+       STICKY HEADER & PROGRESS BARS
+       ======================================================================== -->
+  <header class="top-bars-wrapper" role="banner">
+    <div class="scroll-indicator-track" title="میزان اسکرول صفحه">
+      <div id="scroll-bar" class="scroll-indicator-fill"></div>
+    </div>
+
+    <div class="app-header">
+      <div class="brand-info">
+        <div class="brand-logo" id="secret-logo-trigger" title="سامانه آزمون هوشمند">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          </svg>
+        </div>
+        <div class="brand-titles">
+          <h1 id="hdr-title">زبان انگلیسی هشتم</h1>
+          <p id="hdr-teacher-trigger">طراح و دبیر: <span id="hdr-teacher-name">برزگری</span></p>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <div id="exam-timer-pill" class="timer-pill hidden" aria-live="polite">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+          <span id="timer-display" class="ltr">60:00</span>
+        </div>
+
+        <button type="button" id="theme-toggle-btn" class="btn btn-icon" aria-label="تغییر تم روشن و تاریک" title="تغییر حالت شب و روز">
+          <svg id="theme-icon-sun" class="hidden" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg id="theme-icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Exam Progress Bar -->
+    <div id="exam-progress-strip" class="exam-progress-strip">
+      <span id="progress-text">پیشرفت: ۰٪ (۰ از ۱۵)</span>
+      <div class="progress-bar-container">
+        <div id="progress-bar-fill" class="progress-bar-fill"></div>
+      </div>
+      <span id="current-q-indicator">سؤال جاری: ۱</span>
+    </div>
+  </header>
+
+  <!-- ========================================================================
+       MAIN CONTENT AREA
+       ======================================================================== -->
+  <main class="main-wrapper" role="main">
+
+    <!-- 1. LOGIN & SCHEDULE GATEKEEPER SECTION -->
+    <section id="login-view" class="login-container glass-card">
+      <div class="official-banner">
+        <span class="official-badge">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>
+          سامانه رسمی ارزشیابی مستمر و پایانی
+        </span>
+        <h2 id="login-subject-title">زبان انگلیسی</h2>
+        <p id="login-topic-subtitle" style="color: var(--text-muted); font-weight: 700;"></p>
+      </div>
+
+      <div class="meta-grid">
+        <div class="meta-item">
+          <span class="meta-label">نام دبیر</span>
+          <span class="meta-value" id="meta-teacher">برزگری</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">نام مدرسه</span>
+          <span class="meta-value" id="meta-school">-</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">تاریخ برگزاری</span>
+          <span class="meta-value" id="meta-date">-</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">بازه زمانی مجاز</span>
+          <span class="meta-value" id="meta-time">-</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">مدت زمان آزمون</span>
+          <span class="meta-value" id="meta-duration">-</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">بارم کل آزمون</span>
+          <span class="meta-value">۲۰ نمره استاندارد</span>
+        </div>
+      </div>
+
+      <!-- Time Lock Status Box -->
+      <div id="gate-status-box" class="gate-status-box">
+        <div id="gate-status-title" style="font-weight: 800; font-size: 1rem;">در حال بررسی زمان آزمون...</div>
+        <div id="gate-countdown" class="countdown-digits hidden">00:00:00</div>
+        <div id="gate-status-desc" style="font-size: 0.84rem; color: var(--text-muted); margin-top: 4px;"></div>
+      </div>
+
+      <!-- Student Login Form -->
+      <form id="login-form" novalidate>
+        <div class="form-group">
+          <label class="form-label" for="student-fullname">نام و نام خانوادگی دانش‌آموز (اجباری):</label>
+          <input type="text" id="student-fullname" class="form-control" placeholder="نام خود را از لیست انتخاب کنید یا کامل تایپ نمایید..." list="students-datalist" required autocomplete="name">
+          <datalist id="students-datalist"></datalist>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="student-grade">پایه و کلاس تحصیلی (اجباری):</label>
+          <select id="student-grade" class="form-control" required>
+            <option value="">-- انتخاب پایه تحصیلی --</option>
+            <option value="هشتم - حکمت گوری" selected>هشتم - حکمت گوری</option>
+            <option value="هشتم - الف">هشتم - الف</option>
+            <option value="هشتم - ب">هشتم - ب</option>
+          </select>
+        </div>
+
+        <div id="login-error-msg" style="color: var(--danger); font-weight: 700; font-size: 0.88rem; margin-bottom: 14px; display: none;"></div>
+
+        <button type="submit" id="start-exam-btn" class="btn btn-primary" style="width: 100%; font-size: 1rem; padding: 14px;">
+          ورود و شروع آزمون رسمی
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+        </button>
+      </form>
+    </section>
+
+    <!-- 2. EXAM VIEW SECTION -->
+    <section id="exam-view" class="hidden">
+      <!-- Student Info & Search/Filter Toolbar -->
+      <div class="glass-card exam-toolbar">
+        <div class="search-box">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          <input type="search" id="question-search-input" class="form-control" placeholder="جستجو در متن سؤال‌های انگلیسی یا راهنمای فارسی...">
+        </div>
+
+        <div class="toolbar-filters" role="group" aria-label="فیلتر سؤالات">
+          <button type="button" class="chip-btn active" data-filter="all">همه سؤالات</button>
+          <button type="button" class="chip-btn" data-filter="unanswered">پاسخ‌نداده</button>
+          <button type="button" class="chip-btn" data-filter="flagged">علامت‌گذاری‌شده</button>
+        </div>
+      </div>
+
+      <!-- Results Summary Card (Visible after submission) -->
+      <div id="result-summary-card" class="glass-card hidden">
+        <div class="result-hero">
+          <div class="official-badge">کارنامه نهایی و تحلیل هوشمند پاسخ‌ها</div>
+          <h2 id="res-student-name" style="font-size: 1.35rem; font-weight: 900; margin-bottom: 16px;"></h2>
+
+          <div class="score-circle" id="res-score-circle">
+            <div class="score-circle-inner">
+              <span class="score-big" id="res-score-val">0</span>
+              <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700;">از ۲۰ نمره</span>
+            </div>
+          </div>
+
+          <div id="res-cloud-status" style="font-size: 0.9rem; font-weight: 800; margin-bottom: 14px;"></div>
+
+          <div class="stats-grid">
+            <div class="stat-card">
+              <span class="val" id="res-percent" style="color: var(--primary);">0%</span>
+              <span class="lbl">درصد موفقیت</span>
+            </div>
+            <div class="stat-card">
+              <span class="val" id="res-correct" style="color: var(--success);">0</span>
+              <span class="lbl">پاسخ صحیح</span>
+            </div>
+            <div class="stat-card">
+              <span class="val" id="res-wrong" style="color: var(--danger);">0</span>
+              <span class="lbl">پاسخ غلط / ناقص</span>
+            </div>
+            <div class="stat-card">
+              <span class="val" id="res-unanswered" style="color: var(--warning);">0</span>
+              <span class="lbl">بدون پاسخ</span>
+            </div>
+            <div class="stat-card">
+              <span class="val ltr" id="res-time-spent">00:00</span>
+              <span class="lbl">زمان صرف‌شده</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Questions Container -->
+      <div id="questions-container"></div>
+
+      <!-- Final Submit Card -->
+      <div id="submit-footer-card" class="glass-card" style="text-align: center;">
+        <h3 style="margin-bottom: 8px; font-weight: 900;">پایان پاسخ‌گویی و ثبت نهایی برگه آزمون</h3>
+        <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 18px;">
+          پس از ثبت نهایی، پاسخ‌ها قفل شده، تصحیح هوشمند انجام می‌گیرد و نمره شما در سامانه ثبت خواهد شد.
+        </p>
+        <button type="button" id="open-submit-modal-btn" class="btn btn-success" style="font-size: 1.05rem; padding: 14px 36px;">
+          ثبت نهایی و دریافت کارنامه
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        </button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========================================================================
+       FLOATING QUICK NAVIGATION PANEL
+       ======================================================================== -->
+  <button type="button" id="floating-nav-btn" class="floating-nav-toggle" aria-label="پنل ناوبری سریع سؤالات">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+      <rect x="3" y="3" width="7" height="7"></rect>
+      <rect x="14" y="3" width="7" height="7"></rect>
+      <rect x="14" y="14" width="7" height="7"></rect>
+      <rect x="3" y="14" width="7" height="7"></rect>
+    </svg>
+    <span>ناوبری سؤالات</span>
+  </button>
+
+  <aside id="floating-nav-drawer" class="floating-nav-drawer" aria-label="لیست شماره سؤالات">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <strong style="font-size: 0.92rem;">پرش سریع به سؤال</strong>
+      <button type="button" id="close-nav-drawer-btn" class="btn-icon" style="width: 28px; height: 28px; border-radius: 8px;">✕</button>
+    </div>
+    <div style="display: flex; gap: 10px; font-size: 0.74rem; margin-top: 8px; color: var(--text-muted);">
+      <span>🟢 پاسخ‌داده‌شده</span>
+      <span>🟠 علامت‌دار</span>
+      <span>⚪ سفید</span>
+    </div>
+    <div id="nav-grid-numbers" class="nav-grid-numbers"></div>
+  </aside>
+
+  <!-- ========================================================================
+       CONFIRM SUBMIT MODAL
+       ======================================================================== -->
+  <div id="confirm-submit-modal" class="modal-backdrop" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <h3 style="font-size: 1.2rem; font-weight: 900; margin-bottom: 10px;">تأیید ثبت نهایی برگه آزمون</h3>
+      <p id="submit-modal-summary" style="font-size: 0.92rem; color: var(--text-muted); margin-bottom: 20px;"></p>
+      <div style="display: flex; gap: 10px; justify-content: flex-end;">
+        <button type="button" id="cancel-submit-btn" class="btn btn-outline">بازگشت و مرور برگه</button>
+        <button type="button" id="confirm-final-submit-btn" class="btn btn-success">بله، ثبت نهایی کن</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       SECRET TEACHER PANEL MODAL (PASSWORD: 9162)
+       ======================================================================== -->
+  <div id="teacher-panel-modal" class="modal-backdrop" role="dialog" aria-modal="true">
+    <div class="modal-box">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+        <h3 style="font-size: 1.15rem; font-weight: 900; color: var(--primary);">پنل مدیریت مخفی دبیر (برزگری)</h3>
+        <button type="button" id="close-teacher-modal-btn" class="btn-icon" style="width: 32px; height: 32px;">✕</button>
+      </div>
+
+      <!-- Password Gate -->
+      <div id="teacher-auth-section">
+        <label class="form-label" for="teacher-pin-input">رمز عبور مدیریت را وارد نمایید:</label>
+        <input type="password" id="teacher-pin-input" class="form-control ltr" placeholder="****" maxlength="8" style="margin-bottom: 12px; text-align: center; font-size: 1.2rem; letter-spacing: 4px;">
+        <div id="teacher-pin-error" style="color: var(--danger); font-size: 0.84rem; font-weight: 700; margin-bottom: 10px; display: none;">رمز وارد شده صحیح نیست.</div>
+        <button type="button" id="verify-teacher-pin-btn" class="btn btn-primary" style="width: 100%;">ورود به پنل دبیر</button>
+      </div>
+
+      <!-- Teacher Controls (Unlocked after PIN 9162) -->
+      <div id="teacher-controls-section" class="hidden">
+        <div style="margin-bottom: 14px;">
+          <label class="form-label" for="strictness-select">سطح سخت‌گیری موتور تصحیح هوشمند:</label>
+          <select id="strictness-select" class="form-control">
+            <option value="strict">سخت (حساس به املای دقیق)</option>
+            <option value="standard" selected>استاندارد (پیشنهادی آموزش‌وپرورش)</option>
+            <option value="flexible">منعطف (ارفاق در خطاهای تایپی جزئی)</option>
+          </select>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px;">
+          <button type="button" id="t-btn-unlock-time" class="btn btn-outline" style="font-size: 0.82rem;">باز کردن قفل زمانی آزمون</button>
+          <button type="button" id="t-btn-reset-timer" class="btn btn-outline" style="font-size: 0.82rem;">ریست کامل تایمر</button>
+          <button type="button" id="t-btn-allow-retake" class="btn btn-outline" style="font-size: 0.82rem;">فعال‌سازی شرکت مجدد</button>
+          <button type="button" id="t-btn-reset-all" class="btn" style="background: var(--danger); color: #fff; font-size: 0.82rem;">حذف کل LocalStorage</button>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <strong style="font-size: 0.85rem; display: block; margin-bottom: 6px;">اطلاعات ذخیره‌شده فعلی در مرورگر:</strong>
+          <pre id="teacher-storage-dump" class="ltr" style="background: rgba(15, 23, 42, 0.08); padding: 10px; border-radius: 8px; font-size: 0.75rem; max-height: 170px; overflow: auto;"></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================
+       JAVASCRIPT APPLICATION ARCHITECTURE (ES6+ VANILLA JS)
+       ======================================================================== -->
+  <script>
+    /**
+     * ========================================================================
+     * ۱. تنظیمات اولیه (CONFIGURATION) - مخصوص ویرایش سریع توسط دبیر
+     * ========================================================================
+     */
+    const EXAM_CONFIG = {
+      // اطلاعات ثابت
+      subjectName: "زبان انگلیسی",
+      schoolName: "", // طبق دستورالعمل، در تنظیمات پایه خالی قرار داده شده و در زمان اجرا می‌تواند از override مدرسه استفاده کند
+
+      // اطلاعات پیش‌فرض و سفارشی‌شده برای درخواست فعلی
+      teacherName: "برزگری", // دقیقاً فقط همین متن بدون عنوان اضافی
+      topic: "پایه هشتم - درس دوم (Lesson 2: My Week)",
+      activeSchoolOverride: "حکمت گوری", // نمایش نام مدرسه درخواستی شما (در صورت خالی گذاشتن، از schoolName استفاده می‌شود)
+
+      // تنظیمات زمان‌بندی آزمون (۲۶ آبان ساعت ۱۰:۰۰ تا ۱۱:۰۰ صبح - قبل و بعد قفل)
+      // اگر examDate یا ساعت‌ها خالی ("") باشند، آزمون همیشه فعال است
+      examDate: "1405-08-26", // فرمت شمسی YYYY-MM-DD (روز و ماه ۲۶ آبان در هر سال به‌صورت هوشمند تطبیق داده می‌شود)
+      startTime: "10:00",     // ساعت شروع (فرمت ۲۴ ساعته HH:MM)
+      endTime: "11:00",       // ساعت پایان (فرمت ۲۴ ساعته HH:MM)
+      durationMinutes: 60,    // مدت زمان آزمون به دقیقه
+
+      // سطح سخت‌گیری پیش‌فرض موتور تصحیح هوشمند: 'strict' | 'standard' | 'flexible'
+      gradingStrictness: "standard",
+
+      // تنظیمات اتصال به دیتابیس Supabase (مطابق کد ارسالی شما برای ثبت آنلاین نمرات)
+      supabase: {
+        enabled: true,
+        url: "https://tpwdrzwfzdbmwqlblntu.supabase.co",
+        key: "sb_publishable_ASPIzP1XV1iSweCV43Oy9Q_PCkz5htN",
+        activeSchool: "حکمت گوری",
+        activeSubject: "زبان انگلیسی هشتم - درس دوم"
+      },
+
+      // لیست پیشنهادی دانش‌آموزان (دانش‌آموز می‌تواند نام خود را انتخاب یا تایپ کند)
+      presetStudents: [
+        "محمدامین رضایی", "امیرحسین محمدی", "مهدی کریمی", "ابوالفضل حسینی",
+        "فرهاد مرادی", "سجاد نادری", "حسین جعفری", "عرفان حیدری", "یاسین قاسمی"
+      ]
+    };
+
+    /**
+     * ========================================================================
+     * ۲. بانک سؤالات استاندارد درس دوم زبان انگلیسی هشتم (Lesson 2: My Week)
+     * مجموع بارم دقیقاً ۲۰ نمره - پوشش کامل هر ۱۳ تیپ سؤال استاندارد
+     * ========================================================================
+     */
+    const QUESTION_BANK = [
+      {
+        id: "q1",
+        type: "mcq",
+        typeLabel: "چهارگزینه‌ای (Multiple Choice)",
+        difficulty: "easy",
+        points: 1,
+        instructionFa: "گزینه صحیح را با توجه به روزهای هفته در درس دوم انتخاب کنید.",
+        promptEn: "A: What day is today?\nB: Today is Monday. Tomorrow is .................... .",
+        options: ["Sunday", "Tuesday", "Wednesday", "Thursday"],
+        correctAnswers: ["Tuesday"],
+        explanation: "روز بعد از دوشنبه (Monday)، سه‌شنبه (Tuesday) است."
+      },
+      {
+        id: "q2",
+        type: "true_false",
+        typeLabel: "صحیح / غلط (True / False)",
+        difficulty: "easy",
+        points: 1,
+        instructionFa: "مشخص کنید جمله زیر از نظر معنایی و فرهنگ ایران صحیح است یا خیر.",
+        promptEn: "In Iran, the weekend is on Thursday and Friday.",
+        options: ["True", "False"],
+        correctAnswers: ["True"],
+        explanation: "در ایران روزهای پایانی هفته پنج‌شنبه (Thursday) و جمعه (Friday) هستند."
+      },
+      {
+        id: "q3",
+        type: "fill_blank",
+        typeLabel: "جای خالی (Fill in the Blank)",
+        difficulty: "medium",
+        points: 1.5,
+        instructionFa: "جای خالی را با حرف اضافه زمانی مناسب (برای روزهای هفته) کامل کنید.",
+        promptEn: "I always visit my grandparents .................... Fridays.",
+        correctAnswers: ["on", "every"],
+        synonyms: ["on", "every"],
+        explanation: "قبل از نام روزهای هفته در زبان انگلیسی از حرف اضافه 'on' استفاده می‌شود."
+      },
+      {
+        id: "q4",
+        type: "matching",
+        typeLabel: "تطبیق عبارات (Matching)",
+        difficulty: "medium",
+        points: 2,
+        instructionFa: "فعل‌های ستون چپ را به عبارت‌های مناسب در ستون راست وصل کنید تا فعالیت‌های هفتگی ساخته شوند.",
+        promptEn: "Match the verbs in Column A with the correct phrases in Column B:",
+        pairs: [
+          { left: "1. read", rightOptions: ["the Quran / a story book", "to the gym", "computer games", "relatives"], answer: "the Quran / a story book" },
+          { left: "2. play", rightOptions: ["the Quran / a story book", "to the gym", "computer games", "relatives"], answer: "computer games" },
+          { left: "3. go", rightOptions: ["the Quran / a story book", "to the gym", "computer games", "relatives"], answer: "to the gym" },
+          { left: "4. visit", rightOptions: ["the Quran / a story book", "to the gym", "computer games", "relatives"], answer: "relatives" }
+        ],
+        explanation: "ترکیب‌های صحیح درس دوم: read the Quran، play computer games، go to the gym، visit relatives."
+      },
+      {
+        id: "q5",
+        type: "unscramble",
+        typeLabel: "مرتب کردن کلمات (Word Ordering)",
+        difficulty: "hard",
+        points: 2,
+        instructionFa: "کلمات به‌هم‌ریخته زیر را مرتب کنید تا یک جمله پرسشی صحیح ساخته شود (می‌توانید روی کلمات کلیک کنید یا تایپ نمایید).",
+        promptEn: "do / on / What / do / you / Mondays / ?",
+        words: ["do", "on", "What", "do", "you", "Mondays", "?"],
+        correctAnswers: [
+          "What do you do on Mondays?",
+          "On Mondays what do you do?"
+        ],
+        keywords: ["what", "do", "you", "do", "on", "mondays"],
+        explanation: "ساختار سؤال در زمان حال ساده برای برنامه هفتگی: What do you do on Mondays?"
+      },
+      {
+        id: "q6",
+        type: "dropdown",
+        typeLabel: "انتخاب از لیست (Dropdown)",
+        difficulty: "easy",
+        points: 1,
+        instructionFa: "پاسخ صحیح را از منوی بازشو انتخاب نمایید.",
+        promptEn: "There are seven .................... in a week.",
+        dropdownOptions: ["months", "days", "weeks", "hours"],
+        correctAnswers: ["days"],
+        explanation: "در هر هفته هفت روز (seven days) وجود دارد."
+      },
+      {
+        id: "q7",
+        type: "dialogue",
+        typeLabel: "کامل کردن مکالمه (Dialogue Completion)",
+        difficulty: "medium",
+        points: 2,
+        instructionFa: "مکالمه زیر بین علی و دبیر را با کلمات مناسب کامل کنید.",
+        promptEn: "Complete the conversation:",
+        subQuestions: [
+          {
+            subId: "q7_a",
+            prompt: "Teacher: What do you .................... on Thursdays afternoon?",
+            correctAnswers: ["do", "usually do", "study", "play"],
+            points: 1
+          },
+          {
+            subId: "q7_b",
+            prompt: "Ali: I go to the park and .................... football with my friends.",
+            correctAnswers: ["play", "watch", "practice", "practise"],
+            points: 1
+          }
+        ],
+        explanation: "در بخش اول فعل کمکی/اصلی 'do' و در بخش دوم فعل 'play' برای فوتبال استفاده می‌شود."
+      },
+      {
+        id: "q8",
+        type: "reading",
+        typeLabel: "درک مطلب (Reading Comprehension)",
+        difficulty: "hard",
+        points: 2.5,
+        instructionFa: "متن زیر را با دقت بخوانید و به دو سؤال زیر آن پاسخ دهید.",
+        passage: "Hi! My name is Reza. I am a student in grade 8. I have a busy week. On Saturdays and Mondays, I go to English class in the afternoon. On Wednesdays, I go swimming with my brother. On Thursdays, my family and I visit our grandmother in the village. I love my weekend!",
+        promptEn: "Answer the questions based on the text above:",
+        subQuestions: [
+          {
+            subId: "q8_a",
+            prompt: "1. What does Reza do on Wednesdays?",
+            correctAnswers: [
+              "He goes swimming with his brother",
+              "He goes swimming",
+              "go swimming",
+              "goes swimming",
+              "swimming with his brother",
+              "swimming"
+            ],
+            keywords: ["swimming"],
+            points: 1.25
+          },
+          {
+            subId: "q8_b",
+            prompt: "2. When does he go to English class?",
+            correctAnswers: [
+              "On Saturdays and Mondays",
+              "Saturdays and Mondays",
+              "Saturday and Monday",
+              "On Saturdays and Mondays in the afternoon"
+            ],
+            keywords: ["saturday", "monday"],
+            points: 1.25
+          }
+        ],
+        explanation: "طبق متن، رضا چهارشنبه‌ها به شنا می‌رود (goes swimming) و روزهای شنبه و دوشنبه کلاس زبان دارد (Saturdays and Mondays)."
+      },
+      {
+        id: "q9",
+        type: "vocabulary",
+        typeLabel: "واژگان (Vocabulary)",
+        difficulty: "easy",
+        points: 1,
+        instructionFa: "کلمه ناهماهنگ (Odd One Out) را از نظر معنایی مشخص کنید.",
+        promptEn: "Which word is odd?",
+        options: ["Saturday", "Sunday", "Holiday", "Wednesday"],
+        correctAnswers: ["Holiday"],
+        explanation: "سایر گزینه‌ها نام روزهای خاص هفته هستند، اما Holiday به معنای تعطیلات است."
+      },
+      {
+        id: "q10",
+        type: "grammar",
+        typeLabel: "گرامر (Grammar)",
+        difficulty: "medium",
+        points: 1,
+        instructionFa: "شکل صحیح فعل را برای کامل کردن جمله انتخاب کنید.",
+        promptEn: "A: .................... you study English on Tuesdays?\nB: Yes, I do.",
+        options: ["Are", "Do", "Does", "Is"],
+        correctAnswers: ["Do"],
+        explanation: "با توجه به فاعل 'you' و پاسخ 'Yes, I do'، فعل کمکی 'Do' در ابتدای جمله صحیح است."
+      },
+      {
+        id: "q11",
+        type: "spelling",
+        typeLabel: "املا (Spelling)",
+        difficulty: "medium",
+        points: 1.5,
+        instructionFa: "کلمه ناقص در جمله زیر (نام روز چهارشنبه به انگلیسی) را به‌صورت کامل و با املای صحیح بنویسید.",
+        promptEn: "We have science class on W _ d n e s d _ y.",
+        correctAnswers: ["Wednesday"],
+        explanation: "املای صحیح روز چهارشنبه 'Wednesday' است."
+      },
+      {
+        id: "q12",
+        type: "short_answer",
+        typeLabel: "پاسخ کوتاه (Short Answer)",
+        difficulty: "medium",
+        points: 1.5,
+        instructionFa: "به سؤال زیر درباره آخرین روز هفته در ایران پاسخ کوتاه انگلیسی بدهید.",
+        promptEn: "What day is the weekend in Iran? (Write the day in English)",
+        correctAnswers: [
+          "Friday",
+          "It is Friday",
+          "Thursday and Friday",
+          "Fridays",
+          "On Friday"
+        ],
+        keywords: ["friday"],
+        explanation: "روز جمعه (Friday) یا پنج‌شنبه و جمعه (Thursday and Friday) تعطیلات پایان هفته در ایران است."
+      },
+      {
+        id: "q13",
+        type: "semi_open",
+        typeLabel: "نیمه‌تشریحی و جمله‌سازی (Sentence Production)",
+        difficulty: "hard",
+        points: 2,
+        instructionFa: "یک جمله کامل انگلیسی درباره کاری که روزهای جمعه انجام می‌دهید بنویسید (بهتر است از عبارت on Fridays استفاده کنید).",
+        promptEn: "What do you do on Fridays? (Write a complete sentence in English)",
+        correctAnswers: [
+          "I play football on Fridays",
+          "I visit my relatives on Fridays",
+          "I watch TV on Fridays",
+          "I rest at home on Fridays",
+          "I go to the park on Fridays",
+          "I study my lessons on Fridays",
+          "I play computer games on Fridays"
+        ],
+        keywords: ["i", "friday"],
+        actionVerbs: ["play", "visit", "watch", "go", "read", "study", "stay", "rest", "help", "clean", "do", "sleep", "eat", "walk", "swim", "practise", "practice", "travel"],
+        explanation: "هر جمله‌ای با ساختار فاعل (I) + فعل مناسب (مانند play, visit, go, watch, rest) + فعالیت/روز هفته کاملاً صحیح است."
+      }
+    ];
+
+    /**
+     * ========================================================================
+     * ۳. موتور تبدیل تاریخ میلادی به شمسی (بدون کتابخانه خارجی) و مدیریت قفل زمان
+     * ========================================================================
+     */
+    const PersianDateEngine = {
+      toJalali(gy, gm, gd) {
+        const g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+        let gy2 = (gm > 2) ? (gy + 1) : gy;
+        let days = 355666 + (365 * gy) + Math.floor((gy2 + 3) / 4) - Math.floor((gy2 + 99) / 100) + Math.floor((gy2 + 399) / 400) + gd + g_d_m[gm - 1];
+        let jy = -1595 + (33 * Math.floor(days / 12053));
+        days %= 12053;
+        jy += 4 * Math.floor(days / 1461);
+        days %= 1461;
+        if (days > 365) {
+          jy += Math.floor((days - 1) / 365);
+          days = (days - 1) % 365;
+        }
+        let jm = (days < 186) ? 1 + Math.floor(days / 31) : 7 + Math.floor((days - 186) / 30);
+        let jd = 1 + ((days < 186) ? (days % 31) : ((days - 186) % 30));
+        return { year: jy, month: jm, day: jd };
+      },
+
+      jalaliToGregorian(jy, jm, jd) {
+        jy += 1595;
+        let days = -355668 + (365 * jy) + (Math.floor(jy / 33) * 8) + Math.floor(((jy % 33) + 3) / 4) + jd + ((jm < 7) ? (jm - 1) * 31 : ((jm - 7) * 30) + 186);
+        let gy = 400 * Math.floor(days / 146097);
+        days %= 146097;
+        if (days > 36524) {
+          gy += 100 * Math.floor(--days / 36524);
+          days %= 36524;
+          if (days >= 365) days++;
+        }
+        gy += 4 * Math.floor(days / 1461);
+        days %= 1461;
+        if (days > 365) {
+          gy += Math.floor((days - 1) / 365);
+          days = (days - 1) % 365;
+        }
+        let gd = days + 1;
+        const sal_a = [0, 31, ((gy % 4 === 0 && gy % 100 !== 0) || (gy % 400 === 0)) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        let gm = 0;
+        for (gm = 0; gm < 13 && gd > sal_a[gm]; gm++) gd -= sal_a[gm];
+        return new Date(gy, gm - 1, gd);
+      },
+
+      getScheduleWindow() {
+        if (!EXAM_CONFIG.examDate || !EXAM_CONFIG.startTime || !EXAM_CONFIG.endTime) {
+          return { alwaysOpen: true };
+        }
+        const now = new Date();
+        const currentJalali = this.toJalali(now.getFullYear(), now.getMonth() + 1, now.getDate());
+        const parts = EXAM_CONFIG.examDate.split(/[-/]/).map(Number);
+        // اگر سال وارد شده با سال جاری تفاوت داشت یا فقط ماه/روز مدنظر بود (۲۶ آبان)، سال جاری شمسی را مبنا قرار می‌دهیم تا آزمون در ۲۶ آبان دقیقاً فعال شود
+        const targetYear = parts.length === 3 ? currentJalali.year : currentJalali.year;
+        const targetMonth = parts.length === 3 ? parts[1] : parts[0];
+        const targetDay = parts.length === 3 ? parts[2] : parts[1];
+
+        const baseDate = this.jalaliToGregorian(targetYear, targetMonth, targetDay);
+        const [sh, sm] = EXAM_CONFIG.startTime.split(":").map(Number);
+        const [eh, em] = EXAM_CONFIG.endTime.split(":").map(Number);
+
+        const startDate = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate(), sh, sm, 0);
+        const endDate = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate(), eh, em, 0);
+
+        return {
+          alwaysOpen: false,
+          startDate,
+          endDate,
+          formattedLabel: `${targetDay} آبان (${targetYear}/${String(targetMonth).padStart(2, "0")}/${String(targetDay).padStart(2, "0")})`
+        };
+      }
+    };
+
+    /**
+     * ========================================================================
+     * ۴. موتور تصحیح هوشمند (SMART NLP GRADING ENGINE)
+     * پشتیبانی از American/British، فاصله لونشتاین، کلیدواژه و مترادف‌ها
+     * ========================================================================
+     */
+    const SmartGradingEngine = {
+      britishToAmericanMap: {
+        "colour": "color",
+        "colours": "colors",
+        "favourite": "favorite",
+        "favourites": "favorites",
+        "travelled": "traveled",
+        "travelling": "traveling",
+        "centre": "center",
+        "centres": "centers",
+        "practise": "practice",
+        "practised": "practiced",
+        "organise": "organize",
+        "neighbour": "neighbor",
+        "programme": "program",
+        "grey": "gray",
+        "theatre": "theater"
+      },
+
+      contractionsMap: {
+        "don't": "do not",
+        "doesn't": "does not",
+        "i'm": "i am",
+        "it's": "it is",
+        "we're": "we are",
+        "they're": "they are",
+        "you're": "you are",
+        "can't": "cannot"
+      },
+
+      normalize(str) {
+        if (!str || typeof str !== "string") return "";
+        let text = str.toLowerCase().trim();
+
+        // باز کردن مخفف‌ها
+        Object.entries(this.contractionsMap).forEach(([k, v]) => {
+          text = text.replace(new RegExp(`\\b${k}\\b`, "g"), v);
+        });
+
+        // حذف علائم نگارشی غیرضروری و فاصله‌های اضافی
+        text = text.replace(/[.,!?;:"'()[\]{}\-_]/g, " ").replace(/\s+/g, " ").trim();
+
+        // یکسان‌سازی British و American
+        const words = text.split(" ").map(w => this.britishToAmericanMap[w] || w);
+        return words.join(" ");
+      },
+
+      levenshteinSimilarity(a, b) {
+        const s1 = this.normalize(a);
+        const s2 = this.normalize(b);
+        if (!s1 && !s2) return 1;
+        if (!s1 || !s2) return 0;
+        if (s1 === s2) return 1;
+
+        const matrix = Array.from({ length: s1.length + 1 }, (_, i) => [i]);
+        for (let j = 0; j <= s2.length; j++) matrix[0][j] = j;
+
+        for (let i = 1; i <= s1.length; i++) {
+          for (let j = 1; j <= s2.length; j++) {
+            const cost = s1[i - 1] === s2[j - 1] ? 0 : 1;
+            matrix[i][j] = Math.min(
+              matrix[i - 1][j] + 1,
+              matrix[i][j - 1] + 1,
+              matrix[i - 1][j - 1] + cost
+            );
+          }
+        }
+        const distance = matrix[s1.length][s2.length];
+        const maxLen = Math.max(s1.length, s2.length);
+        return (maxLen - distance) / maxLen;
+      },
+
+      getThresholds(strictness) {
+        if (strictness === "strict") return { full: 0.96, partial: 0.85 };
+        if (strictness === "flexible") return { full: 0.78, partial: 0.60 };
+        return { full: 0.85, partial: 0.68 }; // standard
+      },
+
+      evaluateTextAnswer(studentInput, questionConfig, strictness = "standard") {
+        const normStudent = this.normalize(studentInput);
+        if (!normStudent) return { scoreRatio: 0, status: "unanswered" };
+
+        const thresholds = this.getThresholds(strictness);
+        const validTargets = [
+          ...(questionConfig.correctAnswers || []),
+          ...(questionConfig.synonyms || [])
+        ];
+
+        // ۱. بررسی شباهت متنی (Levenshtein Similarity) با تمام پاسخ‌های معادل
+        let maxSim = 0;
+        for (const target of validTargets) {
+          const sim = this.levenshteinSimilarity(normStudent, target);
+          if (sim > maxSim) maxSim = sim;
+        }
+
+        if (maxSim >= thresholds.full) {
+          return { scoreRatio: 1, status: "correct" };
+        }
+
+        // ۲. بررسی هوشمند برای جمله‌سازی نیمه‌تشریحی (Grammar + Meaning Check)
+        if (questionConfig.type === "semi_open" && questionConfig.actionVerbs) {
+          const tokens = normStudent.split(" ");
+          const hasSubject = tokens.includes("i") || tokens.includes("we");
+          const hasVerb = questionConfig.actionVerbs.some(v =>
+            tokens.some(t => this.levenshteinSimilarity(t, v) >= 0.8)
+          );
+          const hasDayRef = tokens.some(t => this.levenshteinSimilarity(t, "friday") >= 0.75 || this.levenshteinSimilarity(t, "fridays") >= 0.75 || this.levenshteinSimilarity(t, "weekend") >= 0.75);
+
+          if (hasSubject && hasVerb && hasDayRef && tokens.length >= 3) {
+            return { scoreRatio: 1, status: "correct" };
+          }
+          if ((hasSubject && hasVerb) || (hasVerb && hasDayRef)) {
+            return { scoreRatio: 0.75, status: "partial" };
+          }
+        }
+
+        // ۳. بررسی کلیدواژه‌ها (Keyword Matching) برای درک مطلب و پاسخ کوتاه
+        if (questionConfig.keywords && questionConfig.keywords.length > 0) {
+          const studentTokens = normStudent.split(" ");
+          let matchedCount = 0;
+          questionConfig.keywords.forEach(kw => {
+            const normKw = this.normalize(kw);
+            const found = studentTokens.some(tok => this.levenshteinSimilarity(tok, normKw) >= thresholds.full);
+            if (found) matchedCount++;
+          });
+
+          const kwRatio = matchedCount / questionConfig.keywords.length;
+          if (kwRatio === 1) return { scoreRatio: 1, status: "correct" };
+          if (kwRatio >= 0.5) return { scoreRatio: Math.max(kwRatio, 0.5), status: "partial" };
+        }
+
+        if (maxSim >= thresholds.partial) {
+          return { scoreRatio: 0.5, status: "partial" };
+        }
+
+        return { scoreRatio: 0, status: "wrong" };
+      },
+
+      gradeQuestion(q, userAns, strictness) {
+        // سؤالات چندبخشی (Reading / Dialogue)
+        if (q.subQuestions) {
+          let earned = 0;
+          let anyAnswered = false;
+          q.subQuestions.forEach(sub => {
+            const subAns = userAns ? userAns[sub.subId] : "";
+            if (subAns && subAns.trim() !== "") anyAnswered = true;
+            const res = this.evaluateTextAnswer(subAns, sub, strictness);
+            earned += res.scoreRatio * sub.points;
+          });
+          if (!anyAnswered) return { earned: 0, max: q.points, status: "unanswered" };
+          const status = earned === q.points ? "correct" : (earned > 0 ? "partial" : "wrong");
+          return { earned: Math.round(earned * 100) / 100, max: q.points, status };
+        }
+
+        // سؤالات تطبیق (Matching)
+        if (q.type === "matching") {
+          if (!userAns || Object.keys(userAns).length === 0) {
+            return { earned: 0, max: q.points, status: "unanswered" };
+          }
+          let correctPairs = 0;
+          let anySelected = false;
+          q.pairs.forEach((p, idx) => {
+            const chosen = userAns[idx];
+            if (chosen) anySelected = true;
+            if (chosen === p.answer) correctPairs++;
+          });
+          if (!anySelected) return { earned: 0, max: q.points, status: "unanswered" };
+          const earned = (correctPairs / q.pairs.length) * q.points;
+          const status = earned === q.points ? "correct" : (earned > 0 ? "partial" : "wrong");
+          return { earned: Math.round(earned * 100) / 100, max: q.points, status };
+        }
+
+        // سؤالات تستی، صحیح/غلط و Dropdown
+        if (["mcq", "true_false", "dropdown", "vocabulary", "grammar"].includes(q.type)) {
+          if (!userAns || String(userAns).trim() === "") {
+            return { earned: 0, max: q.points, status: "unanswered" };
+          }
+          const isCorrect = q.correctAnswers.some(ans => this.normalize(ans) === this.normalize(userAns));
+          return {
+            earned: isCorrect ? q.points : 0,
+            max: q.points,
+            status: isCorrect ? "correct" : "wrong"
+          };
+        }
+
+        // سؤالات نوشتاری، املا، جای خالی، مرتب‌سازی، پاسخ کوتاه و نیمه‌تشریحی
+        const evalRes = this.evaluateTextAnswer(userAns, q, strictness);
+        const earned = Math.round(evalRes.scoreRatio * q.points * 100) / 100;
+        return { earned, max: q.points, status: evalRes.status };
+      }
+    };
+
+    /**
+     * ========================================================================
+     * ۵. مدیریت وضعیت برنامه و ذخیره‌سازی خودکار (STATE & LOCALSTORAGE MANAGER)
+     * ========================================================================
+     */
+    const STORAGE_KEY = "BARZEGARI_EXAM_8TH_L2_STATE_V1";
+
+    const AppState = {
+      data: {
+        studentName: "",
+        studentGrade: "هشتم - حکمت گوری",
+        startedAt: null,
+        submittedAt: null,
+        isSubmitted: false,
+        teacherTimeUnlocked: false,
+        strictness: EXAM_CONFIG.gradingStrictness,
+        theme: "light",
+        answers: {},
+        flagged: {},
+        finalReport: null
+      },
+
+      load() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            this.data = { ...this.data, ...parsed };
+          }
+        } catch (e) {
+          console.error("خطا در بازیابی LocalStorage:", e);
+        }
+      },
+
+      save() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(this.data));
+        } catch (e) {
+          console.error("خطا در ذخیره LocalStorage:", e);
+        }
+      },
+
+      clearAll() {
+        localStorage.removeItem(STORAGE_KEY);
+        window.location.reload();
+      }
+    };
+
+    /**
+     * ========================================================================
+     * ۶. ماژول ارسال به دیتابیس ابری SUPABASE (مطابق ساختار جدول Students)
+     * ========================================================================
+     */
+    async function sendResultToSupabase(studentName, score, totalScore, detailsText) {
+      if (!EXAM_CONFIG.supabase.enabled) return true;
+      const payload = {
+        Student_name: studentName,
+        School_name: EXAM_CONFIG.supabase.activeSchool || EXAM_CONFIG.activeSchoolOverride || EXAM_CONFIG.schoolName || "حکمت گوری",
+        Subject: `${EXAM_CONFIG.subjectName} - ${EXAM_CONFIG.topic}`,
+        Score: parseFloat(score),
+        Total_score: parseFloat(totalScore),
+        Details: detailsText
+      };
+
+      const response = await fetch(`${EXAM_CONFIG.supabase.url}/rest/v1/Students`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": EXAM_CONFIG.supabase.key,
+          "Authorization": `Bearer ${EXAM_CONFIG.supabase.key}`,
+          "Prefer": "return=minimal"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error(`خطای سرور: ${response.status}`);
+      }
+      return true;
+    }
+
+    /**
+     * ========================================================================
+     * ۷. کنترلر رابط کاربری و چرخه حیات آزمون (UI & EXAM CONTROLLER)
+     * ========================================================================
+     */
+    const ExamController = {
+      timerInterval: null,
+      gateInterval: null,
+      activeFilter: "all",
+      searchQuery: "",
+
+      init() {
+        AppState.load();
+        this.applyTheme(AppState.data.theme);
+        this.renderStaticMetadata();
+        this.bindGlobalEvents();
+        this.initRippleEffect();
+
+        if (AppState.data.startedAt) {
+          this.enterExamView();
+        } else {
+          this.startGatekeeperLoop();
+        }
+      },
+
+      renderStaticMetadata() {
+        const schoolDisplay = EXAM_CONFIG.schoolName || EXAM_CONFIG.activeSchoolOverride || "حکمت گوری";
+        document.getElementById("hdr-title").textContent = `${EXAM_CONFIG.subjectName} (${EXAM_CONFIG.topic})`;
+        document.getElementById("hdr-teacher-name").textContent = EXAM_CONFIG.teacherName;
+        document.getElementById("login-subject-title").textContent = EXAM_CONFIG.subjectName;
+        document.getElementById("login-topic-subtitle").textContent = EXAM_CONFIG.topic;
+        document.getElementById("meta-teacher").textContent = EXAM_CONFIG.teacherName;
+        document.getElementById("meta-school").textContent = schoolDisplay;
+        document.getElementById("meta-duration").textContent = `${EXAM_CONFIG.durationMinutes} دقیقه`;
+
+        const sched = PersianDateEngine.getScheduleWindow();
+        if (sched.alwaysOpen) {
+          document.getElementById("meta-date").textContent = "آزاد (همیشه فعال)";
+          document.getElementById("meta-time").textContent = "بدون محدودیت زمانی";
+        } else {
+          document.getElementById("meta-date").textContent = "۲۶ آبان";
+          document.getElementById("meta-time").textContent = `ساعت ${EXAM_CONFIG.startTime} تا ${EXAM_CONFIG.endTime} صبح`;
+        }
+
+        // پر کردن لیست پیشنهادی دانش‌آموزان
+        const datalist = document.getElementById("students-datalist");
+        datalist.innerHTML = EXAM_CONFIG.presetStudents.map(name => `<option value="${name}">`).join("");
+
+        if (AppState.data.studentName) {
+          document.getElementById("student-fullname").value = AppState.data.studentName;
+        }
+        if (AppState.data.studentGrade) {
+          document.getElementById("student-grade").value = AppState.data.studentGrade;
+        }
+        document.getElementById("strictness-select").value = AppState.data.strictness || "standard";
+      },
+
+      startGatekeeperLoop() {
+        const updateGate = () => {
+          const box = document.getElementById("gate-status-box");
+          const title = document.getElementById("gate-status-title");
+          const desc = document.getElementById("gate-status-desc");
+          const cd = document.getElementById("gate-countdown");
+          const startBtn = document.getElementById("start-exam-btn");
+
+          const sched = PersianDateEngine.getScheduleWindow();
+          if (sched.alwaysOpen || AppState.data.teacherTimeUnlocked) {
+            box.className = "gate-status-box open";
+            title.textContent = "✅ درگاه آزمون فعال است";
+            desc.textContent = "هم‌اکنون می‌توانید مشخصات خود را وارد کرده و آزمون را آغاز نمایید.";
+            cd.classList.add("hidden");
+            startBtn.disabled = false;
+            return;
+          }
+
+          const now = new Date();
+          if (now < sched.startDate) {
+            box.className = "gate-status-box locked-before";
+            title.textContent = "🔒 آزمون هنوز شروع نشده است (قفل قبل از آزمون)";
+            desc.textContent = `ورود به آزمون رأس ساعت ${EXAM_CONFIG.startTime} صبح تاریخ ۲۶ آبان باز می‌شود.`;
+            cd.classList.remove("hidden");
+            cd.textContent = this.formatDiff(sched.startDate - now);
+            startBtn.disabled = true;
+          } else if (now > sched.endDate) {
+            box.className = "gate-status-box locked-after";
+            title.textContent = "⛔ مهلت شرکت در آزمون به پایان رسیده است (قفل پس از آزمون)";
+            desc.textContent = `بازه مجاز آزمون (ساعت ${EXAM_CONFIG.startTime} تا ${EXAM_CONFIG.endTime} صبح ۲۶ آبان) خاتمه یافته است.`;
+            cd.classList.add("hidden");
+            startBtn.disabled = true;
+          } else {
+            box.className = "gate-status-box open";
+            title.textContent = "✅ زمان برگزاری آزمون فعال است";
+            desc.textContent = `مهلت ورود و پاسخ‌گویی تا ساعت ${EXAM_CONFIG.endTime} صبح می‌باشد.`;
+            cd.classList.add("hidden");
+            startBtn.disabled = false;
+          }
+        };
+
+        updateGate();
+        clearInterval(this.gateInterval);
+        this.gateInterval = setInterval(updateGate, 1000);
+      },
+
+      formatDiff(ms) {
+        const totalSec = Math.max(0, Math.floor(ms / 1000));
+        const d = Math.floor(totalSec / 86400);
+        const h = Math.floor((totalSec % 86400) / 3600);
+        const m = Math.floor((totalSec % 3600) / 60);
+        const s = totalSec % 60;
+        const pad = n => String(n).padStart(2, "0");
+        return d > 0 ? `${d}d : ${pad(h)}h : ${pad(m)}m : ${pad(s)}s` : `${pad(h)}:${pad(m)}:${pad(s)}`;
+      },
+
+      enterExamView() {
+        clearInterval(this.gateInterval);
+        document.getElementById("login-view").classList.add("hidden");
+        document.getElementById("exam-view").classList.remove("hidden");
+        document.getElementById("exam-timer-pill").classList.remove("hidden");
+        document.getElementById("exam-progress-strip").classList.add("active");
+        document.getElementById("floating-nav-btn").style.display = "inline-flex";
+
+        this.renderQuestions();
+        this.renderNavGrid();
+        this.updateProgressUI();
+
+        if (AppState.data.isSubmitted) {
+          this.lockExamAndShowReport(true);
+        } else {
+          this.startExamTimer();
+        }
+      },
+
+      startExamTimer() {
+        clearInterval(this.timerInterval);
+        const durationMs = EXAM_CONFIG.durationMinutes * 60 * 1000;
+        const sched = PersianDateEngine.getScheduleWindow();
+
+        const tick = () => {
+          const now = Date.now();
+          const elapsed = now - AppState.data.startedAt;
+          let remainingMs = durationMs - elapsed;
+
+          // اگر ساعت پایان آزمون (۱۱:۰۰) نزدیک‌تر باشد و قفل توسط دبیر باز نشده باشد، سقف زمان تا ساعت ۱۱ است
+          if (!sched.alwaysOpen && !AppState.data.teacherTimeUnlocked) {
+            const untilEndWindow = sched.endDate.getTime() - now;
+            if (untilEndWindow < remainingMs) {
+              remainingMs = untilEndWindow;
+            }
+          }
+
+          if (remainingMs <= 0) {
+            document.getElementById("timer-display").textContent = "00:00";
+            clearInterval(this.timerInterval);
+            if (!AppState.data.isSubmitted) {
+              this.finalizeSubmission(true);
+            }
+            return;
+          }
+
+          const totalSec = Math.ceil(remainingMs / 1000);
+          const mins = Math.floor(totalSec / 60);
+          const secs = totalSec % 60;
+          document.getElementById("timer-display").textContent = `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+
+          const pill = document.getElementById("exam-timer-pill");
+          pill.classList.remove("warning", "danger");
+          if (totalSec <= 120) {
+            pill.classList.add("danger");
+          } else if (totalSec <= 300) {
+            pill.classList.add("warning");
+          }
+        };
+
+        tick();
+        this.timerInterval = setInterval(tick, 1000);
+      },
+
+      isQuestionAnswered(q) {
+        const val = AppState.data.answers[q.id];
+        if (!val) return false;
+        if (q.subQuestions) {
+          return q.subQuestions.some(sub => val[sub.subId] && String(val[sub.subId]).trim() !== "");
+        }
+        if (q.type === "matching") {
+          return Object.values(val).some(v => v && String(v).trim() !== "");
+        }
+        return String(val).trim() !== "";
+      },
+
+      renderQuestions() {
+        const container = document.getElementById("questions-container");
+        container.innerHTML = "";
+        const disabledAttr = AppState.data.isSubmitted ? "disabled" : "";
+
+        QUESTION_BANK.forEach((q, idx) => {
+          const qNum = idx + 1;
+          const isAns = this.isQuestionAnswered(q);
+          const isFlag = !!AppState.data.flagged[q.id];
+
+          const diffLabels = { easy: "آسان", medium: "متوسط", hard: "سخت" };
+          const diffClasses = { easy: "diff-easy", medium: "diff-medium", hard: "diff-hard" };
+
+          const card = document.createElement("article");
+          card.className = `glass-card question-card ${isAns ? "answered" : ""} ${isFlag ? "flagged" : ""}`;
+          card.id = `card-${q.id}`;
+          card.dataset.qid = q.id;
+          card.dataset.qnum = qNum;
+
+          let bodyHtml = "";
+          const savedAns = AppState.data.answers[q.id];
+
+          // Passage for Reading
+          if (q.passage) {
+            bodyHtml += `<div class="reading-passage ltr">${q.passage}</div>`;
+          }
+
+          // Prompt
+          bodyHtml += `<div class="q-prompt-en ltr">${q.promptEn.replace(/\n/g, "<br>")}</div>`;
+
+          // Render Input by Type
+          if (["mcq", "true_false", "vocabulary", "grammar"].includes(q.type)) {
+            bodyHtml += `<div class="options-grid">`;
+            q.options.forEach(opt => {
+              const checked = savedAns === opt ? "checked" : "";
+              const selClass = savedAns === opt ? "selected" : "";
+              bodyHtml += `
+                <label class="option-label ${selClass}">
+                  <input type="radio" name="ans-${q.id}" value="${opt}" ${checked} ${disabledAttr}
+                         onchange="ExamController.handleSingleInput('${q.id}', this.value)">
+                  <span>${opt}</span>
+                </label>
+              `;
+            });
+            bodyHtml += `</div>`;
+          } else if (q.type === "dropdown") {
+            bodyHtml += `
+              <div class="ltr">
+                <select class="form-control ltr" ${disabledAttr} onchange="ExamController.handleSingleInput('${q.id}', this.value)">
+                  <option value="">-- Choose the correct answer --</option>
+                  ${q.dropdownOptions.map(opt => `<option value="${opt}" ${savedAns === opt ? "selected" : ""}>${opt}</option>`).join("")}
+                </select>
+              </div>
+            `;
+          } else if (q.type === "matching") {
+            const matchObj = savedAns || {};
+            q.pairs.forEach((pair, pIdx) => {
+              const curVal = matchObj[pIdx] || "";
+              bodyHtml += `
+                <div class="matching-row">
+                  <div class="matching-left">${pair.left}</div>
+                  <select class="form-control ltr" ${disabledAttr} onchange="ExamController.handleMatchingInput('${q.id}', ${pIdx}, this.value)">
+                    <option value="">-- Select match --</option>
+                    ${pair.rightOptions.map(ro => `<option value="${ro}" ${curVal === ro ? "selected" : ""}>${ro}</option>`).join("")}
+                  </select>
+                </div>
+              `;
+            });
+          } else if (q.type === "unscramble") {
+            const curText = savedAns || "";
+            bodyHtml += `
+              <div class="word-bank">
+                ${q.words.map(w => `<button type="button" class="word-chip" ${disabledAttr} onclick="ExamController.appendWordToInput('${q.id}', '${w.replace(/'/g, "\\'")}')">${w}</button>`).join("")}
+              </div>
+              <div style="display:flex; gap:8px;" class="ltr">
+                <input type="text" id="input-${q.id}" class="form-control ltr" value="${curText.replace(/"/g, "&quot;")}"
+                       placeholder="Click words above or type the full sentence here..." ${disabledAttr}
+                       oninput="ExamController.handleSingleInput('${q.id}', this.value)">
+                <button type="button" class="btn btn-outline" ${disabledAttr} onclick="ExamController.clearTextInput('${q.id}')">پاک کردن</button>
+              </div>
+            `;
+          } else if (q.subQuestions) {
+            const subObj = savedAns || {};
+            q.subQuestions.forEach(sub => {
+              const subVal = subObj[sub.subId] || "";
+              bodyHtml += `
+                <div class="sub-question-block ltr">
+                  <label class="form-label ltr" style="margin-bottom:6px;">${sub.prompt} <span style="color:var(--primary);">(${sub.points} pt)</span></label>
+                  <input type="text" class="form-control ltr" value="${subVal.replace(/"/g, "&quot;")}"
+                         placeholder="Write your answer here..." ${disabledAttr}
+                         oninput="ExamController.handleSubQuestionInput('${q.id}', '${sub.subId}', this.value)">
+                </div>
+              `;
+            });
+          } else {
+            // fill_blank, spelling, short_answer, semi_open
+            const curText = savedAns || "";
+            bodyHtml += `
+              <input type="text" id="input-${q.id}" class="form-control ltr" value="${curText.replace(/"/g, "&quot;")}"
+                     placeholder="Type your English answer here..." ${disabledAttr}
+                     oninput="ExamController.handleSingleInput('${q.id}', this.value)">
+            `;
+          }
+
+          card.innerHTML = `
+            <div class="q-header">
+              <div class="q-badges">
+                <span class="q-num-badge">سؤال ${qNum}</span>
+                <span class="q-type-badge">${q.typeLabel}</span>
+                <span class="q-diff-badge ${diffClasses[q.difficulty]}">${diffLabels[q.difficulty]}</span>
+              </div>
+              <div class="q-actions-right">
+                <span class="q-points">${q.points} نمره</span>
+                <button type="button" class="flag-btn ${isFlag ? "active" : ""}" id="flag-btn-${q.id}"
+                        onclick="ExamController.toggleFlag('${q.id}')" title="علامت‌گذاری برای مرور مجدد">
+                  🚩 <span>${isFlag ? "علامت‌دار" : "مرور"}</span>
+                </button>
+              </div>
+            </div>
+            <div class="q-instruction-fa">${q.instructionFa}</div>
+            ${bodyHtml}
+            <div id="feedback-${q.id}" class="review-feedback"></div>
+          `;
+
+          container.appendChild(card);
+        });
+      },
+
+      handleSingleInput(qId, value) {
+        if (AppState.data.isSubmitted) return;
+        AppState.data.answers[qId] = value;
+        AppState.save();
+        this.refreshQuestionStateUI(qId);
+      },
+
+      handleMatchingInput(qId, pairIdx, value) {
+        if (AppState.data.isSubmitted) return;
+        if (!AppState.data.answers[qId] || typeof AppState.data.answers[qId] !== "object") {
+          AppState.data.answers[qId] = {};
+        }
+        AppState.data.answers[qId][pairIdx] = value;
+        AppState.save();
+        this.refreshQuestionStateUI(qId);
+      },
+
+      handleSubQuestionInput(qId, subId, value) {
+        if (AppState.data.isSubmitted) return;
+        if (!AppState.data.answers[qId] || typeof AppState.data.answers[qId] !== "object") {
+          AppState.data.answers[qId] = {};
+        }
+        AppState.data.answers[qId][subId] = value;
+        AppState.save();
+        this.refreshQuestionStateUI(qId);
+      },
+
+      appendWordToInput(qId, word) {
+        if (AppState.data.isSubmitted) return;
+        const input = document.getElementById(`input-${qId}`);
+        if (!input) return;
+        const cur = input.value.trim();
+        const nextVal = cur ? (word === "?" || word === "." ? `${cur}${word}` : `${cur} ${word}`) : word;
+        input.value = nextVal;
+        this.handleSingleInput(qId, nextVal);
+      },
+
+      clearTextInput(qId) {
+        if (AppState.data.isSubmitted) return;
+        const input = document.getElementById(`input-${qId}`);
+        if (input) input.value = "";
+        this.handleSingleInput(qId, "");
+      },
+
+      toggleFlag(qId) {
+        AppState.data.flagged[qId] = !AppState.data.flagged[qId];
+        AppState.save();
+        const btn = document.getElementById(`flag-btn-${qId}`);
+        if (btn) {
+          btn.classList.toggle("active", AppState.data.flagged[qId]);
+          btn.querySelector("span").textContent = AppState.data.flagged[qId] ? "علامت‌دار" : "مرور";
+        }
+        this.refreshQuestionStateUI(qId);
+      },
+
+      refreshQuestionStateUI(qId) {
+        const q = QUESTION_BANK.find(item => item.id === qId);
+        const card = document.getElementById(`card-${qId}`);
+        if (q && card) {
+          const isAns = this.isQuestionAnswered(q);
+          const isFlag = !!AppState.data.flagged[qId];
+          card.classList.toggle("answered", isAns);
+          card.classList.toggle("flagged", isFlag);
+
+          // Update radio highlight
+          if (["mcq", "true_false", "vocabulary", "grammar"].includes(q.type)) {
+            card.querySelectorAll(".option-label").forEach(lbl => {
+              const inp = lbl.querySelector("input");
+              lbl.classList.toggle("selected", inp && inp.checked);
+            });
+          }
+        }
+        this.updateProgressUI();
+        this.renderNavGrid();
+        this.applySearchAndFilter();
+      },
+
+      updateProgressUI() {
+        const total = QUESTION_BANK.length;
+        const answeredCount = QUESTION_BANK.filter(q => this.isQuestionAnswered(q)).length;
+        const pct = Math.round((answeredCount / total) * 100);
+
+        const toFaDigits = n => String(n).replace(/\d/g, d => "۰۱۲۳۴۵۶۷۸۹"[d]);
+        document.getElementById("progress-text").textContent = `پیشرفت: ${toFaDigits(pct)}٪ (${toFaDigits(answeredCount)} از ${toFaDigits(total)})`;
+        document.getElementById("progress-bar-fill").style.width = `${pct}%`;
+      },
+
+      renderNavGrid() {
+        const grid = document.getElementById("nav-grid-numbers");
+        grid.innerHTML = "";
+        QUESTION_BANK.forEach((q, idx) => {
+          const btn = document.createElement("button");
+          const isAns = this.isQuestionAnswered(q);
+          const isFlag = !!AppState.data.flagged[q.id];
+          btn.type = "button";
+          btn.className = `nav-num-btn ${isAns ? "answered" : ""} ${isFlag ? "flagged" : ""}`;
+          btn.textContent = idx + 1;
+          btn.onclick = () => {
+            const target = document.getElementById(`card-${q.id}`);
+            if (target) {
+              target.scrollIntoView({ behavior: "smooth", block: "start" });
+              document.getElementById("floating-nav-drawer").classList.remove("open");
+            }
+          };
+          grid.appendChild(btn);
+        });
+      },
+
+      applySearchAndFilter() {
+        const query = this.searchQuery.trim().toLowerCase();
+        QUESTION_BANK.forEach(q => {
+          const card = document.getElementById(`card-${q.id}`);
+          if (!card) return;
+          const isAns = this.isQuestionAnswered(q);
+          const isFlag = !!AppState.data.flagged[q.id];
+
+          let matchesFilter = true;
+          if (this.activeFilter === "unanswered") matchesFilter = !isAns;
+          if (this.activeFilter === "flagged") matchesFilter = isFlag;
+
+          let matchesSearch = true;
+          if (query) {
+            const hay = `${q.instructionFa} ${q.promptEn} ${q.passage || ""} ${q.typeLabel}`.toLowerCase();
+            matchesSearch = hay.includes(query);
+          }
+
+          card.classList.toggle("hidden", !(matchesFilter && matchesSearch));
+        });
+      },
+
+      async finalizeSubmission(autoByTimer = false) {
+        if (AppState.data.isSubmitted) return;
+        clearInterval(this.timerInterval);
+
+        let totalScoreEarned = 0;
+        let correctCount = 0;
+        let wrongCount = 0;
+        let unansweredCount = 0;
+        const detailsParts = [];
+
+        QUESTION_BANK.forEach((q, idx) => {
+          const userAns = AppState.data.answers[q.id];
+          const res = SmartGradingEngine.gradeQuestion(q, userAns, AppState.data.strictness);
+          totalScoreEarned += res.earned;
+
+          if (res.status === "unanswered") unansweredCount++;
+          else if (res.status === "correct") correctCount++;
+          else wrongCount++;
+
+          detailsParts.push(`Q${idx + 1}:${res.earned}/${res.max}`);
+        });
+
+        totalScoreEarned = Math.round(totalScoreEarned * 100) / 100;
+        const now = Date.now();
+        const spentSec = Math.max(1, Math.floor((now - AppState.data.startedAt) / 1000));
+
+        AppState.data.isSubmitted = true;
+        AppState.data.submittedAt = now;
+        AppState.data.finalReport = {
+          score: totalScoreEarned,
+          totalScore: 20,
+          percent: Math.round((totalScoreEarned / 20) * 100),
+          correctCount,
+          wrongCount,
+          unansweredCount,
+          spentSec,
+          detailsString: detailsParts.join(" | "),
+          autoByTimer
+        };
+        AppState.save();
+
+        document.getElementById("confirm-submit-modal").classList.remove("active");
+        this.lockExamAndShowReport(false);
+      },
+
+      async lockExamAndShowReport(fromReload = false) {
+        clearInterval(this.timerInterval);
+        this.renderQuestions(); // re-renders inputs with disabled attribute
+        document.getElementById("submit-footer-card").classList.add("hidden");
+
+        const rep = AppState.data.finalReport;
+        const summaryCard = document.getElementById("result-summary-card");
+        summaryCard.classList.remove("hidden");
+
+        document.getElementById("res-student-name").textContent = `${AppState.data.studentName} (${AppState.data.studentGrade})`;
+        document.getElementById("res-score-val").textContent = rep.score;
+        document.getElementById("res-percent").textContent = `${rep.percent}%`;
+        document.getElementById("res-correct").textContent = rep.correctCount;
+        document.getElementById("res-wrong").textContent = rep.wrongCount;
+        document.getElementById("res-unanswered").textContent = rep.unansweredCount;
+
+        const m = Math.floor(rep.spentSec / 60);
+        const s = rep.spentSec % 60;
+        document.getElementById("res-time-spent").textContent = `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+        document.getElementById("res-score-circle").style.setProperty("--deg", `${(rep.score / 20) * 360}deg`);
+
+        // نمایش پاسخ صحیح و توضیحات زیر هر سؤال
+        QUESTION_BANK.forEach(q => {
+          const userAns = AppState.data.answers[q.id];
+          const res = SmartGradingEngine.gradeQuestion(q, userAns, AppState.data.strictness);
+          const fbEl = document.getElementById(`feedback-${q.id}`);
+          if (!fbEl) return;
+
+          const statusMap = {
+            correct: { cls: "correct", title: `✅ پاسخ کاملاً صحیح (${res.earned} از ${res.max} نمره)` },
+            partial: { cls: "partial", title: `⚠️ نمره بخشی / قابل قبول (${res.earned} از ${res.max} نمره)` },
+            wrong: { cls: "wrong", title: `❌ پاسخ نادرست (۰ از ${res.max} نمره)` },
+            unanswered: { cls: "wrong", title: `⚪ بدون پاسخ (۰ از ${res.max} نمره)` }
+          };
+
+          const st = statusMap[res.status];
+          let correctDisplay = "";
+          if (q.correctAnswers) {
+            correctDisplay = `<div class="ltr" style="margin-top:6px;"><strong>Correct Answer:</strong> ${q.correctAnswers.join(" / ")}</div>`;
+          } else if (q.subQuestions) {
+            correctDisplay = `<div class="ltr" style="margin-top:6px;"><strong>Answers:</strong> ${q.subQuestions.map(s => s.correctAnswers[0]).join(" | ")}</div>`;
+          } else if (q.pairs) {
+            correctDisplay = `<div class="ltr" style="margin-top:6px;"><strong>Matches:</strong> ${q.pairs.map(p => `${p.left} -> ${p.answer}`).join(" | ")}</div>`;
+          }
+
+          fbEl.className = `review-feedback visible ${st.cls}`;
+          fbEl.innerHTML = `
+            <div style="font-weight:800;">${st.title}</div>
+            ${correctDisplay}
+            <div style="margin-top:6px; font-size:0.84rem; color:var(--text-muted);">💡 <strong>توضیح دبیر:</strong> ${q.explanation}</div>
+          `;
+        });
+
+        window.scrollTo({ top: 0, behavior: "smooth" });
+
+        // ارسال نمره به Supabase
+        const cloudStatus = document.getElementById("res-cloud-status");
+        if (!fromReload) {
+          cloudStatus.style.color = "var(--primary)";
+          cloudStatus.textContent = "⏳ در حال ثبت نمره در سرور دبیر (برزگری)...";
+          try {
+            await sendResultToSupabase(
+              AppState.data.studentName,
+              rep.score,
+              rep.totalScore,
+              `${AppState.data.studentGrade} | ${rep.detailsString}`
+            );
+            cloudStatus.style.color = "var(--success)";
+            cloudStatus.textContent = "✅ نمره شما با موفقیت در سامانه مرکزی دبیر ثبت گردید و در مرورگر نیز ذخیره شد.";
+          } catch (err) {
+            cloudStatus.style.color = "var(--warning)";
+            cloudStatus.textContent = "📌 کارنامه در حافظه دستگاه شما ثبت نهایی شد (در حال حاضر ارتباط اینترنتی با سرور برقرار نیست).";
+          }
+        } else {
+          cloudStatus.style.color = "var(--success)";
+          cloudStatus.textContent = "🔒 این آزمون قبلاً ثبت نهایی شده است و قابل ویرایش مجدد نمی‌باشد.";
+        }
+      },
+
+      applyTheme(theme) {
+        AppState.data.theme = theme;
+        document.documentElement.setAttribute("data-theme", theme);
+        document.getElementById("theme-icon-sun").classList.toggle("hidden", theme === "light");
+        document.getElementById("theme-icon-moon").classList.toggle("hidden", theme === "dark");
+        AppState.save();
+      },
+
+      initRippleEffect() {
+        document.addEventListener("click", e => {
+          const btn = e.target.closest(".btn, .chip-btn");
+          if (!btn || btn.disabled) return;
+          const rect = btn.getBoundingClientRect();
+          const ripple = document.createElement("span");
+          const size = Math.max(rect.width, rect.height);
+          ripple.style.width = ripple.style.height = `${size}px`;
+          ripple.style.left = `${e.clientX - rect.left - size / 2}px`;
+          ripple.style.top = `${e.clientY - rect.top - size / 2}px`;
+          ripple.className = "ripple-span";
+          btn.appendChild(ripple);
+          setTimeout(() => ripple.remove(), 600);
+        });
+      },
+
+      bindGlobalEvents() {
+        // Theme toggle
+        document.getElementById("theme-toggle-btn").addEventListener("click", () => {
+          const next = AppState.data.theme === "light" ? "dark" : "light";
+          this.applyTheme(next);
+        });
+
+        // Scroll Indicator & Current Question Tracker
+        window.addEventListener("scroll", () => {
+          const scrollTop = window.scrollY;
+          const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+          const pct = docHeight > 0 ? Math.min(100, (scrollTop / docHeight) * 100) : 0;
+          document.getElementById("scroll-bar").style.width = `${pct}%`;
+
+          // Find current visible question
+          const cards = document.querySelectorAll(".question-card:not(.hidden)");
+          let currentNum = 1;
+          cards.forEach(c => {
+            const r = c.getBoundingClientRect();
+            if (r.top <= 220) currentNum = c.dataset.qnum;
+          });
+          const toFaDigits = n => String(n).replace(/\d/g, d => "۰۱۲۳۴۵۶۷۸۹"[d]);
+          document.getElementById("current-q-indicator").textContent = `سؤال جاری: ${toFaDigits(currentNum)}`;
+        }, { passive: true });
+
+        // Login Form Submit
+        document.getElementById("login-form").addEventListener("submit", e => {
+          e.preventDefault();
+          const nameInput = document.getElementById("student-fullname").value.trim();
+          const gradeInput = document.getElementById("student-grade").value.trim();
+          const errEl = document.getElementById("login-error-msg");
+
+          if (nameInput.length < 3 || !gradeInput) {
+            errEl.style.display = "block";
+            errEl.textContent = "لطفاً نام و نام خانوادگی کامل و پایه تحصیلی خود را وارد نمایید.";
+            return;
+          }
+
+          errEl.style.display = "none";
+          AppState.data.studentName = nameInput;
+          AppState.data.studentGrade = gradeInput;
+          if (!AppState.data.startedAt) {
+            AppState.data.startedAt = Date.now();
+          }
+          AppState.save();
+          this.enterExamView();
+        });
+
+        // Search & Filter Events
+        document.getElementById("question-search-input").addEventListener("input", e => {
+          this.searchQuery = e.target.value;
+          this.applySearchAndFilter();
+        });
+
+        document.querySelectorAll(".chip-btn").forEach(btn => {
+          btn.addEventListener("click", () => {
+            document.querySelectorAll(".chip-btn").forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            this.activeFilter = btn.dataset.filter;
+            this.applySearchAndFilter();
+          });
+        });
+
+        // Floating Nav Drawer
+        document.getElementById("floating-nav-btn").addEventListener("click", () => {
+          document.getElementById("floating-nav-drawer").classList.toggle("open");
+        });
+        document.getElementById("close-nav-drawer-btn").addEventListener("click", () => {
+          document.getElementById("floating-nav-drawer").classList.remove("open");
+        });
+
+        // Final Submit Confirmation Modal
+        document.getElementById("open-submit-modal-btn").addEventListener("click", () => {
+          const total = QUESTION_BANK.length;
+          const answered = QUESTION_BANK.filter(q => this.isQuestionAnswered(q)).length;
+          const unanswered = total - answered;
+          const summaryEl = document.getElementById("submit-modal-summary");
+          summaryEl.innerHTML = unanswered > 0
+            ? `شما به <strong>${answered}</strong> سؤال پاسخ داده‌اید و هنوز <strong style="color:var(--danger);">${unanswered} سؤال بدون پاسخ</strong> دارید. آیا از ثبت نهایی و قفل شدن برگه اطمینان دارید؟`
+            : `شما به تمام <strong>${total}</strong> سؤال آزمون پاسخ داده‌اید. آیا مایل به ثبت نهایی و دریافت کارنامه هستید؟`;
+          document.getElementById("confirm-submit-modal").classList.add("active");
+        });
+
+        document.getElementById("cancel-submit-btn").addEventListener("click", () => {
+          document.getElementById("confirm-submit-modal").classList.remove("active");
+        });
+
+        document.getElementById("confirm-final-submit-btn").addEventListener("click", () => {
+          this.finalizeSubmission(false);
+        });
+
+        // Prevent accidental tab close during active exam
+        window.addEventListener("beforeunload", e => {
+          if (AppState.data.startedAt && !AppState.data.isSubmitted) {
+            e.preventDefault();
+            e.returnValue = "";
+          }
+        });
+
+        // ====================================================================
+        // ۱۰. پنل مخفی دبیر (SECRET TEACHER PANEL) - رمز: 9162
+        // روش‌های باز کردن: Ctrl+Shift+L یا ۵ کلیک سریع روی نام دبیر/لوگو
+        // ====================================================================
+        let secretClicks = 0;
+        let clickTimer = null;
+        const triggerSecretPanel = () => {
+          secretClicks++;
+          clearTimeout(clickTimer);
+          clickTimer = setTimeout(() => { secretClicks = 0; }, 1600);
+          if (secretClicks >= 5) {
+            secretClicks = 0;
+            this.openTeacherModal();
+          }
+        };
+
+        document.getElementById("hdr-teacher-trigger").addEventListener("click", triggerSecretPanel);
+        document.getElementById("secret-logo-trigger").addEventListener("click", triggerSecretPanel);
+
+        window.addEventListener("keydown", e => {
+          if (e.ctrlKey && e.shiftKey && (e.key === "L" || e.key === "l")) {
+            e.preventDefault();
+            this.openTeacherModal();
+          }
+        });
+
+        document.getElementById("close-teacher-modal-btn").addEventListener("click", () => {
+          document.getElementById("teacher-panel-modal").classList.remove("active");
+        });
+
+        document.getElementById("verify-teacher-pin-btn").addEventListener("click", () => {
+          const pin = document.getElementById("teacher-pin-input").value.trim();
+          if (pin === "9162") {
+            document.getElementById("teacher-auth-section").classList.add("hidden");
+            document.getElementById("teacher-controls-section").classList.remove("hidden");
+            document.getElementById("teacher-storage-dump").textContent = JSON.stringify(AppState.data, null, 2);
+          } else {
+            document.getElementById("teacher-pin-error").style.display = "block";
+          }
+        });
+
+        // Teacher Control Actions
+        document.getElementById("strictness-select").addEventListener("change", e => {
+          AppState.data.strictness = e.target.value;
+          AppState.save();
+          document.getElementById("teacher-storage-dump").textContent = JSON.stringify(AppState.data, null, 2);
+        });
+
+        document.getElementById("t-btn-unlock-time").addEventListener("click", () => {
+          AppState.data.teacherTimeUnlocked = true;
+          AppState.save();
+          this.startGatekeeperLoop();
+          document.getElementById("teacher-panel-modal").classList.remove("active");
+        });
+
+        document.getElementById("t-btn-reset-timer").addEventListener("click", () => {
+          if (AppState.data.startedAt) {
+            AppState.data.startedAt = Date.now();
+            AppState.save();
+            this.startExamTimer();
+          }
+          document.getElementById("teacher-panel-modal").classList.remove("active");
+        });
+
+        document.getElementById("t-btn-allow-retake").addEventListener("click", () => {
+          AppState.data.isSubmitted = false;
+          AppState.data.submittedAt = null;
+          AppState.data.finalReport = null;
+          AppState.data.startedAt = Date.now();
+          AppState.save();
+          window.location.reload();
+        });
+
+        document.getElementById("t-btn-reset-all").addEventListener("click", () => {
+          AppState.clearAll();
+        });
+      },
+
+      openTeacherModal() {
+        document.getElementById("teacher-pin-input").value = "";
+        document.getElementById("teacher-pin-error").style.display = "none";
+        document.getElementById("teacher-auth-section").classList.remove("hidden");
+        document.getElementById("teacher-controls-section").classList.add("hidden");
+        document.getElementById("teacher-panel-modal").classList.add("active");
+      }
+    };
+
+    // اجرای برنامه پس از بارگذاری کامل DOM
+    document.addEventListener("DOMContentLoaded", () => {
+      ExamController.init();
+    });
+  </script>
+</body>
+</html>
