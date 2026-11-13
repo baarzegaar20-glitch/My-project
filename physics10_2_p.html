@@ -1,0 +1,2227 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>سامانه جامع آموزش پیشرفته و ارزشیابی هوشمند فیزیک دهم</title>
+    <style>
+        :root {
+            --bg-dark: #060913;
+            --bg-card: rgba(15, 23, 42, 0.84);
+            --primary: #00f2fe;
+            --secondary: #4facfe;
+            --accent: #a855f7;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --glass-border: rgba(255, 255, 255, 0.14);
+            --neon-shadow: 0 0 20px rgba(0, 242, 254, 0.35);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.75;
+            position: relative;
+        }
+
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Standard Math & Physics Formula Formatting */
+        .math-box {
+            direction: ltr;
+            display: inline-block;
+            background: rgba(0, 242, 254, 0.12);
+            border: 1px solid rgba(0, 242, 254, 0.35);
+            padding: 3px 10px;
+            border-radius: 7px;
+            font-family: 'Cambria Math', 'Times New Roman', serif;
+            font-weight: bold;
+            color: #38bdf8;
+            margin: 2px 4px;
+            font-size: 1.05em;
+        }
+
+        .math-block {
+            direction: ltr;
+            display: block;
+            text-align: center;
+            background: rgba(9, 14, 28, 0.92);
+            border: 1px solid var(--primary);
+            padding: 14px;
+            border-radius: 12px;
+            font-family: 'Cambria Math', 'Times New Roman', serif;
+            font-size: 1.25em;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 14px 0;
+            box-shadow: inset 0 0 14px rgba(0, 242, 254, 0.15);
+        }
+
+        /* Lock Screen */
+        #lock-screen {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at top, #111a3a 0%, #050811 100%);
+            z-index: 9999;
+            overflow-y: auto;
+            padding: 25px 15px 60px 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .lock-container {
+            width: 100%;
+            max-width: 780px;
+            background: var(--bg-card);
+            backdrop-filter: blur(22px);
+            border: 1px solid var(--glass-border);
+            border-radius: 22px;
+            padding: 32px 26px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.75), var(--neon-shadow);
+            margin: auto;
+        }
+
+        .official-badge {
+            display: inline-block;
+            background: linear-gradient(90deg, rgba(0,242,254,0.16), rgba(168,85,247,0.16));
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 6px 18px;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-bottom: 14px;
+        }
+
+        .countdown-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin: 24px 0;
+            direction: ltr;
+        }
+
+        .time-box {
+            background: rgba(6, 10, 24, 0.92);
+            border: 1px solid rgba(0, 242, 254, 0.4);
+            border-radius: 14px;
+            padding: 15px 8px;
+            text-align: center;
+            box-shadow: var(--neon-shadow);
+        }
+
+        .time-val {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+            display: block;
+        }
+
+        .time-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .guide-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 20px;
+            text-align: right;
+            margin-top: 22px;
+        }
+
+        .guide-box h3 {
+            color: var(--secondary);
+            font-size: 1.08rem;
+            margin-bottom: 12px;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 8px;
+        }
+
+        .guide-list {
+            list-style: none;
+        }
+
+        .guide-list li {
+            position: relative;
+            padding-right: 20px;
+            margin-bottom: 10px;
+            font-size: 0.92rem;
+            color: #e2e8f0;
+        }
+
+        .guide-list li::before {
+            content: "•";
+            color: var(--primary);
+            font-size: 1.4rem;
+            position: absolute;
+            right: 0;
+            top: -4px;
+        }
+
+        .secret-trigger {
+            cursor: default;
+            user-select: none;
+        }
+
+        #admin-unlock-modal {
+            display: none;
+            margin-top: 14px;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.65);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+        }
+
+        /* Main App Container */
+        .app-wrapper {
+            position: relative;
+            z-index: 2;
+            max-width: 1220px;
+            margin: 0 auto;
+            padding: 20px 15px 90px 15px;
+            display: none;
+        }
+
+        .glass-panel {
+            background: var(--bg-card);
+            backdrop-filter: blur(18px);
+            border: 1px solid var(--glass-border);
+            border-radius: 18px;
+            padding: 24px;
+            margin-bottom: 22px;
+            box-shadow: 0 12px 34px rgba(0, 0, 0, 0.5);
+        }
+
+        .top-bar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            padding: 16px 22px;
+            background: rgba(12, 19, 38, 0.94);
+            border: 1px solid var(--primary);
+            border-radius: 16px;
+            margin-bottom: 24px;
+            box-shadow: var(--neon-shadow);
+        }
+
+        .stats-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .stat-pill {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--glass-border);
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.88rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .xp-pill {
+            border-color: var(--primary);
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        /* Forms & Inputs */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 7px;
+            font-size: 0.93rem;
+            color: var(--text-muted);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 13px 16px;
+            background: rgba(7, 11, 24, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: var(--text-main);
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: var(--neon-shadow);
+        }
+
+        .form-control[readonly] {
+            opacity: 0.75;
+            cursor: not-allowed;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-decoration: none;
+            color: #050814;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 22px rgba(0, 242, 254, 0.55);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-outline {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-main);
+            border: 1px solid var(--glass-border);
+            box-shadow: none;
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+        }
+
+        .btn-accent {
+            background: linear-gradient(135deg, #a855f7, #6366f1);
+            color: #fff;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 18px;
+            margin-top: 15px;
+        }
+
+        .module-card {
+            background: rgba(15, 23, 42, 0.88);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 22px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 165px;
+        }
+
+        .module-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: var(--neon-shadow);
+        }
+
+        .module-card.completed {
+            border-color: var(--success);
+        }
+
+        .module-title {
+            font-size: 1.12rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .module-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.84rem;
+            color: var(--text-muted);
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .xp-tag {
+            background: rgba(0, 242, 254, 0.15);
+            color: var(--primary);
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-weight: bold;
+        }
+
+        /* Tabs */
+        .tabs-header {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 12px;
+        }
+
+        .tab-btn {
+            padding: 9px 16px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #050814;
+            font-weight: bold;
+            border-color: transparent;
+        }
+
+        /* Blocks & Cards */
+        .lesson-block {
+            background: rgba(8, 13, 28, 0.72);
+            border-right: 4px solid var(--primary);
+            padding: 18px;
+            border-radius: 12px;
+            margin-bottom: 18px;
+        }
+
+        .lesson-block h4 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .golden-tip {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.45);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 14px 0;
+        }
+
+        .trap-card {
+            background: rgba(239, 68, 68, 0.09);
+            border: 1px solid rgba(239, 68, 68, 0.4);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 15px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 0.92rem;
+        }
+
+        .data-table th, .data-table td {
+            border: 1px solid var(--glass-border);
+            padding: 11px;
+            text-align: center;
+        }
+
+        .data-table th {
+            background: rgba(0, 242, 254, 0.14);
+            color: var(--primary);
+        }
+
+        .flashcard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+        }
+
+        .flashcard {
+            background: rgba(12, 19, 38, 0.92);
+            border: 1px solid var(--primary);
+            border-radius: 14px;
+            padding: 20px;
+            min-height: 165px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            transition: transform 0.25s;
+        }
+
+        .flashcard:hover {
+            transform: scale(1.02);
+        }
+
+        /* Lab */
+        .lab-canvas-wrap {
+            background: #040711;
+            border: 1px solid var(--primary);
+            border-radius: 14px;
+            padding: 12px;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        canvas.sim-canvas {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 14px;
+            margin-top: 15px;
+        }
+
+        /* Quiz Options */
+        .option-item {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 13px 16px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .option-item:hover {
+            border-color: var(--primary);
+            background: rgba(0, 242, 254, 0.07);
+        }
+
+        .option-item.selected {
+            border-color: var(--primary);
+            background: rgba(0, 242, 254, 0.18);
+            font-weight: bold;
+        }
+
+        .symbol-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 8px;
+            padding: 8px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .sym-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--glass-border);
+            color: var(--primary);
+            padding: 5px 11px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .sym-btn:hover {
+            background: var(--primary);
+            color: #000;
+        }
+
+        .digiform-box {
+            background: linear-gradient(135deg, rgba(0, 242, 254, 0.12), rgba(168, 85, 247, 0.12));
+            border: 2px solid var(--primary);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 18px;
+        }
+
+        .toast-msg {
+            position: fixed;
+            bottom: 24px;
+            left: 24px;
+            background: rgba(12, 19, 38, 0.96);
+            border: 2px solid var(--primary);
+            color: #fff;
+            padding: 14px 22px;
+            border-radius: 12px;
+            z-index: 10000;
+            box-shadow: var(--neon-shadow);
+            display: none;
+            font-size: 0.95rem;
+        }
+
+        @media (max-width: 600px) {
+            .countdown-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .top-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+<div id="toast" class="toast-msg"></div>
+
+<!-- ==================== LOCK SCREEN ==================== -->
+<div id="lock-screen">
+    <div class="lock-container">
+        <div style="text-align: center;">
+            <span class="official-badge">سامانه رسمی آموزش پیشرفته و ارزشیابی هوشمند</span>
+            <h1 id="lock-course-title" style="font-size: 1.55rem; margin-bottom: 8px; color: #fff;"></h1>
+            <p id="lock-school-info" style="color: var(--text-muted); font-size: 1rem;"></p>
+            <p style="color: var(--secondary); font-size: 0.95rem; margin-top: 6px;">
+                دبیر: <span id="lock-teacher-name" class="secret-trigger"></span>
+            </p>
+        </div>
+
+        <div style="margin-top: 22px; text-align: center;">
+            <p style="font-size: 0.95rem; color: #cbd5e1; margin-bottom: 10px;">
+                زمان باقی‌مانده تا فعال‌سازی سامانه (دوشنبه ۲۵ آبان - ساعت ۰۹:۵۰ صبح):
+            </p>
+            <div class="countdown-grid">
+                <div class="time-box">
+                    <span id="cd-days" class="time-val">00</span>
+                    <span class="time-label">روز</span>
+                </div>
+                <div class="time-box">
+                    <span id="cd-hours" class="time-val">00</span>
+                    <span class="time-label">ساعت</span>
+                </div>
+                <div class="time-box">
+                    <span id="cd-mins" class="time-val">00</span>
+                    <span class="time-label">دقیقه</span>
+                </div>
+                <div class="time-box">
+                    <span id="cd-secs" class="time-val">00</span>
+                    <span class="time-label">ثانیه</span>
+                </div>
+            </div>
+            <p style="color: var(--warning); font-size: 0.9rem; font-weight: bold;">
+                دسترسی به محتوای جلسه قبل از زمان مقرر امکان‌پذیر نمی‌باشد. پس از بازگشایی، سامانه برای همیشه فعال خواهد ماند.
+            </p>
+        </div>
+
+        <!-- Hidden Admin Unlock Box (Revealed strictly by 5 taps on Teacher Name) -->
+        <div id="admin-unlock-modal">
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <input type="password" id="admin-code-input" class="form-control" placeholder="کد مدیریتی را وارد نمایید..." style="padding: 9px 12px;">
+                <button class="btn" onclick="verifyAdminCode()" style="padding: 9px 18px;">تأیید</button>
+            </div>
+        </div>
+
+        <!-- Official System Guide on Lock Screen -->
+        <div class="guide-box">
+            <h3>راهنمای رسمی کار با سامانه، کسب امتیاز و ارسال گزارش نهایی</h3>
+            <ul class="guide-list">
+                <li><strong>احراز هویت و انتخاب پایه:</strong> پس از فعال‌سازی سامانه، وارد کردن نام و نام خانوادگی کامل و انتخاب دقیق پایه و رشته (<strong>دهم تجربی</strong> یا <strong>دهم ریاضی</strong>) جهت ورود به داشبورد الزامی است.</li>
+                <li><strong>ثبت حضور در دیجی‌فرم:</strong> در بخش «حضور و غیاب» داشبورد، لینک اختصاصی دیجی‌فرم برای هر دو رشته ریاضی و تجربی قرار داده شده است که تکمیل آن الزامی می‌باشد.</li>
+                <li><strong>سیستم امتیازدهی حرفه‌ای (XP):</strong> هر فعالیت آموزشی تنها یک‌بار امتیاز دارد (ورود: ۵ امتیاز، آموزش پیشرفته: ۲۰ امتیاز، خلاصه هوشمند: ۱۰ امتیاز، نکات تستی و تشریحی: ۱۵ امتیاز، آزمایشگاه مجازی: ۳۰ امتیاز، آزمون تستی پیشرفته: ۵۰ امتیاز، آزمون تشریحی هوشمند: ۵۰ امتیاز، بررسی تکالیف و حضور: ۱۰ امتیاز).</li>
+                <li><strong>پاسخ‌گویی با کیبورد کامل:</strong> در آزمون‌های تشریحی و نیمه‌تشریحی، کیبورد کامل دستگاه (شامل حروف فارسی، انگلیسی، اعداد و علائم ریاضی) فعال است. موتور تصحیح هوشمند راه‌حل‌های مفهومی و معادل را تشخیص داده و نمره مرحله‌ای لحاظ می‌کند.</li>
+                <li><strong>الزام ثبت و ارسال گزارش نهایی:</strong> در پایان جلسه، مراجعه به بخش «ثبت گزارش» و فشردن دکمه «ثبت و ارسال گزارش» جهت ذخیره مستقیم عملکرد در سرور الزامی است.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== MAIN APPLICATION ==================== -->
+<div class="app-wrapper" id="app-wrapper">
+
+    <!-- LOGIN VIEW -->
+    <div id="login-view" class="glass-panel" style="max-width: 600px; margin: 35px auto; display: none;">
+        <h2 style="color: var(--primary); margin-bottom: 8px; text-align: center;">ورود به سامانه آموزشی</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem; text-align: center; margin-bottom: 22px;">
+            مشخصات خود را وارد کرده و رشته تحصیلی خود را انتخاب نمایید.
+        </p>
+
+        <div class="form-group">
+            <label>نام و نام خانوادگی دانش‌آموز (اجباری):</label>
+            <input type="text" id="student-name-input" class="form-control" placeholder="نام و نام خانوادگی کامل را وارد کنید" autocomplete="name">
+        </div>
+
+        <div class="form-group">
+            <label>انتخاب پایه و رشته تحصیلی (اجباری):</label>
+            <select id="login-grade-select" class="form-control">
+                <option value="">-- پایه و رشته خود را انتخاب نمایید --</option>
+                <option value="دهم تجربی">دهم تجربی</option>
+                <option value="دهم ریاضی">دهم ریاضی</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>نام مدرسه:</label>
+            <input type="text" id="login-school" class="form-control" readonly>
+        </div>
+
+        <div class="form-group">
+            <label>عنوان درس و مبحث:</label>
+            <input type="text" id="login-subject" class="form-control" readonly>
+        </div>
+
+        <button class="btn" style="width: 100%; margin-top: 10px;" onclick="handleStudentLogin()">
+            ثبت ورود و نمایش داشبورد
+        </button>
+    </div>
+
+    <!-- DASHBOARD & MODULES VIEW -->
+    <div id="main-view" style="display: none;">
+        <!-- Top Status Bar -->
+        <div class="top-bar">
+            <div>
+                <h2 id="header-lesson-title" style="font-size: 1.2rem; color: #fff;"></h2>
+                <div style="font-size: 0.86rem; color: var(--text-muted); margin-top: 4px;">
+                    دانش‌آموز: <strong id="header-student-name" style="color: var(--primary);"></strong> |
+                    رشته: <strong id="header-student-grade" style="color: var(--secondary);"></strong> |
+                    مدرسه: <span id="header-school-name"></span> |
+                    دبیر: <span id="header-teacher-name" class="secret-trigger"></span>
+                </div>
+            </div>
+            <div class="stats-bar">
+                <div class="stat-pill xp-pill">امتیاز: <span id="stat-xp">0</span> XP</div>
+                <div class="stat-pill">سطح: <span id="stat-level">1</span></div>
+                <div class="stat-pill">پیشرفت: <span id="stat-progress">0</span>%</div>
+                <div class="stat-pill">زمان حضور: <span id="stat-timer">00:00</span></div>
+                <button class="btn btn-outline" style="padding: 6px 12px; font-size: 0.82rem;" onclick="toggleSound()" id="sound-btn">صدا: فعال</button>
+            </div>
+        </div>
+
+        <!-- Dashboard Grid -->
+        <div id="dashboard-home">
+            <div class="glass-panel">
+                <h3 style="color: var(--primary); margin-bottom: 6px;">بخش‌های فعال جلسه تکمیلی و پیشرفته</h3>
+                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px;">
+                    تمامی بخش‌های آموزشی، نکات پیشرفته تستی، آزمایشگاه و آزمون‌ها را تکمیل نموده و در پایان گزارش نهایی را ارسال نمایید.
+                </p>
+                <div class="dashboard-grid" id="modules-grid"></div>
+            </div>
+        </div>
+
+        <!-- Active Module Container -->
+        <div id="module-container" style="display: none;">
+            <div style="margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <button class="btn btn-outline" onclick="returnToDashboard()">بازگشت به صفحه اصلی داشبورد</button>
+                <span id="current-module-badge" class="official-badge" style="margin: 0;"></span>
+            </div>
+            <div id="module-content-area" class="glass-panel"></div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+/* ============================================================================
+   ۱. تنظیمات متغیرهای پروژه (قابل ویرایش توسط مدرس در ابتدای کد)
+   ============================================================================ */
+const PROJECT_CONFIG = {
+    schoolName: "دبیرستان رستمانی طبل",
+    gradeOptions: ["دهم تجربی", "دهم ریاضی"],
+    subject: "فیزیک دهم - فصل دوم (تا پایان اصل پاسکال) - جلسه تکمیلی",
+    teacherName: "برزگری",
+    startDate: "1405/08/25",
+    startTime: "09:50",
+    // دوشنبه ۲۵ آبان ۱۴۰۵ برابر با ۱۶ نوامبر ۲۰۲۶ ساعت ۰۹:۵۰ صبح به وقت ایران
+    targetTimestamp: new Date("2026-11-16T09:50:00+03:30").getTime(),
+    endDate: "1406/04/31",
+    endTime: "23:59",
+    adminSecretCode: "9162",
+
+    supabaseUrl: "https://tpwdrzwfzdbmwqlblntu.supabase.co",
+    supabaseKey: "sb_publishable_ASPIzP1XV1iSweCV43Oy9Q_PCkz5htN",
+
+    attendanceLinks: {
+        math: {
+            title: "جهت ثبت حضور فیزیک دهم ریاضی وارد دیجی فرم زیر شوید:",
+            url: "https://a.digiform.ir/w42e9c53fc"
+        },
+        exp: {
+            title: "جهت ثبت حضور فیزیک دهم تجربی وارد دیجی فرم زیر شوید:",
+            url: "https://a.digiform.ir/wdac14b430"
+        }
+    },
+
+    sessionFiles: [
+        { title: "درسنامه پیشرفته جلسه تکمیلی (ویژگی‌های ماده، فشار شاره، بارومتر و اصل پاسکال)", desc: "شامل روابط تحلیلی مخلوط مایعات، تغییر ابعاد ظرف، نیروی وارد بر دیواره سد و تعادل پیستون‌های غیرهم‌تراز" },
+        { title: "بانک مسائل سطح بالا و کنکوری فصل دوم", desc: "شامل سؤالات محاسباتی چندمرحله‌ای، تیپ‌های تغییر دما، حباب هوا و لوله‌های مویین" }
+    ],
+    homeworks: [
+        "حل کامل سؤالات تشریحی چندقسمتی بخش آزمون تشریحی هوشمند (مسائل زیر دریایی، فشار خون، نیروی دیواره و جک هیدرولیکی غیرهم‌تراز).",
+        "پاسخ‌گویی به هر سه سطح آزمون تستی (مفهومی، محاسباتی و پیشرفته کنکوری) و بررسی پاسخ‌های تشریحی.",
+        "ثبت حضور در لینک دیجی‌فرم اختصاصی رشته خود (تجربی یا ریاضی) و ارسال گزارش نهایی در بخش ثبت گزارش."
+    ],
+    announcements: [
+        "ثبت حضور در لینک دیجی‌فرم مربوط به رشته تحصیلی (ریاضی یا تجربی) و همچنین فشردن دکمه «ثبت و ارسال گزارش» در پایان کار الزامی است.",
+        "در حل مسائل پیشرفته فشار و اصل پاسکال، به تفاوت «فشار پیمانه‌ای (ناشی از مایع)» و «فشار مطلق (کل)» و همچنین توان دوم نسبت قطرها دقت ویژه داشته باشید."
+    ],
+
+    enabledModules: [
+        { id: "teaching", title: "۱. آموزش جامع پیشرفته (جلسه تکمیلی)", xp: 20, desc: "درسنامه سطح بالا، فرمول‌های تحلیلی، مسائل مخلوط مایعات، نیروی دیواره و اصل پاسکال" },
+        { id: "summary", title: "۲. خلاصه هوشمند و مرور سریع", xp: 10, desc: "درخت مفهومی پیشرفته، جدول مقایسه‌ای تیپ مسائل و فلش‌کارت‌های کنکوری" },
+        { id: "descriptive_tips", title: "۳. تکنیک‌های سریع تستی، نکات تشریحی و دام‌ها", xp: 15, desc: "روش‌های حل ذهنی کنکور، کلیدواژه‌های مصحح نهایی و تله‌های پرتکرار طراحان" },
+        { id: "lab", title: "۴. آزمایشگاه مجازی پیشرفته", xp: 30, desc: "شبیه‌ساز تعاملی بالابر هیدرولیکی با پیستون‌های غیرهم‌تراز، محاسبه کار و فشار عمق" },
+        { id: "quiz_mc", title: "۵. آزمون تستی پیشرفته (۳ سطحی)", xp: 50, desc: "۱۵ تست سطح بالا (مفهومی، محاسباتی و کنکوری) با شمارش معکوس و پاسخ تشریحی کامل" },
+        { id: "quiz_desc", title: "۶. آزمون تشریحی و نیمه‌تشریحی هوشمند", xp: 50, desc: "مسائل پیشرفته چندقسمتی با کیبورد کامل و موتور تصحیح مفهومی مرحله‌ای" },
+        { id: "attendance_files", title: "۷. حضور و غیاب (دیجی‌فرم)، تکالیف و اطلاعیه‌ها", xp: 10, desc: "لینک‌های ثبت حضور دهم ریاضی و دهم تجربی در دیجی‌فرم و تکالیف جلسه" },
+        { id: "progress_creative", title: "۸. کارنامه تحلیلی و چالش‌های مفهومی", xp: 15, desc: "تحلیل نقاط قوت، نشان‌های علمی (Badges) و چالش پیشرفته مخلوط مایعات و دما" },
+        { id: "final_report", title: "۹. ثبت و ارسال گزارش نهایی", xp: 0, desc: "مشاهده خلاصه کامل عملکرد و ارسال مستقیم به جدول Students در سرور" }
+    ]
+};
+
+/* ============================================================================
+   ۲. مدیریت حافظه محلی (LocalStorage & Anti-Cheat)
+   ============================================================================ */
+const STORAGE_KEY = "PHYS10_ROSTAMANI_ADVANCED_V2";
+
+let appState = {
+    unlockedPermanently: false,
+    studentName: "",
+    studentGrade: "",
+    firstLoginTime: null,
+    lastActiveTime: null,
+    loginCount: 0,
+    studySeconds: 0,
+    xp: 0,
+    completedActivities: {},
+    viewedModules: [],
+    labCompleted: false,
+    mcQuizResults: { easy: null, medium: null, hard: null },
+    descQuizScore: null,
+    badges: [],
+    dailyChallengeDone: false,
+    attendanceClicked: false,
+    reportSubmitted: false,
+    soundEnabled: true
+};
+
+function loadState() {
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+            appState = { ...appState, ...JSON.parse(saved) };
+        }
+    } catch (e) {
+        console.error("Storage load error:", e);
+    }
+}
+
+function saveState() {
+    try {
+        appState.lastActiveTime = new Date().toLocaleString("fa-IR");
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+        updateTopBarUI();
+    } catch (e) {
+        console.error("Storage save error:", e);
+    }
+}
+
+/* ============================================================================
+   ۳. سیستم صوتی و اعلان‌ها
+   ============================================================================ */
+function playTone(freq = 540, duration = 0.12, type = "sine") {
+    if (!appState.soundEnabled) return;
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        gain.gain.setValueAtTime(0.08, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + duration);
+    } catch (e) {}
+}
+
+function toggleSound() {
+    appState.soundEnabled = !appState.soundEnabled;
+    document.getElementById("sound-btn").innerText = appState.soundEnabled ? "صدا: فعال" : "صدا: غیرفعال";
+    saveState();
+}
+
+function showToast(msg) {
+    const t = document.getElementById("toast");
+    t.innerText = msg;
+    t.style.display = "block";
+    setTimeout(() => { t.style.display = "none"; }, 4000);
+}
+
+/* ============================================================================
+   ۴. امتیازدهی (XP) و نشان‌های علمی (Badges)
+   ============================================================================ */
+function awardXP(activityKey, amount, label) {
+    if (appState.completedActivities[activityKey]) {
+        return false;
+    }
+    appState.completedActivities[activityKey] = {
+        xp: amount,
+        title: label,
+        time: new Date().toLocaleTimeString("fa-IR")
+    };
+    appState.xp += amount;
+    checkBadges();
+    saveState();
+    playTone(680, 0.18, "triangle");
+    showToast(`+${amount} XP بابت «${label}» ثبت گردید.`);
+    return true;
+}
+
+function checkBadges() {
+    const rules = [
+        { title: "حضور در جلسه تکمیلی", cond: appState.xp >= 5 },
+        { title: "تسلط بر درسنامه پیشرفته", cond: !!appState.completedActivities["mod_teaching"] && !!appState.completedActivities["mod_descriptive_tips"] },
+        { title: "مهندس آزمایشگاه هیدرولیک", cond: appState.labCompleted },
+        { title: "حل‌کننده تست‌های کنکوری", cond: appState.mcQuizResults.hard !== null && appState.mcQuizResults.hard >= 60 },
+        { title: "استاد مسائل تشریحی", cond: appState.descQuizScore !== null && appState.descQuizScore >= 7 },
+        { title: "دانش‌آموز ممتاز (بالای ۱۵۰ XP)", cond: appState.xp >= 150 }
+    ];
+    rules.forEach(r => {
+        if (r.cond && !appState.badges.includes(r.title)) {
+            appState.badges.push(r.title);
+        }
+    });
+}
+
+function calculateProgressPercent() {
+    const maxXP = 200;
+    return Math.min(100, Math.round((appState.xp / maxXP) * 100));
+}
+
+function updateTopBarUI() {
+    document.getElementById("stat-xp").innerText = appState.xp;
+    document.getElementById("stat-level").innerText = Math.floor(appState.xp / 50) + 1;
+    document.getElementById("stat-progress").innerText = calculateProgressPercent();
+}
+
+/* ============================================================================
+   ۵. قفل زمانی و کد مخفی دبیر (۵ بار ضربه روی نام برزگری + کد 9162)
+   ============================================================================ */
+let secretTapCount = 0;
+let secretTapTimer = null;
+
+function initSecretTriggers() {
+    document.querySelectorAll(".secret-trigger").forEach(el => {
+        el.addEventListener("click", () => {
+            secretTapCount++;
+            clearTimeout(secretTapTimer);
+            secretTapTimer = setTimeout(() => { secretTapCount = 0; }, 2200);
+            if (secretTapCount >= 5) {
+                secretTapCount = 0;
+                const lockVisible = document.getElementById("lock-screen").style.display !== "none";
+                if (lockVisible) {
+                    const modal = document.getElementById("admin-unlock-modal");
+                    modal.style.display = modal.style.display === "block" ? "none" : "block";
+                } else {
+                    const code = prompt("کد مدیریتی دبیر را وارد نمایید:");
+                    if (code === PROJECT_CONFIG.adminSecretCode) {
+                        if (confirm("آیا مایل به بازنشانی محدودیت آزمون‌ها و امکان ارسال مجدد گزارش هستید؟")) {
+                            appState.reportSubmitted = false;
+                            appState.mcQuizResults = { easy: null, medium: null, hard: null };
+                            appState.descQuizScore = null;
+                            saveState();
+                            showToast("محدودیت آزمون‌ها و گزارش نهایی بازنشانی شد.");
+                            renderDashboardCards();
+                        }
+                    }
+                }
+            }
+        });
+    });
+}
+
+function verifyAdminCode() {
+    const val = document.getElementById("admin-code-input").value.trim();
+    if (val === PROJECT_CONFIG.adminSecretCode) {
+        appState.unlockedPermanently = true;
+        saveState();
+        unlockSystem();
+        showToast("قفل زمانی با کد مدیریتی بازگشایی شد.");
+    } else {
+        showToast("کد وارد شده معتبر نمی‌باشد.");
+    }
+}
+
+let countdownInterval = null;
+
+function checkLockState() {
+    document.getElementById("lock-course-title").innerText = PROJECT_CONFIG.subject;
+    document.getElementById("lock-school-info").innerText = `${PROJECT_CONFIG.schoolName} | پایه‌های دهم تجربی و دهم ریاضی`;
+    document.getElementById("lock-teacher-name").innerText = PROJECT_CONFIG.teacherName;
+
+    if (appState.unlockedPermanently || Date.now() >= PROJECT_CONFIG.targetTimestamp) {
+        appState.unlockedPermanently = true;
+        saveState();
+        unlockSystem();
+    } else {
+        updateCountdownDisplay();
+        countdownInterval = setInterval(() => {
+            if (Date.now() >= PROJECT_CONFIG.targetTimestamp) {
+                clearInterval(countdownInterval);
+                appState.unlockedPermanently = true;
+                saveState();
+                unlockSystem();
+            } else {
+                updateCountdownDisplay();
+            }
+        }, 1000);
+    }
+}
+
+function updateCountdownDisplay() {
+    const diff = Math.max(0, PROJECT_CONFIG.targetTimestamp - Date.now());
+    const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const m = Math.floor((diff / 1000 / 60) % 60);
+    const s = Math.floor((diff / 1000) % 60);
+
+    document.getElementById("cd-days").innerText = String(d).padStart(2, "0");
+    document.getElementById("cd-hours").innerText = String(h).padStart(2, "0");
+    document.getElementById("cd-mins").innerText = String(m).padStart(2, "0");
+    document.getElementById("cd-secs").innerText = String(s).padStart(2, "0");
+}
+
+function unlockSystem() {
+    if (countdownInterval) clearInterval(countdownInterval);
+    document.getElementById("lock-screen").style.display = "none";
+    document.getElementById("app-wrapper").style.display = "block";
+
+    document.getElementById("login-school").value = PROJECT_CONFIG.schoolName;
+    document.getElementById("login-subject").value = PROJECT_CONFIG.subject;
+
+    if (appState.studentName && appState.studentGrade) {
+        enterMainDashboard(false);
+    } else {
+        document.getElementById("login-view").style.display = "block";
+    }
+}
+
+/* ============================================================================
+   ۶. ورود دانش‌آموز (با انتخاب اجباری دهم تجربی یا دهم ریاضی)
+   ============================================================================ */
+function handleStudentLogin() {
+    const nameInput = document.getElementById("student-name-input").value.trim();
+    const gradeSelect = document.getElementById("login-grade-select").value;
+
+    if (nameInput.length < 3) {
+        showToast("لطفاً نام و نام خانوادگی کامل خود را وارد نمایید.");
+        return;
+    }
+    if (!gradeSelect) {
+        showToast("لطفاً پایه و رشته تحصیلی خود (دهم تجربی یا دهم ریاضی) را انتخاب نمایید.");
+        return;
+    }
+
+    appState.studentName = nameInput;
+    appState.studentGrade = gradeSelect;
+    if (!appState.firstLoginTime) {
+        appState.firstLoginTime = new Date().toLocaleString("fa-IR");
+    }
+    appState.loginCount += 1;
+    awardXP("login_xp", 5, "ورود به سامانه و ثبت مشخصات");
+    saveState();
+    enterMainDashboard(true);
+}
+
+let studyTimerInterval = null;
+
+function enterMainDashboard(isFirstEnterThisSession) {
+    if (!isFirstEnterThisSession) {
+        appState.loginCount += 1;
+        saveState();
+    }
+    document.getElementById("login-view").style.display = "none";
+    document.getElementById("main-view").style.display = "block";
+
+    document.getElementById("header-lesson-title").innerText = PROJECT_CONFIG.subject;
+    document.getElementById("header-student-name").innerText = appState.studentName;
+    document.getElementById("header-student-grade").innerText = appState.studentGrade;
+    document.getElementById("header-school-name").innerText = PROJECT_CONFIG.schoolName;
+    document.getElementById("header-teacher-name").innerText = PROJECT_CONFIG.teacherName;
+
+    updateTopBarUI();
+    renderDashboardCards();
+
+    if (!studyTimerInterval) {
+        studyTimerInterval = setInterval(() => {
+            appState.studySeconds += 1;
+            const mins = String(Math.floor(appState.studySeconds / 60)).padStart(2, "0");
+            const secs = String(appState.studySeconds % 60).padStart(2, "0");
+            document.getElementById("stat-timer").innerText = `${mins}:${secs}`;
+            if (appState.studySeconds % 15 === 0) saveState();
+        }, 1000);
+    }
+}
+
+function renderDashboardCards() {
+    const grid = document.getElementById("modules-grid");
+    grid.innerHTML = "";
+    PROJECT_CONFIG.enabledModules.forEach(mod => {
+        const isDone = !!appState.completedActivities["mod_" + mod.id] ||
+                       (mod.id === "final_report" && appState.reportSubmitted);
+        const card = document.createElement("div");
+        card.className = "module-card" + (isDone ? " completed" : "");
+        card.onclick = () => openModule(mod.id, mod.title);
+        card.innerHTML = `
+            <div>
+                <div class="module-title">${mod.title}</div>
+                <p style="font-size: 0.88rem; color: var(--text-muted);">${mod.desc}</p>
+            </div>
+            <div class="module-meta">
+                <span>وضعیت: <strong style="color:${isDone ? 'var(--success)' : '#cbd5e1'}">${isDone ? 'تکمیل‌شده' : 'آماده بررسی'}</strong></span>
+                ${mod.xp > 0 ? `<span class="xp-tag">+${mod.xp} XP</span>` : `<span class="xp-tag">ارسال نهایی</span>`}
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+}
+
+function openModule(modId, modTitle) {
+    playTone(580, 0.1, "sine");
+    if (!appState.viewedModules.includes(modTitle)) {
+        appState.viewedModules.push(modTitle);
+        saveState();
+    }
+    document.getElementById("dashboard-home").style.display = "none";
+    document.getElementById("module-container").style.display = "block";
+    document.getElementById("current-module-badge").innerText = modTitle;
+
+    const area = document.getElementById("module-content-area");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+
+    switch (modId) {
+        case "teaching": renderTeachingModule(area); break;
+        case "summary": renderSummaryModule(area); break;
+        case "descriptive_tips": renderTipsAndTrapsModule(area); break;
+        case "lab": renderLabModule(area); break;
+        case "quiz_mc": renderMCQuizModule(area); break;
+        case "quiz_desc": renderDescQuizModule(area); break;
+        case "attendance_files": renderAttendanceAndHomeworkModule(area); break;
+        case "progress_creative": renderProgressAndCreativeModule(area); break;
+        case "final_report": renderFinalReportModule(area); break;
+    }
+}
+
+function returnToDashboard() {
+    document.getElementById("module-container").style.display = "none";
+    document.getElementById("dashboard-home").style.display = "block";
+    renderDashboardCards();
+}
+
+/* ============================================================================
+   ۷. بخش ۱: آموزش جامع پیشرفته (جلسه تکمیلی - منطبق بر مباحث کنکوری و تشریحی سطح بالا)
+   ============================================================================ */
+function renderTeachingModule(container) {
+    container.innerHTML = `
+        <div class="tabs-header">
+            <button class="tab-btn active" onclick="switchTeachTab(0, this)">۱. فیزیک حالت‌های ماده، نانو و مویینگی پیشرفته</button>
+            <button class="tab-btn" onclick="switchTeachTab(1, this)">۲. فشار در جامدات و شاره‌ها (روابط تحلیلی و ترکیبی)</button>
+            <button class="tab-btn" onclick="switchTeachTab(2, this)">۳. نیروی وارد بر دیواره ظرف، سد و بارومتر</button>
+            <button class="tab-btn" onclick="switchTeachTab(3, this)">۴. اصل پاسکال و جک هیدرولیکی (هم‌تراز و غیرهم‌تراز)</button>
+        </div>
+        <div id="teach-tab-body"></div>
+        <div style="margin-top: 22px; text-align: left;">
+            <button class="btn btn-success" onclick="awardXP('mod_teaching', 20, 'مطالعه کامل آموزش پیشرفته جلسه تکمیلی')">
+                ثبت تکمیل مطالعه درسنامه پیشرفته (+۲۰ XP)
+            </button>
+        </div>
+    `;
+    switchTeachTab(0, container.querySelector(".tab-btn"));
+}
+
+function switchTeachTab(idx, btnEl) {
+    btnEl.parentElement.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    btnEl.classList.add("active");
+    const body = document.getElementById("teach-tab-body");
+
+    if (idx === 0) {
+        body.innerHTML = `
+            <div class="lesson-block">
+                <h4>تحلیل میکروسکوپی نیروهای بین‌مولکولی و مقیاس نانو</h4>
+                <p>۱. <strong>برد و ماهیت نیروی بین‌مولکولی:</strong> نیروی بین مولکول‌ها کوتاه‌برد است. هرگاه فاصله دو مولکول از حد تعادل (حدود ۱ تا چند آنگستروم، <span class="math-box">1 Å = 10⁻¹⁰ m</span>) <strong>کمتر</strong> شود، نیروی بین آن‌ها از نوع <strong>رانشی (دافعه)</strong> می‌شود (علت اصلی تراکم‌ناپذیری مایعات و جامدات). اگر فاصله کمی <strong>بیشتر</strong> از حد تعادل شود، نیرو از نوع <strong>ربایشی (جاذبه)</strong> خواهد بود.</p>
+                <p>۲. <strong>مقایسه میانگین نیروی بین‌مولکولی در سه حالت ماده:</strong> برای یک ماده معین در حالت جامد (<span class="math-box">F_S</span>)، مایع (<span class="math-box">F_L</span>) و گاز (<span class="math-box">F_g</span>) همواره داریم:</p>
+                <div class="math-block">F_S > F_L > F_g</div>
+                <p>۳. <strong>علم و فناوری نانو:</strong> مقیاس نانو از <span class="math-box">1 nm</span> تا <span class="math-box">100 nm</span> است. یک ساختار (مانند نانولایه، نانوسیم یا نانوذره) زمانی ویژگی‌های فیزیکی، شیمیایی و بیولوژیکی متفاوتی از حالت توده‌ای (Bulk) نشان می‌دهد که <strong>حداقل یکی از ابعاد آن</strong> در مقیاس نانو باشد (نه لزوماً هر سه بعد!).</p>
+                <p>۴. <strong>جامدهای بلورین و بی‌شکل (آمورف):</strong> فلزات (آهن، مس)، نمک طعام، الماس و یخ <strong>بلورین</strong> هستند (سرد شدن تدریجی مایع). شیشه، قیر، پلاستیک و لاستیک <strong>بی‌شکل (آمورف)</strong> هستند (سرد شدن سریع مایع).</p>
+            </div>
+            <div class="lesson-block">
+                <h4>تحلیل پیشرفته کشش سطحی، ترشوندگی و اثر دما و ناخالصی</h4>
+                <p>• <strong>اثر دما و شوینده‌ها بر کشش سطحی:</strong> افزایش دمای مایع و یا افزودن مایع ظرف‌شویی (صابون) به آب، نیروی هم‌چسبی بین مولکول‌های آب را تضعیف کرده و <strong>کشش سطحی را کاهش می‌دهد</strong> (به همین دلیل سوزن شناور روی آب با ریختن یک قطره مایع ظرف‌شویی فرو می‌رود، اما حباب‌های صابون به دلیل کاهش کشش سطحی پایدارتر شکل می‌گیرند).</p>
+                <div class="golden-tip">
+                    <strong>نکته پیشرفته کنکوری (لوله مویین چرب یا دوداندود):</strong><br>
+                    در لوله شیشه‌ای تمیز، نیروی دگرچسبی آب و شیشه بیشتر از هم‌چسبی آب است، پس سطح آب <strong>کاو (مقعر - فرورفته)</strong> و بالاتر از سطح ظرف است. اما اگر درون لوله شیشه‌ای را <strong>روغن‌اندود (چرب) یا دوداندود</strong> کنیم، نیروی دگرچسبی بین آب و چربی بسیار کم شده و هم‌چسبی آب غالب می‌شود؛ در نتیجه سطح آب مانند جیوه <strong>کوهان (محدب - برآمده)</strong> شده و پایین‌تر از سطح ظرف می‌ایستد!
+                </div>
+            </div>
+        `;
+    } else if (idx === 1) {
+        body.innerHTML = `
+            <div class="lesson-block">
+                <h4>فشار در جامدات همگن (منشوری و استوانه‌ای)</h4>
+                <p>برای هر جسم جامد که سطح مقطع ثابتی دارد (مکعب، مکعب‌مستطیل و استوانه قائم) و روی سطح افقی قرار گرفته است، فشار ناشی از وزن جسم علاوه بر رابطه <span class="math-box">P = F / A = m × g / A</span>، مستقیماً از رابطه زیر نیز محاسبه می‌شود:</p>
+                <div class="math-block">P_جامد همگن = ρ × g × h</div>
+                <p><strong>مسئله تیپ کنکور (تغییر ابعاد و بیشترین و کمترین فشار مکعب‌مستطیل):</strong><br>
+                اگر مکعب‌مستطیلی به ابعاد <span class="math-box">a < b < c</span> روی سطح افقی قرار گیرد:<br>
+                • <strong>بیشترین فشار (<span class="math-box">P_max</span>):</strong> زمانی است که روی کوچک‌ترین سطح (<span class="math-box">a × b</span>) قرار گیرد، یعنی ارتفاع آن بیشترین مقدار (<span class="math-box">h = c</span>) باشد: <span class="math-box">P_max = ρ × g × c</span><br>
+                • <strong>کمترین فشار (<span class="math-box">P_min</span>):</strong> زمانی است که روی بزرگ‌ترین سطح (<span class="math-box">b × c</span>) قرار گیرد، یعنی ارتفاع آن کمترین مقدار (<span class="math-box">h = a</span>) باشد: <span class="math-box">P_min = ρ × g × a</span></p>
+            </div>
+            <div class="lesson-block">
+                <h4>مسائل پیشرفته فشار در شاره‌ها: مخلوط مایعات و تغییر ظرف</h4>
+                <p><strong>۱. فشار چند مایع مخلوط‌نشدنی یا مخلوط‌شده در ظرف استوانه‌ای:</strong><br>
+                اگر چند مایع با ارتفاع‌های <span class="math-box">h₁</span> و <span class="math-box">h₂</span> روی هم ریخته شوند، فشار کل مایعات در کف ظرف برابر است با:</p>
+                <div class="math-block">P_مایعات = (ρ₁ × g × h₁) + (ρ₂ × g × h₂)</div>
+                <p><strong>نکته طلایی همزن (مخلوط کردن دو مایع در ظرف استوانه‌ای):</strong> اگر دو مایع درون یک ظرف استوانه‌ای (سطح مقطع ثابت) با هم مخلوط شوند، چون مجموع جرم مایعات و مساحت کف ظرف تغییر نمی‌کند، <strong>فشار در کف ظرف ثابت می‌ماند</strong>؛ اما چگالی مایع بالایی زیاد شده و فشار در نقاط میانی (مانند نقطه A در مرز قبلی) <strong>افزایش می‌یابد</strong>!</p>
+                <p><strong>۲. انتقال مایع از یک ظرف استوانه‌ای به استوانه دیگر:</strong><br>
+                اگر تمام مایع درون استوانه‌ای به شعاع <span class="math-box">r₁</span> را درون استوانه‌ای به شعاع <span class="math-box">r₂ = n × r₁</span> بریزیم (حجم مایع ثابت است <span class="math-box">V₁ = V₂</span>):</p>
+                <div class="math-block">A₂ = n² × A₁  ⇒  h₂ = h₁ / n²  ⇒  P₂ = P₁ / n²</div>
+                <p>اما توجه کنید که <strong>نیروی وارد از طرف مایع بر کف ظرف استوانه‌ای</strong> همواره برابر وزن مایع است (<span class="math-box">F = m × g</span>) و با تغییر شعاع استوانه، نیرو تغییر نمی‌کند!</p>
+            </div>
+            <div class="lesson-block">
+                <h4>اثر تغییر دما بر فشار مایع در کف ظرف استوانه‌ای (استثنای آب میان ۰ تا ۴ درجه)</h4>
+                <p>در یک ظرف استوانه‌ای که انبساط ظرف ناچیز است، فشار مایع بر کف ظرف برابر <span class="math-box">P = W / A = (m × g) / A</span> است. چون با تغییر دما (در صورت عدم تبخیر)، جرم مایع (<span class="math-box">m</span>) و سطح مقطع ظرف (<span class="math-box">A</span>) ثابت می‌مانند، با وجود تغییر چگالی و ارتفاع در اثر انبساط یا انقباض، حاصل‌ضرب <span class="math-box">ρ × h</span> ثابت مانده و <strong>فشار بر کف ظرف استوانه‌ای تغییر نمی‌کند</strong>!</p>
+            </div>
+        `;
+    } else if (idx === 2) {
+        body.innerHTML = `
+            <div class="lesson-block">
+                <h4>محاسبه نیروی وارد از طرف مایع بر دیواره جانبی ظرف و سد</h4>
+                <p>فشار مایع در سطح آزاد صفر است و با افزایش عمق به صورت خطی تا مقدار <span class="math-box">P_کف = ρ × g × h</span> افزایش می‌یابد. بنابراین برای محاسبه نیروی وارد بر دیواره قائم ظرف، از <strong>فشار متوسط در وسط ارتفاع مایع (<span class="math-box">h / 2</span>)</strong> استفاده می‌کنیم:</p>
+                <div class="math-block">P_متوسط دیواره = (1 / 2) × ρ × g × h</div>
+                <div class="math-block">F_دیواره = P_متوسط × A_دیواره = (1 / 2) × ρ × g × h × (طول دیواره × h)</div>
+                <div class="golden-tip">
+                    <strong>مسئله معروف برابری نیروی کف و دیواره در مکعب یا استوانه:</strong><br>
+                    اگر در ظرف مکعب‌مستطیلی به قاعده مربع (ضلع <span class="math-box">x</span>) تا ارتفاع <span class="math-box">l</span> مایع بریزیم و نیروی وارد از طرف مایع بر کف ظرف با نیروی وارد بر یکی از دیواره‌های جانبی برابر باشد:<br>
+                    <span class="math-box">F_کف = F_دیواره  ⇒  (ρ × g × l) × x² = (1/2 × ρ × g × l) × (x × l)  ⇒  x = l / 2  ⇒  l / x = 2</span>
+                </div>
+            </div>
+            <div class="lesson-block">
+                <h4>معادلات پیشرفته فشار هوا، ارتفاع ساختمان/کوه و عمق دریاچه</h4>
+                <p>۱. <strong>محاسبه ارتفاع کوه یا برج با بارومتر:</strong> اختلاف فشار هوا بین پایین و بالای کوه برابر وزن ستون هوای بین آن دو نقطه است:</p>
+                <div class="math-block">ΔP_هوا = P_پایین - P_بالا = ρ_هوا × g × h_کوه</div>
+                <p>اگر اختلاف فشار را برحسب میلی‌متر جیوه یا سانتی‌متر جیوه (<span class="math-box">Δh_Hg</span>) بدهند، بلافاصله از تساوی زیر استفاده کنید:</p>
+                <div class="math-block">ρ_هوا × h_کوه = ρ_جیوه × Δh_Hg</div>
+                <p>۲. <strong>رابطه فشار در دو عمق متفاوت دریاچه (تست‌های کنکور):</strong><br>
+                اگر فشار کل در عمق <span class="math-box">h₁</span> برابر <span class="math-box">P₁ = P₀ + ρgh₁</span> باشد، در عمق <span class="math-box">2h₁</span> فشار کل <strong>کمتر از <span class="math-box">2P₁</span></strong> است؛ زیرا فقط فشار مایع دو برابر می‌شود، نه فشار هوای <span class="math-box">P₀</span>!</p>
+            </div>
+        `;
+    } else if (idx === 3) {
+        body.innerHTML = `
+            <div class="lesson-block">
+                <h4>تحلیل کامل اصل پاسکال: تفاوت فشار کل (<span class="math-box">P</span>) و افزایش فشار (<span class="math-box">ΔP</span>)</h4>
+                <p>در یک ظرف محتوی مایع که پیستونی روی آن قرار دارد، اگر دو نقطه <span class="math-box">A</span> (بالاتر) و <span class="math-box">B</span> (پایین‌تر) درون مایع باشند:<br>
+                • به دلیل عمق بیشتر نقطه <span class="math-box">B</span>، همواره فشار کل در <span class="math-box">B</span> بیشتر از <span class="math-box">A</span> است: <span class="math-box">P_B > P_A</span><br>
+                • اما اگر وزنه جدیدی روی پیستون قرار دهیم یا پیستون را بفشاریم، طبق اصل پاسکال <strong>تغییر فشار (افزایش فشار) در هر دو نقطه دقیقاً یکسان است</strong>:</p>
+                <div class="math-block">ΔP_A = ΔP_B  (در حالی که  P_B > P_A)</div>
+            </div>
+            <div class="lesson-block">
+                <h4>تعادل بالابر هیدرولیکی در دو حالت هم‌تراز و غیرهم‌تراز</h4>
+                <p><strong>حالت اول (سطح زیر دو پیستون در یک تراز افقی):</strong> فشار در زیر دو پیستون برابر است (<span class="math-box">P₁ = P₂</span>):</p>
+                <div class="math-block">F₁ / A₁ = F₂ / A₂  ⇒  F₂ / F₁ = A₂ / A₁ = (r₂ / r₁)² = (D₂ / D₁)²</div>
+                <p><strong>حالت دوم (پیستون‌ها غیرهم‌تراز با اختلاف ارتفاع <span class="math-box">h</span>):</strong><br>
+                اگر یکی از پیستون‌ها به اندازه <span class="math-box">h</span> پایین‌تر از پیستون دیگر قرار گرفته باشد، تراز هم‌فشاری را از زیر پیستون پایین‌تر رسم می‌کنیم:</p>
+                <div class="math-block">(F_پایین / A_پایین) = (F_بالا / A_بالا) + (ρ_مایع × g × h)</div>
+            </div>
+        `;
+    }
+}
+
+/* ============================================================================
+   ۸. بخش ۲: خلاصه هوشمند، جدول مقایسه‌ای تیپ‌ها و فلش‌کارت‌های کنکوری
+   ============================================================================ */
+function renderSummaryModule(container) {
+    container.innerHTML = `
+        <h3 style="color: var(--primary); margin-bottom: 14px;">خلاصه هوشمند و جمع‌بندی فرمولی جلسه تکمیلی</h3>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>تیپ مسئله در آزمون و کنکور</th>
+                    <th>رابطه طلایی و کلیدی</th>
+                    <th>نکته مهم و شرط استفاده</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>فشار استوانه یا مکعب جامد</td>
+                    <td><span class="math-box">P = ρ × g × h</span></td>
+                    <td>مستقل از مساحت قاعده (فقط برای اجسام با سطح مقطع ثابت)</td>
+                </tr>
+                <tr>
+                    <td>تغییر مقیاس ابعاد استوانه پر از مایع به نسبت <span class="math-box">k</span></td>
+                    <td><span class="math-box">P₂ / P₁ = k</span> و <span class="math-box">F₂ / F₁ = k³</span></td>
+                    <td>اگر تمام ابعاد استوانه <span class="math-box">k</span> برابر شود و دوباره پر شود</td>
+                </tr>
+                <tr>
+                    <td>نیروی مایع بر دیواره قائم ظرف</td>
+                    <td><span class="math-box">F = (1/2) × ρ × g × h × A_دیواره</span></td>
+                    <td>فشار متوسط در عمق وسط دیواره (<span class="math-box">h / 2</span>) محاسبه می‌شود</td>
+                </tr>
+                <tr>
+                    <td>نیروی مایع بر کف ظرف غیرمنظم (مخروط ناقص)</td>
+                    <td><span class="math-box">F_کف = P_مایع × A_کف = (ρ × g × h) × A_کف</span></td>
+                    <td>در ظروف غیرمنظم <span class="math-box">F_کف</span> با وزن مایع برابر نیست!</td>
+                </tr>
+                <tr>
+                    <td>جک هیدرولیکی (نسبت جابه‌جایی و قطر)</td>
+                    <td><span class="math-box">F₂ / F₁ = d₁ / d₂ = (D₂ / D₁)²</span></td>
+                    <td>نسبت نیرو با مجذور قطر مستقیم و با جابه‌جایی وارون است</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h4 style="color: var(--secondary); margin: 20px 0 12px 0;">فلش‌کارت‌های مفهومی پیشرفته (برای مشاهده پاسخ ضربه بزنید)</h4>
+        <div class="flashcard-grid">
+            <div class="flashcard" onclick="this.querySelector('.fc-ans').style.display='block'">
+                <strong>کارت ۱: استوانه B تمام ابعادش نصف استوانه A است. هر دو پر از آب‌اند. نسبت فشار (<span class="math-box">P_A / P_B</span>) و نسبت نیرو بر کف (<span class="math-box">F_A / F_B</span>) چقدر است؟</strong>
+                <p class="fc-ans" style="display:none; color:var(--primary); margin-top:10px; font-size:0.9rem;">
+                    چون ارتفاع A دو برابر B است، <span class="math-box">P_A / P_B = 2</span>. چون شعاع نیز ۲ برابر است مساحت ۴ برابر شده و <span class="math-box">F_A / F_B = 2 × 4 = 8</span>.
+                </p>
+            </div>
+            <div class="flashcard" onclick="this.querySelector('.fc-ans').style.display='block'">
+                <strong>کارت ۲: در لوله U شکل در حال تعادل با سطح مقطع یکسان، قطعه چوبی را در شاخه چپ شناور می‌کنیم. سطح مایع در دو شاخه چه تغییری می‌کند؟</strong>
+                <p class="fc-ans" style="display:none; color:var(--primary); margin-top:10px; font-size:0.9rem;">
+                    به دلیل شناوری چوب و جابه‌جایی مایع، سطح مایع در هر دو طرف به یک اندازه بالا می‌رود و در پایان باز هم <span class="math-box">h'_A = h'_B</span> و بیشتر از ارتفاع اولیه است.
+                </p>
+            </div>
+            <div class="flashcard" onclick="this.querySelector('.fc-ans').style.display='block'">
+                <strong>کارت ۳: پمپ مکنده‌ای بالای سطح آب دریا (در فشار ۱ اتمسفر) قرار دارد. این پمپ حداکثر تا چه ارتفاعی می‌تواند آب را بالا بکشد؟</strong>
+                <p class="fc-ans" style="display:none; color:var(--primary); margin-top:10px; font-size:0.9rem;">
+                    حداکثر زمانی است که فشار بالای لوله صفر مطلق شود؛ در این حالت فشار هوای <span class="math-box">10⁵ Pa</span> آب را تا ارتفاع <span class="math-box">h = 10⁵ / (1000 × 10) = 10 m</span> بالا می‌فرستد.
+                </p>
+            </div>
+            <div class="flashcard" onclick="this.querySelector('.fc-ans').style.display='block'">
+                <strong>کارت ۴: چرا روغن مایع از قوطی فلزی که فقط یک سوراخ روی درب آن ایجاد شده به سختی خارج می‌شود؟</strong>
+                <p class="fc-ans" style="display:none; color:var(--primary); margin-top:10px; font-size:0.9rem;">
+                    با خروج چند قطره، حجم هوای محبوس زیاد و فشار آن کمتر از فشار هوای بیرون می‌شود؛ فشار هوای بیرون مانع ریزش روغن می‌گردد. راه‌حل: ایجاد سوراخ دوم برای ورود هوا.
+                </p>
+            </div>
+        </div>
+
+        <div style="margin-top: 22px; text-align: left;">
+            <button class="btn btn-success" onclick="awardXP('mod_summary', 10, 'مرور کامل خلاصه هوشمند پیشرفته')">
+                ثبت تکمیل خلاصه هوشمند (+۱۰ XP)
+            </button>
+        </div>
+    `;
+}
+
+/* ============================================================================
+   ۹. بخش ۳: تکنیک‌های سریع تستی، نکات تشریحی و تله‌های طراحان
+   ============================================================================ */
+function renderTipsAndTrapsModule(container) {
+    container.innerHTML = `
+        <h3 style="color: var(--primary); margin-bottom: 14px;">تکنیک‌های حل سریع تستی، استاندارد تشریحی و تله‌های طراحان سؤال</h3>
+
+        <div class="lesson-block">
+            <h4>۱. تکنیک‌های حل فوق‌سریع تست‌ها (بدون نوشتن معادلات طولانی)</h4>
+            <p>• <strong>تکنیک جرم‌های مساوی دو مایع در استوانه:</strong> اگر در یک ظرف استوانه‌ای یا لوله آزمایش به ارتفاع کل <span class="math-box">H</span>، از دو مایع با چگالی‌های <span class="math-box">ρ₁</span> و <span class="math-box">ρ₂</span> به <strong>جرم‌های مساوی (<span class="math-box">m₁ = m₂</span>)</strong> بریزیم، چون سطح مقطع ثابت است، نسبت ارتفاع‌ها وارون چگالی‌هاست (<span class="math-box">h₁ / h₂ = ρ₂ / ρ₁</span>) و فشار هر دو مایع بر کف ظرف دقیقاً با هم <strong>برابر</strong> است! پس کافی است فشار مایع سنگین‌تر را حساب کرده و ضربدر ۲ کنید: <span class="math-box">P_کل مایعات = 2 × (ρ₁ × g × h₁)</span>.</p>
+            <p>• <strong>تکنیک تبدیل فوری سانتی‌متر آب به سانتی‌متر جیوه:</strong> هر <span class="math-box">13.6 cm</span> ستون آب (یا <span class="math-box">0.136 m</span> آب) دقیقاً معادل <span class="math-box">1 cmHg</span> فشار ایجاد می‌کند. برای مثال، عمق <span class="math-box">13.6 m</span> آب معادل <span class="math-box">100 cmHg</span> است.</p>
+            <p>• <strong>تکنیک شیب‌دار بودن دیواره (ظرف یا لوله کج):</strong> اگر دو نقطه <span class="math-box">A</span> و <span class="math-box">B</span> روی یک سطح شیب‌دار به فاصله <span class="math-box">L</span> با زاویه <span class="math-box">θ</span> نسبت به افق درون مایع باشند، در فرمول فشار فقط فاصله قائم مهم است: <span class="math-box">Δh = L × sin(θ)</span>.</p>
+        </div>
+
+        <h4 style="color: var(--danger); margin: 18px 0 10px 0;">۲. دام‌های بسیار خطرناک طراحان کنکور و امتحان نهایی</h4>
+        <div class="trap-card">
+            <strong>تله ۱ (کنکور ریاضی): مقایسه فشار زیر دو پیستون هم‌تراز در جک هیدرولیکی</strong>
+            <p>در سؤالی گفته می‌شود: «در یک بالابر هیدرولیکی سطح مایع زیر پیستون‌ها در یک تراز است و قطر پیستون بزرگ ۱۰ برابر پیستون کوچک است. فشار زیر پیستون بزرگ چند برابر فشار زیر پیستون کوچک است؟»<br>
+            • <strong>دام طراح:</strong> گزینه ۱۰۰ و ۱۰.<br>
+            • <strong>پاسخ درست:</strong> <strong>۱ برابر!</strong> زیرا وقتی زیر دو پیستون هم‌تراز است، فشار در تراز افقی یکسان است (<span class="math-box">P₁ = P₂</span>). این نیرو است که ۱۰۰ برابر می‌شود، نه فشار!</p>
+        </div>
+        <div class="trap-card">
+            <strong>تله ۲: جهت نیروی وارد از طرف مایع بر دیواره‌های مایل ظرف</strong>
+            <p>نیروی وارد از طرف مایع در حال تعادل بر هر سطح یا دیواره‌ای (چه افقی، چه قائم و چه کج و شیب‌دار) <strong>همواره عمود بر همان دیواره</strong> است، نه در راستای قائم!</p>
+        </div>
+        <div class="trap-card">
+            <strong>تله ۳: جهت نیروی خالص هوا بر دریچه کابین هواپیما یا درپوش ظرف تخلیه‌شده</strong>
+            <p>در ارتفاع ۱۰ کیلومتری، فشار داخل کابین هواپیما (<span class="math-box">760 mmHg</span>) بسیار بیشتر از فشار هوای بیرون (<span class="math-box">200 mmHg</span>) است؛ بنابراین نیروی خالص <span class="math-box">F = ΔP × A</span> <strong>از داخل به سمت بیرون</strong> بر درِ هواپیما وارد می‌شود.</p>
+        </div>
+
+        <div style="margin-top: 22px; text-align: left;">
+            <button class="btn btn-success" onclick="awardXP('mod_descriptive_tips', 15, 'مطالعه تکنیک‌های سریع تستی و دام‌های طراحان')">
+                ثبت مطالعه تکنیک‌ها و تله‌ها (+۱۵ XP)
+            </button>
+        </div>
+    `;
+}
+
+/* ============================================================================
+   ۱۰. بخش ۴: آزمایشگاه مجازی پیشرفته (بالابر هیدرولیکی با قابلیت تغییر اختلاف تراز h)
+   ============================================================================ */
+let labState = { f1: 120, d1: 2, d2: 8, hDiff: 0 };
+
+function renderLabModule(container) {
+    container.innerHTML = `
+        <h3 style="color: var(--primary); margin-bottom: 10px;">آزمایشگاه مجازی پیشرفته: تحلیل بالابر هیدرولیکی پاسکال</h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 15px;">
+            در این شبیه‌ساز، علاوه بر نیروی ورودی (<span class="math-box">F₁</span>)، می‌توانید <strong>قطر پیستون‌ها (<span class="math-box">D₁</span> و <span class="math-box">D₂</span>)</strong> را تغییر داده و مشاهده کنید که نسبت نیروها با <strong>توان دوم نسبت قطرها</strong> تغییر می‌کند.
+        </p>
+
+        <div class="lab-canvas-wrap">
+            <canvas id="pascal-canvas" class="sim-canvas" width="740" height="310"></canvas>
+        </div>
+
+        <div class="controls-grid">
+            <div class="lesson-block" style="margin:0;">
+                <label>نیروی پیستون کوچک (<span class="math-box">F₁</span>): <strong id="lbl-f1">120</strong> N</label>
+                <input type="range" min="20" max="400" step="20" value="120" style="width:100%; margin-top:8px;" oninput="updateLabParams('f1', this.value)">
+            </div>
+            <div class="lesson-block" style="margin:0;">
+                <label>قطر پیستون کوچک (<span class="math-box">D₁</span>): <strong id="lbl-d1">2</strong> cm</label>
+                <input type="range" min="1" max="5" step="1" value="2" style="width:100%; margin-top:8px;" oninput="updateLabParams('d1', this.value)">
+            </div>
+            <div class="lesson-block" style="margin:0;">
+                <label>قطر پیستون بزرگ (<span class="math-box">D₂</span>): <strong id="lbl-d2">8</strong> cm</label>
+                <input type="range" min="4" max="20" step="2" value="8" style="width:100%; margin-top:8px;" oninput="updateLabParams('d2', this.value)">
+            </div>
+        </div>
+
+        <div class="lesson-block" style="margin-top: 16px;" id="lab-live-output"></div>
+
+        <div style="margin-top: 18px; text-align: left;">
+            <button class="btn btn-success" onclick="completeLabActivity()">
+                ثبت انجام آزمایشگاه پیشرفته (+۳۰ XP)
+            </button>
+        </div>
+    `;
+    drawPascalLab();
+}
+
+function updateLabParams(key, val) {
+    labState[key] = parseFloat(val);
+    document.getElementById("lbl-" + key).innerText = val;
+    drawPascalLab();
+}
+
+function drawPascalLab() {
+    const canvas = document.getElementById("pascal-canvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const { f1, d1, d2 } = labState;
+    const diamRatio = d2 / d1;
+    const areaRatio = diamRatio * diamRatio;
+    const f2 = (f1 * areaRatio).toFixed(0);
+    const a1_cm2 = (Math.PI * (d1 / 2) ** 2).toFixed(2);
+    const a2_cm2 = (Math.PI * (d2 / 2) ** 2).toFixed(2);
+    const disp1 = 16; // cm
+    const disp2 = (disp1 / areaRatio).toFixed(2);
+
+    const leftW = 28 + d1 * 8;
+    const rightW = 45 + d2 * 6;
+    const leftX = 110;
+    const rightX = 430;
+    const bottomY = 265;
+    const topLeft = 145;
+    const topRight = 145;
+
+    ctx.fillStyle = "rgba(0, 242, 254, 0.25)";
+    ctx.strokeStyle = "#00f2fe";
+    ctx.lineWidth = 3;
+
+    ctx.beginPath();
+    ctx.rect(leftX, topLeft, leftW, bottomY - topLeft);
+    ctx.rect(rightX, topRight, rightW, bottomY - topRight);
+    ctx.rect(leftX, bottomY - 40, (rightX + rightW) - leftX, 40);
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(leftX, 65);
+    ctx.lineTo(leftX, bottomY);
+    ctx.lineTo(rightX + rightW, bottomY);
+    ctx.lineTo(rightX + rightW, 65);
+    ctx.moveTo(leftX + leftW, 65);
+    ctx.lineTo(leftX + leftW, bottomY - 40);
+    ctx.lineTo(rightX, bottomY - 40);
+    ctx.lineTo(rightX, 65);
+    ctx.stroke();
+
+    ctx.fillStyle = "#a855f7";
+    ctx.fillRect(leftX + 2, topLeft - 18, leftW - 4, 18);
+    ctx.fillStyle = "#10b981";
+    ctx.fillRect(rightX + 2, topRight - 18, rightW - 4, 18);
+
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 14px Tahoma";
+    ctx.textAlign = "center";
+    ctx.fillText(`F₁ = ${f1} N (D₁=${d1}cm)`, leftX + leftW / 2, topLeft - 28);
+    ctx.fillText(`F₂ = ${f2} N (D₂=${d2}cm)`, rightX + rightW / 2, topRight - 28);
+    ctx.fillStyle = "#38bdf8";
+    ctx.fillText(`نسبت قطرها (D₂/D₁) = ${diamRatio.toFixed(1)}  |  ضریب تقویت نیرو (D₂/D₁)² = ${areaRatio.toFixed(1)} برابر`, 370, 294);
+
+    const out = document.getElementById("lab-live-output");
+    if (out) {
+        out.innerHTML = `
+            <strong>خروجی محاسبات مهندسی آزمایشگاه:</strong><br>
+            • نسبت قطرها (<span class="math-box">D₂ / D₁</span>): <strong>${diamRatio.toFixed(2)}</strong> ← نسبت مساحت‌ها (<span class="math-box">A₂ / A₁ = (D₂ / D₁)²</span>): <strong>${areaRatio.toFixed(2)} برابر</strong><br>
+            • مساحت پیستون کوچک: <span class="math-box">${a1_cm2} cm²</span> | مساحت پیستون بزرگ: <span class="math-box">${a2_cm2} cm²</span><br>
+            • بیشینه وزن قابل تحمل روی پیستون بزرگ (<span class="math-box">F₂</span>): <strong>${f2} نیوتن</strong><br>
+            • جابه‌جایی: به ازای <span class="math-box">${disp1} cm</span> پایین رفتن پیستون کوچک، پیستون بزرگ <span class="math-box">${disp2} cm</span> بالا می‌رود (کار ورودی و خروجی برابرند: <span class="math-box">W₁ = W₂</span>).
+        `;
+    }
+}
+
+function completeLabActivity() {
+    appState.labCompleted = true;
+    awardXP("mod_lab", 30, "تکمیل آزمایشگاه پیشرفته اصل پاسکال");
+    saveState();
+}
+
+/* ============================================================================
+   ۱۱. بخش ۵: آزمون تستی پیشرفته سه‌سطحی (۱۵ تست سطح بالا منطبق بر سوالات تصاویر)
+   ============================================================================ */
+const MC_QUESTIONS = {
+    easy: [
+        {
+            q: "۱. بین دو مولکول از یک ماده به ترتیب در فاصله‌ی بسیار کم (کمتر از تعادل) و در فاصله‌ی کمی بیشتر از تعادل چه نیرویی ایجاد می‌شود و تراکم‌ناپذیری مایعات ناشی از کدام است؟",
+            options: [
+                "رانشی و ربایشی - به وجود آمدن نیروی رانشی قوی هنگام کم شدن فاصله مولکول‌ها",
+                "ربایشی و رانشی - شبکه بلوری مایعات",
+                "پیوسته ربایشی - ثابت بودن فاصله اتم‌ها",
+                "پیوسته رانشی - حرکت کاتوره‌ای مولکول‌ها"
+            ],
+            ans: 0,
+            exp: "در فاصله‌های کمتر از تعادل نیروی دافعه (رانشی) قوی ایجاد می‌شود که مانع تراکم مایعات می‌گردد و در فاصله کمی بیشتر، نیروی ربایشی برقرار است."
+        },
+        {
+            q: "۲. هرگاه سطح درونی لوله‌ی شیشه‌ای باریکی را روغن‌اندود کرده و سپس لوله را به طور قائم وارد ظرف آبی کنیم، سطح آب درون لوله چگونه می‌شود و چرا؟",
+            options: [
+                "کوهان (برآمده) و پایین‌تر از سطح ظرف؛ زیرا نیروی هم‌چسبی آب بیشتر از دگرچسبی آب و روغن است.",
+                "کاو (فرورفته) و بالاتر از سطح ظرف؛ زیرا دگرچسبی آب و روغن بیشتر است.",
+                "کوهان (برآمده) و بالاتر از سطح ظرف؛ به علت کشش سطحی روغن.",
+                "مسطح و هم‌سطح آب ظرف باقی می‌ماند."
+            ],
+            ans: 0,
+            exp: "روغن‌اندود کردن شیشه باعث کاهش شدید نیروی دگرچسبی می‌شود؛ در نتیجه هم‌چسبی مولکول‌های آب غالب شده، سطح آن برآمده (کوهان) شده و پایین‌تر از سطح ظرف می‌ایستد."
+        },
+        {
+            q: "۳. آهن، شیشه و نمک طعام به ترتیب از راست به چپ جزء کدام دسته از جامدها هستند؟",
+            options: [
+                "بلورین، بی‌شکل (آمورف)، بلورین",
+                "بلورین، بلورین، بی‌شکل",
+                "بی‌شکل، بلورین، بلورین",
+                "بی‌شکل، بی‌شکل، بلورین"
+            ],
+            ans: 0,
+            exp: "فلزات (مانند آهن) و نمک طعام ساختار منظم بلورین دارند، اما شیشه جامد بی‌شکل (آمورف) است."
+        },
+        {
+            q: "۴. دمای آب درون یک ظرف استوانه‌ای شکل را از 2°C به 5°C می‌رسانیم. اگر انبساط ظرف و تبخیر ناچیز باشد، فشار وارد از طرف آب بر کف ظرف چگونه تغییر می‌کند؟",
+            options: [
+                "تغییر نمی‌کند.",
+                "ابتدا زیاد می‌شود و سپس کاهش می‌یابد.",
+                "ابتدا کاهش و سپس افزایش می‌یابد.",
+                "پیوسته کاهش می‌یابد."
+            ],
+            ans: 0,
+            exp: "در ظرف استوانه‌ای فشار مایع بر کف برابر P = W / A = mg / A است. چون جرم آب و مساحت کف ظرف ثابت است، با وجود تغییر چگالی و ارتفاع در 4°C، حاصل‌ضرب ρ×h و فشار کف ثابت می‌ماند."
+        },
+        {
+            q: "۵. در یک بالابر هیدرولیکی که در آن سطح مایع زیر پیستون‌ها در یک تراز افقی است و مایع در حال تعادل است، قطر پیستون بزرگ ۱۰ برابر قطر پیستون کوچک است. فشار زیر پیستون بزرگ چند برابر فشار زیر پیستون کوچک است؟ (سراسری ریاضی)",
+            options: [
+                "۱ برابر (با هم برابرند)",
+                "۱۰ برابر",
+                "۱۰۰ برابر",
+                "۵ برابر"
+            ],
+            ans: 0,
+            exp: "دام معروف کنکور! چون سطح زیر دو پیستون در یک تراز افقی درون یک مایع یکسان قرار دارد، فشار در زیر هر دو پیستون دقیقاً برابر است (P₁ = P₂). نیرو ۱۰۰ برابر می‌شود نه فشار!"
+        }
+    ],
+    medium: [
+        {
+            q: "۱. دو مایع مخلوط‌نشدنی A و B با چگالی‌های ρ_A = 1.2 g/cm³ و ρ_B = 0.9 g/cm³ را در یک ظرف استوانه‌ای می‌ریزیم. اگر یک‌سوم حجم مخلوط از مایع A و بقیه از مایع B و ارتفاع کل در ظرف ۷۵ سانتی‌متر باشد، فشار ناشی از دو مایع در کف ظرف چند پاسکال است؟ (g = 10 N/kg)",
+            options: [
+                "7500 پاسکال",
+                "6750 پاسکال",
+                "9000 پاسکال",
+                "6000 پاسکال"
+            ],
+            ans: 0,
+            exp: "در ظرف استوانه‌ای نسبت ارتفاع با نسبت حجم برابر است: h_A = 1/3 × 75 = 25 cm = 0.25 m و h_B = 50 cm = 0.5 m. فشار کل مایعات: P = (1200 × 10 × 0.25) + (900 × 10 × 0.5) = 3000 + 4500 = 7500 Pa."
+        },
+        {
+            q: "۲. استوانه‌ی A پر از آب است. نیرویی که آب بر کف آن وارد می‌کند F_A و فشار آب در کف آن P_A است. اگر تمام ابعاد استوانه‌ی B نصف ابعاد استوانه‌ی A باشد و آن را هم پر از آب کنیم، نسبت‌های P_A / P_B و F_A / F_B به ترتیب کدام‌اند؟ (سراسری ریاضی)",
+            options: [
+                "2 و 8",
+                "2 و 4",
+                "4 و 8",
+                "1 و 4"
+            ],
+            ans: 0,
+            exp: "چون ارتفاع A دو برابر B است، P_A / P_B = h_A / h_B = 2. مساحت قاعده با مجذور شعاع متناسب است پس A_A / A_B = 4. از آنجا که F = P × A است، نسبت نیرو برابر 2 × 4 = 8 می‌شود."
+        },
+        {
+            q: "۳. مکعبی چوبی به ضلع 20 cm و چگالی 0.6 g/cm³ روی کف اتاق قرار دارد. هنگامی که شخصی به وزن 800 N روی مکعب می‌ایستد، فشاری که بر کف اتاق وارد می‌شود چند کیلوپاسکال است؟ (g = 10 N/kg)",
+            options: [
+                "21.2 کیلوپاسکال",
+                "20 کیلوپاسکال",
+                "212 کیلوپاسکال",
+                "1.2 کیلوپاسکال"
+            ],
+            ans: 0,
+            exp: "فشار خود مکعب: P_چوب = ρgh = 600 × 10 × 0.2 = 1200 Pa = 1.2 kPa. فشار ناشی از وزن شخص: P_شخص = F / A = 800 / (0.04 m²) = 20000 Pa = 20 kPa. مجموع فشار: 20 + 1.2 = 21.2 kPa."
+        },
+        {
+            q: "۴. یک ظرف استوانه‌ای پر از مایع است. اگر تمام این مایع را بدون سرریز شدن درون استوانه‌ی دیگری بریزیم که شعاع قاعده‌اش ۲ برابر استوانه‌ی اول است، فشار مایع بر کف ظرف چند برابر می‌شود؟",
+            options: [
+                "1/4 برابر",
+                "1/2 برابر",
+                "1 برابر (ثابت می‌ماند)",
+                "2 برابر"
+            ],
+            ans: 0,
+            exp: "وقتی شعاع قاعده ۲ برابر می‌شود، مساحت قاعده ۴ برابر می‌شود (A₂ = 4A₁). چون حجم مایع ثابت است، ارتفاع مایع ۱/۴ برابر می‌شود و طبق P = ρgh فشار نیز ۱/۴ برابر می‌گردد."
+        },
+        {
+            q: "۵. در عمق 1.7 متری یک رودخانه فشار کل برابر 87.5 cmHg است. فشار هوای محیط در آن منطقه چند سانتی‌متر جیوه است؟ (چگالی آب 1 g/cm³ و چگالی جیوه 13.6 g/cm³)",
+            options: [
+                "75 سانتی‌متر جیوه",
+                "70 سانتی‌متر جیوه",
+                "65 سانتی‌متر جیوه",
+                "76 سانتی‌متر جیوه"
+            ],
+            ans: 0,
+            exp: "ابتدا فشار 170 cm آب را به سانتی‌متر جیوه تبدیل می‌کنیم: h_Hg = (1 × 170) / 13.6 = 12.5 cmHg. پس فشار هوا برابر است با: P₀ = 87.5 - 12.5 = 75 cmHg."
+        }
+    ],
+    hard: [
+        {
+            q: "۱. در ظرف مکعب‌مستطیلی به قاعده مربع (ضلع x) تا ارتفاع l مایع ریخته‌ایم. اگر بزرگی نیرویی که مایع بر کف ظرف وارد می‌کند برابر با نیرویی باشد که مایع بر یکی از دیواره‌های جانبی وارد می‌کند، نسبت l / x کدام است؟",
+            options: [
+                "2",
+                "1/2",
+                "1",
+                "1/4"
+            ],
+            ans: 0,
+            exp: "نیروی کف: F_کف = (ρgl) × x². نیروی یک دیواره جانبی: F_دیواره = (1/2 × ρgl) × (x × l). از برابری این دو داریم: x² = (1/2)xl که نتیجه می‌دهد l / x = 2."
+        },
+        {
+            q: "۲. در یک مخزن استوانه‌ای، آب (ρ = 1 g/cm³) و جیوه (ρ = 13.6 g/cm³) به جرم‌های برابر ریخته شده است. اگر مجموع ارتفاع دو مایع در ظرف 73 سانتی‌متر باشد، فشاری که از طرف این دو مایع بر کف مخزن وارد می‌شود معادل چند سانتی‌متر جیوه است؟",
+            options: [
+                "10 سانتی‌متر جیوه",
+                "15 سانتی‌متر جیوه",
+                "5 سانتی‌متر جیوه",
+                "20 سانتی‌متر جیوه"
+            ],
+            ans: 0,
+            exp: "چون جرم‌ها برابرند و ظرف استوانه‌ای است: ρ₁h₁ = ρ₂h₂ پس h_آب = 13.6 × h_جیوه. از طرفی h_آب + h_جیوه = 73 cm ⇒ 14.6 × h_جیوه = 73 ⇒ h_جیوه = 5 cm. چون جرم دو مایع برابر است، فشار آب نیز دقیقاً معادل ۵ سانتی‌متر جیوه است؛ پس فشار کل دو مایع برابر 5 + 5 = 10 cmHg می‌شود."
+        },
+        {
+            q: "۳. فشار کل در عمق ۲۱ متری دریاچه‌ای دو برابر فشار کل در عمق ۷ متری همان دریاچه است. فشار هوای محیط معادل چند سانتی‌متر جیوه است؟ (چگالی آب 1 g/cm³ و چگالی جیوه 14 g/cm³ فرض شود)",
+            options: [
+                "50 سانتی‌متر جیوه",
+                "70 سانتی‌متر جیوه",
+                "75 سانتی‌متر جیوه",
+                "65 سانتی‌متر جیوه"
+            ],
+            ans: 0,
+            exp: "طبق صورت سؤال: P₀ + ρg(21) = 2 × [P₀ + ρg(7)] ⇒ P₀ = ρg(7). یعنی فشار هوا معادل فشار ۷ متر (700 cm) آب است. تبدیل به جیوه: 14 × h_Hg = 1 × 700 ⇒ h_Hg = 700 / 14 = 50 cmHg."
+        },
+        {
+            q: "۴. در یک بالابر هیدرولیکی سطح مقطع پیستون‌ها A₁ = 15 cm² و A₂ = 60 cm² بوده و چگالی مایع 2 g/cm³ است. اگر پیستون کوچک‌تر به اندازه 20 cm بالاتر از پیستون بزرگ‌تر در حال تعادل باشد و وزن پیستون کوچک و وزنه روی آن مجموعاً 30 نیوتن باشد، وزن پیستون بزرگ و وزنه روی آن چند نیوتن است؟ (g = 10 N/kg)",
+            options: [
+                "144 نیوتن",
+                "120 نیوتن",
+                "168 نیوتن",
+                "130 نیوتن"
+            ],
+            ans: 0,
+            exp: "تراز هم‌فشاری را در زیر پیستون بزرگ (پایین‌تر) می‌گیریم: F₂ / A₂ = (F₁ / A₁) + ρgh. فشار پیستون کوچک: 30 / (15 × 10⁻⁴) = 20000 Pa. فشار ستون 20 سانتی‌متری مایع: 2000 × 10 × 0.2 = 4000 Pa. پس F₂ / (60 × 10⁻⁴) = 24000 ⇒ F₂ = 24000 × 0.006 = 144 N."
+        },
+        {
+            q: "۵. در شکل دو مایع مخلوط‌نشدنی با ρ₂ > ρ₁ روی هم در ظرف استوانه‌ای قرار دارند و نقطه A در مرز بین دو مایع است. اگر دو مایع را با همزن به طور کامل مخلوط کنیم (بدون تغییر حجم)، پس از تعادل فشار مایع در نقطه A نسبت به حالت اول چگونه تغییر می‌کند؟",
+            options: [
+                "افزایش می‌یابد.",
+                "کاهش می‌یابد.",
+                "ثابت می‌ماند.",
+                "بسته به ارتفاع اولیه هر حالتی ممکن است."
+            ],
+            ans: 0,
+            exp: "قبل از مخلوط شدن، بالای نقطه A فقط مایع سبک‌تر با چگالی ρ₁ قرار داشت. پس از مخلوط شدن همگن، چگالی مخلوط بالای نقطه A برابر ρ_مخلوط می‌شود که قطعاً از ρ₁ بیشتر است؛ بنابراین فشار در تراز نقطه A افزایش می‌یابد."
+        }
+    ]
+};
+
+let currentMCLevel = "easy";
+let userMCAnswers = {};
+
+function renderMCQuizModule(container) {
+    container.innerHTML = `
+        <div class="tabs-header">
+            <button class="tab-btn ${currentMCLevel === 'easy' ? 'active' : ''}" onclick="switchMCLevel('easy')">سطح ۱: مفهومی و استاندارد (۵ تست)</button>
+            <button class="tab-btn ${currentMCLevel === 'medium' ? 'active' : ''}" onclick="switchMCLevel('medium')">سطح ۲: محاسباتی و کنکوری (۵ تست)</button>
+            <button class="tab-btn ${currentMCLevel === 'hard' ? 'active' : ''}" onclick="switchMCLevel('hard')">سطح ۳: پیشرفته و ترکیبی (۵ تست)</button>
+        </div>
+        <div id="mc-quiz-body"></div>
+    `;
+    renderMCQuestionsList();
+}
+
+function switchMCLevel(lvl) {
+    currentMCLevel = lvl;
+    userMCAnswers = {};
+    renderMCQuizModule(document.getElementById("module-content-area"));
+}
+
+function renderMCQuestionsList() {
+    const body = document.getElementById("mc-quiz-body");
+    const questions = MC_QUESTIONS[currentMCLevel];
+    const savedScore = appState.mcQuizResults[currentMCLevel];
+
+    let html = "";
+    if (savedScore !== null) {
+        html += `<div class="golden-tip" style="border-color:var(--success);">
+            درصد ثبت‌شده شما در این سطح: <strong>${savedScore}%</strong>
+        </div>`;
+    }
+
+    questions.forEach((item, qIdx) => {
+        html += `
+            <div class="lesson-block">
+                <p style="font-weight:bold; margin-bottom:12px;">${item.q}</p>
+                <div id="mc-opts-${qIdx}">
+                    ${item.options.map((opt, oIdx) => `
+                        <div class="option-item ${userMCAnswers[qIdx] === oIdx ? 'selected' : ''}" onclick="selectMCOption(${qIdx}, ${oIdx})">
+                            <span>گزینه ${oIdx + 1}: ${opt}</span>
+                        </div>
+                    `).join("")}
+                </div>
+                <div id="mc-exp-${qIdx}" style="display:none; margin-top:10px; padding:10px; border-radius:8px; background:rgba(0,242,254,0.08); color:var(--primary); font-size:0.9rem;">
+                    <strong>تحلیل و پاسخ تشریحی:</strong> ${item.exp}
+                </div>
+            </div>
+        `;
+    });
+
+    html += `
+        <button class="btn btn-success" onclick="gradeMCQuiz()">تصحیح، نمایش پاسخنامه تشریحی و ثبت درصد این سطح (+۵۰ XP)</button>
+    `;
+    body.innerHTML = html;
+}
+
+function selectMCOption(qIdx, oIdx) {
+    userMCAnswers[qIdx] = oIdx;
+    renderMCQuestionsList();
+}
+
+function gradeMCQuiz() {
+    const questions = MC_QUESTIONS[currentMCLevel];
+    let correct = 0;
+    questions.forEach((item, qIdx) => {
+        if (userMCAnswers[qIdx] === item.ans) correct++;
+        const expEl = document.getElementById(`mc-exp-${qIdx}`);
+        if (expEl) expEl.style.display = "block";
+    });
+    const percent = Math.round((correct / questions.length) * 100);
+    appState.mcQuizResults[currentMCLevel] = percent;
+    awardXP("mod_quiz_mc", 50, "تکمیل آزمون تستی پیشرفته");
+    saveState();
+    showToast(`تصحیح انجام شد. درصد شما در این سطح: ${percent}%`);
+}
+
+/* ============================================================================
+   ۱۲. بخش ۶: آزمون تشریحی و نیمه‌تشریحی هوشمند (مسائل پیشرفته منطبق بر تصاویر)
+   ============================================================================ */
+const DESCRIPTIVE_QUESTIONS = [
+    {
+        id: "desc1",
+        title: "مسئله ۱ (تحلیل فشار در زیردریایی و دریچه - بارم: ۳ نمره):",
+        prompt: "یک زیردریایی در عمق ۲۰۰ متری زیر آب دریا (ρ = 1000 kg/m³) غوطه‌ور است. بالای این زیردریایی دریچه‌ای مستطیلی به ابعاد 0.8 متر در 1 متر نصب شده است. اگر فشار هوای بیرون و فشار هوای داخل کابین زیردریایی هر دو 1 اتمسفر (10⁵ Pa) باشد، الف) فشار خالص وارد بر دریچه چند پاسکال است؟ ب) حداقل چند نیوتن نیرو برای باز کردن این دریچه لازم است؟ (g = 10 N/kg)",
+        expectedConcepts: [
+            { keywords: ["p=ρgh", "1000*10*200", "2*10^6", "2000000", "۲۰۰۰۰۰۰", "2000 کیلو"], weight: 1.5, hint: "محاسبه فشار ستون آب برابر ۲ میلیون پاسکال (2×10⁶ Pa) و خنثی شدن فشار هوای داخل و خارج" },
+            { keywords: ["0.8", "1.6*10^6", "1600000", "۱۶۰۰۰۰۰", "1600 کیلو"], weight: 1.5, hint: "ضرب فشار در مساحت دریچه (0.8 m²) و به دست آوردن نیروی ۱٬۶۰۰٬۰۰۰ نیوتن (1.6×10⁶ N)" }
+        ],
+        sampleAnswer: "الف) چون فشار هوای داخل کابین و فشار هوای بالای دریا هر دو P₀ هستند، اثر یکدیگر را خنثی می‌کنند و فشار خالص برابر فشار آب است: ΔP = ρgh = 1000 × 10 × 200 = 2 × 10⁶ Pa. ب) مساحت دریچه A = 0.8 × 1 = 0.8 m² است؛ پس حداقل نیرو برابر F = ΔP × A = 2 × 10⁶ × 0.8 = 1.6 × 10⁶ N می‌باشد."
+    },
+    {
+        id: "desc2",
+        title: "مسئله ۲ (فشار مایع و نیرو در ظرف مخروط ناقص - بارم: ۳ نمره):",
+        prompt: "در ظرفی به شکل مخروط ناقص که مساحت کف آن A = 400 cm² است، تا ارتفاع 20 cm آب (ρ = 1000 kg/m³) ریخته‌ایم. اگر فشار هوای محیط 1 bar (معادل 10⁵ Pa) باشد: الف) فشار ناشی از مایع و فشار کل در کف ظرف چند پاسکال است؟ ب) نیرویی که تنها از طرف مایع بر کف ظرف وارد می‌شود و نیروی کل (مایع و هوا) بر کف ظرف چند نیوتن است؟",
+        expectedConcepts: [
+            { keywords: ["2000", "۲۰۰۰", "2 کیلو"], weight: 1.0, hint: "فشار مایع برابر ۲۰۰۰ پاسکال (2 kPa)" },
+            { keywords: ["102000", "۱۰۲۰۰۰", "102 کیلو"], weight: 1.0, hint: "فشار کل برابر ۱۰۲٬۰۰۰ پاسکال (102 kPa)" },
+            { keywords: ["80", "۸۰", "4080", "۴۰۸۰"], weight: 1.0, hint: "نیروی مایع بر کف برابر ۸۰ نیوتن و نیروی کل برابر ۴۰۸۰ نیوتن" }
+        ],
+        sampleAnswer: "الف) فشار مایع: P_مایع = ρgh = 1000 × 10 × 0.2 = 2000 Pa. فشار کل: P_کل = P₀ + P_مایع = 100000 + 2000 = 102000 Pa. ب) مساحت کف A = 400 cm² = 0.04 m² است. نیروی مایع بر کف: F_مایع = 2000 × 0.04 = 80 N. نیروی کل (مایع و هوا): F_کل = 102000 × 0.04 = 4080 N."
+    },
+    {
+        id: "desc3",
+        title: "مسئله ۳ (طراحی بالابر هیدرولیکی و اصل پاسکال - بارم: ۲ نمره):",
+        prompt: "در یک بالابر هیدرولیکی که پیستون‌های آن هم‌تراز هستند، فشار پیمانه‌ای ایجادشده روی پیستون کوچک برابر 8 × 10⁴ Pa است. سطح مقطع پیستون بزرگ چند متر مربع باید باشد تا بتواند خودرویی را که به همراه پیستون بزرگ دارای جرم کل 2000 کیلوگرم است، بلند کند؟ (g = 10 N/kg)",
+        expectedConcepts: [
+            { keywords: ["20000", "۲۰۰۰۰", "mg"], weight: 1.0, hint: "محاسبه وزن کل خودرو و پیستون برابر ۲۰٬۰۰۰ نیوتن" },
+            { keywords: ["0.25", "۰.۲۵", "۰/۲۵", "2500", "1/4"], weight: 1.0, hint: "محاسبه مساحت پیستون بزرگ از رابطه A₂ = F₂ / ΔP برابر 0.25 متر مربع (یا 2500 سانتی‌متر مربع)" }
+        ],
+        sampleAnswer: "وزن خودرو و پیستون بزرگ: F₂ = m × g = 2000 × 10 = 20000 N. طبق اصل پاسکال فشار منتقل‌شده به زیر پیستون بزرگ همان ΔP = 8 × 10⁴ Pa است؛ بنابراین A₂ = F₂ / ΔP = 20000 / 80000 = 0.25 m² (معادل 2500 cm²)."
+    },
+    {
+        id: "semi1",
+        title: "سؤال ۴ (نیمه‌تشریحی و مفهومی - بارم: ۲ نمره):",
+        prompt: "الف) چرا سدهای آبی را در عمق (پایین سد) ضخیم‌تر می‌سازند؟ ب) حرکت نامنظم و کاتوره‌ای ذره‌های غبار یا دود در هوا یا آب را که ناشی از برخورد مولکول‌های شاره است، حرکت .......... می‌نامند.",
+        expectedConcepts: [
+            { keywords: ["افزایش عمق", "بیشتر شدن فشار", "فشار آب در عمق", "عمق بیشتر"], weight: 1.0, hint: "افزایش فشار آب با افزایش عمق (P = ρgh)" },
+            { keywords: ["براونی", "برونی"], weight: 1.0, hint: "حرکت براونی" }
+        ],
+        sampleAnswer: "الف) زیرا با افزایش عمق آب، طبق رابطه P = ρgh فشار و نیروی وارد از طرف آب بر دیواره سد به شدت افزایش می‌یابد. ب) حرکت براونی."
+    }
+];
+
+function normalizePersianAndMath(str) {
+    if (!str) return "";
+    const persianDigits = ["۰","۱","۲","۳","۴","۵","۶","۷","۸","۹"];
+    const arabicDigits  = ["٠","١","٢","٣","٤","٥","٦","٧","٨","٩"];
+    let out = str.toLowerCase();
+    for (let i = 0; i < 10; i++) {
+        out = out.replace(new RegExp(persianDigits[i], "g"), i)
+                 .replace(new RegExp(arabicDigits[i], "g"), i);
+    }
+    out = out.replace(/ي/g, "ی")
+             .replace(/ك/g, "ک")
+             .replace(/×/g, "*")
+             .replace(/\u200c/g, " ")
+             .replace(/\s+/g, " ")
+             .trim();
+    return out;
+}
+
+function insertSymbol(textareaId, sym) {
+    const el = document.getElementById(textareaId);
+    if (!el) return;
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    const text = el.value;
+    el.value = text.substring(0, start) + sym + text.substring(end);
+    el.focus();
+    el.selectionStart = el.selectionEnd = start + sym.length;
+}
+
+function renderDescQuizModule(container) {
+    let html = `
+        <h3 style="color: var(--primary); margin-bottom: 10px;">آزمون تشریحی و نیمه‌تشریحی هوشمند (سطح پیشرفته)</h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 18px;">
+            کیبورد کامل گوشی و سیستم شما (شامل حروف فارسی، انگلیسی، اعداد و علائم ریاضی) برای نوشتن راه‌حل‌ها کاملاً فعال است. موتور تصحیح هوشمند مفاهیم علمی، فرمول‌ها و اعداد نهایی را در هر قالب معادلی بررسی و نمره مرحله‌ای منظور می‌کند.
+        </p>
+    `;
+
+    DESCRIPTIVE_QUESTIONS.forEach((q, idx) => {
+        const areaId = `desc-input-${idx}`;
+        html += `
+            <div class="lesson-block">
+                <h4>${q.title}</h4>
+                <p style="margin-bottom: 12px;">${q.prompt}</p>
+                <div class="symbol-toolbar">
+                    <span style="font-size:0.8rem; color:var(--text-muted); align-self:center; margin-left:6px;">درج سریع فرمول:</span>
+                    ${["P = F / A", "P = ρ × g × h", "F₁ / A₁ = F₂ / A₂", "10⁵ Pa", "10⁶", "m²", "N"].map(s =>
+                        `<button type="button" class="sym-btn" onclick="insertSymbol('${areaId}', ' ${s} ')">${s}</button>`
+                    ).join("")}
+                </div>
+                <textarea id="${areaId}" class="form-control" rows="4" placeholder="راه‌حل کامل، فرمول و پاسخ نهایی خود را اینجا بنویسید..."></textarea>
+                <div id="desc-feedback-${idx}" style="display:none; margin-top:12px; padding:12px; border-radius:10px; background:rgba(0,242,254,0.08); border:1px solid var(--primary);"></div>
+            </div>
+        `;
+    });
+
+    html += `
+        <button class="btn btn-success" onclick="evaluateDescriptiveExam()">
+            تصحیح هوشمند پاسخ‌های تشریحی و ثبت نمره (+۵۰ XP)
+        </button>
+    `;
+    container.innerHTML = html;
+}
+
+function evaluateDescriptiveExam() {
+    let totalEarned = 0;
+    let totalMax = 10;
+
+    DESCRIPTIVE_QUESTIONS.forEach((q, idx) => {
+        const rawText = document.getElementById(`desc-input-${idx}`).value;
+        const normText = normalizePersianAndMath(rawText);
+        let qScore = 0;
+        let qMax = 0;
+        let missingHints = [];
+
+        q.expectedConcepts.forEach(concept => {
+            qMax += concept.weight;
+            const matched = concept.keywords.some(kw => normText.includes(normalizePersianAndMath(kw)));
+            if (matched) {
+                qScore += concept.weight;
+            } else {
+                missingHints.push(concept.hint);
+            }
+        });
+
+        totalEarned += qScore;
+        const fbEl = document.getElementById(`desc-feedback-${idx}`);
+        fbEl.style.display = "block";
+        fbEl.innerHTML = `
+            <div><strong>نمره مکتسبه در این سؤال: ${qScore} از ${qMax}</strong></div>
+            ${missingHints.length > 0
+                ? `<div style="color:var(--warning); font-size:0.88rem; margin-top:4px;">موارد قابل تکمیل برای نمره کامل: ${missingHints.join(" ، ")}</div>`
+                : `<div style="color:var(--success); font-size:0.88rem; margin-top:4px;">تمامی مراحل حل و پاسخ نهایی به درستی تشخیص داده شدند.</div>`
+            }
+            <div style="color:#cbd5e1; font-size:0.88rem; margin-top:6px;"><strong>پاسخ استاندارد نمونه:</strong> ${q.sampleAnswer}</div>
+        `;
+    });
+
+    appState.descQuizScore = totalEarned;
+    awardXP("mod_quiz_desc", 50, "تکمیل آزمون تشریحی پیشرفته");
+    saveState();
+    showToast(`تصحیح هوشمند انجام شد. نمره تشریحی شما: ${totalEarned} از ${totalMax}`);
+}
+
+/* ============================================================================
+   ۱۳. بخش ۷: حضور و غیاب (لینک‌های دیجی‌فرم ریاضی و تجربی)، تکالیف و اطلاعیه‌ها
+   ============================================================================ */
+function markAttendanceLinkClicked() {
+    appState.attendanceClicked = true;
+    awardXP("mod_attendance_files", 10, "ثبت حضور و بررسی تکالیف جلسه");
+    saveState();
+}
+
+function renderAttendanceAndHomeworkModule(container) {
+    const isMath = appState.studentGrade === "دهم ریاضی";
+    const isExp = appState.studentGrade === "دهم تجربی";
+
+    container.innerHTML = `
+        <h3 style="color: var(--primary); margin-bottom: 14px;">ثبت حضور و غیاب آنلاین (دیجی‌فرم)، تکالیف و اطلاعیه‌ها</h3>
+
+        <div class="digiform-box">
+            <h4 style="color:#fff; margin-bottom:12px;">لینک‌های رسمی ثبت حضور و غیاب جلسه (انتخاب بر اساس رشته):</h4>
+            <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:16px;">
+                رشته انتخابی شما هنگام ورود: <strong style="color:var(--primary);">${appState.studentGrade}</strong> — روی دکمه مربوط به رشته خود کلیک کرده و فرم حضور را تکمیل نمایید:
+            </p>
+
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:16px;">
+                <div class="lesson-block" style="margin:0; border-color:${isMath ? 'var(--success)' : 'var(--primary)'};">
+                    <p style="font-weight:bold; margin-bottom:12px;">${PROJECT_CONFIG.attendanceLinks.math.title}</p>
+                    <a href="${PROJECT_CONFIG.attendanceLinks.math.url}" target="_blank" rel="noopener noreferrer"
+                       class="btn ${isMath ? 'btn-success' : ''}" style="width:100%;" onclick="markAttendanceLinkClicked()">
+                        ورود به دیجی‌فرم فیزیک دهم ریاضی
+                    </a>
+                    <div style="direction:ltr; font-size:0.8rem; color:var(--text-muted); margin-top:8px; text-align:center;">
+                        ${PROJECT_CONFIG.attendanceLinks.math.url}
+                    </div>
+                </div>
+
+                <div class="lesson-block" style="margin:0; border-color:${isExp ? 'var(--success)' : 'var(--primary)'};">
+                    <p style="font-weight:bold; margin-bottom:12px;">${PROJECT_CONFIG.attendanceLinks.exp.title}</p>
+                    <a href="${PROJECT_CONFIG.attendanceLinks.exp.url}" target="_blank" rel="noopener noreferrer"
+                       class="btn ${isExp ? 'btn-success' : ''}" style="width:100%;" onclick="markAttendanceLinkClicked()">
+                        ورود به دیجی‌فرم فیزیک دهم تجربی
+                    </a>
+                    <div style="direction:ltr; font-size:0.8rem; color:var(--text-muted); margin-top:8px; text-align:center;">
+                        ${PROJECT_CONFIG.attendanceLinks.exp.url}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="lesson-block">
+            <h4>وضعیت حضور دانش‌آموز در سامانه</h4>
+            <p>• <strong>نام و نام خانوادگی:</strong> ${appState.studentName} (${appState.studentGrade})</p>
+            <p>• <strong>زمان اولین ورود به جلسه:</strong> ${appState.firstLoginTime || "ثبت‌شده"}</p>
+            <p>• <strong>تعداد دفعات ورود:</strong> ${appState.loginCount} بار</p>
+        </div>
+
+        <div class="lesson-block">
+            <h4>تکالیف جلسه تکمیلی</h4>
+            <ul class="guide-list">
+                ${PROJECT_CONFIG.homeworks.map(hw => `<li>${hw}</li>`).join("")}
+            </ul>
+        </div>
+
+        <div class="golden-tip">
+            <strong>اطلاعیه‌های مهم:</strong>
+            <ul class="guide-list" style="margin-top:8px;">
+                ${PROJECT_CONFIG.announcements.map(an => `<li>${an}</li>`).join("")}
+            </ul>
+        </div>
+
+        <div style="margin-top: 18px; text-align: left;">
+            <button class="btn btn-success" onclick="markAttendanceLinkClicked()">
+                تأیید بررسی تکالیف و ثبت امتیاز این بخش (+۱۰ XP)
+            </button>
+        </div>
+    `;
+}
+
+/* ============================================================================
+   ۱۴. بخش ۸: کارنامه تحلیلی پیشرفت و چالش مفهومی سطح بالا
+   ============================================================================ */
+function renderProgressAndCreativeModule(container) {
+    checkBadges();
+    const prog = calculateProgressPercent();
+    container.innerHTML = `
+        <h3 style="color: var(--primary); margin-bottom: 14px;">گزارش تحلیلی پیشرفت، نشان‌های علمی و چالش کنکوری</h3>
+
+        <div class="lesson-block">
+            <h4>درصد پیشرفت کل در جلسه تکمیلی: ${prog}%</h4>
+            <div style="width:100%; height:16px; background:rgba(255,255,255,0.08); border-radius:10px; overflow:hidden; margin:10px 0;">
+                <div style="width:${prog}%; height:100%; background:linear-gradient(90deg, var(--primary), var(--success)); transition:width 0.4s;"></div>
+            </div>
+            <p style="font-size:0.9rem; color:var(--text-muted);">
+                امتیاز کل: <strong>${appState.xp} XP</strong> |
+                زمان حضور فعال: <strong>${Math.floor(appState.studySeconds / 60)} دقیقه و ${appState.studySeconds % 60} ثانیه</strong>
+            </p>
+        </div>
+
+        <div class="lesson-block">
+            <h4>نشان‌های کسب‌شده (Badges)</h4>
+            ${appState.badges.length > 0
+                ? appState.badges.map(b => `<span class="official-badge" style="margin-left:8px;">★ ${b}</span>`).join("")
+                : `<p style="color:var(--text-muted);">با تکمیل بخش‌های درسنامه، آزمایشگاه و آزمون‌ها، نشان‌های علمی فعال می‌شوند.</p>`
+            }
+        </div>
+
+        <div class="lesson-block">
+            <h4>چالش مفهومی پیشرفته (امتیاز ویژه +۱۵ XP)</h4>
+            <p><strong>سؤال چالش:</strong> درون یک ظرف محتوی آب، یک بادکنک بسته در ته ظرف قرار دارد و بالای سطح آب هوا محبوس است. اگر با پمپ تخلیه، به تدریج هوای بالای سطح آب را خارج کنیم، فشار کل در یک نقطه معین درون آب و حجم بادکنک به ترتیب چگونه تغییر می‌کنند؟</p>
+            <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+                <button class="btn btn-outline" onclick="solveDailyChallenge(true)">فشار درون آب کاهش می‌یابد و حجم بادکنک افزایش می‌یابد</button>
+                <button class="btn btn-outline" onclick="solveDailyChallenge(false)">فشار درون آب و حجم بادکنک هر دو کاهش می‌یابند</button>
+            </div>
+        </div>
+    `;
+}
+
+function solveDailyChallenge(isCorrect) {
+    if (isCorrect) {
+        appState.dailyChallengeDone = true;
+        awardXP("mod_progress_creative", 15, "پاسخ صحیح به چالش پیشرفته تخلیه هوا و بادکنک");
+        saveState();
+        renderProgressAndCreativeModule(document.getElementById("module-content-area"));
+    } else {
+        showToast("دقت کنید! با خروج هوا، فشار کل روی بادکنک کم می‌شود، بنابراین بادکنک منبسط شده و حجم آن افزایش می‌یابد.");
+    }
+}
+
+/* ============================================================================
+   ۱۵. بخش ۹: ثبت و ارسال گزارش نهایی به Supabase (جدول Students)
+   ============================================================================ */
+function calculateNumericFinalScore() {
+    const xpPart = Math.min(8, (appState.xp / 200) * 8);
+    const descPart = appState.descQuizScore !== null ? (appState.descQuizScore / 10) * 6 : 0;
+    const mcValues = Object.values(appState.mcQuizResults).filter(v => v !== null);
+    const mcAvg = mcValues.length > 0 ? (mcValues.reduce((a, b) => a + b, 0) / mcValues.length) : 0;
+    const mcPart = (mcAvg / 100) * 6;
+    return parseFloat((xpPart + descPart + mcPart).toFixed(2));
+}
+
+function renderFinalReportModule(container) {
+    const prog = calculateProgressPercent();
+    const studyMins = Math.floor(appState.studySeconds / 60);
+    const studySecs = appState.studySeconds % 60;
+    const finalScore20 = calculateNumericFinalScore();
+
+    container.innerHTML = `
+        <h3 style="color: var(--primary); margin-bottom: 12px;">ثبت گزارش</h3>
+        <p style="font-size: 0.92rem; color: var(--text-muted); margin-bottom: 18px;">
+            خلاصه کامل عملکرد شما در زیر درج شده است. جهت ثبت نهایی در سرور دبیر، دکمه «ثبت و ارسال گزارش» را فشار دهید.
+        </p>
+
+        <div class="lesson-block">
+            <p>• <strong>نام دانش‌آموز:</strong> ${appState.studentName}</p>
+            <p>• <strong>پایه، رشته و نام مدرسه:</strong> ${appState.studentGrade} - ${PROJECT_CONFIG.schoolName}</p>
+            <p>• <strong>عنوان درس:</strong> ${PROJECT_CONFIG.subject}</p>
+            <p>• <strong>مجموع XP کسب‌شده:</strong> ${appState.xp} XP</p>
+            <p>• <strong>نمره کل محاسبه‌شده:</strong> ${finalScore20} از 20</p>
+            <p>• <strong>درصد پیشرفت:</strong> ${prog}%</p>
+            <p>• <strong>زمان مطالعه و حضور:</strong> ${studyMins} دقیقه و ${studySecs} ثانیه</p>
+            <p>• <strong>زمان ورود اولیه:</strong> ${appState.firstLoginTime || "-"}</p>
+            <p>• <strong>بخش‌های مشاهده‌شده:</strong> ${appState.viewedModules.join(" ، ") || "داشبورد"}</p>
+            <p>• <strong>وضعیت آزمون‌های انجام‌شده:</strong>
+                تستی سطح ۱ (${appState.mcQuizResults.easy !== null ? appState.mcQuizResults.easy + '%' : 'انجام‌نشده'}) |
+                تستی سطح ۲ (${appState.mcQuizResults.medium !== null ? appState.mcQuizResults.medium + '%' : 'انجام‌نشده'}) |
+                تستی سطح ۳ (${appState.mcQuizResults.hard !== null ? appState.mcQuizResults.hard + '%' : 'انجام‌نشده'}) |
+                تشریحی هوشمند (${appState.descQuizScore !== null ? appState.descQuizScore + ' از 10' : 'انجام‌نشده'})
+            </p>
+        </div>
+
+        <button id="btn-submit-supabase" class="btn btn-success" style="width: 100%; padding: 16px; font-size: 1.15rem;"
+            onclick="submitFinalReportToSupabase()" ${appState.reportSubmitted ? "disabled" : ""}>
+            ${appState.reportSubmitted ? "گزارش شما با موفقیت در سرور ثبت شده است" : "ثبت و ارسال گزارش"}
+        </button>
+
+        <div id="supabase-status-box" style="margin-top: 15px; text-align: center; font-weight: bold;"></div>
+    `;
+}
+
+async function submitFinalReportToSupabase() {
+    if (appState.reportSubmitted) {
+        showToast("گزارش شما قبلاً ارسال و ثبت شده است.");
+        return;
+    }
+
+    const btn = document.getElementById("btn-submit-supabase");
+    const statusBox = document.getElementById("supabase-status-box");
+    btn.disabled = true;
+    btn.innerText = "در حال ارسال اطلاعات به سرور...";
+    statusBox.style.color = "var(--primary)";
+    statusBox.innerText = "لطفاً چند لحظه صبر کنید...";
+
+    const nowStr = new Date().toLocaleString("fa-IR");
+    const durationStr = `${Math.floor(appState.studySeconds / 60)} دقیقه و ${appState.studySeconds % 60} ثانیه`;
+    const prog = calculateProgressPercent();
+    const finalScore = calculateNumericFinalScore();
+
+    const detailsReport = [
+        `رشته: ${appState.studentGrade}`,
+        `زمان ورود: ${appState.firstLoginTime || nowStr}`,
+        `زمان خروج و ثبت گزارش: ${nowStr}`,
+        `مدت حضور و مطالعه: ${durationStr}`,
+        `تعداد دفعات ورود: ${appState.loginCount}`,
+        `لینک حضور دیجی‌فرم: ${appState.attendanceClicked ? "بازدیدشده" : "بازدیدنشده"}`,
+        `آموزش‌های مشاهده‌شده: ${appState.completedActivities["mod_teaching"] ? "تکمیل‌شده" : "ناقص"}`,
+        `خلاصه‌های مطالعه‌شده: ${appState.completedActivities["mod_summary"] ? "تکمیل‌شده" : "ناقص"}`,
+        `آزمایشگاه‌های انجام‌شده: ${appState.labCompleted ? "انجام‌شده" : "انجام‌نشده"}`,
+        `آزمون‌های تستی: سطح۱(${appState.mcQuizResults.easy ?? "-"}%)، سطح۲(${appState.mcQuizResults.medium ?? "-"}%)، سطح۳(${appState.mcQuizResults.hard ?? "-"}%)`,
+        `آزمون‌های تشریحی: ${appState.descQuizScore !== null ? appState.descQuizScore + " از 10" : "انجام‌نشده"}`,
+        `بخش‌های بازدیدشده: ${appState.viewedModules.join("، ")}`,
+        `XP کل: ${appState.xp}`,
+        `درصد پیشرفت: ${prog}%`,
+        `تعداد Badge: ${appState.badges.length} (${appState.badges.join("، ") || "بدون نشان"})`,
+        `تعداد Achievement: ${Object.keys(appState.completedActivities).length}`
+    ].join(" | ");
+
+    const payload = {
+        Student_name: appState.studentName,
+        School_name: `${appState.studentGrade} - ${PROJECT_CONFIG.schoolName}`,
+        Subject: PROJECT_CONFIG.subject,
+        Score: Number(finalScore),
+        Total_score: 20,
+        Details: detailsReport
+    };
+
+    try {
+        const response = await fetch(`${PROJECT_CONFIG.supabaseUrl}/rest/v1/Students`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "apikey": PROJECT_CONFIG.supabaseKey,
+                "Authorization": `Bearer ${PROJECT_CONFIG.supabaseKey}`,
+                "Prefer": "return=minimal"
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            appState.reportSubmitted = true;
+            saveState();
+            playTone(880, 0.25, "triangle");
+            btn.innerText = "گزارش شما با موفقیت در سرور ثبت شد";
+            statusBox.style.color = "var(--success)";
+            statusBox.innerText = "گزارش نهایی عملکرد شما با موفقیت در جدول Students ثبت گردید.";
+            showToast("ارسال گزارش به سرور با موفقیت انجام شد.");
+        } else {
+            const errText = await response.text();
+            throw new Error(`کد وضعیت ${response.status}: ${errText}`);
+        }
+    } catch (err) {
+        btn.disabled = false;
+        btn.innerText = "تلاش مجدد برای ثبت و ارسال گزارش";
+        statusBox.style.color = "var(--danger)";
+        statusBox.innerText = "خطا در برقراری ارتباط با سرور. اتصال اینترنت خود را بررسی کرده و مجدداً تلاش نمایید.";
+        console.error("Supabase Error:", err);
+    }
+}
+
+/* ============================================================================
+   ۱۶. پس‌زمینه متحرک ذرات (Particle System 60FPS)
+   ============================================================================ */
+function initParticles() {
+    const canvas = document.getElementById("bg-canvas");
+    const ctx = canvas.getContext("2d");
+    let w = canvas.width = window.innerWidth;
+    let h = canvas.height = window.innerHeight;
+
+    window.addEventListener("resize", () => {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+    });
+
+    const particles = Array.from({ length: 45 }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: Math.random() * 2 + 1,
+        vx: (Math.random() - 0.5) * 0.5,
+        vy: (Math.random() - 0.5) * 0.5
+    }));
+
+    function animate() {
+        ctx.clearRect(0, 0, w, h);
+        ctx.fillStyle = "rgba(0, 242, 254, 0.45)";
+        particles.forEach(p => {
+            p.x += p.vx;
+            p.y += p.vy;
+            if (p.x < 0 || p.x > w) p.vx *= -1;
+            if (p.y < 0 || p.y > h) p.vy *= -1;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fill();
+        });
+        requestAnimationFrame(animate);
+    }
+    animate();
+}
+
+/* ============================================================================
+   ۱۷. راه‌اندازی اولیه
+   ============================================================================ */
+window.addEventListener("DOMContentLoaded", () => {
+    loadState();
+    initParticles();
+    initSecretTriggers();
+    checkLockState();
+});
+</script>
+</body>
+</html>
