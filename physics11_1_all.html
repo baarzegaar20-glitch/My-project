@@ -1,0 +1,2444 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>سامانه جامع جمع‌بندی فصل اول فیزیک یازدهم تجربی - مدرسه رستمانی طبل</title>
+    <style>
+        :root {
+            --bg-dark: #070b14;
+            --bg-card: rgba(15, 23, 42, 0.82);
+            --bg-glass: rgba(255, 255, 255, 0.05);
+            --primary: #00f2fe;
+            --secondary: #38bdf8;
+            --accent: #a855f7;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-glass: rgba(255, 255, 255, 0.12);
+            --shadow-neon: 0 0 22px rgba(0, 242, 254, 0.25);
+            --radius-lg: 18px;
+            --radius-md: 12px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.65;
+            position: relative;
+        }
+
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .app-wrapper {
+            position: relative;
+            z-index: 1;
+            max-width: 1220px;
+            margin: 0 auto;
+            padding: 16px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Glassmorphism Panels */
+        .glass-panel {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.45);
+            margin-bottom: 20px;
+            transition: transform 0.25s ease, border-color 0.25s ease;
+        }
+
+        .glass-panel:hover {
+            border-color: rgba(0, 242, 254, 0.32);
+        }
+
+        h1, h2, h3, h4 {
+            color: var(--text-main);
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .neon-text {
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
+
+        /* Clean Mathematical Formula Styling */
+        .math-expr {
+            direction: ltr;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'Cambria Math', 'Times New Roman', serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #38bdf8;
+            background: rgba(0, 242, 254, 0.08);
+            padding: 4px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 242, 254, 0.2);
+            margin: 2px 4px;
+        }
+
+        .frac {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            vertical-align: middle;
+            margin: 0 4px;
+            font-size: 0.95em;
+        }
+
+        .frac-num {
+            border-bottom: 1.5px solid currentColor;
+            padding: 0 5px 2px;
+            line-height: 1.1;
+        }
+
+        .frac-den {
+            padding: 2px 5px 0;
+            line-height: 1.1;
+        }
+
+        .formula-box {
+            background: rgba(0, 242, 254, 0.06);
+            border-right: 4px solid var(--primary);
+            padding: 15px 18px;
+            border-radius: var(--radius-md);
+            margin: 12px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        /* Buttons */
+        .btn {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: #040814;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: var(--shadow-neon);
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-outline {
+            background: var(--bg-glass);
+            color: var(--text-main);
+            border: 1px solid var(--border-glass);
+            box-shadow: none;
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: var(--primary);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #059669, #10b981);
+            color: #fff;
+        }
+
+        .btn-accent {
+            background: linear-gradient(135deg, #7c3aed, #a855f7);
+            color: #fff;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #d97706, #f59e0b);
+            color: #fff;
+        }
+
+        input[type="text"], textarea, select {
+            width: 100%;
+            background: rgba(9, 13, 22, 0.85);
+            border: 1px solid var(--border-glass);
+            color: var(--text-main);
+            padding: 14px 16px;
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="text"]:focus, textarea:focus, select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 12px rgba(0, 242, 254, 0.25);
+        }
+
+        /* Lock Screen */
+        #lock-screen {
+            min-height: 92vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 20px 0;
+        }
+
+        .countdown-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin: 24px 0;
+            direction: ltr;
+        }
+
+        .time-box {
+            background: rgba(0, 242, 254, 0.07);
+            border: 1px solid rgba(0, 242, 254, 0.25);
+            border-radius: var(--radius-md);
+            padding: 16px 8px;
+            text-align: center;
+        }
+
+        .time-box span {
+            display: block;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .time-box small {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .guide-list {
+            list-style: none;
+            display: grid;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .guide-list li {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 12px 16px;
+            border-radius: var(--radius-md);
+            border-right: 3px solid var(--secondary);
+            font-size: 0.92rem;
+        }
+
+        /* Top Bar & Dashboard */
+        .top-bar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-lg);
+            margin-bottom: 20px;
+            position: sticky;
+            top: 10px;
+            z-index: 50;
+            backdrop-filter: blur(16px);
+        }
+
+        .stats-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .stat-pill {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border-glass);
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .stat-pill b {
+            color: var(--primary);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(245px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .nav-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-lg);
+            padding: 22px 18px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 14px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--primary);
+            box-shadow: var(--shadow-neon);
+        }
+
+        .nav-card.completed::after {
+            content: "✓ انجام شده";
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(16, 185, 129, 0.2);
+            color: #34d399;
+            font-size: 0.72rem;
+            padding: 3px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+        }
+
+        .nav-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            background: rgba(0, 242, 254, 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: var(--primary);
+        }
+
+        .view-section {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 14px 0;
+            font-size: 0.92rem;
+        }
+
+        .data-table th, .data-table td {
+            border: 1px solid var(--border-glass);
+            padding: 12px;
+            text-align: right;
+        }
+
+        .data-table th {
+            background: rgba(0, 242, 254, 0.1);
+            color: var(--primary);
+        }
+
+        /* Flashcards */
+        .flashcard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+            gap: 14px;
+            margin: 16px 0;
+        }
+
+        .flashcard {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            min-height: 140px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .flashcard:hover {
+            border-color: var(--primary);
+            background: rgba(0, 242, 254, 0.08);
+        }
+
+        /* Lab Controls */
+        .lab-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 14px;
+            margin: 16px 0;
+        }
+
+        .control-box {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-glass);
+            padding: 14px;
+            border-radius: var(--radius-md);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--primary);
+            margin-top: 8px;
+            cursor: pointer;
+        }
+
+        /* Quiz Options */
+        .option-btn {
+            width: 100%;
+            text-align: right;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-glass);
+            color: var(--text-main);
+            padding: 14px 18px;
+            border-radius: var(--radius-md);
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.96rem;
+        }
+
+        .option-btn:hover {
+            border-color: var(--primary);
+            background: rgba(0, 242, 254, 0.08);
+        }
+
+        .option-btn.selected {
+            border-color: var(--primary);
+            background: rgba(0, 242, 254, 0.22);
+            font-weight: 700;
+        }
+
+        /* Virtual Full Keyboard */
+        .virtual-kb-toggle {
+            margin-top: 8px;
+            font-size: 0.82rem;
+            padding: 6px 12px;
+        }
+
+        .virtual-kb {
+            background: rgba(11, 16, 29, 0.96);
+            border: 1px solid var(--border-glass);
+            border-radius: var(--radius-md);
+            padding: 10px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .virtual-kb.show {
+            display: block;
+        }
+
+        .kb-row {
+            display: flex;
+            justify-content: center;
+            gap: 5px;
+            margin-bottom: 6px;
+            flex-wrap: wrap;
+        }
+
+        .kb-key {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #fff;
+            min-width: 36px;
+            height: 38px;
+            padding: 0 8px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .kb-key:active {
+            background: var(--primary);
+            color: #000;
+        }
+
+        /* Modal for Secret Admin */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.82);
+            backdrop-filter: blur(8px);
+            z-index: 999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .badge-item {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-glass);
+            padding: 14px;
+            border-radius: var(--radius-md);
+            text-align: center;
+            opacity: 0.45;
+            transition: all 0.3s;
+        }
+
+        .badge-item.unlocked {
+            opacity: 1;
+            border-color: var(--primary);
+            box-shadow: var(--shadow-neon);
+            background: rgba(0, 242, 254, 0.08);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: #10b981;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: var(--radius-md);
+            font-weight: 700;
+            z-index: 1000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        @media (max-width: 640px) {
+            .countdown-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .glass-panel {
+                padding: 16px;
+            }
+            .top-bar {
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="particle-canvas"></canvas>
+
+<div class="app-wrapper">
+
+    <!-- ================= 1. LOCK SCREEN ================= -->
+    <section id="lock-screen">
+        <div class="glass-panel" style="max-width: 800px; margin: 0 auto; width: 100%;">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; border-bottom: 1px solid var(--border-glass); padding-bottom: 16px; margin-bottom: 20px;">
+                <div>
+                    <h1 class="neon-text" style="font-size: 1.45rem; margin-bottom: 4px;" id="lock-lesson-title">فصل اول فیزیک یازدهم تجربی</h1>
+                    <p style="color: var(--text-muted); font-size: 0.92rem;" id="lock-school-info">پایه یازدهم تجربی | مدرسه رستمانی طبل</p>
+                </div>
+                <div style="text-align: left;">
+                    <span style="font-size: 0.85rem; color: var(--text-muted);">دبیر مربوطه: </span>
+                    <span id="secret-teacher-trigger" style="font-weight: 700; color: var(--primary); user-select: none; cursor: default;">برزگری</span>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin: 20px 0;">
+                <h2 id="lock-status-heading" style="font-size: 1.2rem;">سامانه تا فرا رسیدن زمان مقرر قفل می‌باشد</h2>
+                <p style="color: var(--text-muted); font-size: 0.9rem;">زمان بازگشایی رسمی: <b id="lock-target-display" style="color: var(--text-main);">۲۵ آبان ساعت ۱۱:۴۰ صبح</b></p>
+
+                <div class="countdown-grid" id="countdown-box">
+                    <div class="time-box"><span id="cd-days">00</span><small>روز</small></div>
+                    <div class="time-box"><span id="cd-hours">00</span><small>ساعت</small></div>
+                    <div class="time-box"><span id="cd-mins">00</span><small>دقیقه</small></div>
+                    <div class="time-box"><span id="cd-secs">00</span><small>ثانیه</small></div>
+                </div>
+
+                <div id="unlock-action-area" style="display: none; margin-top: 20px;">
+                    <button class="btn btn-success" onclick="proceedToLogin()" style="font-size: 1.05rem; padding: 14px 36px;">
+                        ورود به صفحه احراز هویت دانش‌آموز
+                    </button>
+                </div>
+            </div>
+
+            <div style="margin-top: 28px; border-top: 1px solid var(--border-glass); padding-top: 20px;">
+                <h3 style="font-size: 1.05rem; color: var(--primary);">راهنمای رسمی کار با سامانه، کسب امتیاز و ثبت گزارش نهایی</h3>
+                <ul class="guide-list">
+                    <li><b>۱. احراز هویت و ورود رسمی:</b> پس از فرارسیدن زمان مقرر (۲۵ آبان ساعت ۱۱:۴۰ صبح)، قفل سامانه به‌طور دائمی باز شده و ورود صرفاً با ثبت نام و نام خانوادگی کامل امکان‌پذیر خواهد بود.</li>
+                    <li><b>۲. سازوکار امتیازدهی (XP) و ضدتقلب:</b> هر فعالیت آموزشی در این سامانه فقط یک‌بار امتیاز دارد (ورود به سامانه: ۵ امتیاز، مطالعه آموزش جامع فصل: ۲۰ امتیاز، بررسی خلاصه هوشمند و فرمول‌ها: ۱۰ امتیاز، انجام آزمایشگاه مجازی فیزیک: ۳۰ امتیاز، مشاهده تکالیف و اطلاعیه‌ها: ۱۰ امتیاز، و اتمام آزمون‌ها: ۵۰ امتیاز). بارگذاری مجدد صفحه (Refresh) یا ورود تکراری امتیاز اضافی نخواهد داشت.</li>
+                    <li><b>۳. نحوه پاسخ‌گویی به سؤالات و مسائل:</b> تمامی کادرهای پاسخ به صفحه‌کلید کامل دستگاه (متنی، عددی و علائم) و همچنین صفحه‌کلید کامل درون‌برنامه‌ای (شامل حروف فارسی، انگلیسی، اعداد و نمادهای فیزیکی) مجهز هستند. موتور تصحیح هوشمند، راه‌حل‌ها، فرمول‌های معادل و واحدها را به‌صورت مفهومی بررسی می‌کند.</li>
+                    <li><b>۴. ثبت و ارسال نهایی در سرور:</b> در پایان مطالعه و انجام آزمون‌ها، به بخش «ثبت گزارش» مراجعه کرده و با فشردن دکمه «ثبت و ارسال گزارش»، کارنامه و ریز عملکرد خود را مستقیماً در پایگاه داده ثبت نمایید. ارسال گزارش نهایی فقط یک‌بار امکان‌پذیر است.</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= 2. LOGIN SCREEN ================= -->
+    <section id="login-screen" class="view-section">
+        <div class="glass-panel" style="max-width: 520px; margin: 40px auto;">
+            <h2 class="neon-text" style="text-align: center; font-size: 1.4rem;">ورود رسمی به سامانه آموزشی فیزیک</h2>
+            <p style="text-align: center; color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">
+                مشخصات زیر را بررسی کرده و نام و نام خانوادگی خود را به‌صورت کامل وارد نمایید.
+            </p>
+
+            <div style="display: grid; gap: 14px;">
+                <div>
+                    <label style="display: block; margin-bottom: 6px; font-size: 0.9rem; color: var(--primary);">نام و نام خانوادگی دانش‌آموز (اجباری):</label>
+                    <input type="text" id="student-name-input" placeholder="نام و نام خانوادگی کامل خود را بنویسید..." autocomplete="name" inputmode="text">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-muted);">پایه و رشته تحصیلی:</label>
+                    <input type="text" id="login-grade" readonly style="opacity: 0.75; cursor: not-allowed;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-muted);">نام مدرسه:</label>
+                    <input type="text" id="login-school" readonly style="opacity: 0.75; cursor: not-allowed;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 6px; font-size: 0.85rem; color: var(--text-muted);">عنوان درس:</label>
+                    <input type="text" id="login-subject" readonly style="opacity: 0.75; cursor: not-allowed;">
+                </div>
+                <button class="btn" onclick="handleLogin()" style="margin-top: 10px; width: 100%; padding: 14px;">
+                    تأیید اطلاعات و ورود به داشبورد جمع‌بندی
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= 3. MAIN APPLICATION ================= -->
+    <main id="main-app" class="view-section">
+        <!-- Top Bar -->
+        <header class="top-bar">
+            <div>
+                <h2 style="font-size: 1.05rem; margin-bottom: 2px;" id="header-student-name">دانش‌آموز</h2>
+                <span style="font-size: 0.8rem; color: var(--text-muted);" id="header-meta-info">یازدهم تجربی | مدرسه رستمانی طبل | دبیر: برزگری</span>
+            </div>
+            <div class="stats-bar">
+                <div class="stat-pill">امتیاز: <b id="ui-xp">0</b> XP</div>
+                <div class="stat-pill">سطح: <b id="ui-level">1</b></div>
+                <div class="stat-pill">پیشرفت: <b id="ui-progress">0%</b></div>
+                <div class="stat-pill">زمان حضور: <b id="ui-timer">00:00</b></div>
+                <button class="btn btn-outline" id="sound-toggle-btn" onclick="toggleSound()" style="padding: 6px 12px; font-size: 0.8rem;">
+                    🔊 صدا: فعال
+                </button>
+                <button class="btn" onclick="openSection('dashboard')" style="padding: 6px 14px; font-size: 0.85rem;">
+                    صفحه اصلی
+                </button>
+            </div>
+        </header>
+
+        <!-- DASHBOARD VIEW -->
+        <div id="sec-dashboard" class="sub-view">
+            <div class="glass-panel" style="padding: 18px 24px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                    <span style="font-size: 0.9rem; font-weight: 700;">میزان پیشرفت در جمع‌بندی فصل اول (آمادگی امتحان هفته آینده)</span>
+                    <span id="progress-bar-label" style="color: var(--primary); font-weight: 700;">0%</span>
+                </div>
+                <div style="width: 100%; height: 10px; background: rgba(255,255,255,0.08); border-radius: 99px; overflow: hidden;">
+                    <div id="progress-bar-fill" style="width: 0%; height: 100%; background: linear-gradient(90deg, var(--primary), var(--accent)); transition: width 0.4s ease;"></div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid" id="dashboard-cards-container"></div>
+        </div>
+
+        <!-- SECTION: آموزش جامع جمع‌بندی فصل اول -->
+        <div id="sec-teaching" class="sub-view" style="display: none;">
+            <div class="glass-panel">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
+                    <h2 class="neon-text">آموزش جامع و جمع‌بندی فصل اول: الکتریسیته ساکن</h2>
+                    <button class="btn btn-outline" onclick="openSection('dashboard')">بازگشت به داشبورد</button>
+                </div>
+
+                <!-- Sub-navigation inside Teaching -->
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;">
+                    <button class="btn" onclick="switchTeachTab('t-coulomb')">۱. بار الکتریکی و قانون کولن</button>
+                    <button class="btn btn-outline" onclick="switchTeachTab('t-field')">۲. میدان الکتریکی و خطوط میدان</button>
+                    <button class="btn btn-outline" onclick="switchTeachTab('t-potential')">۳. انرژی، پتانسیل و توزیع بار</button>
+                    <button class="btn btn-outline" onclick="switchTeachTab('t-capacitor')">۴. خازن و انرژی ذخیره شده</button>
+                    <button class="btn btn-outline" onclick="switchTeachTab('t-exam-tips')">۵. نکات تشریحی، تستی و تله‌های طراح</button>
+                </div>
+
+                <!-- Tab 1: Charge & Coulomb's Law -->
+                <div id="t-coulomb" class="teach-tab">
+                    <h3>مبحث اول: پایستگی، کوانتیده بودن بار و قانون کولن</h3>
+                    <p>بار الکتریکی یک کمیت نرده‌ای است که از دو اصل بنیادی پیروی می‌کند: <b>۱. اصل پایستگی بار الکتریکی</b> (مجموع جبری بارها در یک دستگاه منزوی ثابت است) و <b>۲. کوانتیده بودن بار الکتریکی</b> (بار هر جسم مضرب درستی از بار پایه است).</p>
+
+                    <div class="formula-box">
+                        <div><b>۱. رابطه کوانتیده بودن بار الکتریکی:</b></div>
+                        <div>
+                            <span class="math-expr">q = ± n e</span>
+                            <span>که در آن <span class="math-expr">e = 1.6 × 10<sup>-19</sup> C</span> بار پایه و <span class="math-expr">n</span> تعداد الکترون‌های مبادله‌شده (عدد صحیح) است.</span>
+                        </div>
+                        <div style="font-size: 0.9rem; color: var(--text-muted);">نکته: اگر جسم الکترون بگیرد بار آن منفی (<span class="math-expr">q &lt; 0</span>) و اگر الکترون از دست بدهد بار آن مثبت (<span class="math-expr">q &gt; 0</span>) می‌شود.</div>
+                    </div>
+
+                    <div class="formula-box">
+                        <div><b>۲. فرمول قانون کولن (نیروی الکتریکی بین دو بار نقطه‌ای):</b></div>
+                        <div>
+                            <span class="math-expr">
+                                F = k
+                                <span class="frac">
+                                    <span class="frac-num">|q<sub>1</sub>| |q<sub>2</sub>|</span>
+                                    <span class="frac-den">r<sup>2</sup></span>
+                                </span>
+                            </span>
+                            <span>که در آن <span class="math-expr">k = 9 × 10<sup>9</sup> <span class="frac"><span class="frac-num">N · m<sup>2</sup></span><span class="frac-den">C<sup>2</sup></span></span></span>، بارها برحسب کولن (<span class="math-expr">C</span>) و فاصله <span class="math-expr">r</span> برحسب متر (<span class="math-expr">m</span>) است.</span>
+                        </div>
+                    </div>
+
+                    <div class="formula-box" style="border-right-color: var(--success);">
+                        <div><b>مثال حل‌شده امتحانی ۱:</b> دو بار نقطه‌ای <span class="math-expr">q<sub>1</sub> = 2 μC</span> و <span class="math-expr">q<sub>2</sub> = -6 μC</span> در فاصله <span class="math-expr">r = 30 cm</span> از یکدیگر قرار دارند. بزرگی نیروی الکتریکی بین آن‌ها چند نیوتون و از چه نوعی است؟</div>
+                        <div><b>پاسخ استاندارد:</b> ابتدا واحدها را به SI تبدیل می‌کنیم: <span class="math-expr">|q<sub>1</sub>| = 2 × 10<sup>-6</sup> C</span>، <span class="math-expr">|q<sub>2</sub>| = 6 × 10<sup>-6</sup> C</span> و <span class="math-expr">r = 0.3 m = 3 × 10<sup>-1</sup> m</span>.</div>
+                        <div>
+                            <span class="math-expr">
+                                F = 9 × 10<sup>9</sup> ×
+                                <span class="frac">
+                                    <span class="frac-num">(2 × 10<sup>-6</sup>) × (6 × 10<sup>-6</sup>)</span>
+                                    <span class="frac-den">9 × 10<sup>-2</sup></span>
+                                </span>
+                                = 1.2 N
+                            </span>
+                            <span>(چون بارها ناهم‌نام هستند، نیرو از نوع <b>ربایشی</b> است.)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 2: Electric Field -->
+                <div id="t-field" class="teach-tab" style="display: none;">
+                    <h3>مبحث دوم: میدان الکتریکی، بار نقطه‌ای و خطوط میدان</h3>
+                    <p>میدان الکتریکی در هر نقطه از فضا برابر است با نیروی الکتریکی وارد بر یکای بار الکتریکی مثبتِ آزمون که در آن نقطه قرار می‌گیرد.</p>
+
+                    <div class="formula-box">
+                        <div><b>۱. رابطه تعریف میدان الکتریکی:</b></div>
+                        <div>
+                            <span class="math-expr">
+                                E = <span class="frac"><span class="frac-num">F</span><span class="frac-den">q<sub>0</sub></span></span>
+                            </span>
+                            <span>&nbsp;&rArr;&nbsp; نیروی وارد بر بار <span class="math-expr">q</span> در میدان: <span class="math-expr">F = |q| E</span> (واحد میدان: <span class="math-expr">N/C</span> یا <span class="math-expr">V/m</span>)</span>
+                        </div>
+                        <div style="font-size: 0.9rem; color: var(--text-muted);">نکته جهت نیرو: اگر بار <span class="math-expr">q</span> مثبت باشد، نیروی <span class="math-expr">F</span> هم‌جهت با میدان <span class="math-expr">E</span> و اگر بار <span class="math-expr">q</span> منفی باشد، نیروی <span class="math-expr">F</span> در خلاف جهت میدان <span class="math-expr">E</span> است.</div>
+                    </div>
+
+                    <div class="formula-box">
+                        <div><b>۲. میدان ناشی از یک بار نقطه‌ای در فاصله <span class="math-expr">r</span>:</b></div>
+                        <div>
+                            <span class="math-expr">
+                                E = k
+                                <span class="frac">
+                                    <span class="frac-num">|q|</span>
+                                    <span class="frac-den">r<sup>2</sup></span>
+                                </span>
+                            </span>
+                            <span>(برای بار مثبت جهت میدان <b>برون‌سو</b> و برای بار منفی <b>درون‌سو</b> است.)</span>
+                        </div>
+                    </div>
+
+                    <div class="formula-box">
+                        <div><b>۳. ویژگی‌های کلیدی خطوط میدان الکتریکی (پرتکرار در امتحان تشریحی):</b></div>
+                        <ul class="guide-list">
+                            <li>خطوط میدان از بار مثبت خارج و به بار منفی وارد می‌شوند.</li>
+                            <li>بردار میدان الکتریکی در هر نقطه، بر خط میدان گذرنده از آن نقطه مماس است.</li>
+                            <li>در هر ناحیه که تراکم خطوط میدان بیشتر باشد، میدان الکتریکی قوی‌تر است.</li>
+                            <li>دو خط میدان الکتریکی هرگز یکدیگر را قطع نمی‌کنند (زیرا در یک نقطه نمی‌توان دو بردار میدان متفاوت داشت).</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Tab 3: Potential Energy, Potential & Conductors -->
+                <div id="t-potential" class="teach-tab" style="display: none;">
+                    <h3>مبحث سوم: انرژی پتانسیل، اختلاف پتانسیل و توزیع بار در رساناها</h3>
+
+                    <div class="formula-box">
+                        <div><b>۱. تغییر انرژی پتانسیل الکتریکی و کار نیروی میدان:</b></div>
+                        <div>
+                            <span class="math-expr">ΔU = - W<sub>E</sub> = q E d cos(θ)</span>
+                            <span>اگر جابه‌جایی در خلاف جهت نیروی الکتریکی باشد، انرژی پتانسیل الکتریکی <b>افزایش</b> (<span class="math-expr">ΔU &gt; 0</span>) و اگر در جهت نیروی الکتریکی باشد، انرژی پتانسیل <b>کاهش</b> (<span class="math-expr">ΔU &lt; 0</span>) می‌یابد.</span>
+                        </div>
+                    </div>
+
+                    <div class="formula-box">
+                        <div><b>۲. اختلاف پتانسیل الکتریکی (<span class="math-expr">ΔV</span>):</b></div>
+                        <div>
+                            <span class="math-expr">
+                                ΔV = V<sub>2</sub> - V<sub>1</sub> = <span class="frac"><span class="frac-num">ΔU</span><span class="frac-den">q</span></span>
+                            </span>
+                            <span>(یکای اختلاف پتانسیل در SI، ولت <span class="math-expr">V = J/C</span> است.)</span>
+                        </div>
+                        <div><b>نکته طلایی:</b> با حرکت در جهت خطوط میدان الکتریکی، پتانسیل الکتریکی همواره <b>کاهش</b> می‌یابد (مستقل از نوع بار متحرک).</div>
+                    </div>
+
+                    <div class="formula-box">
+                        <div><b>۳. رابطه میدان الکتریکی یکنواخت و اختلاف پتانسیل:</b></div>
+                        <div>
+                            <span class="math-expr">
+                                E = <span class="frac"><span class="frac-num">ΔV</span><span class="frac-den">d</span></span>
+                            </span>
+                            <span>که در آن <span class="math-expr">d</span> فاصله دو صفحه یا جابه‌جایی در امتداد خطوط میدان برحسب متر است.</span>
+                        </div>
+                    </div>
+
+                    <div class="formula-box">
+                        <div><b>۴. میدان در داخل رساناها و چگالی سطحی بار (<span class="math-expr">σ</span>):</b></div>
+                        <div>در حالت تعادل الکترواستاتیکی، میدان الکتریکی در داخل جسم رسانا (توپر یا توخالی) برابر صفر است (<span class="math-expr">E = 0</span>) و تمام بار خالص روی سطح خارجی رسانا قرار می‌گیرد.</div>
+                        <div>
+                            <span>فرمول چگالی سطحی بار:</span>
+                            <span class="math-expr">
+                                σ = <span class="frac"><span class="frac-num">q</span><span class="frac-den">A</span></span>
+                            </span>
+                            <span>(تراکم بار در نقاط نوک‌تیز که شعاع انحنای کمتری دارند، بیشتر است.)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 4: Capacitors -->
+                <div id="t-capacitor" class="teach-tab" style="display: none;">
+                    <h3>مبحث چهارم: خازن، عوامل مؤثر بر ظرفیت و انرژی خازن</h3>
+
+                    <div class="formula-box">
+                        <div><b>۱. فرمول اصلی بار و ظرفیت خازن:</b></div>
+                        <div>
+                            <span class="math-expr">
+                                C = <span class="frac"><span class="frac-num">q</span><span class="frac-den">V</span></span>
+                            </span>
+                            <span>&nbsp;&rArr;&nbsp; <span class="math-expr">q = C V</span> (یکای ظرفیت: فاراد <span class="math-expr">F = C/V</span>؛ ظرفیت خازن به بار <span class="math-expr">q</span> و ولتاژ <span class="math-expr">V</span> بستگی <b>ندارد</b> و فقط به ساختار هندسی و دی‌الکتریک وابسته است.)</span>
+                        </div>
+                    </div>
+
+                    <div class="formula-box">
+                        <div><b>۲. ظرفیت خازن تخت با عایق دی‌الکتریک:</b></div>
+                        <div>
+                            <span class="math-expr">
+                                C = κ ε<sub>0</sub> <span class="frac"><span class="frac-num">A</span><span class="frac-den">d</span></span>
+                            </span>
+                            <span>که در آن <span class="math-expr">κ</span> ضریب دی‌الکتریک، <span class="math-expr">A</span> مساحت مشترک صفحات، <span class="math-expr">d</span> فاصله بین دو صفحه و <span class="math-expr">ε<sub>0</sub> = 8.85 × 10<sup>-12</sup> <span class="frac"><span class="frac-num">F</span><span class="frac-den">m</span></span></span> است.</span>
+                        </div>
+                    </div>
+
+                    <div class="formula-box">
+                        <div><b>۳. هر سه رابطه انرژی پتانسیل الکتریکی ذخیره‌شده در خازن:</b></div>
+                        <div>
+                            <span class="math-expr">U = <span class="frac"><span class="frac-num">1</span><span class="frac-den">2</span></span> q V</span>
+                            &nbsp;=&nbsp;
+                            <span class="math-expr"><span class="frac"><span class="frac-num">1</span><span class="frac-den">2</span></span> C V<sup>2</sup></span>
+                            &nbsp;=&nbsp;
+                            <span class="math-expr"><span class="frac"><span class="frac-num">q<sup>2</sup></span><span class="frac-den">2 C</span></span></span>
+                            <span>(برحسب ژول <span class="math-expr">J</span>)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 5: Exam Tips & Designer Traps -->
+                <div id="t-exam-tips" class="teach-tab" style="display: none;">
+                    <h3>نکات طلایی امتحان تشریحی، تکنیک‌های تستی و تله‌های طراح سؤال</h3>
+
+                    <div class="formula-box" style="border-right-color: var(--warning);">
+                        <div><b>نکات کلیدی برای کسب نمره کامل در امتحان تشریحی هفته آینده:</b></div>
+                        <ul class="guide-list">
+                            <li><b>نوشتن فرمول خام و یکا (واحد):</b> در بارم‌بندی امتحانات فیزیک، نوشتن رابطه اصلی (مثلاً <span class="math-expr">q = C V</span>) و ذکر واحد نهایی در پایان محاسبه، نمره مستقل دارد.</li>
+                            <li><b>عدم جایگذاری علامت منفی بار در قانون کولن و میدان:</b> در فرمول‌های <span class="math-expr">F</span> و <span class="math-expr">E</span>، قدرمطلق بار (<span class="math-expr">|q|</span>) قرار می‌گیرد و علامت بار صرفاً برای تعیین جهت بردار بر روی شکل استفاده می‌شود.</li>
+                            <li><b>تبدیل پیشوندها به SI:</b> پیشوند میکرو (<span class="math-expr">μ = 10<sup>-6</sup></span>)، نانو (<span class="math-expr">n = 10<sup>-9</sup></span>)، میلی (<span class="math-expr">m = 10<sup>-3</sup></span>) و سانتی‌متر (<span class="math-expr">cm = 10<sup>-2</sup> m</span>) را حتماً پیش از جایگذاری تبدیل کنید.</li>
+                        </ul>
+                    </div>
+
+                    <div class="formula-box" style="border-right-color: var(--danger);">
+                        <div><b>تله‌های رایج طراح سؤال در آزمون‌ها:</b></div>
+                        <ul class="guide-list">
+                            <li><b>تله ۱ (وابستگی ظرفیت خازن به بار و ولتاژ):</b> اگر ولتاژ دو سر خازنی ۲ برابر شود، بار آن ۲ برابر می‌شود اما ظرفیت خازن (<span class="math-expr">C</span>) <b>ثابت</b> می‌ماند!</li>
+                            <li><b>تله ۲ (تغییر فاصله صفحات خازن متصل به باتری در برابر جدا از باتری):</b> وقتی خازن به باتری متصل است ولتاژ <span class="math-expr">V</span> ثابت می‌ماند، اما وقتی خازن پر شده و از باتری جدا می‌شود، بار <span class="math-expr">q</span> روی صفحات ثابت می‌ماند.</li>
+                            <li><b>تله ۳ (تغییر پتانسیل بار منفی):</b> پتانسیل الکتریکی <span class="math-expr">V</span> ویژگی نقاط فضا است؛ در جهت خطوط میدان، پتانسیل <span class="math-expr">V</span> همیشه کم می‌شود، اما اگر بار منفی در جهت خطوط میدان حرکت کند، انرژی پتانسیل آن (<span class="math-expr">ΔU = q ΔV</span>) افزایش می‌یابد!</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div style="margin-top: 24px; text-align: left;">
+                    <button class="btn btn-success" onclick="completeActivity('teaching', 20, 'آموزش جامع جمع‌بندی فصل اول مطالعه شد (+۲۰ XP)')">
+                        ثبت تکمیل مطالعه آموزش جامع (+۲۰ XP)
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION: خلاصه هوشمند (Mind Map, Comparison Tables, Flashcards) -->
+        <div id="sec-summary" class="sub-view" style="display: none;">
+            <div class="glass-panel">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
+                    <h2 class="neon-text">خلاصه هوشمند، نقشه ذهنی و جدول‌های جمع‌بندی</h2>
+                    <button class="btn btn-outline" onclick="openSection('dashboard')">بازگشت به داشبورد</button>
+                </div>
+
+                <h3>۱. درخت مفهومی کل فصل اول (الکتریسیته ساکن)</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; margin-bottom: 22px;">
+                    <div style="background: rgba(255,255,255,0.04); padding: 14px; border-radius: 12px; border-top: 3px solid var(--primary);">
+                        <b>۱. بار و قانون کولن</b>
+                        <p style="font-size: 0.88rem; margin-top: 6px;">• کوانتیده بودن: <span class="math-expr">q = ± n e</span><br>• نیروی کولن: متناسب با <span class="math-expr">1/r<sup>2</sup></span><br>• اصل برهم‌نهی نیروهای الکتریکی</p>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.04); padding: 14px; border-radius: 12px; border-top: 3px solid var(--secondary);">
+                        <b>۲. میدان الکتریکی</b>
+                        <p style="font-size: 0.88rem; margin-top: 6px;">• تعریف: <span class="math-expr">E = F / q<sub>0</sub></span><br>• بار نقطه‌ای: <span class="math-expr">E = k |q| / r<sup>2</sup></span><br>• میدان داخل رسانا: <span class="math-expr">E = 0</span></p>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.04); padding: 14px; border-radius: 12px; border-top: 3px solid var(--accent);">
+                        <b>۳. پتانسیل و انرژی</b>
+                        <p style="font-size: 0.88rem; margin-top: 6px;">• کار میدان: <span class="math-expr">W<sub>E</sub> = - ΔU</span><br>• اختلاف پتانسیل: <span class="math-expr">ΔV = ΔU / q</span><br>• میدان یکنواخت: <span class="math-expr">E = ΔV / d</span></p>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.04); padding: 14px; border-radius: 12px; border-top: 3px solid var(--success);">
+                        <b>۴. خازن و دی‌الکتریک</b>
+                        <p style="font-size: 0.88rem; margin-top: 6px;">• ظرفیت: <span class="math-expr">C = κ ε<sub>0</sub> A / d</span><br>• بار خازن: <span class="math-expr">q = C V</span><br>• انرژی: <span class="math-expr">U = ½ C V<sup>2</sup></span></p>
+                    </div>
+                </div>
+
+                <h3>۲. جدول مقایسه طلایی خازن (متصل به مولد در برابر جدا از مولد)</h3>
+                <p style="font-size: 0.9rem; color: var(--text-muted);">فرض کنید فاصله صفحات خازن (<span class="math-expr">d</span>) را <b>نصف</b> کنیم (<span class="math-expr">C</span> دو برابر می‌شود):</p>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>وضعیت خازن</th>
+                            <th>ظرفیت (<span class="math-expr">C</span>)</th>
+                            <th>اختلاف پتانسیل (<span class="math-expr">V</span>)</th>
+                            <th>بار الکتریکی (<span class="math-expr">q</span>)</th>
+                            <th>میدان (<span class="math-expr">E = V/d</span>)</th>
+                            <th>انژی (<span class="math-expr">U</span>)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><b>متصل به باتری (مولد)</b></td>
+                            <td>۲ برابر می‌شود</td>
+                            <td><b>ثابت می‌ماند</b></td>
+                            <td>۲ برابر می‌شود</td>
+                            <td>۲ برابر می‌شود</td>
+                            <td>۲ برابر می‌شود (<span class="math-expr">U = ½CV<sup>2</sup></span>)</td>
+                        </tr>
+                        <tr>
+                            <td><b>جدا از باتری (منزوی)</b></td>
+                            <td>۲ برابر می‌شود</td>
+                            <td>نصف می‌شود</td>
+                            <td><b>ثابت می‌ماند</b></td>
+                            <td>ثابت می‌ماند</td>
+                            <td>نصف می‌شود (<span class="math-expr">U = q<sup>2</sup>/2C</span>)</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3 style="margin-top: 20px;">۳. فلش‌کارت‌های مرور سریع فرمول‌ها (روی هر کارت کلیک کنید)</h3>
+                <div class="flashcard-grid" id="flashcards-container"></div>
+
+                <div style="margin-top: 24px; text-align: left;">
+                    <button class="btn btn-success" onclick="completeActivity('summary', 10, 'خلاصه هوشمند و جداول جمع‌بندی مرور شد (+۱۰ XP)')">
+                        ثبت مرور خلاصه فصل (+۱۰ XP)
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION: آزمایشگاه مجازی فیزیک (Interactive Coulomb & Capacitor Lab) -->
+        <div id="sec-lab" class="sub-view" style="display: none;">
+            <div class="glass-panel">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
+                    <h2 class="neon-text">آزمایشگاه مجازی تعاملی الکتریسیته ساکن</h2>
+                    <button class="btn btn-outline" onclick="openSection('dashboard')">بازگشت به داشبورد</button>
+                </div>
+
+                <!-- Experiment 1: Coulomb's Law Interactive Simulator + Live Canvas -->
+                <div style="margin-bottom: 28px; padding-bottom: 22px; border-bottom: 1px solid var(--border-glass);">
+                    <h3>آزمایش ۱: شبیه‌ساز زنده قانون کولن و بردارهای نیرو</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">مقدار بارها و فاصله بین آن‌ها را تغییر دهید تا بردارهای نیرو و مقدار دقیق نیروی الکتریکی به‌صورت زنده محاسبه و ترسیم شوند:</p>
+
+                    <div class="lab-controls">
+                        <div class="control-box">
+                            <label>بار اول (<span class="math-expr">q<sub>1</sub></span>): <b id="lbl-q1">4</b> میکروکولن (<span class="math-expr">μC</span>)</label>
+                            <input type="range" id="rng-q1" min="-10" max="10" step="1" value="4" oninput="updateCoulombLab()">
+                        </div>
+                        <div class="control-box">
+                            <label>بار دوم (<span class="math-expr">q<sub>2</sub></span>): <b id="lbl-q2">-6</b> میکروکولن (<span class="math-expr">μC</span>)</label>
+                            <input type="range" id="rng-q2" min="-10" max="10" step="1" value="-6" oninput="updateCoulombLab()">
+                        </div>
+                        <div class="control-box">
+                            <label>فاصله بین دو بار (<span class="math-expr">r</span>): <b id="lbl-r">30</b> سانتی‌متر (<span class="math-expr">cm</span>)</label>
+                            <input type="range" id="rng-r" min="10" max="100" step="5" value="30" oninput="updateCoulombLab()">
+                        </div>
+                    </div>
+
+                    <canvas id="coulomb-canvas" width="760" height="220" style="width: 100%; background: rgba(0,0,0,0.45); border: 1px solid var(--border-glass); border-radius: var(--radius-md); display: block;"></canvas>
+
+                    <div id="coulomb-readout" class="formula-box" style="margin-top: 12px;"></div>
+                </div>
+
+                <!-- Experiment 2: Parallel Plate Capacitor Simulator -->
+                <div>
+                    <h3>آزمایش ۲: شبیه‌ساز خازن تخت، دی‌الکتریک و انرژی ذخیره‌شده</h3>
+                    <p style="font-size: 0.9rem; color: var(--text-muted);">ابعاد صفحات، ضریب دی‌الکتریک و ولتاژ باتری را تغییر دهید و تغییر ظرفیت، بار و انرژی خازن را مشاهده کنید:</p>
+
+                    <div class="lab-controls">
+                        <div class="control-box">
+                            <label>مساحت صفحات (<span class="math-expr">A</span>): <b id="lbl-cap-a">200</b> <span class="math-expr">cm<sup>2</sup></span></label>
+                            <input type="range" id="rng-cap-a" min="50" max="600" step="50" value="200" oninput="updateCapacitorLab()">
+                        </div>
+                        <div class="control-box">
+                            <label>فاصله صفحات (<span class="math-expr">d</span>): <b id="lbl-cap-d">2</b> میلی‌متر (<span class="math-expr">mm</span>)</label>
+                            <input type="range" id="rng-cap-d" min="1" max="10" step="1" value="2" oninput="updateCapacitorLab()">
+                        </div>
+                        <div class="control-box">
+                            <label>ثابت دی‌الکتریک (<span class="math-expr">κ</span>): <b id="lbl-cap-k">3</b></label>
+                            <input type="range" id="rng-cap-k" min="1" max="8" step="1" value="3" oninput="updateCapacitorLab()">
+                        </div>
+                        <div class="control-box">
+                            <label>ولتاژ باتری (<span class="math-expr">V</span>): <b id="lbl-cap-v">100</b> ولت (<span class="math-expr">V</span>)</label>
+                            <input type="range" id="rng-cap-v" min="20" max="200" step="20" value="100" oninput="updateCapacitorLab()">
+                        </div>
+                    </div>
+
+                    <div id="capacitor-readout" class="formula-box"></div>
+                </div>
+
+                <div style="margin-top: 24px; text-align: left;">
+                    <button class="btn btn-success" onclick="completeActivity('lab', 30, 'آزمایشگاه مجازی فیزیک با موفقیت انجام شد (+۳۰ XP)')">
+                        ثبت تکمیل آزمایشگاه مجازی (+۳۰ XP)
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION: مرکز آزمون هوشمند (MCQ + Semi-Descriptive + Smart Descriptive) -->
+        <div id="sec-exam" class="sub-view" style="display: none;">
+            <div class="glass-panel">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
+                    <h2 class="neon-text">مرکز آزمون جامع آمادگی امتحان (تستی، نیمه‌تشریحی و تشریحی)</h2>
+                    <button class="btn btn-outline" onclick="openSection('dashboard')">بازگشت به داشبورد</button>
+                </div>
+
+                <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px;">
+                    <button class="btn" onclick="switchExamTab('ex-mcq')">۱. آزمون تستی (۳ سطح)</button>
+                    <button class="btn btn-outline" onclick="switchExamTab('ex-semi')">۲. آزمون نیمه‌تشریحی</button>
+                    <button class="btn btn-outline" onclick="switchExamTab('ex-desc')">۳. آزمون تشریحی با موتور تصحیح هوشمند</button>
+                </div>
+
+                <!-- Exam 1: MCQ -->
+                <div id="ex-mcq" class="exam-tab">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
+                        <div>
+                            <span>فیلتر سطح دشواری: </span>
+                            <select id="mcq-level-filter" onchange="renderMCQs()" style="width: auto; display: inline-block; padding: 6px 14px;">
+                                <option value="all">همه سطوح (۶ سؤال استاندارد فصل اول)</option>
+                                <option value="آسان">سطح آسان</option>
+                                <option value="متوسط">سطح متوسط</option>
+                                <option value="سخت">سطح سخت</option>
+                            </select>
+                        </div>
+                        <div class="stat-pill">نمره بخش تستی: <b id="mcq-score-badge">ثبت نشده</b></div>
+                    </div>
+                    <div id="mcq-questions-container"></div>
+                    <button class="btn btn-success" onclick="submitMCQExam()" style="margin-top: 14px;">
+                        ثبت و تصحیح آزمون تستی
+                    </button>
+                    <div id="mcq-analysis-box" style="margin-top: 16px;"></div>
+                </div>
+
+                <!-- Exam 2: Semi-Descriptive -->
+                <div id="ex-semi" class="exam-tab" style="display: none;">
+                    <h3>سؤالات کوتاه‌پاسخ و جای‌خالی مفهومی و محاسباتی</h3>
+                    <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 16px;">
+                        می‌توانید پاسخ را با کیبورد گوشی یا «کیبورد کامل درون‌برنامه‌ای» (متنی، عددی و نمادهای فیزیکی) وارد نمایید. اعداد فارسی و انگلیسی هر دو پذیرفته می‌شوند.
+                    </p>
+                    <div id="semi-questions-container"></div>
+                    <button class="btn btn-success" onclick="submitSemiExam()" style="margin-top: 14px;">
+                        ثبت و تصحیح آزمون نیمه‌تشریحی
+                    </button>
+                    <div id="semi-analysis-box" style="margin-top: 16px;"></div>
+                </div>
+
+                <!-- Exam 3: Smart AI Descriptive Exam -->
+                <div id="ex-desc" class="exam-tab" style="display: none;">
+                    <h3>آزمون تشریحی با موتور تصحیح هوشمند مفهومی و مرحله‌ای</h3>
+                    <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 16px;">
+                        در این بخش، نوشتن فرمول، مراحل راه‌حل، عدد نهایی و توضیحات مفهومی شما به‌صورت مرحله‌ای بررسی می‌شود و حتی در صورت نوشتن بخشی از راه‌حل، نمره مرحله‌ای به شما تعلق می‌گیرد.
+                    </p>
+                    <div id="desc-questions-container"></div>
+                    <button class="btn btn-success" onclick="submitDescExam()" style="margin-top: 14px;">
+                        ثبت و تحلیل هوشمند برگه‌ تشریحی
+                    </button>
+                    <div id="desc-analysis-box" style="margin-top: 16px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION: حضور و غیاب (Attendance + DigiForm Link) -->
+        <div id="sec-attendance" class="sub-view" style="display: none;">
+            <div class="glass-panel">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
+                    <h2 class="neon-text">ثبت حضور و غیاب فیزیک یازدهم تجربی</h2>
+                    <button class="btn btn-outline" onclick="openSection('dashboard')">بازگشت به داشبورد</button>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; margin-bottom: 20px;">
+                    <div class="formula-box"><span>نام دانش‌آموز:</span><b id="att-name">-</b></div>
+                    <div class="formula-box"><span>زمان اولین ورود:</span><b id="att-first-in">-</b></div>
+                    <div class="formula-box"><span>تعداد دفعات ورود:</span><b id="att-login-count">1</b></div>
+                    <div class="formula-box"><span>مدت حضور فعال:</span><b id="att-duration">0 دقیقه</b></div>
+                </div>
+
+                <div class="formula-box" style="border-right-color: var(--warning); background: rgba(245, 158, 11, 0.08); padding: 18px;">
+                    <h3 style="font-size: 1.05rem; color: var(--warning); margin-bottom: 6px;">ثبت حضور در فرم رسمی فیزیک یازدهم تجربی</h3>
+                    <p style="font-size: 0.92rem; margin-bottom: 14px;">
+                        جهت ثبت حضور رسمی در جلسه جمع‌بندی فیزیک یازدهم تجربی، وارد لینک دیجی‌فرم زیر شوید و مشخصات خود را ثبت نمایید:
+                    </p>
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <a id="digiform-attendance-link" href="https://a.digiform.ir/w82a56fd14" target="_blank" rel="noopener noreferrer" class="btn btn-warning" onclick="completeActivity('attendance', 5, 'ورود به فرم حضور و غیاب و ثبت حاضری انجام شد (+۵ XP)')">
+                            ورود به دیجی‌فرم ثبت حضور فیزیک یازدهم تجربی
+                        </a>
+                        <button class="btn btn-success" onclick="completeActivity('attendance', 5, 'حضور در جلسه تأیید شد (+۵ XP)')">
+                            تأیید حاضری درون‌برنامه‌ای (+۵ XP)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION: تکالیف، فایل‌ها و اطلاعیه‌های امتحان هفته آینده -->
+        <div id="sec-homework" class="sub-view" style="display: none;">
+            <div class="glass-panel">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
+                    <h2 class="neon-text">تکالیف، برنامه مطالعاتی و اطلاعیه‌های امتحان هفته آینده</h2>
+                    <button class="btn btn-outline" onclick="openSection('dashboard')">بازگشت به داشبورد</button>
+                </div>
+                <div id="resources-dynamic-content" style="display: grid; gap: 16px;"></div>
+                <button class="btn btn-success" style="margin-top: 20px;" onclick="completeActivity('homework', 10, 'تکالیف و اطلاعیه‌های امتحان بررسی شد (+۱۰ XP)')">
+                    برنامه و تکالیف را مطالعه کردم (+۱۰ XP)
+                </button>
+            </div>
+        </div>
+
+        <!-- SECTION: دستاوردها، نشان‌ها و چالش روزانه -->
+        <div id="sec-rewards" class="sub-view" style="display: none;">
+            <div class="glass-panel">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h2 class="neon-text">دستاوردها، نشان‌های افتخار (Badges) و چالش روزانه</h2>
+                    <button class="btn btn-outline" onclick="openSection('dashboard')">بازگشت به داشبورد</button>
+                </div>
+
+                <h3>نشان‌های افتخار شما در جمع‌بندی فصل اول</h3>
+                <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(175px, 1fr)); gap: 12px; margin: 14px 0 24px;" id="badges-grid"></div>
+
+                <h3>صندوقچه امتیاز (Mystery Box)</h3>
+                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 12px;">با پاسخ صحیح به سؤال سرعتی زیر، ۱۵ امتیاز جایزه دریافت کنید:</p>
+                <div class="formula-box">
+                    <div><b>چالش سرعتی:</b> اگر فاصله بین دو بار الکتریکی نقطه‌ای را ۳ برابر کنیم، نیروی الکتریکی بین آن‌ها چند برابر می‌شود؟</div>
+                    <div style="display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap;">
+                        <button class="btn btn-accent" onclick="claimMysteryBox(true)">یک‌نهم (۱/۹) برابر</button>
+                        <button class="btn btn-outline" onclick="claimMysteryBox(false)">یک‌سوم (۱/۳) برابر</button>
+                        <button class="btn btn-outline" onclick="claimMysteryBox(false)">۹ برابر</button>
+                    </div>
+                    <div id="mystery-feedback" style="margin-top: 8px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION: ثبت گزارش نهایی (Final Report & Direct Supabase Submission) -->
+        <div id="sec-report" class="sub-view" style="display: none;">
+            <div class="glass-panel">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
+                    <h2 class="neon-text">ثبت گزارش عملکرد و ارسال نهایی به سرور</h2>
+                    <button class="btn btn-outline" onclick="openSection('dashboard')">بازگشت به داشبورد</button>
+                </div>
+
+                <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 18px;">
+                    خلاصه کامل وضعیت مطالعه، نمرات آزمون‌های سه‌گانه و مدت حضور شما در جدول زیر درج شده است. جهت ثبت نهایی در سرور، دکمه «ثبت و ارسال گزارش» را فشار دهید.
+                </p>
+
+                <table class="data-table">
+                    <tbody>
+                        <tr>
+                            <th>نام و نام خانوادگی دانش‌آموز</th>
+                            <td id="rep-student-name">-</td>
+                        </tr>
+                        <tr>
+                            <th>پایه و نام مدرسه</th>
+                            <td id="rep-school-name">-</td>
+                        </tr>
+                        <tr>
+                            <th>نام درس و دبیر</th>
+                            <td id="rep-subject">-</td>
+                        </tr>
+                        <tr>
+                            <th>مجموع امتیاز کسب‌شده (XP)</th>
+                            <td id="rep-xp" style="color: var(--primary); font-weight: 800;">0</td>
+                        </tr>
+                        <tr>
+                            <th>نمره کل محاسبه‌شده (از ۱۰۰)</th>
+                            <td id="rep-final-score" style="color: #10b981; font-weight: 800;">0</td>
+                        </tr>
+                        <tr>
+                            <th>درصد پیشرفت کل جلسه</th>
+                            <td id="rep-progress">0%</td>
+                        </tr>
+                        <tr>
+                            <th>زمان مطالعه و مدت حضور</th>
+                            <td id="rep-time">-</td>
+                        </tr>
+                        <tr>
+                            <th>بخش‌های مشاهده‌شده</th>
+                            <td id="rep-sections">-</td>
+                        </tr>
+                        <tr>
+                            <th>وضعیت آزمون‌های انجام‌شده</th>
+                            <td id="rep-exams">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div style="margin-top: 24px; text-align: center;">
+                    <button class="btn btn-success" id="btn-final-supabase" onclick="submitReportToSupabase()" style="width: 100%; max-width: 480px; padding: 18px 28px; font-size: 1.15rem;">
+                        ثبت و ارسال گزارش
+                    </button>
+                    <p id="supabase-status-msg" style="margin-top: 14px; font-weight: 700;"></p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<!-- Secret Admin Modal (Hidden until 5 taps on برزگری) -->
+<div class="modal-overlay" id="admin-modal">
+    <div class="glass-panel" style="max-width: 400px; width: 100%; margin: 0;">
+        <h3 class="neon-text" style="font-size: 1.15rem;">پنل مدیریت زمان و دسترسی دبیر</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px;">کد امنیتی دبیر را جهت بازگشایی قفل زمانی یا ریست محدودیت‌های آزمون وارد نمایید:</p>
+        <input type="text" id="admin-code-input" placeholder="کد امنیتی را وارد کنید" style="text-align: center; font-weight: 800; letter-spacing: 3px; direction: ltr;">
+        <div style="display: flex; gap: 10px; margin-top: 16px;">
+            <button class="btn btn-success" style="flex: 1;" onclick="verifyAdminCode()">تأیید و اعمال</button>
+            <button class="btn btn-outline" style="flex: 1;" onclick="closeAdminModal()">انصراف</button>
+        </div>
+        <p id="admin-feedback" style="margin-top: 10px; font-size: 0.85rem; text-align: center;"></p>
+    </div>
+</div>
+
+<div class="toast" id="toast-msg"></div>
+
+<script>
+/* ============================================================================
+   تنظیمات متغیرهای پروژه (قابل ویرایش سریع توسط مدرس برای هر کلاس یا جلسه)
+   ============================================================================ */
+const PROJECT_CONFIG = {
+    schoolName: "مدرسه رستمانی طبل",
+    grade: "یازدهم تجربی",
+    subject: "جمع‌بندی فصل اول فیزیک یازدهم تجربی (الکتریسیته ساکن)",
+    teacherName: "برزگری",
+    
+    // تاریخ و ساعت شروع: ۲۵ آبان ۱۴۰۵ ساعت ۱۱:۴۰ صبح به وقت ایران
+    startDatePersian: "۲۵ آبان",
+    startTimePersian: "۱۱:۴۰ صبح",
+    unlockTimestampISO: "2026-11-16T11:40:00+03:30",
+    
+    endDatePersian: "بدون محدودیت (همیشه فعال پس از شروع)",
+    endTimePersian: "۲۳:۵۹",
+
+    // تنظیمات اتصال مستقیم به Supabase
+    supabaseUrl: "https://tpwdrzwfzdbmwqlblntu.supabase.co",
+    supabaseKey: "sb_publishable_ASPIzP1XV1iSweCV43Oy9Q_PCkz5htN",
+    supabaseTable: "Students",
+
+    // لینک دیجی‌فرم حضور و غیاب
+    attendanceFormUrl: "https://a.digiform.ir/w82a56fd14",
+    sessionLink: "لینک فرم حضور و غیاب در بخش حضور و غیاب قرار داده شده است.",
+
+    sessionFiles: [
+        "جزوه کامل فرمول‌ها و روابط فصل اول (الکتریسیته ساکن) موجود در بخش آموزش و خلاصه هوشمند",
+        "جدول مقایسه تغییر ابعاد خازن در دو حالت متصل به باتری و جدا از باتری"
+    ],
+
+    homeworks: [
+        "۱. مرور کامل تمامی فرمول‌های فصل اول (کوانتیده بودن بار، قانون کولن، میدان الکتریکی، انرژی و پتانسیل الکتریکی، و ظرفیت و انرژی خازن) جهت آمادگی کامل برای امتحان کتبی هفته آینده.",
+        "۲. حل مجدد مسائل و پرسش‌های آخر فصل اول کتاب درسی در دفتر و بررسی دقیق تبدیل واحدها (میکروکولن به کولن و سانتی‌متر به متر).",
+        "۳. تکمیل هر سه بخش آزمون این سامانه (تستی، نیمه‌تشریحی و تشریحی هوشمند) و ثبت گزارش نهایی در سرور."
+    ],
+
+    announcements: [
+        "امتحان کتبی فصل اول فیزیک یازدهم تجربی در هفته آینده برگزار می‌گردد؛ مطالعه دقیق این سامانه و نکات تشریحی آن برای کسب نمره کامل الزامی است.",
+        "جهت ثبت حضور در جلسه امروز، حتماً فرم دیجی‌فرم موجود در بخش «حضور و غیاب» را تکمیل نمایید.",
+        "پس از اتمام مطالعه و آزمون‌ها، مراجعه به بخش «ثبت گزارش» و فشردن دکمه «ثبت و ارسال گزارش» الزامی است."
+    ],
+
+    enabledSections: [
+        { id: "teaching", title: "آموزش جلسه (جمع‌بندی فصل ۱)", sub: "آموزش کامل فرمول‌ها، نکات تشریحی، تستی و دام‌ها (+۲۰ XP)", icon: "⚡" },
+        { id: "summary", title: "خلاصه هوشمند", sub: "نقشه ذهنی، جدول مقایسه خازن و فلش‌کارت (+۱۰ XP)", icon: "🧠" },
+        { id: "lab", title: "آزمایشگاه مجازی", sub: "شبیه‌ساز قانون کولن و آزمایشگاه خازن تخت (+۳۰ XP)", icon: "🔬" },
+        { id: "exam", title: "آزمون جامع", sub: "آزمون تستی، نیمه‌تشریحی و تشریحی هوشمند (+۵۰ XP)", icon: "📝" },
+        { id: "attendance", title: "حضور و غیاب", sub: "دیجی‌فرم ثبت حضور فیزیک یازدهم و وضعیت حضور (+۵ XP)", icon: "🕒" },
+        { id: "homework", title: "تکالیف و اطلاعیه‌ها", sub: "برنامه آمادگی امتحان هفته آینده و منابع (+۱۰ XP)", icon: "📌" },
+        { id: "rewards", title: "دستاوردها و نشان‌ها", sub: "بررسی سطح، نشان‌های افتخار و چالش سرعتی", icon: "🏆" },
+        { id: "report", title: "ثبت گزارش", sub: "مشاهده کارنامه جامع و ارسال مستقیم به سرور", icon: "🚀" }
+    ]
+};
+
+/* ============================================================================
+   مدیریت وضعیت برنامه و ذخیره‌سازی ضدتقلب در LocalStorage
+   ============================================================================ */
+const STORAGE_KEY = "PHYSICS11_CH1_ROSTAMANI_STATE_V1";
+
+let appState = {
+    unlockedByTeacher: false,
+    studentName: "",
+    firstLoginTime: null,
+    loginCount: 0,
+    activeSeconds: 0,
+    xp: 0,
+    completedActivities: {},
+    viewedSections: [],
+    mcqSubmitted: false,
+    mcqScore: 0,
+    semiSubmitted: false,
+    semiScore: 0,
+    descSubmitted: false,
+    descScore: 0,
+    mysteryClaimed: false,
+    reportSent: false,
+    reportSentTime: null,
+    soundEnabled: true
+};
+
+function loadState() {
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            appState = { ...appState, ...parsed };
+        }
+    } catch (e) {
+        console.error("Storage load error:", e);
+    }
+}
+
+function saveState() {
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+    } catch (e) {
+        console.error("Storage save error:", e);
+    }
+}
+
+/* ============================================================================
+   تبدیل اعداد فارسی/عربی به انگلیسی برای موتور تصحیح
+   ============================================================================ */
+function normalizeTextAndNumbers(str) {
+    if (!str) return "";
+    const persianDigits = ["۰","۱","۲","۳","۴","۵","۶","۷","۸","۹"];
+    const arabicDigits = ["٠","١","٢","٣","٤","٥","٦","٧","٨","٩"];
+    let res = String(str);
+    for (let i = 0; i < 10; i++) {
+        res = res.replace(new RegExp(persianDigits[i], "g"), i).replace(new RegExp(arabicDigits[i], "g"), i);
+    }
+    return res.trim().toLowerCase().replace(/‌/g, " ").replace(/\s+/g, " ");
+}
+
+/* ============================================================================
+   افکت صوتی Web Audio API
+   ============================================================================ */
+function playTone(freq = 520, duration = 0.12, type = "sine") {
+    if (!appState.soundEnabled) return;
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        gain.gain.setValueAtTime(0.08, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + duration);
+    } catch (e) {}
+}
+
+function toggleSound() {
+    appState.soundEnabled = !appState.soundEnabled;
+    saveState();
+    const btn = document.getElementById("sound-toggle-btn");
+    btn.textContent = appState.soundEnabled ? "🔊 صدا: فعال" : "🔇 صدا: غیرفعال";
+}
+
+function showToast(msg) {
+    const t = document.getElementById("toast-msg");
+    t.textContent = msg;
+    t.classList.add("show");
+    playTone(640, 0.15, "triangle");
+    setTimeout(() => t.classList.remove("show"), 3200);
+}
+
+/* ============================================================================
+   قفل زمانی و مکانیزم مخفی دبیر (۵ بار لمس روی نام برزگری + کد 9162)
+   ============================================================================ */
+let tapCount = 0;
+let tapTimer = null;
+
+function initSecretTrigger() {
+    const trigger = document.getElementById("secret-teacher-trigger");
+    trigger.addEventListener("click", () => {
+        tapCount++;
+        clearTimeout(tapTimer);
+        if (tapCount >= 5) {
+            tapCount = 0;
+            openAdminModal();
+        } else {
+            tapTimer = setTimeout(() => { tapCount = 0; }, 1800);
+        }
+    });
+}
+
+function openAdminModal() {
+    document.getElementById("admin-code-input").value = "";
+    document.getElementById("admin-feedback").textContent = "";
+    document.getElementById("admin-modal").classList.add("active");
+}
+
+function closeAdminModal() {
+    document.getElementById("admin-modal").classList.remove("active");
+}
+
+function verifyAdminCode() {
+    const code = normalizeTextAndNumbers(document.getElementById("admin-code-input").value);
+    if (code === "9162") {
+        appState.unlockedByTeacher = true;
+        appState.mcqSubmitted = false;
+        appState.semiSubmitted = false;
+        appState.descSubmitted = false;
+        appState.reportSent = false;
+        saveState();
+        document.getElementById("admin-feedback").style.color = "#10b981";
+        document.getElementById("admin-feedback").textContent = "قفل زمانی باز شد و محدودیت آزمون‌ها ریست گردید.";
+        checkLockStatus();
+        setTimeout(() => {
+            closeAdminModal();
+            proceedToLogin();
+        }, 700);
+    } else {
+        document.getElementById("admin-feedback").style.color = "#ef4444";
+        document.getElementById("admin-feedback").textContent = "کد وارد شده معتبر نیست.";
+    }
+}
+
+function isTimeUnlocked() {
+    if (appState.unlockedByTeacher) return true;
+    const target = new Date(PROJECT_CONFIG.unlockTimestampISO).getTime();
+    return Date.now() >= target;
+}
+
+function checkLockStatus() {
+    const target = new Date(PROJECT_CONFIG.unlockTimestampISO).getTime();
+    const diff = target - Date.now();
+
+    if (isTimeUnlocked()) {
+        document.getElementById("lock-status-heading").textContent = "زمان شروع فرا رسیده و سامانه فعال است";
+        document.getElementById("lock-status-heading").style.color = "#10b981";
+        document.getElementById("countdown-box").style.display = "none";
+        document.getElementById("unlock-action-area").style.display = "block";
+        return;
+    }
+
+    const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const m = Math.floor((diff / 1000 / 60) % 60);
+    const s = Math.floor((diff / 1000) % 60);
+
+    document.getElementById("cd-days").textContent = String(Math.max(0, d)).padStart(2, "0");
+    document.getElementById("cd-hours").textContent = String(Math.max(0, h)).padStart(2, "0");
+    document.getElementById("cd-mins").textContent = String(Math.max(0, m)).padStart(2, "0");
+    document.getElementById("cd-secs").textContent = String(Math.max(0, s)).padStart(2, "0");
+}
+
+function proceedToLogin() {
+    if (!isTimeUnlocked()) return;
+    document.getElementById("lock-screen").style.display = "none";
+    if (appState.studentName && appState.studentName.trim().length >= 3) {
+        enterMainDashboard(false);
+    } else {
+        document.getElementById("login-screen").classList.add("active");
+    }
+}
+
+/* ============================================================================
+   ورود کاربران و مدیریت نشست
+   ============================================================================ */
+function handleLogin() {
+    const nameInput = document.getElementById("student-name-input").value.trim();
+    if (nameInput.length < 3) {
+        showToast("لطفاً نام و نام خانوادگی کامل خود را وارد نمایید.");
+        return;
+    }
+    appState.studentName = nameInput;
+    if (!appState.firstLoginTime) {
+        appState.firstLoginTime = new Date().toLocaleTimeString("fa-IR");
+    }
+    enterMainDashboard(true);
+}
+
+function enterMainDashboard(isNewAction) {
+    document.getElementById("login-screen").classList.remove("active");
+    document.getElementById("main-app").classList.add("active");
+
+    appState.loginCount = (appState.loginCount || 0) + (isNewAction ? 1 : 0);
+    if (!appState.firstLoginTime) {
+        appState.firstLoginTime = new Date().toLocaleTimeString("fa-IR");
+    }
+
+    if (!appState.completedActivities["login"]) {
+        appState.completedActivities["login"] = true;
+        appState.xp += 5;
+        showToast("ورود به سامانه ثبت شد (+۵ XP)");
+    }
+
+    saveState();
+    updateHeaderUI();
+    renderDashboardCards();
+    openSection("dashboard");
+}
+
+/* ============================================================================
+   سیستم امتیازدهی (XP)، پیشرفت و ناوبری داشبورد
+   ============================================================================ */
+function completeActivity(key, xpAmount, message) {
+    if (appState.completedActivities[key]) {
+        showToast("امتیاز این فعالیت قبلاً در کارنامه شما ثبت شده است.");
+        return;
+    }
+    appState.completedActivities[key] = true;
+    appState.xp += xpAmount;
+    saveState();
+    updateHeaderUI();
+    renderDashboardCards();
+    renderBadges();
+    showToast(message);
+}
+
+function getProgressPercent() {
+    const keys = ["login", "teaching", "summary", "lab", "attendance", "homework", "exam_done"];
+    let done = 0;
+    keys.forEach(k => { if (appState.completedActivities[k]) done++; });
+    return Math.min(100, Math.round((done / keys.length) * 100));
+}
+
+function updateHeaderUI() {
+    document.getElementById("header-student-name").textContent = appState.studentName;
+    document.getElementById("header-meta-info").textContent = `${PROJECT_CONFIG.grade} | ${PROJECT_CONFIG.schoolName} | دبیر: ${PROJECT_CONFIG.teacherName}`;
+    document.getElementById("ui-xp").textContent = appState.xp;
+    const level = Math.floor(appState.xp / 35) + 1;
+    document.getElementById("ui-level").textContent = level;
+    const prog = getProgressPercent();
+    document.getElementById("ui-progress").textContent = prog + "%";
+    document.getElementById("progress-bar-label").textContent = prog + "%";
+    document.getElementById("progress-bar-fill").style.width = prog + "%";
+}
+
+function renderDashboardCards() {
+    const container = document.getElementById("dashboard-cards-container");
+    container.innerHTML = "";
+    PROJECT_CONFIG.enabledSections.forEach(sec => {
+        const isDone = appState.completedActivities[sec.id] || (sec.id === "exam" && appState.completedActivities["exam_done"]) || (sec.id === "report" && appState.reportSent);
+        const card = document.createElement("div");
+        card.className = "nav-card" + (isDone ? " completed" : "");
+        card.onclick = () => openSection(sec.id);
+        card.innerHTML = `
+            <div class="nav-icon">${sec.icon}</div>
+            <div>
+                <h3 style="font-size: 1.05rem; margin-bottom: 4px;">${sec.title}</h3>
+                <p style="font-size: 0.82rem; color: var(--text-muted);">${sec.sub}</p>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+function openSection(secId) {
+    playTone(480, 0.08);
+    document.querySelectorAll(".sub-view").forEach(el => el.style.display = "none");
+    const target = document.getElementById("sec-" + secId);
+    if (target) target.style.display = "block";
+
+    if (secId !== "dashboard") {
+        const found = PROJECT_CONFIG.enabledSections.find(s => s.id === secId);
+        if (found && !appState.viewedSections.includes(found.title)) {
+            appState.viewedSections.push(found.title);
+            saveState();
+        }
+    }
+
+    if (secId === "lab") {
+        updateCoulombLab();
+        updateCapacitorLab();
+    }
+    if (secId === "attendance") updateAttendanceView();
+    if (secId === "report") updateReportView();
+    if (secId === "rewards") renderBadges();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function switchTeachTab(tabId) {
+    document.querySelectorAll(".teach-tab").forEach(el => el.style.display = "none");
+    document.getElementById(tabId).style.display = "block";
+}
+
+function switchExamTab(tabId) {
+    document.querySelectorAll(".exam-tab").forEach(el => el.style.display = "none");
+    document.getElementById(tabId).style.display = "block";
+}
+
+/* ============================================================================
+   فلش‌کارت‌های مرور سریع فرمول‌های فصل اول
+   ============================================================================ */
+const FLASHCARDS = [
+    { front: "فرمول کوانتیده بودن بار الکتریکی چیست؟", back: "q = ± n e  (که در آن e = 1.6 × 10⁻¹⁹ کولن است)" },
+    { front: "فرمول قانون کولن بین دو بار نقطه‌ای چیست؟", back: "F = k |q₁||q₂| / r²  (که در آن k = 9 × 10⁹ است)" },
+    { front: "فرمول میدان الکتریکی حاصل از بار نقطه‌ای در فاصله r چیست؟", back: "E = k |q| / r²  (برون‌سو برای بار مثبت و درون‌سو برای بار منفی)" },
+    { front: "رابطه میدان الکتریکی یکنواخت و اختلاف پتانسیل چیست؟", back: "E = ΔV / d  (که d فاصله در امتداد خطوط میدان است)" },
+    { front: "عوامل مؤثر بر ظرفیت خازن تخت چیست؟", back: "C = κ ε₀ (A / d)  (مستقل از بار q و ولتاژ V)" },
+    { front: "سه رابطه انرژی ذخیره‌شده در خازن کدام‌اند؟", back: "U = ½ qV = ½ CV² = q² / (2C)" }
+];
+
+function initFlashcards() {
+    const container = document.getElementById("flashcards-container");
+    FLASHCARDS.forEach(card => {
+        const div = document.createElement("div");
+        div.className = "flashcard";
+        let flipped = false;
+        div.innerHTML = `<b style="color: var(--primary); font-size: 0.98rem;">${card.front}</b><small style="margin-top:8px; color:var(--text-muted);">برای مشاهده پاسخ کلیک کنید</small>`;
+        div.onclick = () => {
+            flipped = !flipped;
+            playTone(540, 0.08);
+            if (flipped) {
+                div.innerHTML = `<p style="font-weight:700; color:#10b981; direction:ltr;">${card.back}</p>`;
+            } else {
+                div.innerHTML = `<b style="color: var(--primary); font-size: 0.98rem;">${card.front}</b><small style="margin-top:8px; color:var(--text-muted);">برای مشاهده پاسخ کلیک کنید</small>`;
+            }
+        };
+        container.appendChild(div);
+    });
+}
+
+/* ============================================================================
+   آزمایشگاه مجازی ۱ و ۲ (شبیه‌ساز قانون کولن و خازن تخت)
+   ============================================================================ */
+function updateCoulombLab() {
+    const q1 = parseFloat(document.getElementById("rng-q1").value);
+    const q2 = parseFloat(document.getElementById("rng-q2").value);
+    const rCm = parseFloat(document.getElementById("rng-r").value);
+
+    document.getElementById("lbl-q1").textContent = q1;
+    document.getElementById("lbl-q2").textContent = q2;
+    document.getElementById("lbl-r").textContent = rCm;
+
+    const rMeters = rCm / 100;
+    const k = 9e9;
+    const force = (k * Math.abs(q1 * 1e-6) * Math.abs(q2 * 1e-6)) / (rMeters * rMeters);
+    const forceFormatted = force.toFixed(2);
+    const isRepulsive = (q1 * q2) > 0;
+    const isZero = (q1 === 0 || q2 === 0);
+
+    const readout = document.getElementById("coulomb-readout");
+    readout.innerHTML = `
+        <div><b>بزرگی نیروی الکتریکی محاسبه‌شده (<span class="math-expr">F</span>):</b> <span class="math-expr">${forceFormatted} N</span></div>
+        <div><b>نوع برهم‌کنش:</b> <b style="color:${isZero ? '#94a3b8' : (isRepulsive ? '#f59e0b' : '#10b981')}">${isZero ? 'بدون نیرو (یکی از بارها صفر است)' : (isRepulsive ? 'رانشی (بارهای هم‌نام یکدیگر را دفع می‌کنند)' : 'ربایشی (بارهای ناهم‌نام یکدیگر را جذب می‌کنند)')}</b></div>
+    `;
+
+    drawCoulombCanvas(q1, q2, rCm, force, isRepulsive, isZero);
+}
+
+function drawCoulombCanvas(q1, q2, rCm, force, isRepulsive, isZero) {
+    const canvas = document.getElementById("coulomb-canvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    const w = canvas.width;
+    const h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    const centerY = h / 2;
+    const centerX = w / 2;
+    const pixelDist = 110 + (rCm * 3.8);
+    const x1 = centerX - pixelDist / 2;
+    const x2 = centerX + pixelDist / 2;
+
+    // خط فاصله
+    ctx.strokeStyle = "rgba(255,255,255,0.2)";
+    ctx.setLineDash([6, 6]);
+    ctx.beginPath();
+    ctx.moveTo(x1, centerY + 55);
+    ctx.lineTo(x2, centerY + 55);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.fillStyle = "#94a3b8";
+    ctx.font = "bold 14px sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText(`r = ${rCm} cm`, centerX, centerY + 75);
+
+    // رسم بردارهای نیرو
+    if (!isZero) {
+        const vecLen = Math.min(95, Math.max(28, Math.sqrt(force) * 14));
+        ctx.strokeStyle = "#00f2fe";
+        ctx.fillStyle = "#00f2fe";
+        ctx.lineWidth = 3;
+
+        if (isRepulsive) {
+            drawArrow(ctx, x1 - 24, centerY, x1 - 24 - vecLen, centerY);
+            drawArrow(ctx, x2 + 24, centerY, x2 + 24 + vecLen, centerY);
+        } else {
+            drawArrow(ctx, x1 + 24, centerY, x1 + 24 + vecLen, centerY);
+            drawArrow(ctx, x2 - 24, centerY, x2 - 24 - vecLen, centerY);
+        }
+    }
+
+    // رسم کره بار اول و دوم
+    drawChargeSphere(ctx, x1, centerY, q1, "q₁");
+    drawChargeSphere(ctx, x2, centerY, q2, "q₂");
+}
+
+function drawChargeSphere(ctx, x, y, q, label) {
+    ctx.beginPath();
+    ctx.arc(x, y, 22, 0, Math.PI * 2);
+    ctx.fillStyle = q > 0 ? "#ef4444" : (q < 0 ? "#3b82f6" : "#64748b");
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "#fff";
+    ctx.stroke();
+
+    ctx.fillStyle = "#fff";
+    ctx.font = "bold 13px sans-serif";
+    ctx.textAlign = "center";
+    ctx.fillText(q > 0 ? `+${q}` : `${q}`, x, y + 5);
+    ctx.fillText(label, x, y - 30);
+}
+
+function drawArrow(ctx, fromX, fromY, toX, toY) {
+    const headlen = 10;
+    const dx = toX - fromX;
+    const dy = toY - fromY;
+    const angle = Math.atan2(dy, dx);
+    ctx.beginPath();
+    ctx.moveTo(fromX, fromY);
+    ctx.lineTo(toX, toY);
+    ctx.lineTo(toX - headlen * Math.cos(angle - Math.PI / 6), toY - headlen * Math.sin(angle - Math.PI / 6));
+    ctx.moveTo(toX, toY);
+    ctx.lineTo(toX - headlen * Math.cos(angle + Math.PI / 6), toY - headlen * Math.sin(angle + Math.PI / 6));
+    ctx.stroke();
+}
+
+function updateCapacitorLab() {
+    const areaCm2 = parseFloat(document.getElementById("rng-cap-a").value);
+    const dMm = parseFloat(document.getElementById("rng-cap-d").value);
+    const kappa = parseFloat(document.getElementById("rng-cap-k").value);
+    const voltage = parseFloat(document.getElementById("rng-cap-v").value);
+
+    document.getElementById("lbl-cap-a").textContent = areaCm2;
+    document.getElementById("lbl-cap-d").textContent = dMm;
+    document.getElementById("lbl-cap-k").textContent = kappa;
+    document.getElementById("lbl-cap-v").textContent = voltage;
+
+    // C in pF: eps0 = 8.85 pF/m
+    const areaM2 = areaCm2 * 1e-4;
+    const dM = dMm * 1e-3;
+    const capPF = (kappa * 8.85 * areaM2) / dM;
+    const chargeNC = (capPF * voltage) / 1000; // nanoCoulomb
+    const energyNJ = 0.5 * (capPF * 1e-12) * voltage * voltage * 1e9; // nanoJoule
+    const fieldVm = voltage / dM;
+
+    document.getElementById("capacitor-readout").innerHTML = `
+        <div><b>ظرفیت خازن (<span class="math-expr">C</span>):</b> <span class="math-expr">${capPF.toFixed(2)} pF</span> (پیکوفاراد)</div>
+        <div><b>بار ذخیره‌شده (<span class="math-expr">q = C V</span>):</b> <span class="math-expr">${chargeNC.toFixed(2)} nC</span> (نانوکولن)</div>
+        <div><b>شدت میدان یکنواخت بین صفحات (<span class="math-expr">E = V/d</span>):</b> <span class="math-expr">${fieldVm.toFixed(0)} V/m</span></div>
+        <div><b>انرژی ذخیره‌شده در خازن (<span class="math-expr">U = ½ C V<sup>2</sup></span>):</b> <span class="math-expr">${energyNJ.toFixed(2)} nJ</span> (نانوژول)</div>
+    `;
+}
+
+/* ============================================================================
+   کیبورد کامل درون‌برنامه‌ای (فارسی، انگلیسی، اعداد و نمادهای فیزیکی)
+   ============================================================================ */
+const KB_ROWS = [
+    ["1","2","3","4","5","6","7","8","9","0",".","-","+","="],
+    ["q","F","E","V","C","U","r","d","k","n","e","μ","Δ","×","10^","/"],
+    ["ض","ص","ث","ق","ف","غ","ع","ه","خ","ح","ج","چ","پ"],
+    ["ش","س","ی","ب","ل","ا","ت","ن","م","ک","گ"],
+    ["ظ","ط","ز","ر","ذ","د","ئ","و","آ"]
+];
+
+function attachVirtualKeyboard(inputId) {
+    const wrapper = document.createElement("div");
+    const toggleBtn = document.createElement("button");
+    toggleBtn.type = "button";
+    toggleBtn.className = "btn btn-outline virtual-kb-toggle";
+    toggleBtn.textContent = "⌨️ نمایش / بستن کیبورد کامل (متنی، عددی و فرمول)";
+
+    const kbBox = document.createElement("div");
+    kbBox.className = "virtual-kb";
+
+    toggleBtn.onclick = () => kbBox.classList.toggle("show");
+
+    KB_ROWS.forEach(row => {
+        const rowDiv = document.createElement("div");
+        rowDiv.className = "kb-row";
+        row.forEach(ch => {
+            const k = document.createElement("button");
+            k.type = "button";
+            k.className = "kb-key";
+            k.textContent = ch;
+            k.onclick = () => {
+                const inp = document.getElementById(inputId);
+                inp.value += ch;
+                inp.focus();
+            };
+            rowDiv.appendChild(k);
+        });
+        kbBox.appendChild(rowDiv);
+    });
+
+    const ctrlRow = document.createElement("div");
+    ctrlRow.className = "kb-row";
+    
+    const spaceKey = document.createElement("button");
+    spaceKey.type = "button";
+    spaceKey.className = "kb-key";
+    spaceKey.style.minWidth = "140px";
+    spaceKey.textContent = "فاصله (Space)";
+    spaceKey.onclick = () => {
+        const inp = document.getElementById(inputId);
+        inp.value += " ";
+        inp.focus();
+    };
+
+    const backKey = document.createElement("button");
+    backKey.type = "button";
+    backKey.className = "kb-key";
+    backKey.style.minWidth = "95px";
+    backKey.textContent = "⌫ پاک کردن";
+    backKey.onclick = () => {
+        const inp = document.getElementById(inputId);
+        inp.value = inp.value.slice(0, -1);
+        inp.focus();
+    };
+
+    ctrlRow.appendChild(spaceKey);
+    ctrlRow.appendChild(backKey);
+    kbBox.appendChild(ctrlRow);
+
+    wrapper.appendChild(toggleBtn);
+    wrapper.appendChild(kbBox);
+    return wrapper;
+}
+
+/* ============================================================================
+   بخش آزمون‌ها (تستی، نیمه‌تشریحی و موتور تصحیح هوشمند تشریحی فیزیک)
+   ============================================================================ */
+const MCQ_BANK = [
+    {
+        id: "m1",
+        level: "آسان",
+        q: "اگر جسمی در اثر مالش ۵ × ۱۰¹³ الکترون از دست بدهد، بار الکتریکی آن چند میکروکولن می‌شود؟ (e = 1.6 × 10⁻¹⁹ C)",
+        options: ["+۸ میکروکولن", "-۸ میکروکولن", "+۱.۶ میکروکولن", "-۵ میکروکولن"],
+        correct: "+۸ میکروکولن",
+        exp: "چون الکترون از دست داده بار مثبت است: q = +ne = (5×10¹³)(1.6×10⁻¹⁹) = +8×10⁻⁶ C = +8 μC."
+    },
+    {
+        id: "m2",
+        level: "آسان",
+        q: "در حالت تعادل الکترواستاتیکی، میدان الکتریکی در داخل یک کره رسانای باردار توپر چگونه است؟",
+        options: ["صفر است", "بیشینه و ثابت است", "با فاصله از مرکز رابطه مستقیم دارد", "با مجذور فاصله رابطه عکس دارد"],
+        correct: "صفر است",
+        exp: "در داخل هر جسم رسانا در حالت تعادل، میدان الکتریکی خالص برابر صفر (E = 0) است."
+    },
+    {
+        id: "m3",
+        level: "متوسط",
+        q: "در فاصله ۲۰ سانتی‌متری از یک بار نقطه‌ای ۴ میکروکولنی، بزرگی میدان الکتریکی چند نیوتون بر کولن است؟ (k = 9 × 10⁹)",
+        options: ["۹ × ۱۰⁵", "۱.۸ × ۱۰⁵", "۹ × ۱۰³", "۳.۶ × ۱۰⁶"],
+        correct: "۹ × ۱۰⁵",
+        exp: "طبق رابطه E = k|q|/r² داریم: E = (9×10⁹ × 4×10⁻⁶) / (0.04) = 9 × 10⁵ N/C."
+    },
+    {
+        id: "m4",
+        level: "متوسط",
+        q: "اگر یک پروتون (بار مثبت) در جهت خطوط میدان الکتریکی یکنواخت جابه‌جا شود، پتانسیل الکتریکی (V) و انرژی پتانسیل الکتریکی آن (U) به ترتیب چه تغییری می‌کنند؟",
+        options: ["کاهش می‌یابد - کاهش می‌یابد", "کاهش می‌یابد - افزایش می‌یابد", "افزایش می‌یابد - کاهش می‌یابد", "ثابت می‌ماند - کاهش می‌یابد"],
+        correct: "کاهش می‌یابد - کاهش می‌یابد",
+        exp: "در جهت خطوط میدان، پتانسیل الکتریکی (V) همواره کاهش می‌یابد و چون بار پروتون مثبت است و در جهت نیروی میدان حرکت می‌کند، انرژی پتانسیل آن (U) نیز کاهش می‌یابد."
+    },
+    {
+        id: "m5",
+        level: "سخت",
+        q: "خازن تختی به ظرفیت ۵ میکروفاراد به اختلاف پتانسیل ۲۰ ولت متصل است. انرژی ذخیره‌شده در این خازن چند میلی‌ژول است؟",
+        options: ["۱ میلی‌ژول", "۲ میلی‌ژول", "۱۰ میلی‌ژول", "۱۰۰ میلی‌ژول"],
+        correct: "۱ میلی‌ژول",
+        exp: "طبق رابطه U = ½ C V² داریم: U = 0.5 × (5×10⁻⁶) × (400) = 1000 × 10⁻⁶ J = 10⁻³ J = 1 mJ."
+    },
+    {
+        id: "m6",
+        level: "سخت",
+        q: "خازن تختی را پس از پر شدن از مولد جدا می‌کنیم. اگر فاصله بین دو صفحه را ۲ برابر کنیم، ظرفیت خازن (C) و انرژی ذخیره‌شده در آن (U) به ترتیب چند برابر می‌شوند؟",
+        options: ["نصف می‌شود - ۲ برابر می‌شود", "نصف می‌شود - نصف می‌شود", "۲ برابر می‌شود - نصف می‌شود", "ثابت می‌ماند - ۲ برابر می‌شود"],
+        correct: "نصف می‌شود - ۲ برابر می‌شود",
+        exp: "با ۲ برابر شدن فاصله d، ظرفیت C نصف می‌شود. چون خازن از مولد جداست بار q ثابت است و طبق U = q²/(2C) با نصف شدن C، انرژی U دو برابر می‌شود."
+    }
+];
+
+let userMCQSelections = {};
+
+function renderMCQs() {
+    const filter = document.getElementById("mcq-level-filter").value;
+    const container = document.getElementById("mcq-questions-container");
+    container.innerHTML = "";
+
+    const list = filter === "all" ? MCQ_BANK : MCQ_BANK.filter(q => q.level === filter);
+    list.forEach((item, idx) => {
+        const box = document.createElement("div");
+        box.className = "formula-box";
+        box.style.marginBottom = "16px";
+        box.innerHTML = `<div style="display:flex; justify-content:space-between;"><b>سؤال ${idx + 1}: ${item.q}</b><span style="font-size:0.78rem; color:var(--primary);">سطح: ${item.level}</span></div>`;
+
+        item.options.forEach(opt => {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "option-btn" + (userMCQSelections[item.id] === opt ? " selected" : "");
+            btn.textContent = opt;
+            btn.onclick = () => {
+                if (appState.mcqSubmitted) return;
+                userMCQSelections[item.id] = opt;
+                renderMCQs();
+            };
+            box.appendChild(btn);
+        });
+        container.appendChild(box);
+    });
+}
+
+function submitMCQExam() {
+    if (appState.mcqSubmitted) {
+        showToast("آزمون تستی قبلاً ثبت نهایی شده است.");
+        return;
+    }
+    let correctCount = 0;
+    let html = `<h4>پاسخنامه تحلیلی آزمون تستی:</h4>`;
+    MCQ_BANK.forEach((item, i) => {
+        const userAns = userMCQSelections[item.id] || "بدون پاسخ";
+        const isOk = userAns === item.correct;
+        if (isOk) correctCount++;
+        html += `<div class="formula-box" style="border-right-color:${isOk ? '#10b981' : '#ef4444'};">
+            <div><b>سؤال ${i + 1}:</b> پاسخ شما: <b>${userAns}</b> | پاسخ صحیح: <b style="color:#10b981;">${item.correct}</b></div>
+            <div style="font-size:0.85rem; color:var(--text-muted);">${item.exp}</div>
+        </div>`;
+    });
+
+    const percent = Math.round((correctCount / MCQ_BANK.length) * 100);
+    appState.mcqScore = percent;
+    appState.mcqSubmitted = true;
+    document.getElementById("mcq-score-badge").textContent = `${percent}% (${correctCount} از ${MCQ_BANK.length})`;
+    document.getElementById("mcq-analysis-box").innerHTML = html;
+    checkAndRewardExamCompletion();
+    saveState();
+    showToast(`آزمون تستی ثبت شد. درصد شما: ${percent}%`);
+}
+
+/* --- Semi-Descriptive Exam --- */
+const SEMI_QUESTIONS = [
+    {
+        id: "s1",
+        q: "۱. در یک میدان الکتریکی یکنواخت به بزرگی ۲۰۰۰ نیوتون بر کولن، اختلاف پتانسیل بین دو نقطه که در امتداد خطوط میدان به فاصله ۵۰ سانتی‌متر (۰.۵ متر) از هم قرار دارند، چند ولت است؟",
+        check: (v) => /\b1000\b|هزار/.test(v),
+        guide: "طبق رابطه ΔV = E d داریم: ΔV = 2000 × 0.5 = 1000 ولت."
+    },
+    {
+        id: "s2",
+        q: "۲. اگر اختلاف پتانسیل دو سر یک خازن را ۳ برابر کنیم، ظرفیت خازن (C) چند برابر می‌شود؟ (عدد بنویسید)",
+        check: (v) => /\b1\b|یک|ثابت|تغییر نمیکند/.test(v),
+        guide: "ظرفیت خازن به بار و ولتاژ بستگی ندارد و ۱ برابر (ثابت) می‌ماند."
+    },
+    {
+        id: "s3",
+        q: "۳. تراکم بار الکتریکی در سطح خارجی یک رسانا در نقاطی که دارای ............. (نوک‌تیز / مسطح) هستند، بیشتر است.",
+        check: (v) => /تیز|نوک|انحنا/.test(v),
+        guide: "در نقاط نوک‌تیز رسانا، چگالی سطحی بار الکتریکی (σ) بیشتر است."
+    },
+    {
+        id: "s4",
+        q: "۴. خازنی به ظرفیت ۴ میکروفاراد به باتری ۱۰ ولتی متصل است. بار ذخیره‌شده روی هر صفحه آن چند میکروکولن است؟",
+        check: (v) => /\b40\b|چهل/.test(v),
+        guide: "طبق رابطه q = C V داریم: q = 4 × 10 = 40 میکروکولن."
+    }
+];
+
+function renderSemiExam() {
+    const container = document.getElementById("semi-questions-container");
+    container.innerHTML = "";
+    SEMI_QUESTIONS.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "formula-box";
+        const inputId = "semi-inp-" + item.id;
+        div.innerHTML = `
+            <label for="${inputId}">${item.q}</label>
+            <input type="text" id="${inputId}" placeholder="پاسخ خود را بنویسید..." inputmode="text" autocomplete="off">
+        `;
+        div.appendChild(attachVirtualKeyboard(inputId));
+        container.appendChild(div);
+    });
+}
+
+function submitSemiExam() {
+    if (appState.semiSubmitted) {
+        showToast("آزمون نیمه‌تشریحی قبلاً ثبت شده است.");
+        return;
+    }
+    let score = 0;
+    let feedbackHtml = `<h4>تحلیل پاسخ‌های نیمه‌تشریحی:</h4>`;
+
+    SEMI_QUESTIONS.forEach(item => {
+        const raw = normalizeTextAndNumbers(document.getElementById("semi-inp-" + item.id).value);
+        const ok = item.check(raw);
+        if (ok) score += 25;
+        feedbackHtml += `<div class="formula-box" style="border-right-color:${ok ? '#10b981' : '#ef4444'}">
+            <div>پاسخ شما: <b>${raw || 'خالی'}</b> &rarr; ${ok ? '<span style="color:#10b981;">صحیح (۲۵ نمره)</span>' : '<span style="color:#ef4444;">نادرست (۰ نمره)</span>'}</div>
+            <div style="font-size:0.85rem; color:var(--text-muted);">توضیح: ${item.guide}</div>
+        </div>`;
+    });
+
+    appState.semiScore = score;
+    appState.semiSubmitted = true;
+    document.getElementById("semi-analysis-box").innerHTML = feedbackHtml;
+    checkAndRewardExamCompletion();
+    saveState();
+    showToast(`آزمون نیمه‌تشریحی ثبت شد. نمره: ${score} از ۱۰۰`);
+}
+
+/* --- Smart AI Conceptual Grading Engine for Descriptive Physics Exam --- */
+const DESC_QUESTIONS = [
+    {
+        id: "d1",
+        q: "۱. چرا دو خط میدان الکتریکی هرگز یکدیگر را قطع نمی‌کنند؟ به صورت علمی و مفهومی توضیح دهید.",
+        evaluate: function(ans) {
+            const clean = normalizeTextAndNumbers(ans);
+            if (!clean) return { score: 0, msg: "پاسخی وارد نشده است." };
+            const hasTangent = /مماس|جهت|بردار/.test(clean);
+            const hasUnique = /یکتا|دو جهت|دو میدان|یک نقطه|امکان ندارد|نمیتوان/.test(clean);
+            if (hasTangent && hasUnique) {
+                return { score: 100, msg: "عالی! اشاره به مماس بودن بردار میدان بر خط میدان و یکتا بودن بردار میدان در هر نقطه کاملاً دقیق است." };
+            }
+            if (hasTangent || hasUnique) {
+                return { score: 70, msg: "مفهوم اصلی را درست بیان کرده‌اید (نمره مرحله‌ای: ۷۰). برای نمره کامل بنویسید: اگر همدیگر را قطع کنند، در نقطه تقاطع دو خط مماس و در نتیجه دو جهت برای میدان الکتریکی خواهیم داشت که غیرممکن است." };
+            }
+            return { score: 25, msg: "پاسخ نیاز به تکمیل دارد. کلیدواژه مورد انتظار مصحح: «تک‌مقداری بودن جهت بردار میدان (خط مماس) در هر نقطه از فضا»." };
+        }
+    },
+    {
+        id: "d2",
+        q: "۲. مسئله تشریحی: دو بار نقطه‌ای q₁ = 3 μC و q₂ = 6 μC در فاصله ۳۰ سانتی‌متری (0.3 m) از هم قرار دارند. با نوشتن فرمول قانون کولن، بزرگی نیروی الکتریکی بین آن‌ها را برحسب نیوتون محاسبه کنید. (k = 9 × 10⁹)",
+        evaluate: function(ans) {
+            const clean = normalizeTextAndNumbers(ans);
+            if (!clean) return { score: 0, msg: "پاسخی وارد نشده است." };
+            const hasFormula = /f\s*=|k|q|r/.test(clean) || /کولن|فرمول/.test(clean);
+            const hasAnswer = /\b1\.8\b|\b1\/8\b|یک و هشت/.test(clean);
+            if (hasFormula && hasAnswer) {
+                return { score: 100, msg: "فوق‌العاده! هم فرمول قانون کولن و هم پاسخ نهایی (F = 1.8 N) کاملاً صحیح نوشته شده است." };
+            }
+            if (hasAnswer) {
+                return { score: 80, msg: "پاسخ عددی نهایی (۱.۸ نیوتون) کاملاً درست است! در امتحان تشریحی حتماً فرمول F = k|q₁||q₂|/r² را هم بنویسید تا بارم فرمول را از دست ندهید." };
+            }
+            if (hasFormula) {
+                return { score: 50, msg: "فرمول و روش حل را درست نوشته‌اید و نمره مرحله‌ای فرمول را گرفتید، اما عدد نهایی باید 1.8 نیوتون به دست آید." };
+            }
+            return { score: 15, msg: "راه‌حل کامل نیست. فرمول: F = (9×10⁹ × 3×10⁻⁶ × 6×10⁻⁶) / (0.09) = 1.8 N." };
+        }
+    },
+    {
+        id: "d3",
+        q: "۳. مسئله تشریحی خازن: خازنی به ظرفیت ۱۰ میکروفاراد به مولد ۲۰ ولتی متصل است. با نوشتن رابطه، الف) بار خازن (برحسب میکروکولن) و ب) انرژی ذخیره‌شده در آن (برحسب میلی‌ژول یا ژول) را به دست آورید.",
+        evaluate: function(ans) {
+            const clean = normalizeTextAndNumbers(ans);
+            if (!clean) return { score: 0, msg: "پاسخی وارد نشده است." };
+            const hasCharge = /\b200\b/.test(clean);
+            const hasEnergy = /\b2\b|\b0\.002\b|\b2000\b/.test(clean);
+            const hasFormula = /q\s*=|c\s*v|u\s*=/.test(clean);
+            if (hasCharge && hasEnergy) {
+                return { score: 100, msg: "آفرین! هر دو بخش بار خازن (q = 200 μC) و انرژی خازن (U = 2 mJ = 0.002 J) کاملاً صحیح محاسبه شده‌اند." };
+            }
+            if (hasCharge || hasEnergy || hasFormula) {
+                return { score: 65, msg: "بخشی از مراحل حل صحیح است و نمره مرحله‌ای دریافت کردید. پاسخ کامل: الف) q = CV = 200 μC و ب) U = ½CV² = 2 mJ." };
+            }
+            return { score: 20, msg: "برای حل از دو رابطه q = C V (پاسخ: ۲۰۰ میکروکولن) و U = ½ C V² (پاسخ: ۲ میلی‌ژول) استفاده نمایید." };
+        }
+    }
+];
+
+function renderDescExam() {
+    const container = document.getElementById("desc-questions-container");
+    container.innerHTML = "";
+    DESC_QUESTIONS.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "formula-box";
+        const inputId = "desc-inp-" + item.id;
+        div.innerHTML = `
+            <label for="${inputId}">${item.q}</label>
+            <input type="text" id="${inputId}" placeholder="فرمول، راه‌حل و پاسخ نهایی خود را بنویسید..." inputmode="text" autocomplete="off">
+        `;
+        div.appendChild(attachVirtualKeyboard(inputId));
+        container.appendChild(div);
+    });
+}
+
+function submitDescExam() {
+    if (appState.descSubmitted) {
+        showToast("آزمون تشریحی قبلاً تصحیح و ثبت شده است.");
+        return;
+    }
+    let total = 0;
+    let html = `<h4>نتیجه موتور تصحیح هوشمند تشریحی فیزیک:</h4>`;
+    DESC_QUESTIONS.forEach((item, idx) => {
+        const val = document.getElementById("desc-inp-" + item.id).value || "";
+        const res = item.evaluate(val);
+        total += res.score;
+        html += `<div class="formula-box" style="border-right-color:${res.score >= 70 ? '#10b981' : (res.score > 0 ? '#f59e0b' : '#ef4444')}">
+            <div><b>سؤال ${idx + 1}:</b> نمره کسب‌شده: <b>${res.score} از ۱۰۰</b></div>
+            <div style="font-size:0.9rem;">پاسخ ثبت‌شده: ${val || "(خالی)"}</div>
+            <div style="font-size:0.88rem; color:var(--primary);">بازخورد هوشمند: ${res.msg}</div>
+        </div>`;
+    });
+
+    const avg = Math.round(total / DESC_QUESTIONS.length);
+    appState.descScore = avg;
+    appState.descSubmitted = true;
+    document.getElementById("desc-analysis-box").innerHTML = html;
+    checkAndRewardExamCompletion();
+    saveState();
+    showToast(`برگه تشریحی تحلیل شد. میانگین نمره تشریحی: ${avg} از ۱۰۰`);
+}
+
+function checkAndRewardExamCompletion() {
+    if ((appState.mcqSubmitted || appState.semiSubmitted || appState.descSubmitted) && !appState.completedActivities["exam_done"]) {
+        completeActivity("exam_done", 50, "پاداش تکمیل آزمون جامع دریافت شد (+۵۰ XP)");
+    }
+}
+
+/* ============================================================================
+   حضور و غیاب، تکالیف، دستاوردها و گزارش نهایی Supabase
+   ============================================================================ */
+function updateAttendanceView() {
+    document.getElementById("att-name").textContent = appState.studentName || "-";
+    document.getElementById("att-first-in").textContent = appState.firstLoginTime || "-";
+    document.getElementById("att-login-count").textContent = appState.loginCount || 1;
+    const mins = Math.max(1, Math.floor(appState.activeSeconds / 60));
+    document.getElementById("att-duration").textContent = `${mins} دقیقه (${appState.activeSeconds} ثانیه)`;
+}
+
+function initResourcesView() {
+    const digiLink = document.getElementById("digiform-attendance-link");
+    if (digiLink) digiLink.href = PROJECT_CONFIG.attendanceFormUrl;
+
+    const box = document.getElementById("resources-dynamic-content");
+    box.innerHTML = `
+        <div class="formula-box" style="border-right-color: var(--primary);">
+            <h3 style="font-size: 1.05rem; color: var(--primary);">تکالیف و برنامه مطالعاتی ویژه امتحان هفته آینده:</h3>
+            <ul class="guide-list">${PROJECT_CONFIG.homeworks.map(h => `<li>${h}</li>`).join("")}</ul>
+        </div>
+        <div class="formula-box" style="border-right-color: var(--secondary);">
+            <h3 style="font-size: 1.05rem; color: var(--secondary);">منابع و جداول خلاصه جلسه:</h3>
+            <ul class="guide-list">${PROJECT_CONFIG.sessionFiles.map(f => `<li>${f}</li>`).join("")}</ul>
+        </div>
+        <div class="formula-box" style="border-right-color: var(--accent);">
+            <h3 style="font-size: 1.05rem; color: var(--accent);">اطلاعیه‌های مهم درس:</h3>
+            <ul class="guide-list">${PROJECT_CONFIG.announcements.map(a => `<li>${a}</li>`).join("")}</ul>
+        </div>
+    `;
+}
+
+const BADGE_LIST = [
+    { id: "b_login", title: "گام نخست", desc: "ورود رسمی به جلسه جمع‌بندی", check: () => !!appState.completedActivities["login"] },
+    { id: "b_teach", title: "مسلط بر مفاهیم", desc: "تکمیل آموزش جامع فصل اول", check: () => !!appState.completedActivities["teaching"] },
+    { id: "b_lab", title: "پژوهشگر آزمایشگاه", desc: "انجام آزمایشگاه کولن و خازن", check: () => !!appState.completedActivities["lab"] },
+    { id: "b_exam", title: "آماده امتحان", desc: "شرکت در آزمون‌های جامع", check: () => !!appState.completedActivities["exam_done"] },
+    { id: "b_master", title: "رتبه برتر فیزیک", desc: "کسب بیش از ۱۰۰ امتیاز XP", check: () => appState.xp >= 100 }
+];
+
+function renderBadges() {
+    const grid = document.getElementById("badges-grid");
+    if (!grid) return;
+    grid.innerHTML = "";
+    BADGE_LIST.forEach(b => {
+        const unlocked = b.check();
+        const d = document.createElement("div");
+        d.className = "badge-item" + (unlocked ? " unlocked" : "");
+        d.innerHTML = `
+            <div style="font-size:1.6rem; margin-bottom:6px;">${unlocked ? "🏅" : "🔒"}</div>
+            <div style="font-weight:700; font-size:0.92rem;">${b.title}</div>
+            <div style="font-size:0.78rem; color:var(--text-muted);">${b.desc}</div>
+        `;
+        grid.appendChild(d);
+    });
+}
+
+function claimMysteryBox(isCorrect) {
+    const fb = document.getElementById("mystery-feedback");
+    if (appState.mysteryClaimed) {
+        fb.style.color = "#f59e0b";
+        fb.textContent = "جایزه صندوقچه سرعتی قبلاً دریافت شده است.";
+        return;
+    }
+    if (isCorrect) {
+        appState.mysteryClaimed = true;
+        appState.xp += 15;
+        saveState();
+        updateHeaderUI();
+        renderBadges();
+        fb.style.color = "#10b981";
+        fb.textContent = "آفرین! چون نیرو با مجذور فاصله رابطه عکس دارد، یک‌نهم برابر می‌شود (+۱۵ XP).";
+        showToast("صندوقچه باز شد (+۱۵ XP)");
+    } else {
+        fb.style.color = "#ef4444";
+        fb.textContent = "دقت کنید! در قانون کولن r به توان ۲ می‌رسد؛ بنابراین با ۳ برابر شدن فاصله، نیرو ۱/۹ برابر می‌شود.";
+    }
+}
+
+function calculateOverallNumericScore() {
+    const mcq = appState.mcqSubmitted ? appState.mcqScore : 0;
+    const semi = appState.semiSubmitted ? appState.semiScore : 0;
+    const desc = appState.descSubmitted ? appState.descScore : 0;
+    const examAvg = (mcq + semi + desc) / 3;
+    const prog = getProgressPercent();
+    return Number(((examAvg * 0.7) + (prog * 0.3)).toFixed(2));
+}
+
+function updateReportView() {
+    const mins = Math.max(1, Math.floor(appState.activeSeconds / 60));
+    const finalScore = calculateOverallNumericScore();
+
+    document.getElementById("rep-student-name").textContent = appState.studentName || "-";
+    document.getElementById("rep-school-name").textContent = `${PROJECT_CONFIG.grade} - ${PROJECT_CONFIG.schoolName}`;
+    document.getElementById("rep-subject").textContent = `${PROJECT_CONFIG.subject} (دبیر: ${PROJECT_CONFIG.teacherName})`;
+    document.getElementById("rep-xp").textContent = `${appState.xp} XP`;
+    document.getElementById("rep-final-score").textContent = `${finalScore} از ۱۰۰`;
+    document.getElementById("rep-progress").textContent = `${getProgressPercent()}%`;
+    document.getElementById("rep-time").textContent = `ورود: ${appState.firstLoginTime || '-'} | مدت حضور: ${mins} دقیقه (${appState.activeSeconds} ثانیه)`;
+    document.getElementById("rep-sections").textContent = appState.viewedSections.length ? appState.viewedSections.join("، ") : "صرفاً صفحه اصلی";
+    document.getElementById("rep-exams").textContent = `تستی: ${appState.mcqSubmitted ? appState.mcqScore + '%' : 'انجام نشده'} | نیمه‌تشریحی: ${appState.semiSubmitted ? appState.semiScore + '%' : 'انجام نشده'} | تشریحی هوشمند: ${appState.descSubmitted ? appState.descScore + '%' : 'انجام نشده'}`;
+
+    const btn = document.getElementById("btn-final-supabase");
+    const msg = document.getElementById("supabase-status-msg");
+    if (appState.reportSent) {
+        btn.disabled = true;
+        btn.style.opacity = "0.6";
+        btn.textContent = "گزارش نهایی قبلاً در سرور ثبت شده است";
+        msg.style.color = "#10b981";
+        msg.textContent = `گزارش عملکرد شما در زمان ${appState.reportSentTime} با موفقیت در پایگاه داده ثبت گردیده است.`;
+    }
+}
+
+async function submitReportToSupabase() {
+    if (appState.reportSent) {
+        showToast("گزارش شما قبلاً ارسال شده و فقط یک‌بار قابل ارسال است.");
+        return;
+    }
+
+    const btn = document.getElementById("btn-final-supabase");
+    const msg = document.getElementById("supabase-status-msg");
+    btn.disabled = true;
+    msg.style.color = "#00f2fe";
+    msg.textContent = "در حال ارسال مستقیم اطلاعات به پایگاه داده Supabase...";
+
+    const nowStr = new Date().toLocaleString("fa-IR");
+    const mins = Math.max(1, Math.floor(appState.activeSeconds / 60));
+    const unlockedBadgesCount = BADGE_LIST.filter(b => b.check()).length;
+    const achievementsCount = Object.keys(appState.completedActivities).length;
+    const finalScore = calculateOverallNumericScore();
+
+    const detailsSummary = [
+        `زمان ورود: ${appState.firstLoginTime || '-'}`,
+        `زمان خروج/ثبت: ${nowStr}`,
+        `مدت حضور: ${mins} دقیقه (${appState.activeSeconds} ثانیه)`,
+        `تعداد دفعات ورود: ${appState.loginCount}`,
+        `آموزش‌های مشاهده‌شده: ${appState.completedActivities['teaching'] ? 'بله' : 'خیر'}`,
+        `خلاصه‌های مطالعه‌شده: ${appState.completedActivities['summary'] ? 'بله' : 'خیر'}`,
+        `آزمایشگاه‌های انجام‌شده: ${appState.completedActivities['lab'] ? 'بله' : 'خیر'}`,
+        `مشاهده تکالیف: ${appState.completedActivities['homework'] ? 'بله' : 'خیر'}`,
+        `آزمون تستی: ${appState.mcqSubmitted ? appState.mcqScore + '%' : 'انجام نشده'}`,
+        `آزمون نیمه‌تشریحی: ${appState.semiSubmitted ? appState.semiScore + '%' : 'انجام نشده'}`,
+        `آزمون تشریحی: ${appState.descSubmitted ? appState.descScore + '%' : 'انجام نشده'}`,
+        `XP کل: ${appState.xp}`,
+        `درصد پیشرفت: ${getProgressPercent()}%`,
+        `تعداد Badge: ${unlockedBadgesCount}`,
+        `تعداد Achievement: ${achievementsCount}`,
+        `بخش‌های بازدیدشده: ${appState.viewedSections.join('، ') || 'داشبورد'}`,
+        `زمان ثبت گزارش: ${nowStr}`
+    ].join(" | ");
+
+    const payload = {
+        Student_name: appState.studentName,
+        School_name: `${PROJECT_CONFIG.grade} - ${PROJECT_CONFIG.schoolName}`,
+        Subject: PROJECT_CONFIG.subject,
+        Score: finalScore,
+        Total_score: 100,
+        Details: detailsSummary
+    };
+
+    try {
+        const response = await fetch(`${PROJECT_CONFIG.supabaseUrl}/rest/v1/${PROJECT_CONFIG.supabaseTable}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "apikey": PROJECT_CONFIG.supabaseKey,
+                "Authorization": `Bearer ${PROJECT_CONFIG.supabaseKey}`,
+                "Prefer": "return=minimal"
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            appState.reportSent = true;
+            appState.reportSentTime = nowStr;
+            saveState();
+            updateReportView();
+            renderDashboardCards();
+            showToast("گزارش عملکرد با موفقیت در Supabase ثبت شد!");
+        } else {
+            const errText = await response.text();
+            btn.disabled = false;
+            msg.style.color = "#ef4444";
+            msg.textContent = `خطا در ثبت سرور (کد ${response.status}): لطفاً اتصال اینترنت را بررسی و مجدداً تلاش کنید. (${errText})`;
+        }
+    } catch (error) {
+        btn.disabled = false;
+        msg.style.color = "#ef4444";
+        msg.textContent = "خطا در برقراری ارتباط با سرور Supabase. از اتصال اینترنت خود اطمینان حاصل فرمایید.";
+    }
+}
+
+/* ============================================================================
+   انیمیشن پس‌زمینه Particle System (60FPS Canvas)
+   ============================================================================ */
+function initParticles() {
+    const canvas = document.getElementById("particle-canvas");
+    const ctx = canvas.getContext("2d");
+    let w = canvas.width = window.innerWidth;
+    let h = canvas.height = window.innerHeight;
+
+    window.addEventListener("resize", () => {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+    });
+
+    const particles = Array.from({ length: 42 }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        r: Math.random() * 2 + 0.8,
+        dx: (Math.random() - 0.5) * 0.45,
+        dy: (Math.random() - 0.5) * 0.45
+    }));
+
+    function draw() {
+        ctx.clearRect(0, 0, w, h);
+        ctx.fillStyle = "rgba(0, 242, 254, 0.45)";
+        particles.forEach(p => {
+            p.x += p.dx;
+            p.y += p.dy;
+            if (p.x < 0 || p.x > w) p.dx *= -1;
+            if (p.y < 0 || p.y > h) p.dy *= -1;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fill();
+        });
+        requestAnimationFrame(draw);
+    }
+    draw();
+}
+
+/* ============================================================================
+   راه‌اندازی اولیه سامانه
+   ============================================================================ */
+window.addEventListener("DOMContentLoaded", () => {
+    loadState();
+    initParticles();
+    initSecretTrigger();
+
+    document.getElementById("lock-lesson-title").textContent = PROJECT_CONFIG.subject;
+    document.getElementById("lock-school-info").textContent = `${PROJECT_CONFIG.grade} | ${PROJECT_CONFIG.schoolName}`;
+    document.getElementById("lock-target-display").textContent = `${PROJECT_CONFIG.startDatePersian} ساعت ${PROJECT_CONFIG.startTimePersian}`;
+
+    document.getElementById("login-grade").value = PROJECT_CONFIG.grade;
+    document.getElementById("login-school").value = PROJECT_CONFIG.schoolName;
+    document.getElementById("login-subject").value = PROJECT_CONFIG.subject;
+
+    initFlashcards();
+    updateCoulombLab();
+    updateCapacitorLab();
+    renderMCQs();
+    renderSemiExam();
+    renderDescExam();
+    initResourcesView();
+
+    checkLockStatus();
+    setInterval(checkLockStatus, 1000);
+
+    setInterval(() => {
+        if (document.getElementById("main-app").classList.contains("active")) {
+            appState.activeSeconds = (appState.activeSeconds || 0) + 1;
+            const m = String(Math.floor(appState.activeSeconds / 60)).padStart(2, "0");
+            const s = String(appState.activeSeconds % 60).padStart(2, "0");
+            document.getElementById("ui-timer").textContent = `${m}:${s}`;
+            if (appState.activeSeconds % 10 === 0) saveState();
+        }
+    }, 1000);
+});
+</script>
+</body>
+</html>
