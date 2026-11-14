@@ -1,0 +1,1658 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>سامانه آزمون آنلاین ریاضی | برزگری</title>
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
+      --surface: rgba(255, 255, 255, 0.9);
+      --surface-solid: #ffffff;
+      --border: rgba(30, 58, 138, 0.15);
+      --primary: #1e40af;
+      --secondary: #3b82f6;
+      --accent: #0ea5e9;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --warning: #d97706;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --shadow: 0 10px 28px -4px rgba(15, 23, 42, 0.08);
+      --radius: 16px;
+    }
+
+    [data-theme="dark"] {
+      --bg-gradient: linear-gradient(135deg, #090d16 0%, #1e1b4b 100%);
+      --surface: rgba(30, 41, 59, 0.88);
+      --surface-solid: #1e293b;
+      --border: rgba(255, 255, 255, 0.12);
+      --primary: #60a5fa;
+      --secondary: #818cf8;
+      --accent: #38bdf8;
+      --success: #22c55e;
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --text-main: #f8fafc;
+      --text-muted: #cbd5e1;
+      --shadow: 0 10px 28px -4px rgba(0, 0, 0, 0.45);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Tahoma, Arial, sans-serif;
+      transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      line-height: 1.8;
+      overflow-x: hidden;
+      padding-bottom: 60px;
+    }
+
+    .top-progress-container {
+      position: fixed;
+      top: 0;
+      right: 0;
+      left: 0;
+      height: 5px;
+      background: rgba(148, 163, 184, 0.2);
+      z-index: 2000;
+    }
+    .top-progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      transition: width 0.15s ease-out;
+    }
+
+    .sticky-header {
+      position: sticky;
+      top: 5px;
+      z-index: 1000;
+      background: var(--surface);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      box-shadow: var(--shadow);
+    }
+
+    .brand-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .brand-title {
+      font-size: 16px;
+      font-weight: bold;
+      color: var(--primary);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .badge {
+      background: rgba(59, 130, 246, 0.14);
+      color: var(--primary);
+      padding: 4px 11px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: bold;
+      border: 1px solid var(--border);
+      user-select: none;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .timer-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface-solid);
+      border: 2px solid var(--primary);
+      padding: 5px 12px;
+      border-radius: 12px;
+      font-weight: bold;
+      font-size: 14.5px;
+      color: var(--primary);
+    }
+
+    .timer-pill.urgent {
+      border-color: var(--danger);
+      color: var(--danger);
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.04); }
+    }
+
+    .icon-btn {
+      background: var(--surface-solid);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .main-wrapper {
+      max-width: 1140px;
+      margin: 22px auto;
+      padding: 0 14px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+
+    @media (min-width: 960px) {
+      .main-wrapper.exam-active {
+        grid-template-columns: 260px 1fr;
+        align-items: start;
+      }
+    }
+
+    .glass-card {
+      background: var(--surface);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+    }
+
+    .sidebar-nav {
+      position: sticky;
+      top: 80px;
+      display: none;
+    }
+    .main-wrapper.exam-active .sidebar-nav {
+      display: block;
+    }
+
+    .nav-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 7px;
+      margin-top: 12px;
+    }
+
+    .nav-item {
+      padding: 9px 4px;
+      border-radius: 9px;
+      border: 1px solid var(--border);
+      background: var(--surface-solid);
+      color: var(--text-main);
+      font-weight: bold;
+      font-size: 12.5px;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .nav-item.answered {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+    }
+
+    .login-container {
+      max-width: 560px;
+      margin: 8px auto;
+    }
+
+    .exam-meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin: 14px 0;
+    }
+
+    .meta-box {
+      background: var(--surface-solid);
+      border: 1px solid var(--border);
+      padding: 11px 13px;
+      border-radius: 12px;
+    }
+    .meta-box span {
+      display: block;
+      font-size: 11.5px;
+      color: var(--text-muted);
+    }
+    .meta-box strong {
+      font-size: 14px;
+      color: var(--text-main);
+    }
+
+    .live-countdown-box {
+      background: var(--surface-solid);
+      border: 2px solid var(--primary);
+      border-radius: 14px;
+      padding: 15px;
+      text-align: center;
+      margin-bottom: 18px;
+    }
+    .live-countdown-box.waiting {
+      border-color: var(--warning);
+      background: rgba(217, 119, 6, 0.08);
+    }
+    .live-countdown-box.expired {
+      border-color: var(--danger);
+      background: rgba(220, 38, 38, 0.07);
+    }
+    .live-countdown-box.unlocked {
+      border-color: var(--success);
+      background: rgba(22, 163, 74, 0.08);
+    }
+    .countdown-title {
+      font-size: 13.5px;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+    .countdown-digits {
+      font-size: 21px;
+      font-weight: bold;
+      color: var(--primary);
+      margin: 6px 0;
+      direction: ltr;
+    }
+    .live-countdown-box.waiting .countdown-digits { color: var(--warning); }
+    .live-countdown-box.expired .countdown-digits { color: var(--danger); }
+    .live-countdown-box.unlocked .countdown-digits { color: var(--success); }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+    .form-group label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 7px;
+      font-size: 14px;
+    }
+
+    .input-control {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 11px;
+      border: 1.5px solid var(--border);
+      background: var(--surface-solid);
+      color: var(--text-main);
+      font-size: 15px;
+      outline: none;
+    }
+    .input-control:focus {
+      border-color: var(--primary);
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 13px 18px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-primary:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+    }
+
+    .section-banner {
+      background: linear-gradient(90deg, rgba(30, 64, 175, 0.12), transparent);
+      border-right: 4px solid var(--primary);
+      padding: 11px 15px;
+      border-radius: 10px;
+      margin-bottom: 18px;
+      font-weight: bold;
+      color: var(--primary);
+      font-size: 14.5px;
+    }
+
+    .question-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 9px;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    .q-number {
+      font-weight: bold;
+      font-size: 15.5px;
+      color: var(--primary);
+    }
+
+    .q-score {
+      font-size: 12px;
+      background: rgba(14, 165, 233, 0.15);
+      color: var(--primary);
+      padding: 3px 9px;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+
+    .q-body {
+      font-size: 15px;
+      margin-bottom: 16px;
+    }
+
+    .options-list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    @media (min-width: 600px) {
+      .options-list.two-col {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .radio-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 14px;
+      border-radius: 11px;
+      border: 1.5px solid var(--border);
+      background: var(--surface-solid);
+      cursor: pointer;
+    }
+    .radio-card input[type="radio"] {
+      accent-color: var(--primary);
+      width: 18px;
+      height: 18px;
+    }
+
+    .step-box {
+      background: var(--surface-solid);
+      border: 1px solid var(--border);
+      border-right: 4px solid var(--secondary);
+      border-radius: 11px;
+      padding: 13px 15px;
+      margin-bottom: 12px;
+    }
+    .step-title {
+      font-size: 13.5px;
+      font-weight: bold;
+      color: var(--primary);
+      margin-bottom: 7px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .feedback-badge {
+      margin-top: 10px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: bold;
+      display: none;
+    }
+    .feedback-badge.correct {
+      display: block;
+      background: rgba(22, 163, 74, 0.15);
+      color: var(--success);
+    }
+    .feedback-badge.wrong {
+      display: block;
+      background: rgba(220, 38, 38, 0.15);
+      color: var(--danger);
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 3000;
+      padding: 16px;
+    }
+    .modal-backdrop.active {
+      display: flex;
+    }
+    .modal-content {
+      background: var(--surface-solid);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      max-width: 420px;
+      width: 100%;
+      padding: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .admin-btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-progress-container">
+    <div class="top-progress-bar" id="scroll-progress"></div>
+  </div>
+
+  <header class="sticky-header">
+    <div class="brand-info">
+      <span class="brand-title" id="secret-trigger-1">سامانه آزمون ریاضی</span>
+      <span class="badge" id="header-school-badge">مدرسه بهار دانش 4</span>
+      <span class="badge" id="secret-trigger-2" style="cursor: pointer;">برزگری</span>
+    </div>
+
+    <div class="header-controls">
+      <div class="timer-pill" id="global-timer">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+        <span id="timer-text">60:00</span>
+      </div>
+
+      <button class="icon-btn" onclick="toggleTheme()" title="تغییر حالت نمایش">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="main-wrapper" id="main-layout">
+
+    <!-- پنل ناوبری سوالات -->
+    <aside class="sidebar-nav">
+      <div class="glass-card" style="padding: 16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <strong>ناوبری سوالات</strong>
+          <span id="answered-percent" class="badge">0%</span>
+        </div>
+        <div style="height: 6px; background: rgba(148,163,184,0.2); border-radius:4px; margin: 10px 0; overflow:hidden;">
+          <div id="answered-bar" style="height:100%; width:0%; background:var(--success); transition:0.3s;"></div>
+        </div>
+        <div class="nav-grid" id="question-nav-grid"></div>
+        <div style="margin-top: 14px; font-size: 12.5px; color: var(--text-muted);">
+          <div>دانش‌آموز: <strong id="side-student-name">-</strong></div>
+          <div>پایه: <strong id="side-student-grade">-</strong></div>
+        </div>
+      </div>
+    </aside>
+
+    <main>
+
+      <!-- ۱. صفحه ورود رسمی -->
+      <section id="login-view" class="login-container">
+        <div class="glass-card">
+          <h2 style="color: var(--primary); margin-bottom: 4px; text-align: center;">آزمون ریاضی پایه هشتم</h2>
+          <p style="text-align: center; color: var(--text-muted); font-size: 13.5px; margin-bottom: 14px;" id="login-topic-title"></p>
+
+          <div class="exam-meta-grid">
+            <div class="meta-box">
+              <span>نام درس</span>
+              <strong id="meta-subject">ریاضی</strong>
+            </div>
+            <div class="meta-box">
+              <span>نام دبیر</span>
+              <strong id="meta-teacher">برزگری</strong>
+            </div>
+            <div class="meta-box">
+              <span>نام مدرسه</span>
+              <strong id="meta-school">مدرسه بهار دانش 4</strong>
+            </div>
+            <div class="meta-box">
+              <span>زمان برگزاری</span>
+              <strong id="meta-schedule">۲۴ آبان | ۰۹:۴۵ تا ۱۰:۴۵ صبح</strong>
+            </div>
+          </div>
+
+          <!-- کادر شمارش معکوس زنده -->
+          <div id="live-window-box" class="live-countdown-box">
+            <div class="countdown-title" id="window-status-title">در حال بررسی زمان آزمون...</div>
+            <div class="countdown-digits" id="window-countdown-timer">--:--:--</div>
+            <div style="font-size: 12px; color: var(--text-muted);" id="window-status-subtitle"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="student-fullname">نام و نام خانوادگی (الزامی):</label>
+            <input type="text" id="student-fullname" class="input-control" placeholder="نام و نام خانوادگی خود را بنویسید..." autocomplete="off">
+          </div>
+
+          <div class="form-group">
+            <label for="student-grade">پایه تحصیلی (الزامی):</label>
+            <select id="student-grade" class="input-control">
+              <option value="">-- انتخاب پایه تحصیلی --</option>
+              <option value="هفتم">هفتم</option>
+              <option value="هشتم" selected>هشتم</option>
+              <option value="نهم">نهم</option>
+            </select>
+          </div>
+
+          <div id="login-error" style="color: var(--danger); font-size: 13.5px; font-weight: bold; margin-bottom: 12px; display: none;"></div>
+
+          <button class="btn-primary" id="start-exam-btn" onclick="handleStartExam()">
+            <span>ورود به آزمون و نمایش سوالات</span>
+          </button>
+
+          <div style="margin-top: 14px; display:flex; justify-content:space-between; align-items:center; font-size: 12px; color: var(--text-muted);">
+            <span>بارم کل: ۲۰ نمره (۱۰ سوال)</span>
+            <span id="supabase-ping-status">بررسی سرور...</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ۲. صفحه سوالات آزمون -->
+      <section id="exam-view" class="hidden">
+
+        <div class="glass-card" style="padding: 14px 18px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; border-right: 5px solid var(--primary);">
+          <div>
+            <strong>فصل دوم: عددهای اول</strong>
+            <span style="font-size: 12.5px; color: var(--text-muted); margin-right: 6px;">(ذخیره خودکار فعال است)</span>
+          </div>
+          <div style="font-size: 13.5px; font-weight: bold; color: var(--primary);">
+            زمان باقی‌مانده: <span id="inline-remaining-text">60 دقیقه و 00 ثانیه</span>
+          </div>
+        </div>
+
+        <!-- کارنامه نهایی -->
+        <div id="result-card" class="glass-card hidden" style="border: 2px solid var(--primary);">
+          <h3 style="color: var(--primary); margin-bottom: 10px;">کارنامه و نتیجه نهایی آزمون</h3>
+          <div class="exam-meta-grid">
+            <div class="meta-box">
+              <span>نام دانش‌آموز</span>
+              <strong id="res-name">-</strong>
+            </div>
+            <div class="meta-box">
+              <span>نمره کسب‌شده از ۲۰</span>
+              <strong id="res-score" style="font-size: 19px; color: var(--success);">-</strong>
+            </div>
+            <div class="meta-box">
+              <span>بخش اول (سوال ۱ تا ۸)</span>
+              <strong id="res-part1">-</strong>
+            </div>
+            <div class="meta-box">
+              <span>بخش دوم (سوال ۹ و ۱۰)</span>
+              <strong id="res-part2">-</strong>
+            </div>
+          </div>
+          <div id="supabase-sync-status" style="margin-top: 10px; font-weight: bold; font-size: 13.5px;"></div>
+          <button id="retry-sync-btn" class="btn-primary hidden" style="margin-top: 12px;" onclick="retrySendToSupabase()">
+            ارسال مجدد نمره به سرور
+          </button>
+        </div>
+
+        <div class="section-banner">
+          بخش اول: سوالات مفهومی، صحیح/غلط و چهارگزینه‌ای کتاب درسی (۱۲ نمره)
+        </div>
+
+        <!-- سوال ۱ -->
+        <div class="glass-card question-card" id="q-card-1">
+          <div class="question-header">
+            <span class="q-number">سوال ۱ (مفهوم عدد اول)</span>
+            <span class="q-score">۱.۵ نمره</span>
+          </div>
+          <div class="q-body">
+            کدام‌یک از عددهای زیر یک <strong>عدد اول</strong> است؟
+          </div>
+          <div class="options-list two-col">
+            <label class="radio-card"><input type="radio" name="q1" value="9" onchange="saveProgress()"> <span>عدد ۹</span></label>
+            <label class="radio-card"><input type="radio" name="q1" value="15" onchange="saveProgress()"> <span>عدد ۱۵</span></label>
+            <label class="radio-card"><input type="radio" name="q1" value="17" onchange="saveProgress()"> <span>عدد ۱۷</span></label>
+            <label class="radio-card"><input type="radio" name="q1" value="21" onchange="saveProgress()"> <span>عدد ۲۱</span></label>
+          </div>
+          <div class="feedback-badge" id="fb-q1"></div>
+        </div>
+
+        <!-- سوال ۲ -->
+        <div class="glass-card question-card" id="q-card-2">
+          <div class="question-header">
+            <span class="q-number">سوال ۲ (صحیح / غلط)</span>
+            <span class="q-score">۱ نمره</span>
+          </div>
+          <div class="q-body">
+            درستی یا نادرستی عبارت زیر را مشخص کنید:<br>
+            «عدد <strong>۱</strong> نه عدد اول است و نه عدد مرکب.»
+          </div>
+          <div class="options-list two-col">
+            <label class="radio-card"><input type="radio" name="q2" value="true" onchange="saveProgress()"> <span>صحیح</span></label>
+            <label class="radio-card"><input type="radio" name="q2" value="false" onchange="saveProgress()"> <span>غلط</span></label>
+          </div>
+          <div class="feedback-badge" id="fb-q2"></div>
+        </div>
+
+        <!-- سوال ۳ -->
+        <div class="glass-card question-card" id="q-card-3">
+          <div class="question-header">
+            <span class="q-number">سوال ۳ (صحیح / غلط)</span>
+            <span class="q-score">۱ نمره</span>
+          </div>
+          <div class="q-body">
+            درستی یا نادرستی عبارت زیر را مشخص کنید:<br>
+            «تنها عدد زوجی که اول است، عدد <strong>۲</strong> می‌باشد و بقیه عددهای زوجِ بزرگ‌تر از ۲ مرکب هستند.»
+          </div>
+          <div class="options-list two-col">
+            <label class="radio-card"><input type="radio" name="q3" value="true" onchange="saveProgress()"> <span>صحیح</span></label>
+            <label class="radio-card"><input type="radio" name="q3" value="false" onchange="saveProgress()"> <span>غلط</span></label>
+          </div>
+          <div class="feedback-badge" id="fb-q3"></div>
+        </div>
+
+        <!-- سوال ۴ -->
+        <div class="glass-card question-card" id="q-card-4">
+          <div class="question-header">
+            <span class="q-number">سوال ۴ (تکمیل عبارت)</span>
+            <span class="q-score">۱.۵ نمره</span>
+          </div>
+          <div class="q-body">
+            عددهای اول یک‌رقمی عبارت‌اند از: ۲، ۳، ۵ و
+            <select id="q4" class="input-control" style="width: auto; display: inline-block; padding: 6px 14px; margin: 0 6px;" onchange="saveProgress()">
+              <option value="">-- انتخاب کنید --</option>
+              <option value="6">۶</option>
+              <option value="7">۷</option>
+              <option value="8">۸</option>
+              <option value="9">۹</option>
+            </select>
+            .
+          </div>
+          <div class="feedback-badge" id="fb-q4"></div>
+        </div>
+
+        <!-- سوال ۵ -->
+        <div class="glass-card question-card" id="q-card-5">
+          <div class="question-header">
+            <span class="q-number">سوال ۵ (اعداد اول نسبت به هم)</span>
+            <span class="q-score">۱.۵ نمره</span>
+          </div>
+          <div class="q-body">
+            دو عدد طبیعی وقتی <strong>نسبت به هم اول</strong> هستند که بزرگ‌ترین شمارنده مشترک آن‌ها برابر ۱ باشد. کدام جفت از اعداد زیر نسبت به هم اول هستند؟
+          </div>
+          <div class="options-list two-col">
+            <label class="radio-card"><input type="radio" name="q5" value="4-6" onchange="saveProgress()"> <span>۴ و ۶</span></label>
+            <label class="radio-card"><input type="radio" name="q5" value="8-9" onchange="saveProgress()"> <span>۸ و ۹</span></label>
+            <label class="radio-card"><input type="radio" name="q5" value="10-15" onchange="saveProgress()"> <span>۱۰ و ۱۵</span></label>
+            <label class="radio-card"><input type="radio" name="q5" value="12-18" onchange="saveProgress()"> <span>۱۲ و ۱۸</span></label>
+          </div>
+          <div class="feedback-badge" id="fb-q5"></div>
+        </div>
+
+        <!-- سوال ۶ -->
+        <div class="glass-card question-card" id="q-card-6">
+          <div class="question-header">
+            <span class="q-number">سوال ۶ (روش غربال)</span>
+            <span class="q-score">۲ نمره</span>
+          </div>
+          <div class="q-body">
+            در روش غربال برای پیدا کردن عددهای اول بین ۱ تا ۳۰، پس از خط زدن عدد ۱ و مضرب‌های ۲ و ۳، آخرین عدد اولی که مضرب‌های آن را خط می‌زنیم کدام است؟
+          </div>
+          <div class="options-list two-col">
+            <label class="radio-card"><input type="radio" name="q6" value="3" onchange="saveProgress()"> <span>عدد ۳</span></label>
+            <label class="radio-card"><input type="radio" name="q6" value="5" onchange="saveProgress()"> <span>عدد ۵ (چون ۵×۵=۲۵ کمتر از ۳۰ است)</span></label>
+            <label class="radio-card"><input type="radio" name="q6" value="7" onchange="saveProgress()"> <span>عدد ۷ (چون ۷×۷=۴۹ است)</span></label>
+            <label class="radio-card"><input type="radio" name="q6" value="11" onchange="saveProgress()"> <span>عدد ۱۱</span></label>
+          </div>
+          <div class="feedback-badge" id="fb-q6"></div>
+        </div>
+
+        <!-- سوال ۷ -->
+        <div class="glass-card question-card" id="q-card-7">
+          <div class="question-header">
+            <span class="q-number">سوال ۷ (شمارنده‌های اول)</span>
+            <span class="q-score">۲ نمره</span>
+          </div>
+          <div class="q-body">
+            اگر عدد <strong>۲۰</strong> را به صورت ضرب عوامل اول بنویسیم (۵ × ۲ × ۲ = ۲۰)، شمارنده‌های اول عدد ۲۰ کدام‌اند؟
+          </div>
+          <div class="options-list two-col">
+            <label class="radio-card"><input type="radio" name="q7" value="2-5" onchange="saveProgress()"> <span>فقط ۲ و ۵</span></label>
+            <label class="radio-card"><input type="radio" name="q7" value="1-2-5" onchange="saveProgress()"> <span>۱ و ۲ و ۵</span></label>
+            <label class="radio-card"><input type="radio" name="q7" value="4-5" onchange="saveProgress()"> <span>۴ و ۵</span></label>
+            <label class="radio-card"><input type="radio" name="q7" value="2-4-5-10" onchange="saveProgress()"> <span>۲ و ۴ و ۵ و ۱۰</span></label>
+          </div>
+          <div class="feedback-badge" id="fb-q7"></div>
+        </div>
+
+        <!-- سوال ۸ -->
+        <div class="glass-card question-card" id="q-card-8">
+          <div class="question-header">
+            <span class="q-number">سوال ۸ (جای خالی)</span>
+            <span class="q-score">۱.۵ نمره</span>
+          </div>
+          <div class="q-body">
+            کوچک‌ترین عدد اول دو رقمی، عدد
+            <select id="q8" class="input-control" style="width: auto; display: inline-block; padding: 6px 14px; margin: 0 6px;" onchange="saveProgress()">
+              <option value="">-- انتخاب کنید --</option>
+              <option value="10">۱۰</option>
+              <option value="11">۱۱</option>
+              <option value="12">۱۲</option>
+              <option value="13">۱۳</option>
+            </select>
+            است.
+          </div>
+          <div class="feedback-badge" id="fb-q8"></div>
+        </div>
+
+        <div class="section-banner" style="margin-top: 30px;">
+          بخش دوم: مسائل تشریحی گام‌به‌گام در سطح کتاب درسی (۸ نمره)
+        </div>
+
+        <!-- سوال ۹ -->
+        <div class="glass-card question-card" id="q-card-9">
+          <div class="question-header">
+            <span class="q-number">سوال ۹ (مسئله تشریحی: غربال عددهای ۱ تا ۲۵)</span>
+            <span class="q-score">۴ نمره (گام‌به‌گام)</span>
+          </div>
+          <div class="q-body">
+            می‌خواهیم به روش غربال کتاب درسی، عددهای اول بین <strong>۱ تا ۲۵</strong> را پیدا کنیم. گام‌های زیر را به ترتیب کامل کنید:
+          </div>
+
+          <div class="step-box">
+            <div class="step-title">
+              <span>گام اول: تعیین وضعیت عدد ۱</span>
+              <span>۰.۷۵ نمره</span>
+            </div>
+            <p style="font-size: 14px; margin-bottom: 8px;">در ابتدای جدول غربال، با عدد ۱ چه کار می‌کنیم؟</p>
+            <select id="q9_s1" class="input-control" onchange="saveProgress()">
+              <option value="">-- انتخاب کنید --</option>
+              <option value="cross1">عدد ۱ را خط می‌زنیم، چون نه اول است و نه مرکب</option>
+              <option value="circle1">دور عدد ۱ خط می‌کشیم چون عدد اول است</option>
+              <option value="mul1">مضرب‌های ۱ را خط می‌زنیم</option>
+            </select>
+            <div class="feedback-badge" id="fb-q9-s1"></div>
+          </div>
+
+          <div class="step-box">
+            <div class="step-title">
+              <span>گام دوم: تعیین عددهای اول برای خط زدن مضرب‌ها</span>
+              <span>۰.۷۵ نمره</span>
+            </div>
+            <p style="font-size: 14px; margin-bottom: 8px;">چون ۵ × ۵ برابر ۲۵ می‌شود، برای غربال ۱ تا ۲۵ کافی است مضرب‌های کدام عددهای اول را خط بزنیم؟</p>
+            <select id="q9_s2" class="input-control" onchange="saveProgress()">
+              <option value="">-- انتخاب کنید --</option>
+              <option value="2-3-5">عددهای اول ۲، ۳ و ۵</option>
+              <option value="2-4-6">عددهای زوج ۲، ۴ و ۶</option>
+              <option value="2-3-5-7">عددهای اول ۲، ۳، ۵ و ۷</option>
+            </select>
+            <div class="feedback-badge" id="fb-q9-s2"></div>
+          </div>
+
+          <div class="step-box">
+            <div class="step-title">
+              <span>گام سوم: جایگذاری و محاسبه اولین مضرب جدید عدد ۵</span>
+              <span>۱ نمره</span>
+            </div>
+            <p style="font-size: 14px; margin-bottom: 8px;">وقتی سراغ خط زدن مضرب‌های ۵ می‌رویم، مضرب‌های ۱۰، ۱۵ و ۲۰ قبلاً خط خورده‌اند. تنها مضرب ۵ در این جدول که برای اولین بار خط می‌خورد کدام عدد است؟ (حاصل ۵ × ۵ را به عدد وارد کنید)</p>
+            <input type="number" id="q9_s3" class="input-control" placeholder="عدد را بنویسید..." oninput="saveProgress()">
+            <div class="feedback-badge" id="fb-q9-s3"></div>
+          </div>
+
+          <div class="step-box">
+            <div class="step-title">
+              <span>گام چهارم: بررسی اولین مضرب جدید عدد ۳</span>
+              <span>۰.۷۵ نمره</span>
+            </div>
+            <p style="font-size: 14px; margin-bottom: 8px;">در مرحله خط زدن مضرب‌های عدد ۳، کدام عبارت اولین مضرب ۳ را نشان می‌دهد که قبلاً در مضرب‌های ۲ خط نخورده است؟</p>
+            <select id="q9_s4" class="input-control" onchange="saveProgress()">
+              <option value="">-- انتخاب مرحله محاسبه --</option>
+              <option value="6">۳ × ۲ = ۶</option>
+              <option value="9">۳ × ۳ = ۹</option>
+              <option value="12">۳ × ۴ = ۱۲</option>
+            </select>
+            <div class="feedback-badge" id="fb-q9-s4"></div>
+          </div>
+
+          <div class="step-box">
+            <div class="step-title">
+              <span>گام پنجم: پاسخ نهایی</span>
+              <span>۰.۷۵ نمره</span>
+            </div>
+            <p style="font-size: 14px; margin-bottom: 8px;">بزرگ‌ترین عدد اول بین ۱ تا ۲۵ که در پایان غربال خط‌نخورده باقی می‌ماند کدام عدد است؟ (بین ۲۱، ۲۳ و ۲۵ کدام عدد اول است؟)</p>
+            <input type="number" id="q9_s5" class="input-control" placeholder="عدد نهایی را بنویسید..." oninput="saveProgress()">
+            <div class="feedback-badge" id="fb-q9-s5"></div>
+          </div>
+        </div>
+
+        <!-- سوال ۱۰ -->
+        <div class="glass-card question-card" id="q-card-10">
+          <div class="question-header">
+            <span class="q-number">سوال ۱۰ (مسئله تشریحی: تجزیه به عوامل اول و شمارنده مشترک)</span>
+            <span class="q-score">۴ نمره (گام‌به‌گام)</span>
+          </div>
+          <div class="q-body">
+            می‌خواهیم عددهای <strong>۱۲</strong> و <strong>۱۸</strong> را به روش نمودار درختی به عوامل اول تجزیه کرده و <strong>بزرگ‌ترین شمارنده مشترک (ب.م.م)</strong> آن‌ها را پیدا کنیم:
+          </div>
+
+          <div class="step-box">
+            <div class="step-title">
+              <span>گام اول: تجزیه عدد ۱۲ به عوامل اول</span>
+              <span>۰.۷۵ نمره</span>
+            </div>
+            <p style="font-size: 14px; margin-bottom: 8px;">کدام گزینه تجزیه عدد ۱۲ را به صورت ضرب عددهای اول نشان می‌دهد؟</p>
+            <select id="q10_s1" class="input-control" onchange="saveProgress()">
+              <option value="">-- انتخاب تجزیه ۱۲ --</option>
+              <option value="2-2-3">۲ × ۲ × ۳ = ۱۲</option>
+              <option value="3-4">۳ × ۴ = ۱۲</option>
+              <option value="2-6">۲ × ۶ = ۱۲</option>
+            </select>
+            <div class="feedback-badge" id="fb-q10-s1"></div>
+          </div>
+
+          <div class="step-box">
+            <div class="step-title">
+              <span>گام دوم: تجزیه عدد ۱۸ به عوامل اول</span>
+              <span>۰.۷۵ نمره</span>
+            </div>
+            <p style="font-size: 14px; margin-bottom: 8px;">کدام گزینه تجزیه عدد ۱۸ را به صورت ضرب عددهای اول نشان می‌دهد؟</p>
+            <select id="q10_s2" class="input-control" onchange="saveProgress()">
+              <option value="">-- انتخاب تجزیه ۱۸ --</option>
+              <option value="2-9">۲ × ۹ = ۱۸</option>
+              <option value="2-3-3">۲ × ۳ × ۳ = ۱۸</option>
+              <option value="3-6">۳ × ۶ = ۱۸</option>
+            </select>
+            <div class="feedback-badge" id="fb-q10-s2"></div>
+          </div>
+
+          <div class="step-box">
+            <div class="step-title">
+              <span>گام سوم: جایگذاری عامل اول مشترک</span>
+              <span>۱ نمره</span>
+            </div>
+            <p style="font-size: 14px; margin-bottom: 8px;">در تجزیه هر دو عدد ۱۲ و ۱۸، علاوه بر عدد ۲، کدام عدد اول دیگر در هر دو مشترک است؟ (عدد را وارد کنید)</p>
+            <input type="number" id="q10_s3" class="input-control" placeholder="عامل اول مشترک دیگر..." oninput="saveProgress()">
+            <div class="feedback-badge" id="fb-q10-s3"></div>
+          </div>
+
+          <div class="step-box">
+            <div class="step-title">
+              <span>گام چهارم: تشکیل عبارت ضرب شمارنده مشترک</span>
+              <span>۰.۷۵ نمره</span>
+            </div>
+            <p style="font-size: 14px; margin-bottom: 8px;">برای به دست آوردن بزرگ‌ترین شمارنده مشترک ۱۲ و ۱۸، کدام عوامل اول مشترک را در هم ضرب می‌کنیم؟</p>
+            <select id="q10_s4" class="input-control" onchange="saveProgress()">
+              <option value="">-- انتخاب عبارت محاسبه --</option>
+              <option value="2-3">۲ × ۳</option>
+              <option value="2-2-3-3">۲ × ۲ × ۳ × ۳</option>
+              <option value="2-2">۲ × ۲</option>
+            </select>
+            <div class="feedback-badge" id="fb-q10-s4"></div>
+          </div>
+
+          <div class="step-box">
+            <div class="step-title">
+              <span>گام پنجم: پاسخ نهایی (ب.م.م ۱۲ و ۱۸)</span>
+              <span>۰.۷۵ نمره</span>
+            </div>
+            <p style="font-size: 14px; margin-bottom: 8px;">بزرگ‌ترین شمارنده مشترک دو عدد ۱۲ و ۱۸ برابر چه عددی است؟</p>
+            <input type="number" id="q10_s5" class="input-control" placeholder="پاسخ نهایی را وارد کنید..." oninput="saveProgress()">
+            <div class="feedback-badge" id="fb-q10-s5"></div>
+          </div>
+        </div>
+
+        <div class="glass-card" style="text-align: center;">
+          <p style="margin-bottom: 14px; color: var(--text-muted); font-size: 14px;">
+            پیش از ثبت نهایی، پاسخ‌های خود را مرور کنید. ثبت نهایی فقط <strong>یک بار</strong> قابل انجام است.
+          </p>
+          <button class="btn-primary" id="final-submit-btn" onclick="confirmAndSubmitExam()">
+            <span>ثبت نهایی آزمون و دریافت کارنامه</span>
+          </button>
+        </div>
+
+      </section>
+    </main>
+  </div>
+
+  <!-- پنل مخفی مدیریت دبیر (بدون نمایش کد در کادر) -->
+  <div class="modal-backdrop" id="teacher-modal">
+    <div class="modal-content">
+      <h3 style="color: var(--primary); margin-bottom: 8px;">پنل مدیریت دبیر (برزگری)</h3>
+      <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 12px;">
+        رمز عبور مدیریت را وارد کرده و عملیات مورد نظر را انتخاب کنید:
+      </p>
+      <input type="password" id="teacher-pass-input" class="input-control" style="margin-bottom: 10px;" autocomplete="off">
+      <div id="teacher-modal-msg" style="font-size: 13px; font-weight: bold; margin-bottom: 10px; display: none;"></div>
+
+      <div class="admin-btn-group">
+        <button class="btn-primary" onclick="handleTeacherAction('UNLOCK_TIME')" style="background: var(--success);">
+          باز کردن قفل زمانی (فعال‌سازی فوری آزمون)
+        </button>
+        <button class="btn-primary" onclick="handleTeacherAction('LOCK_TIME')" style="background: var(--warning);">
+          بازگردانی قفل زمانی (۲۴ آبان ۰۹:۴۵ تا ۱۰:۴۵)
+        </button>
+        <button class="btn-primary" onclick="handleTeacherAction('FULL_RESET')" style="background: var(--danger);">
+          ریست کامل آزمون، پاسخ‌ها و تایمر دانش‌آموز
+        </button>
+        <button class="btn-primary" onclick="closeTeacherModal()" style="background: #64748b;">
+          بستن پنل
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* =========================================================================
+       ۱. تنظیمات پایه و متغیرهای زمان‌بندی آزمون
+       ========================================================================= */
+    const EXAM_CONFIG = {
+      SUBJECT: "ریاضی",
+      TOPIC: "ریاضی هشتم - فصل دوم (عددهای اول)",
+      SCHOOL: "مدرسه بهار دانش 4",
+      TEACHER: "برزگری",
+
+      // تاریخ فردا یکشنبه ۲۴ آبان (۱۵ نوامبر ۲۰۲۶) ساعت ۰۹:۴۵ تا ۱۰:۴۵ صبح
+      EXAM_DATE_GREGORIAN: "2026-11-15",
+      START_TIME: "09:45",
+      END_TIME: "10:45",
+      DURATION_MINUTES: 60,
+
+      TEACHER_RESET_CODE: "9162",
+      STORAGE_KEY: "BAHAR_DANESH4_MATH8_CH2_FINAL"
+    };
+
+    const SUPABASE_URL = "https://tpwdrzwfzdbmwqlblntu.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_ASPIzP1XV1iSweCV43Oy9Q_PCkz5htN";
+    const ACTIVE_SCHOOL = EXAM_CONFIG.SCHOOL;
+    const ACTIVE_SUBJECT = `${EXAM_CONFIG.SUBJECT} (${EXAM_CONFIG.TOPIC})`;
+
+    let appState = {
+      started: false,
+      submitted: false,
+      timeLockBypassed: false,
+      studentName: "",
+      studentGrade: "هشتم",
+      startTimeStamp: null,
+      remainingSeconds: EXAM_CONFIG.DURATION_MINUTES * 60,
+      answers: {},
+      finalScore: null,
+      detailsText: "",
+      syncedToSupabase: false
+    };
+
+    let examTimerInterval = null;
+    let windowTimerInterval = null;
+
+    window.addEventListener("DOMContentLoaded", () => {
+      initUIHeaders();
+      buildSidebarNav();
+      loadSavedState();
+      updateWindowCountdownAndLock();
+      windowTimerInterval = setInterval(updateWindowCountdownAndLock, 1000);
+      pingSupabaseServer();
+      initSecretTrigger();
+    });
+
+    function initUIHeaders() {
+      document.getElementById("header-school-badge").textContent = EXAM_CONFIG.SCHOOL;
+      document.getElementById("secret-trigger-2").textContent = EXAM_CONFIG.TEACHER;
+      document.getElementById("login-topic-title").textContent = EXAM_CONFIG.TOPIC;
+      document.getElementById("meta-subject").textContent = EXAM_CONFIG.SUBJECT;
+      document.getElementById("meta-teacher").textContent = EXAM_CONFIG.TEACHER;
+      document.getElementById("meta-school").textContent = EXAM_CONFIG.SCHOOL;
+
+      if (EXAM_CONFIG.EXAM_DATE_GREGORIAN && EXAM_CONFIG.START_TIME && EXAM_CONFIG.END_TIME) {
+        document.getElementById("meta-schedule").textContent =
+          `۲۴ آبان | ساعت ${EXAM_CONFIG.START_TIME} تا ${EXAM_CONFIG.END_TIME} صبح`;
+      } else {
+        document.getElementById("meta-schedule").textContent = "آزاد (بدون محدودیت زمانی)";
+      }
+    }
+
+    function formatHMS(totalSeconds) {
+      const sec = Math.max(0, Math.floor(totalSeconds));
+      const h = Math.floor(sec / 3600);
+      const m = Math.floor((sec % 3600) / 60);
+      const s = sec % 60;
+      const pad = n => String(n).padStart(2, "0");
+      return `${pad(h)}:${pad(m)}:${pad(s)}`;
+    }
+
+    function getExamWindowStatus() {
+      if (appState.timeLockBypassed) {
+        return {
+          allowed: true,
+          state: "BYPASSED",
+          title: "قفل زمانی توسط دبیر باز شده است (حالت آزاد)",
+          timerText: "60:00",
+          subtitle: "هم‌اکنون می‌توانید وارد آزمون شوید."
+        };
+      }
+
+      if (!EXAM_CONFIG.EXAM_DATE_GREGORIAN || !EXAM_CONFIG.START_TIME || !EXAM_CONFIG.END_TIME) {
+        return {
+          allowed: true,
+          state: "FREE",
+          title: "آزمون فعال و آماده شروع است",
+          timerText: "60:00",
+          subtitle: "محدودیت زمانی تنظیم نشده است."
+        };
+      }
+
+      const now = new Date();
+      const [startH, startM] = EXAM_CONFIG.START_TIME.split(":").map(Number);
+      const [endH, endM] = EXAM_CONFIG.END_TIME.split(":").map(Number);
+      const [gYear, gMonth, gDay] = EXAM_CONFIG.EXAM_DATE_GREGORIAN.split("-").map(Number);
+
+      const startDate = new Date(gYear, gMonth - 1, gDay, startH, startM, 0);
+      const endDate = new Date(gYear, gMonth - 1, gDay, endH, endM, 0);
+
+      const nowMs = now.getTime();
+      const startMs = startDate.getTime();
+      const endMs = endDate.getTime();
+
+      if (nowMs < startMs) {
+        const diffSec = Math.floor((startMs - nowMs) / 1000);
+        return {
+          allowed: false,
+          state: "BEFORE",
+          title: "آزمون هنوز شروع نشده است (زمان مانده تا شروع):",
+          timerText: formatHMS(diffSec),
+          subtitle: `زمان فعال‌سازی: ۲۴ آبان ساعت ${EXAM_CONFIG.START_TIME} صبح`
+        };
+      }
+
+      if (nowMs >= endMs) {
+        const passedSec = Math.floor((nowMs - endMs) / 1000);
+        return {
+          allowed: false,
+          state: "AFTER",
+          title: "مهلت زمان آزمون به پایان رسیده و قفل شده است",
+          timerText: formatHMS(passedSec),
+          subtitle: `بازه مجاز آزمون: ۲۴ آبان ساعت ${EXAM_CONFIG.START_TIME} تا ${EXAM_CONFIG.END_TIME} صبح بود.`
+        };
+      }
+
+      const remainSec = Math.floor((endMs - nowMs) / 1000);
+      return {
+        allowed: true,
+        state: "ACTIVE",
+        remainSec: remainSec,
+        title: "آزمون فعال است! زمان باقی‌مانده تا بسته شدن آزمون:",
+        timerText: formatHMS(remainSec),
+        subtitle: `مهلت پاسخگویی تا ساعت ${EXAM_CONFIG.END_TIME} صبح می‌باشد.`
+      };
+    }
+
+    function updateWindowCountdownAndLock() {
+      const box = document.getElementById("live-window-box");
+      const titleEl = document.getElementById("window-status-title");
+      const digitsEl = document.getElementById("window-countdown-timer");
+      const subEl = document.getElementById("window-status-subtitle");
+      const startBtn = document.getElementById("start-exam-btn");
+
+      const status = getExamWindowStatus();
+
+      titleEl.textContent = status.title;
+      digitsEl.textContent = status.timerText;
+      subEl.textContent = status.subtitle;
+
+      if (status.allowed) {
+        box.className = "live-countdown-box unlocked";
+        if (!appState.submitted) startBtn.disabled = false;
+
+        if (!appState.started && status.remainSec !== undefined) {
+          renderHeaderTimer(status.remainSec);
+        }
+      } else {
+        box.className = status.state === "BEFORE" ? "live-countdown-box waiting" : "live-countdown-box expired";
+        if (!appState.started) {
+          startBtn.disabled = true;
+        } else if (!appState.submitted && status.state === "AFTER") {
+          finalizeExam(true);
+        }
+      }
+    }
+
+    async function pingSupabaseServer() {
+      const el = document.getElementById("supabase-ping-status");
+      try {
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/Students?select=Student_name&limit=1`, {
+          method: "GET",
+          headers: {
+            "apikey": SUPABASE_KEY,
+            "Authorization": `Bearer ${SUPABASE_KEY}`
+          }
+        });
+        if (res.ok || res.status === 401 || res.status === 404) {
+          el.style.color = "var(--success)";
+          el.textContent = "● سرور ثبت نمره آماده است";
+        } else {
+          el.style.color = "var(--warning)";
+          el.textContent = "● حالت آفلاین فعال است";
+        }
+      } catch (e) {
+        el.style.color = "var(--warning)";
+        el.textContent = "● محاسبه آفلاین کارنامه فعال است";
+      }
+    }
+
+    async function sendToSupabase(studentName, score, totalScore, detailsText) {
+      const payload = {
+        Student_name: studentName,
+        School_name: ACTIVE_SCHOOL,
+        Subject: ACTIVE_SUBJECT,
+        Score: parseFloat(score),
+        Total_score: parseFloat(totalScore),
+        Details: detailsText
+      };
+
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/Students`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${SUPABASE_KEY}`,
+          "Prefer": "return=minimal"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error(`خطای سرور: ${response.status}`);
+      }
+      return true;
+    }
+
+    function handleStartExam() {
+      const status = getExamWindowStatus();
+      const errEl = document.getElementById("login-error");
+
+      if (!status.allowed) {
+        errEl.style.display = "block";
+        errEl.textContent = status.title;
+        return;
+      }
+
+      const nameVal = document.getElementById("student-fullname").value.trim();
+      const gradeVal = document.getElementById("student-grade").value;
+
+      if (!nameVal || nameVal.length < 3) {
+        errEl.style.display = "block";
+        errEl.textContent = "لطفاً نام و نام خانوادگی خود را به صورت کامل وارد کنید.";
+        return;
+      }
+      if (!gradeVal) {
+        errEl.style.display = "block";
+        errEl.textContent = "لطفاً پایه تحصیلی خود را انتخاب نمایید.";
+        return;
+      }
+
+      errEl.style.display = "none";
+      appState.started = true;
+      appState.studentName = nameVal;
+      appState.studentGrade = gradeVal;
+
+      if (!appState.startTimeStamp) {
+        appState.startTimeStamp = Date.now();
+        if (status.remainSec !== undefined && !appState.timeLockBypassed) {
+          appState.remainingSeconds = Math.min(EXAM_CONFIG.DURATION_MINUTES * 60, status.remainSec);
+        } else {
+          appState.remainingSeconds = EXAM_CONFIG.DURATION_MINUTES * 60;
+        }
+      }
+
+      saveToLocalStorage();
+      showExamView();
+    }
+
+    function showExamView() {
+      document.getElementById("login-view").classList.add("hidden");
+      document.getElementById("exam-view").classList.remove("hidden");
+      document.getElementById("main-layout").classList.add("exam-active");
+
+      document.getElementById("side-student-name").textContent = appState.studentName;
+      document.getElementById("side-student-grade").textContent = appState.studentGrade;
+
+      restoreInputsFromState();
+      updateProgressUI();
+
+      if (appState.submitted) {
+        lockAllInputs();
+        evaluateAndShowFeedback();
+      } else {
+        startStudentCountdown();
+      }
+    }
+
+    function startStudentCountdown() {
+      if (examTimerInterval) clearInterval(examTimerInterval);
+
+      examTimerInterval = setInterval(() => {
+        if (appState.submitted) {
+          clearInterval(examTimerInterval);
+          return;
+        }
+
+        const status = getExamWindowStatus();
+        if (status.state === "ACTIVE" && status.remainSec !== undefined && !appState.timeLockBypassed) {
+          appState.remainingSeconds = status.remainSec;
+        } else {
+          const elapsed = Math.floor((Date.now() - appState.startTimeStamp) / 1000);
+          appState.remainingSeconds = Math.max(0, (EXAM_CONFIG.DURATION_MINUTES * 60) - elapsed);
+        }
+
+        renderHeaderTimer(appState.remainingSeconds);
+
+        if (appState.remainingSeconds <= 0) {
+          clearInterval(examTimerInterval);
+          finalizeExam(true);
+        }
+      }, 1000);
+    }
+
+    function renderHeaderTimer(sec) {
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      const mStr = String(m).padStart(2, "0");
+      const sStr = String(s).padStart(2, "0");
+
+      document.getElementById("timer-text").textContent = `${mStr}:${sStr}`;
+
+      const inlineEl = document.getElementById("inline-remaining-text");
+      if (inlineEl) {
+        inlineEl.textContent = `${m} دقیقه و ${sStr} ثانیه`;
+      }
+
+      const pill = document.getElementById("global-timer");
+      if (sec <= 300) {
+        pill.classList.add("urgent");
+      } else {
+        pill.classList.remove("urgent");
+      }
+    }
+
+    function saveProgress() {
+      if (appState.submitted) return;
+
+      ["q1", "q2", "q3", "q5", "q6", "q7"].forEach(qName => {
+        const checked = document.querySelector(`input[name="${qName}"]:checked`);
+        appState.answers[qName] = checked ? checked.value : "";
+      });
+
+      [
+        "q4", "q8",
+        "q9_s1", "q9_s2", "q9_s3", "q9_s4", "q9_s5",
+        "q10_s1", "q10_s2", "q10_s3", "q10_s4", "q10_s5"
+      ].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) appState.answers[id] = el.value.trim();
+      });
+
+      saveToLocalStorage();
+      updateProgressUI();
+    }
+
+    function restoreInputsFromState() {
+      const ans = appState.answers || {};
+
+      ["q1", "q2", "q3", "q5", "q6", "q7"].forEach(qName => {
+        if (ans[qName]) {
+          const radio = document.querySelector(`input[name="${qName}"][value="${ans[qName]}"]`);
+          if (radio) radio.checked = true;
+        }
+      });
+
+      [
+        "q4", "q8",
+        "q9_s1", "q9_s2", "q9_s3", "q9_s4", "q9_s5",
+        "q10_s1", "q10_s2", "q10_s3", "q10_s4", "q10_s5"
+      ].forEach(id => {
+        if (ans[id] !== undefined) {
+          const el = document.getElementById(id);
+          if (el) el.value = ans[id];
+        }
+      });
+    }
+
+    function saveToLocalStorage() {
+      localStorage.setItem(EXAM_CONFIG.STORAGE_KEY, JSON.stringify(appState));
+    }
+
+    function loadSavedState() {
+      const raw = localStorage.getItem(EXAM_CONFIG.STORAGE_KEY);
+      if (!raw) return;
+      try {
+        const parsed = JSON.parse(raw);
+        appState = { ...appState, ...parsed };
+        if (appState.studentName) {
+          document.getElementById("student-fullname").value = appState.studentName;
+        }
+        if (appState.studentGrade) {
+          document.getElementById("student-grade").value = appState.studentGrade;
+        }
+        if (appState.started) {
+          showExamView();
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    function buildSidebarNav() {
+      const grid = document.getElementById("question-nav-grid");
+      grid.innerHTML = "";
+      for (let i = 1; i <= 10; i++) {
+        const item = document.createElement("div");
+        item.className = "nav-item";
+        item.id = `nav-q-${i}`;
+        item.textContent = `س ${i}`;
+        item.onclick = () => {
+          const target = document.getElementById(`q-card-${i}`);
+          if (target) target.scrollIntoView({ behavior: "smooth", block: "center" });
+        };
+        grid.appendChild(item);
+      }
+    }
+
+    function isQuestionAnswered(qIndex) {
+      const a = appState.answers;
+      if (qIndex >= 1 && qIndex <= 8) {
+        return Boolean(a[`q${qIndex}`]);
+      }
+      if (qIndex === 9) {
+        return Boolean(a.q9_s1 && a.q9_s2 && a.q9_s3 && a.q9_s4 && a.q9_s5);
+      }
+      if (qIndex === 10) {
+        return Boolean(a.q10_s1 && a.q10_s2 && a.q10_s3 && a.q10_s4 && a.q10_s5);
+      }
+      return false;
+    }
+
+    function updateProgressUI() {
+      let count = 0;
+      for (let i = 1; i <= 10; i++) {
+        const navEl = document.getElementById(`nav-q-${i}`);
+        if (isQuestionAnswered(i)) {
+          count++;
+          if (navEl) navEl.classList.add("answered");
+        } else {
+          if (navEl) navEl.classList.remove("answered");
+        }
+      }
+      const pct = Math.round((count / 10) * 100);
+      document.getElementById("answered-percent").textContent = `${pct}%`;
+      document.getElementById("answered-bar").style.width = `${pct}%`;
+    }
+
+    window.addEventListener("scroll", () => {
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = docHeight > 0 ? (window.scrollY / docHeight) * 100 : 0;
+      document.getElementById("scroll-progress").style.width = `${pct}%`;
+    });
+
+    function toEnglishDigits(str) {
+      if (!str) return "";
+      return String(str)
+        .replace(/[۰-۹]/g, d => "۰۱۲۳۴۵۶۷۸۹".indexOf(d))
+        .replace(/[٠-٩]/g, d => "٠١٢٣٤٥٦٧٨٩".indexOf(d))
+        .trim();
+    }
+
+    function confirmAndSubmitExam() {
+      if (appState.submitted) return;
+      const ok = confirm("آیا از ثبت نهایی آزمون اطمینان دارید؟ پس از ثبت، پاسخ‌ها قفل خواهند شد.");
+      if (ok) {
+        finalizeExam(false);
+      }
+    }
+
+    async function finalizeExam(autoByTimer) {
+      saveProgress();
+      appState.submitted = true;
+      if (examTimerInterval) clearInterval(examTimerInterval);
+
+      lockAllInputs();
+      const result = evaluateAndShowFeedback();
+
+      appState.finalScore = result.totalScore;
+      appState.detailsText = result.detailsLog;
+      saveToLocalStorage();
+
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      await syncResultWithSupabase();
+    }
+
+    function evaluateAndShowFeedback() {
+      const a = appState.answers;
+      let part1Score = 0;
+      let part2Score = 0;
+      let details = [`پایه: ${appState.studentGrade}`];
+
+      const part1Key = [
+        { id: "q1", ans: "17", pts: 1.5, fb: "fb-q1", label: "س۱", explain: "عدد ۱۷ فقط دو شمارنده (۱ و ۱۷) دارد." },
+        { id: "q2", ans: "true", pts: 1, fb: "fb-q2", label: "س۲", explain: "صحیح؛ عدد ۱ نه اول است و نه مرکب." },
+        { id: "q3", ans: "true", pts: 1, fb: "fb-q3", label: "س۳", explain: "صحیح؛ عدد ۲ تنها عدد اول زوج است." },
+        { id: "q4", ans: "7", pts: 1.5, fb: "fb-q4", label: "س۴", explain: "عددهای اول یک‌رقمی ۲، ۳، ۵ و ۷ هستند." },
+        { id: "q5", ans: "8-9", pts: 1.5, fb: "fb-q5", label: "س۵", explain: "۸ و ۹ هیچ شمارنده مشترک بزرگ‌تر از ۱ ندارند." },
+        { id: "q6", ans: "5", pts: 2, fb: "fb-q6", label: "س۶", explain: "عدد ۵ است چون ۵×۵=۲۵ کمتر از ۳۰ است اما ۷×۷=۴۹ از ۳۰ بیشتر است." },
+        { id: "q7", ans: "2-5", pts: 2, fb: "fb-q7", label: "س۷", explain: "شمارنده‌های اول عدد ۲۰ فقط ۲ و ۵ هستند." },
+        { id: "q8", ans: "11", pts: 1.5, fb: "fb-q8", label: "س۸", explain: "کوچک‌ترین عدد اول دو رقمی ۱۱ است." }
+      ];
+
+      part1Key.forEach(item => {
+        const userVal = toEnglishDigits(a[item.id]);
+        const isCorrect = userVal === item.ans;
+        if (isCorrect) part1Score += item.pts;
+        details.push(`${item.label}:${isCorrect ? item.pts : 0}`);
+        showFeedbackBadge(item.fb, isCorrect, item.pts, item.explain);
+      });
+
+      const stepsKey = [
+        { id: "q9_s1", ans: "cross1", pts: 0.75, fb: "fb-q9-s1", label: "س۹گ۱", explain: "عدد ۱ را خط می‌زنیم چون نه اول است و نه مرکب." },
+        { id: "q9_s2", ans: "2-3-5", pts: 0.75, fb: "fb-q9-s2", label: "س۹گ۲", explain: "مضرب‌های عددهای اول ۲، ۳ و ۵ خط می‌خورند." },
+        { id: "q9_s3", ans: "25", pts: 1, fb: "fb-q9-s3", label: "س۹گ۳", explain: "۵ × ۵ = ۲۵" },
+        { id: "q9_s4", ans: "9", pts: 0.75, fb: "fb-q9-s4", label: "س۹گ۴", explain: "۳ × ۳ = ۹ (چون ۶ قبلاً در مضرب‌های ۲ خط خورده است)." },
+        { id: "q9_s5", ans: "23", pts: 0.75, fb: "fb-q9-s5", label: "س۹گ۵", explain: "عدد ۲۳ بزرگ‌ترین عدد اول بین ۱ تا ۲۵ است." },
+
+        { id: "q10_s1", ans: "2-2-3", pts: 0.75, fb: "fb-q10-s1", label: "س۱۰گ۱", explain: "۱۲ = ۲ × ۲ × ۳" },
+        { id: "q10_s2", ans: "2-3-3", pts: 0.75, fb: "fb-q10-s2", label: "س۱۰گ۲", explain: "۱۸ = ۲ × ۳ × ۳" },
+        { id: "q10_s3", ans: "3", pts: 1, fb: "fb-q10-s3", label: "س۱۰گ۳", explain: "عامل اول ۳ در هر دو مشترک است." },
+        { id: "q10_s4", ans: "2-3", pts: 0.75, fb: "fb-q10-s4", label: "س۱۰گ۴", explain: "حاصل‌ضرب عوامل اول مشترک: ۲ × ۳" },
+        { id: "q10_s5", ans: "6", pts: 0.75, fb: "fb-q10-s5", label: "س۱۰گ۵", explain: "بزرگ‌ترین شمارنده مشترک ۱۲ و ۱۸ برابر ۶ است." }
+      ];
+
+      stepsKey.forEach(step => {
+        const userVal = toEnglishDigits(a[step.id]);
+        const isCorrect = userVal === step.ans;
+        if (isCorrect) part2Score += step.pts;
+        details.push(`${step.label}:${isCorrect ? step.pts : 0}`);
+        showFeedbackBadge(step.fb, isCorrect, step.pts, step.explain);
+      });
+
+      const totalScore = part1Score + part2Score;
+
+      const resCard = document.getElementById("result-card");
+      resCard.classList.remove("hidden");
+      document.getElementById("res-name").textContent = `${appState.studentName} (${appState.studentGrade})`;
+      document.getElementById("res-score").textContent = `${totalScore} از ۲۰`;
+      document.getElementById("res-part1").textContent = `${part1Score} از ۱۲ نمره`;
+      document.getElementById("res-part2").textContent = `${part2Score} از ۸ نمره`;
+
+      return {
+        totalScore,
+        detailsLog: details.join(" | ")
+      };
+    }
+
+    function showFeedbackBadge(elementId, isCorrect, pts, explanation) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      if (isCorrect) {
+        el.className = "feedback-badge correct";
+        el.textContent = `✔ صحیح (+${pts} نمره) — ${explanation}`;
+      } else {
+        el.className = "feedback-badge wrong";
+        el.textContent = `✖ نادرست (۰ نمره) — پاسخ صحیح: ${explanation}`;
+      }
+    }
+
+    async function syncResultWithSupabase() {
+      const statusEl = document.getElementById("supabase-sync-status");
+      const retryBtn = document.getElementById("retry-sync-btn");
+
+      if (appState.syncedToSupabase) {
+        statusEl.style.color = "var(--success)";
+        statusEl.textContent = "✅ نمره شما در سامانه ثبت شده است.";
+        retryBtn.classList.add("hidden");
+        return;
+      }
+
+      statusEl.style.color = "var(--primary)";
+      statusEl.textContent = "در حال ارسال نمره به سرور...";
+      retryBtn.classList.add("hidden");
+
+      try {
+        await sendToSupabase(
+          `${appState.studentName} - ${appState.studentGrade}`,
+          appState.finalScore,
+          20,
+          appState.detailsText
+        );
+        appState.syncedToSupabase = true;
+        saveToLocalStorage();
+        statusEl.style.color = "var(--success)";
+        statusEl.textContent = "✅ نمره شما با موفقیت در سامانه ثبت شد.";
+      } catch (err) {
+        statusEl.style.color = "var(--danger)";
+        statusEl.textContent = "❌ کارنامه محاسبه شد اما ارسال اینترنتی نمره با خطا مواجه شد. پس از اتصال به اینترنت دکمه زیر را بزنید.";
+        retryBtn.classList.remove("hidden");
+      }
+    }
+
+    function retrySendToSupabase() {
+      syncResultWithSupabase();
+    }
+
+    function lockAllInputs() {
+      const inputs = document.querySelectorAll("#exam-view input, #exam-view select");
+      inputs.forEach(el => (el.disabled = true));
+      const submitBtn = document.getElementById("final-submit-btn");
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = "آزمون ثبت نهایی و قفل شده است";
+      }
+    }
+
+    function initSecretTrigger() {
+      let clickCount = 0;
+      let clickTimer = null;
+
+      const handleSecretClick = () => {
+        clickCount++;
+        clearTimeout(clickTimer);
+        if (clickCount >= 5) {
+          clickCount = 0;
+          openTeacherModal();
+        } else {
+          clickTimer = setTimeout(() => { clickCount = 0; }, 1600);
+        }
+      };
+
+      document.getElementById("secret-trigger-1").addEventListener("click", handleSecretClick);
+      document.getElementById("secret-trigger-2").addEventListener("click", handleSecretClick);
+
+      window.addEventListener("keydown", (e) => {
+        if ((e.ctrlKey && e.shiftKey && (e.key === "R" || e.key === "r")) || (e.altKey && (e.key === "r" || e.key === "R"))) {
+          e.preventDefault();
+          openTeacherModal();
+        }
+      });
+    }
+
+    function openTeacherModal() {
+      document.getElementById("teacher-pass-input").value = "";
+      document.getElementById("teacher-modal-msg").style.display = "none";
+      document.getElementById("teacher-modal").classList.add("active");
+      document.getElementById("teacher-pass-input").focus();
+    }
+
+    function closeTeacherModal() {
+      document.getElementById("teacher-modal").classList.remove("active");
+    }
+
+    function handleTeacherAction(actionType) {
+      const code = toEnglishDigits(document.getElementById("teacher-pass-input").value);
+      const msgEl = document.getElementById("teacher-modal-msg");
+
+      if (code !== EXAM_CONFIG.TEACHER_RESET_CODE) {
+        msgEl.style.display = "block";
+        msgEl.style.color = "var(--danger)";
+        msgEl.textContent = "رمز عبور نادرست است!";
+        return;
+      }
+
+      if (actionType === "UNLOCK_TIME") {
+        appState.timeLockBypassed = true;
+        appState.submitted = false;
+        appState.startTimeStamp = Date.now();
+        appState.remainingSeconds = EXAM_CONFIG.DURATION_MINUTES * 60;
+        saveToLocalStorage();
+        updateWindowCountdownAndLock();
+
+        msgEl.style.display = "block";
+        msgEl.style.color = "var(--success)";
+        msgEl.textContent = "قفل زمانی باز شد و آزمون فعال گردید.";
+        setTimeout(() => {
+          closeTeacherModal();
+          location.reload();
+        }, 700);
+      } else if (actionType === "LOCK_TIME") {
+        appState.timeLockBypassed = false;
+        saveToLocalStorage();
+        updateWindowCountdownAndLock();
+
+        msgEl.style.display = "block";
+        msgEl.style.color = "var(--warning)";
+        msgEl.textContent = "قفل زمانی ۲۴ آبان (۰۹:۴۵ تا ۱۰:۴۵) فعال شد.";
+        setTimeout(() => {
+          closeTeacherModal();
+          location.reload();
+        }, 700);
+      } else if (actionType === "FULL_RESET") {
+        localStorage.removeItem(EXAM_CONFIG.STORAGE_KEY);
+        if (examTimerInterval) clearInterval(examTimerInterval);
+        location.reload();
+      }
+    }
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      const isDark = html.getAttribute("data-theme") === "dark";
+      html.setAttribute("data-theme", isDark ? "light" : "dark");
+    }
+  </script>
+</body>
+</html>
