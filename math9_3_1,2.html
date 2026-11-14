@@ -1,0 +1,2515 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>سامانه جامع آموزش و ارزشیابی هوشمند</title>
+    <style>
+        :root {
+            --bg-dark: #070b14;
+            --bg-card: rgba(16, 24, 45, 0.78);
+            --bg-glass: rgba(255, 255, 255, 0.04);
+            --border-glass: rgba(255, 255, 255, 0.12);
+            --neon-cyan: #00f2fe;
+            --neon-blue: #4facfe;
+            --neon-purple: #a855f7;
+            --neon-emerald: #10b981;
+            --neon-amber: #f59e0b;
+            --neon-rose: #f43f5e;
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --font-main: 'Tahoma', 'Segoe UI', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        input, textarea {
+            user-select: text !important;
+        }
+
+        body, html {
+            width: 100%;
+            min-height: 100vh;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            font-family: var(--font-main);
+            overflow-x: hidden;
+            overflow-y: auto;
+            line-height: 1.75;
+            scroll-behavior: smooth;
+        }
+
+        /* کانواس پس‌زمینه ذرات */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* کانتینرهای اصلی */
+        .screen-layer {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            min-height: 100vh;
+            display: none;
+            padding: 25px 15px 60px;
+        }
+
+        .screen-layer.active {
+            display: block;
+            animation: fadeInScreen 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes fadeInScreen {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .container-box {
+            max-width: 1120px;
+            margin: 0 auto;
+        }
+
+        /* کارت شیشه‌ای نئونی */
+        .glass-panel {
+            background: var(--bg-card);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 22px;
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.08);
+            transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .glass-panel:hover {
+            border-color: rgba(0, 242, 254, 0.28);
+        }
+
+        /* تایپوگرافی و عناوین */
+        .title-glow {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-blue), var(--neon-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+        }
+
+        .section-header-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding-bottom: 14px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-glass);
+        }
+
+        /* دکمه‌ها */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 11px 22px;
+            border-radius: 12px;
+            border: 1px solid transparent;
+            font-family: var(--font-main);
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            text-decoration: none;
+            color: #fff;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0284c7, #2563eb);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 18px rgba(0, 242, 254, 0.25);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(0, 242, 254, 0.5);
+        }
+
+        .btn-emerald {
+            background: linear-gradient(135deg, #059669, #10b981);
+            border-color: #34d399;
+            box-shadow: 0 0 18px rgba(16, 185, 129, 0.25);
+        }
+
+        .btn-emerald:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.5);
+        }
+
+        .btn-amber {
+            background: linear-gradient(135deg, #d97706, #f59e0b);
+            border-color: #fbbf24;
+        }
+
+        .btn-outline {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--border-glass);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--neon-cyan);
+            background: rgba(0, 242, 254, 0.08);
+        }
+
+        .btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* صفحه قفل (Lock Screen) */
+        .lock-box {
+            max-width: 760px;
+            margin: 20px auto;
+            text-align: center;
+        }
+
+        .lock-emblem {
+            width: 82px;
+            height: 82px;
+            margin: 0 auto 16px;
+            border-radius: 50%;
+            background: rgba(0, 242, 254, 0.08);
+            border: 2px solid var(--neon-cyan);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            box-shadow: 0 0 30px rgba(0, 242, 254, 0.25);
+            cursor: default;
+        }
+
+        .countdown-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            max-width: 500px;
+            margin: 24px auto;
+            direction: ltr;
+        }
+
+        .countdown-cell {
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(0, 242, 254, 0.3);
+            border-radius: 14px;
+            padding: 14px 8px;
+        }
+
+        .countdown-num {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--neon-cyan);
+            font-family: monospace;
+        }
+
+        .countdown-label {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .guide-list {
+            text-align: right;
+            list-style: none;
+            margin-top: 14px;
+        }
+
+        .guide-list li {
+            position: relative;
+            padding-right: 22px;
+            margin-bottom: 10px;
+            font-size: 0.92rem;
+            color: #cbd5e1;
+        }
+
+        .guide-list li::before {
+            content: "▪";
+            position: absolute;
+            right: 0;
+            color: var(--neon-cyan);
+            font-size: 1.2rem;
+        }
+
+        /* فرم‌ها و ورودی‌ها */
+        .form-group {
+            margin-bottom: 16px;
+            text-align: right;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 7px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 13px 16px;
+            border-radius: 12px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--border-glass);
+            color: #fff;
+            font-family: var(--font-main);
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 12px rgba(0, 242, 254, 0.2);
+        }
+
+        .form-input[readonly] {
+            background: rgba(255, 255, 255, 0.03);
+            color: #94a3b8;
+        }
+
+        /* نوار بالای داشبورد */
+        .top-navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 14px;
+            padding: 16px 22px;
+            background: rgba(10, 17, 34, 0.9);
+            border: 1px solid var(--border-glass);
+            border-radius: 18px;
+            margin-bottom: 24px;
+            position: sticky;
+            top: 10px;
+            z-index: 50;
+            backdrop-filter: blur(15px);
+        }
+
+        .stats-Row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .stat-pill {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border-glass);
+            padding: 6px 13px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .stat-pill b {
+            color: var(--neon-cyan);
+        }
+
+        /* گرید کارت‌های داشبورد */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 18px;
+            margin-bottom: 28px;
+        }
+
+        .dash-card {
+            background: linear-gradient(145deg, rgba(20, 30, 55, 0.85), rgba(12, 18, 34, 0.9));
+            border: 1px solid var(--border-glass);
+            border-radius: 18px;
+            padding: 22px 18px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.28s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 155px;
+        }
+
+        .dash-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--neon-cyan);
+            box-shadow: 0 12px 28px rgba(0, 242, 254, 0.16);
+        }
+
+        .dash-card.done-card {
+            border-color: rgba(16, 185, 129, 0.45);
+        }
+
+        .dash-card-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .dash-icon {
+            font-size: 2rem;
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            background: rgba(0, 242, 254, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dash-xp-tag {
+            font-size: 0.78rem;
+            padding: 4px 10px;
+            border-radius: 12px;
+            background: rgba(168, 85, 247, 0.18);
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            color: #e9d5ff;
+        }
+
+        .dash-card.done-card .dash-xp-tag {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: #10b981;
+            color: #6ee7b7;
+        }
+
+        .dash-title {
+            font-size: 1.08rem;
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .dash-status {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 8px;
+        }
+
+        /* جعبه فرمول ریاضی استاندارد */
+        .math-expr {
+            display: inline-block;
+            direction: ltr;
+            unicode-bidi: embed;
+            font-family: 'Cambria Math', 'Times New Roman', serif;
+            font-weight: bold;
+            color: var(--neon-cyan);
+            background: rgba(0, 242, 254, 0.08);
+            padding: 2px 8px;
+            border-radius: 6px;
+            margin: 0 3px;
+            letter-spacing: 0.5px;
+        }
+
+        .math-block {
+            direction: ltr;
+            text-align: center;
+            font-family: 'Cambria Math', 'Times New Roman', serif;
+            font-size: 1.18rem;
+            font-weight: bold;
+            color: var(--neon-cyan);
+            background: rgba(0, 0, 0, 0.45);
+            border: 1px solid rgba(0, 242, 254, 0.25);
+            padding: 14px;
+            border-radius: 12px;
+            margin: 12px 0;
+        }
+
+        /* تب‌های داخلی بخش‌ها */
+        .sub-tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 18px;
+        }
+
+        .sub-tab-btn {
+            padding: 9px 16px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border-glass);
+            color: var(--text-muted);
+            cursor: pointer;
+            font-family: var(--font-main);
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .sub-tab-btn.active {
+            background: rgba(0, 242, 254, 0.15);
+            border-color: var(--neon-cyan);
+            color: #fff;
+            font-weight: bold;
+        }
+
+        /* جدول‌های آموزشی */
+        .edu-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 14px 0;
+            font-size: 0.92rem;
+        }
+
+        .edu-table th, .edu-table td {
+            border: 1px solid var(--border-glass);
+            padding: 11px 14px;
+            text-align: right;
+        }
+
+        .edu-table th {
+            background: rgba(0, 242, 254, 0.1);
+            color: var(--neon-cyan);
+        }
+
+        .edu-table tr:nth-child(even) {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        /* فلش‌کارت */
+        .flashcard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+            margin-top: 15px;
+        }
+
+        .flashcard-item {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-glass);
+            border-radius: 14px;
+            padding: 18px;
+            cursor: pointer;
+            min-height: 130px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .flashcard-item:hover {
+            border-color: var(--neon-purple);
+            background: rgba(168, 85, 247, 0.08);
+        }
+
+        .flashcard-item .fc-ans {
+            display: none;
+            color: var(--neon-emerald);
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .flashcard-item.flipped .fc-ans {
+            display: block;
+        }
+
+        /* آزمایشگاه مجازی */
+        .lab-canvas-wrap {
+            width: 100%;
+            background: #050811;
+            border: 1px solid rgba(0, 242, 254, 0.3);
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        #geometry-lab-canvas {
+            width: 100%;
+            height: 360px;
+            display: block;
+        }
+
+        .lab-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+            gap: 14px;
+            background: rgba(0, 0, 0, 0.35);
+            padding: 16px;
+            border-radius: 14px;
+        }
+
+        /* گزینه‌های آزمون تستی */
+        .quiz-option {
+            display: block;
+            width: 100%;
+            text-align: right;
+            padding: 13px 16px;
+            margin-bottom: 10px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border-glass);
+            color: var(--text-main);
+            cursor: pointer;
+            font-family: var(--font-main);
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .quiz-option:hover {
+            border-color: var(--neon-cyan);
+        }
+
+        .quiz-option.selected {
+            background: rgba(0, 242, 254, 0.16);
+            border-color: var(--neon-cyan);
+            font-weight: bold;
+        }
+
+        /* کیبورد جامع موبایل و دسکتاپ */
+        .smart-keyboard {
+            background: rgba(8, 13, 26, 0.96);
+            border: 1px solid var(--neon-cyan);
+            border-radius: 16px;
+            padding: 12px;
+            margin-top: 14px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        .kb-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            justify-content: center;
+            margin-bottom: 6px;
+        }
+
+        .kb-key {
+            padding: 8px 11px;
+            min-width: 38px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            color: #fff;
+            font-family: var(--font-main);
+            font-size: 0.92rem;
+            cursor: pointer;
+            text-align: center;
+            transition: background 0.15s, transform 0.1s;
+        }
+
+        .kb-key:active {
+            transform: scale(0.92);
+            background: var(--neon-cyan);
+            color: #000;
+        }
+
+        .kb-key.math-key {
+            background: rgba(0, 242, 254, 0.14);
+            border-color: rgba(0, 242, 254, 0.35);
+            color: var(--neon-cyan);
+            font-weight: bold;
+        }
+
+        .kb-key.phrase-key {
+            background: rgba(168, 85, 247, 0.15);
+            border-color: rgba(168, 85, 247, 0.4);
+            color: #e9d5ff;
+            font-size: 0.82rem;
+        }
+
+        /* نوتیفیکیشن Toast */
+        #toast-box {
+            position: fixed;
+            bottom: 24px;
+            left: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast-item {
+            background: rgba(15, 23, 42, 0.95);
+            border-right: 4px solid var(--neon-cyan);
+            color: #fff;
+            padding: 13px 18px;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+            font-size: 0.9rem;
+            animation: slideInToast 0.3s ease;
+        }
+
+        @keyframes slideInToast {
+            from { opacity: 0; transform: translateX(-30px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* مودال مخفی دبیر */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.78);
+            backdrop-filter: blur(8px);
+            z-index: 5000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+        }
+
+        .modal-backdrop.active {
+            display: flex;
+        }
+
+        .modal-card {
+            background: #0f172a;
+            border: 1px solid var(--neon-cyan);
+            border-radius: 18px;
+            max-width: 420px;
+            width: 100%;
+            padding: 24px;
+            text-align: center;
+        }
+
+        @media (max-width: 640px) {
+            .countdown-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .top-navbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="particle-canvas"></canvas>
+<div id="toast-box"></div>
+
+<!-- مودال مخفی مدیریت دبیر (با 5 کلیک روی آیکون قفل باز می‌شود) -->
+<div id="teacher-secret-modal" class="modal-backdrop">
+    <div class="modal-card">
+        <h3 class="title-glow" style="font-size:1.2rem;">پنل مدیریت زمان دبیر</h3>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:14px;">رمز مدیریتی را جهت بازگشایی یا ریست قفل زمانی وارد نمایید:</p>
+        <input type="password" id="secret-pin-input" class="form-input" placeholder="رمز عبور..." style="text-align:center; direction:ltr; margin-bottom:14px;">
+        <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+            <button class="btn btn-emerald" onclick="handleTeacherPin('unlock')">بازگشایی دائم قفل</button>
+            <button class="btn btn-amber" onclick="handleTeacherPin('relock')">بازگردانی به حالت زمان‌دار</button>
+            <button class="btn btn-outline" onclick="closeTeacherModal()">بستن</button>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== لایه ۱: صفحه قفل (LOCK SCREEN) ==================== -->
+<section id="layer-lock" class="screen-layer active">
+    <div class="lock-box">
+        <div class="glass-panel">
+            <!-- ۵ بار کلیک روی این آیکون مودال مخفی دبیر را باز می‌کند -->
+            <div class="lock-emblem" id="secret-lock-trigger" title="وضعیت دسترسی">🔒</div>
+            <h1 class="title-glow">سامانه هوشمند آموزش و ارزشیابی</h1>
+            <p style="color:var(--text-muted); font-size:0.95rem;">دسترسی به محتوای آموزشی، آزمایشگاه و آزمون‌ها در زمان مقرر فعال می‌گردد.</p>
+
+            <div id="lock-status-banner" style="margin: 18px 0; padding: 12px; border-radius: 12px; background: rgba(244, 63, 94, 0.12); border: 1px solid rgba(244, 63, 94, 0.35); color: #fda4af; font-weight: bold;">
+                وضعیت سامانه: در انتظار فرا رسیدن زمان شروع جلسه (۲۴ آبان - ساعت ۰۸:۳۰)
+            </div>
+
+            <div class="countdown-grid" id="countdown-box">
+                <div class="countdown-cell">
+                    <div class="countdown-num" id="cd-days">00</div>
+                    <div class="countdown-label">روز</div>
+                </div>
+                <div class="countdown-cell">
+                    <div class="countdown-num" id="cd-hours">00</div>
+                    <div class="countdown-label">ساعت</div>
+                </div>
+                <div class="countdown-cell">
+                    <div class="countdown-num" id="cd-mins">00</div>
+                    <div class="countdown-label">دقیقه</div>
+                </div>
+                <div class="countdown-cell">
+                    <div class="countdown-num" id="cd-secs">00</div>
+                    <div class="countdown-label">ثانیه</div>
+                </div>
+            </div>
+
+            <div id="enter-login-wrap" style="display:none; margin-top:20px;">
+                <button class="btn btn-emerald" style="width:100%; font-size:1.05rem; padding:14px;" onclick="proceedToLogin()">
+                    ورود به بخش احراز هویت سامانه ⬅
+                </button>
+            </div>
+        </div>
+
+        <!-- راهنمای رسمی کار با سامانه، کسب امتیاز و ارسال نتایج در صفحه قفل -->
+        <div class="glass-panel" style="text-align:right;">
+            <h2 class="title-glow" style="font-size:1.2rem;">راهنمای کار با سامانه، نظام امتیازدهی و ثبت گزارش نهایی</h2>
+            <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:12px;">
+                پیش از آغاز فعالیت در سامانه، مطالعه دقیق ضوابط زیر الزامی است:
+            </p>
+            <ul class="guide-list">
+                <li><b>احراز هویت:</b> پس از فعال‌سازی سامانه در ساعت مقرر، وارد کردن نام و نام خانوادگی کامل جهت ورود به داشبورد اصلی الزامی است.</li>
+                <li><b>نظام امتیازدهی (XP) و ضدتقلب:</b> هر فعالیت آموزشی صرفاً یک نوبت امتیاز دارد. بازخوانی صفحه (Refresh) یا ورود مجدد به یک بخش، امتیاز مضاعف ایجاد نمی‌کند.</li>
+                <li><b>جدول امتیازات فعالیت‌ها:</b> ورود به سامانه (۵ امتیاز)، مطالعه آموزش جامع (۲۰ امتیاز)، بررسی خلاصه هوشمند (۱۰ امتیاز)، مطالعه نکات تشریحی و تستی و تله‌های آموزشی (هرکدام ۱۰ امتیاز)، تکمیل آزمایشگاه تعاملی (۳۰ امتیاز)، شرکت در آزمون‌های تستی، نیمه‌تشریحی و تشریحی (مجموعاً تا ۱۱۰ امتیاز)، ثبت حضور و غیاب (۱۰ امتیاز) و بررسی تکالیف (۱۰ امتیاز).</li>
+                <li><b>موتور تصحیح هوشمند و کیبورد داخلی:</b> در آزمون‌های تشریحی، پاسخ‌ها بر اساس مفاهیم هندسی، فرض و حکم و روابط ریاضی بررسی می‌شوند. برای درج نمادهای ریاضی می‌توانید از کیبورد جامع تعبیه‌شده در سامانه استفاده نمایید.</li>
+                <li><b>ارسال گزارش نهایی:</b> پس از تکمیل کلیه بخش‌ها، مراجعه به بخش «ثبت گزارش» و فشردن دکمه «ثبت و ارسال گزارش» الزامی است. گزارش عملکرد فقط یک بار در پایگاه داده ثبت می‌گردد.</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== لایه ۲: صفحه ورود (LOGIN SCREEN) ==================== -->
+<section id="layer-login" class="screen-layer">
+    <div class="container-box" style="max-width: 540px; margin-top: 30px;">
+        <div class="glass-panel">
+            <h2 class="title-glow" style="text-align:center;">ورود به سامانه آموزشی</h2>
+            <p style="text-align:center; color:var(--text-muted); font-size:0.9rem; margin-bottom:20px;">
+                اطلاعات زیر را بررسی نموده و نام و نام خانوادگی خود را به صورت دقیق وارد نمایید.
+            </p>
+
+            <div class="form-group">
+                <label>نام و نام خانوادگی دانش‌آموز (اجباری):</label>
+                <input type="text" id="login-student-name" class="form-input" placeholder="نام و نام خانوادگی خود را وارد کنید...">
+            </div>
+
+            <div class="form-group">
+                <label>نام مدرسه:</label>
+                <input type="text" id="login-school" class="form-input" readonly>
+            </div>
+
+            <div class="form-group">
+                <label>پایه تحصیلی:</label>
+                <input type="text" id="login-grade" class="form-input" readonly>
+            </div>
+
+            <div class="form-group">
+                <label>عنوان درس:</label>
+                <input type="text" id="login-subject" class="form-input" readonly>
+            </div>
+
+            <div class="form-group">
+                <label>دبیر مربوطه:</label>
+                <input type="text" id="login-teacher" class="form-input" readonly>
+            </div>
+
+            <button class="btn btn-primary" style="width:100%; padding:14px; font-size:1rem; margin-top:10px;" onclick="submitStudentLogin()">
+                تأیید اطلاعات و ورود به داشبورد
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- ==================== لایه ۳: داشبورد و بخش‌های داخلی ==================== -->
+<section id="layer-app" class="screen-layer">
+    <div class="container-box">
+        <!-- نوار وضعیت بالا -->
+        <header class="top-navbar">
+            <div>
+                <div style="font-weight:bold; font-size:1.05rem; color:#fff;" id="nav-student-title">دانش‌آموز: ---</div>
+                <div style="font-size:0.8rem; color:var(--text-muted);" id="nav-meta-title">---</div>
+            </div>
+            <div class="stats-Row">
+                <div class="stat-pill">امتیاز کل: <b id="ui-xp">0</b> XP</div>
+                <div class="stat-pill">سطح: <b id="ui-level">1</b></div>
+                <div class="stat-pill">پیشرفت: <b id="ui-progress">0%</b></div>
+                <div class="stat-pill">زمان حضور: <b id="ui-timer">00:00</b></div>
+                <button class="btn btn-outline" style="padding:6px 12px; font-size:0.8rem;" onclick="toggleAudioSound()" id="btn-sound-toggle">🔊 صدا: فعال</button>
+                <button class="btn btn-primary" style="padding:6px 14px; font-size:0.85rem;" onclick="openSection('dashboard')">خانه (داشبورد)</button>
+            </div>
+        </header>
+
+        <!-- نمای اصلی داشبورد (فقط عناوین بخش‌های فعال مدرس بدون لو رفتن جزئیات) -->
+        <div id="view-dashboard" class="app-subview">
+            <div class="glass-panel">
+                <div class="section-header-bar">
+                    <h2 class="title-glow" style="margin:0;">داشبورد بخش‌های آموزشی جلسه</h2>
+                    <span style="font-size:0.85rem; color:var(--text-muted);">جهت مشاهده محتوا و دریافت امتیاز، روی هر بخش کلیک نمایید.</span>
+                </div>
+                <div class="dashboard-grid" id="dashboard-cards-container"></div>
+            </div>
+        </div>
+
+        <!-- ۱. بخش آموزش جامع -->
+        <div id="view-teaching" class="app-subview" style="display:none;">
+            <div class="glass-panel">
+                <div class="section-header-bar">
+                    <h2 class="title-glow" style="margin:0;">آموزش جلسه: استدلال و اثبات در هندسه</h2>
+                    <button class="btn btn-outline" onclick="openSection('dashboard')">بازگشت به داشبورد</button>
+                </div>
+
+                <div class="sub-tabs">
+                    <button class="sub-tab-btn active" onclick="switchEduTab('edu-part1', this)">بخش اول: استدلال، فرض و حکم</button>
+                    <button class="sub-tab-btn" onclick="switchEduTab('edu-part2', this)">بخش دوم: نوشتن فرض و اثبات حکم</button>
+                    <button class="sub-tab-btn" onclick="switchEduTab('edu-part3', this)">بخش سوم: همنهشتی و تشابه</button>
+                    <button class="sub-tab-btn" onclick="switchEduTab('edu-part4', this)">بخش چهارم: پیش‌نیازها و مثال‌های حل‌شده</button>
+                </div>
+
+                <!-- تب ۱ -->
+                <div id="edu-part1" class="edu-tab-content">
+                    <h3 style="color:var(--neon-cyan); margin-bottom:10px;">۱. مفهوم استدلال ریاضی</h3>
+                    <p>در هندسه، مشاهده چشمی یا اندازه‌گیری با خط‌کش و نقاله برای اثبات درستی یک ادعا در حالت کلی کافی نیست؛ زیرا ابزارهای اندازه‌گیری دارای خطای انسانی هستند و فقط یک حالت خاص را بررسی می‌کنند. <b>استدلال</b> یعنی بهره‌گیری از حقایق، تعاریف و قضایای قبلی برای نتیجه‌گیری منطقی یک حکم جدید.</p>
+
+                    <div style="margin: 16px 0; padding: 14px; border-right: 4px solid var(--neon-purple); background: rgba(168,85,247,0.08); border-radius: 8px;">
+                        <b>ساختار هر قضیه هندسی:</b><br>
+                        • <b>فرض (Hypothesis):</b> اطلاعات داده شده، شرایط اولیه مسئله و ویژگی‌هایی که درستی آن‌ها از قبل مشخص است (معمولاً بعد از کلمه «اگر» یا در توصیف شکل می‌آید).<br>
+                        • <b>حکم (Conclusion):</b> ادعا یا نتیجه‌ای که باید درستی آن را با استفاده از فرض‌ها اثبات کنیم (معمولاً بعد از کلمه «آنگاه» یا عباراتی چون «ثابت کنید / نشان دهید» قرار می‌گیرد).
+                    </div>
+
+                    <h4 style="color:var(--neon-emerald); margin: 14px 0 8px;">مثال تفکیک فرض و حکم:</h4>
+                    <p>گزاره: «در هر مثلث متساوی‌الساقین، زاویه‌های روبه‌رو به ساق‌ها با هم برابرند.»</p>
+                    <p>در مثلث <span class="math-expr">△ABC</span> داریم:</p>
+                    <div class="math-block">
+                        فرض: AB = AC &nbsp;&nbsp;&nbsp; ⟹ &nbsp;&nbsp;&nbsp; حکم: ∠B = ∠C
+                    </div>
+
+                    <h4 style="color:var(--neon-amber); margin: 14px 0 8px;">مثال نقض (Counterexample):</h4>
+                    <p>برای رد کردن یک ادعای کلی (نشان دادن نادرستی یک گزاره)، کافی است <b>تنها یک نمونه</b> پیدا کنیم که در آن فرض برقرار باشد اما حکم برقرار نباشد. به این نمونه، <b>مثال نقض</b> می‌گویند.</p>
+                    <p>• مثال: ادعا شده است «هر چهارضلعی که قطرهایش بر هم عمود باشند، لوزی است.»<br>
+                    پاسخ: این ادعا نادرست است؛ زیرا یک چهارضلعی (مانند بادبادک یا چهارضلعی غیرمحدب با قطرهای متعامد) می‌تواند قطرهای عمود بر هم داشته باشد (<span class="math-expr">AC ⊥ BD</span>) ولی اضلاع آن با هم برابر نباشند. نکته مهم: برای <b>اثبات درستی</b> یک حکم کلی، آوردن چند مثال عددی کافی نیست و حتماً باید استدلال کلی نوشت.</p>
+                </div>
+
+                <!-- تب ۲ -->
+                <div id="edu-part2" class="edu-tab-content" style="display:none;">
+                    <h3 style="color:var(--neon-cyan); margin-bottom:10px;">۲. روش گام‌به‌گام استخراج فرض‌ها و اثبات حکم</h3>
+                    <p>برای نوشتن یک اثبات هندسی استاندارد، چهار گام زیر را به ترتیب اجرا می‌کنیم:</p>
+                    <ol style="padding-right:22px; margin: 12px 0;">
+                        <li><b>رسم شکل دقیق و نام‌گذاری:</b> رئوس، اضلاع و زوایا را با حروف استاندارد مشخص کنید.</li>
+                        <li><b>استخراج فرض از متن و شکل:</b> کلمات کلیدی متن را به زبان ریاضی ترجمه کنید:
+                            <ul style="padding-right:18px; margin-top:6px; color:#cbd5e1;">
+                                <li>«نیمساز زاویه <span class="math-expr">∠A</span>»  <span class="math-expr">∠A₁ = ∠A₂</span></li>
+                                <li>«میانه وارد بر ضلع <span class="math-expr">BC</span>» (<span class="math-expr">AM</span>)  <span class="math-expr">BM = CM</span></li>
+                                <li>«ارتفاع وارد بر ضلع <span class="math-expr">BC</span>» (<span class="math-expr">AH</span>)  <span class="math-expr">AH ⊥ BC</span> یا <span class="math-expr">∠AHB = ∠AHC = 90°</span></li>
+                                <li>«عمودمنصف ضلع <span class="math-expr">AB</span>»  هم بر <span class="math-expr">AB</span> عمود است و هم آن را نصف می‌کند.</li>
+                            </ul>
+                        </li>
+                        <li><b>نوشتن صریح حکم:</b> دقیقاً بنویسید چه تساوی یا رابطه‌ای باید اثبات شود.</li>
+                        <li><b>زنجیره استدلال:</b> از فرض‌ها و قضایای قبلی استفاده کنید تا مرحله‌به‌مرحله به حکم برسید.</li>
+                    </ol>
+                </div>
+
+                <!-- تب ۳ -->
+                <div id="edu-part3" class="edu-tab-content" style="display:none;">
+                    <h3 style="color:var(--neon-cyan); margin-bottom:10px;">۳. همنهشتی و تشابه مثلث‌ها</h3>
+                    <p>دو مثلث زمانی <b>همنهشت</b> (<span class="math-expr">≅</span>) هستند که کاملاً بر هم منطبق شوند؛ یعنی هر سه ضلع و هر سه زاویه متناظر آن‌ها با هم برابر باشند.</p>
+                    <table class="edu-table">
+                        <thead>
+                            <tr>
+                                <th>حالت همنهشتی</th>
+                                <th>توضیح ریاضی</th>
+                                <th>شرط کلیدی</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><b>ض.ض.ض</b> (سه ضلع)</td>
+                                <td>برابری سه ضلع یک مثلث با سه ضلع مثلث دیگر</td>
+                                <td>برابری هر سه جفت ضلع متناظر</td>
+                            </tr>
+                            <tr>
+                                <td><b>ض.ز.ض</b> (دو ضلع و زاویه بین)</td>
+                                <td>دو ضلع و زاویه محصور بین آن دو ضلع</td>
+                                <td>زاویه حتماً باید <b>بین</b> دو ضلع باشد</td>
+                            </tr>
+                            <tr>
+                                <td><b>ز.ض.ز</b> (دو زاویه و ضلع بین)</td>
+                                <td>دو زاویه و ضلع مشترک بین آن دو زاویه</td>
+                                <td>برابری دو زاویه، زاویه سوم را نیز برابر می‌کند</td>
+                            </tr>
+                            <tr>
+                                <td><b>وتر و یک ضلع قائمه (و.ض)</b></td>
+                                <td>ویژه مثلث‌های قائم‌الزاویه (<span class="math-expr">∠ = 90°</span>)</td>
+                                <td>برابری وتر و یکی از اضلاع قائمه</td>
+                            </tr>
+                            <tr>
+                                <td><b>وتر و یک زاویه تند (و.ز)</b></td>
+                                <td>ویژه مثلث‌های قائم‌الزاویه (<span class="math-expr">∠ = 90°</span>)</td>
+                                <td>برابری وتر و یکی از زوایای حاده</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4 style="color:var(--neon-purple); margin: 16px 0 8px;">مفهوم تشابه (<span class="math-expr">∼</span>) و نسبت تشابه (<span class="math-expr">k</span>):</h4>
+                    <p>دو شکل هندسی متشابه هستند اگر زاویه‌های متناظر آن‌ها با هم برابر باشند و طول اضلاع متناظر آن‌ها با هم متناسب باشند. اگر <span class="math-expr">△ABC ∼ △DEF</span> باشد:</p>
+                    <div class="math-block">
+                        ∠A = ∠D , &nbsp; ∠B = ∠E , &nbsp; ∠C = ∠F <br>
+                        AB / DE = BC / EF = AC / DF = k
+                    </div>
+                    <p>• در دو مثلث، اگر تنها <b>دو زاویه</b> از یکی با دو زاویه از دیگری برابر باشد، دو مثلث متشابه هستند.</p>
+                </div>
+
+                <!-- تب ۴ -->
+                <div id="edu-part4" class="edu-tab-content" style="display:none;">
+                    <h3 style="color:var(--neon-cyan); margin-bottom:10px;">۴. مرور پیش‌نیازها (هندسه هشتم) و نمونه اثبات کامل</h3>
+                    <p>برای موفقیت در اثبات‌های فصل سوم نهم، تسلط بر پیش‌نیازهای زیر ضروری است:</p>
+                    <ul class="guide-list">
+                        <li><b>خطوط موازی و مورب:</b> اگر دو خط موازی (<span class="math-expr">d₁ ∥ d₂</span>) توسط خط سومی قطع شوند، زاویه‌های متبادله داخلی و خارجی با هم برابرند و مجموع دو زاویه داخلی یک‌طرف خط مورب برابر <span class="math-expr">180°</span> است.</li>
+                        <li><b>زاویه‌های متقابل به رأس:</b> دو خط متقاطع، زاویه‌های متقابل به رأس مساوی می‌سازند.</li>
+                        <li><b>ویژگی‌های متوازی‌الاضلاع:</b> اضلاع روبه‌رو موازی و مساوی، زوایای روبه‌رو مساوی و قطرها همدیگر را نصف می‌کنند.</li>
+                        <li><b>قضیه فیثاغورس:</b> در مثلث قائم‌الزاویه <span class="math-expr">△ABC</span> (<span class="math-expr">∠A = 90°</span>) رابطه <span class="math-expr">BC² = AB² + AC²</span> برقرار است.</li>
+                    </ul>
+
+                    <div style="background:rgba(16, 185, 129, 0.08); border:1px solid rgba(16, 185, 129, 0.35); border-radius:12px; padding:16px; margin-top:16px;">
+                        <h4 style="color:var(--neon-emerald);">مثال حل‌شده استاندارد:</h4>
+                        <p><b>سؤال:</b> ثابت کنید در هر مثلث متساوی‌الساقین <span class="math-expr">△ABC</span> (<span class="math-expr">AB = AC</span>)، نیمساز زاویه رأس (<span class="math-expr">AD</span>) بر قاعده عمود است و آن را نصف می‌کند.</p>
+                        <p style="margin-top:8px;"><b>پاسخ استاندارد:</b><br>
+                        • <b>فرض:</b> <span class="math-expr">AB = AC</span> و <span class="math-expr">∠A₁ = ∠A₂</span><br>
+                        • <b>حکم:</b> <span class="math-expr">BD = CD</span> و <span class="math-expr">AD ⊥ BC</span><br>
+                        • <b>اثبات:</b> در دو مثلث <span class="math-expr">△ABD</span> و <span class="math-expr">△ACD</span> داریم:<br>
+                        ۱) <span class="math-expr">AB = AC</span> (طبق فرض)<br>
+                        ۲) <span class="math-expr">∠A₁ = ∠A₂</span> (طبق فرض؛ <span class="math-expr">AD</span> نیمساز است)<br>
+                        ۳) <span class="math-expr">AD = AD</span> (ضلع مشترک)<br>
+                        بنابراین به حالت <b>ض.ز.ض</b> دو مثلث همنهشت هستند: <span class="math-expr">△ABD ≅ △ACD</span>.<br>
+                        از برابری اجزای متناظر نتیجه می‌شود: <span class="math-expr">BD = CD</span> (اولین حکم اثبات شد) و همچنین <span class="math-expr">∠D₁ = ∠D₂</span>. چون <span class="math-expr">∠D₁ + ∠D₂ = 180°</span>، پس <span class="math-expr">∠D₁ = ∠D₂ = 90°</span> یعنی <span class="math-expr">AD ⊥ BC</span>.</p>
+                    </div>
+                </div>
+
+                <div style="margin-top:22px; text-align:left;">
+                    <button class="btn btn-emerald" onclick="completeActivity('teaching', 20, 'مطالعه کامل آموزش جامع ثبت گردید.')">
+                        ثبت تکمیل مطالعه آموزش (+20 XP) ✓
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ۲. بخش خلاصه هوشمند -->
+        <div id="view-summary" class="app-subview" style="display:none;">
+            <div class="glass-panel">
+                <div class="section-header-bar">
+                    <h2 class="title-glow" style="margin:0;">خلاصه هوشمند و فلش‌کارت‌های مرور سریع</h2>
+                    <button class="btn btn-outline" onclick="openSection('dashboard')">بازگشت به داشبورد</button>
+                </div>
+
+                <h3 style="color:var(--neon-cyan); margin-bottom:12px;">درخت مفهومی فصل سوم</h3>
+                <div style="background:rgba(0,0,0,0.4); border:1px solid var(--border-glass); border-radius:14px; padding:18px; margin-bottom:20px;">
+                    <p><b>استدلال و اثبات در هندسه</b></p>
+                    <p style="padding-right:20px;">├── <b>تشخیص درستی گزاره‌ها:</b> اثبات استنتاجی (با فرض و حکم) در برابر مثال نقض (برای رد ادعای نادرست)</p>
+                    <p style="padding-right:20px;">├── <b>همنهشتی مثلث‌ها (<span class="math-expr">≅</span>):</b> حالت‌های کلی (ض.ض.ض / ض.ز.ض / ز.ض.ز) و حالت‌های قائم‌الزاویه (و.ض / و.ز)</p>
+                    <p style="padding-right:20px;">└── <b>تشابه شکل‌ها (<span class="math-expr">∼</span>):</b> برابری زوایای متناظر + تناسب اضلاع متناظر با نسبت <span class="math-expr">k</span></p>
+                </div>
+
+                <h3 style="color:var(--neon-purple); margin-bottom:10px;">فلش‌کارت‌های تعاملی (برای مشاهده پاسخ روی کارت کلیک کنید)</h3>
+                <div class="flashcard-grid">
+                    <div class="flashcard-item" onclick="this.classList.toggle('flipped')">
+                        <div>آیا حالت <b>ز.ز.ز</b> (برابری سه زاویه) باعث همنهشتی دو مثلث می‌شود؟</div>
+                        <div class="fc-ans">خیر! برابری سه زاویه فقط باعث <b>تشابه</b> دو مثلث می‌شود، نه همنهشتی.</div>
+                    </div>
+                    <div class="flashcard-item" onclick="this.classList.toggle('flipped')">
+                        <div>آیا حالت <b>ض.ض.ز</b> (دو ضلع و زاویه غیربین) همواره همنهشتی می‌دهد؟</div>
+                        <div class="fc-ans">خیر! زاویه حتماً باید <b>بین</b> دو ضلع باشد (مگر در مثلث قائم‌الزاویه یعنی حالت وتر و یک ضلع قائمه).</div>
+                    </div>
+                    <div class="flashcard-item" onclick="this.classList.toggle('flipped')">
+                        <div>در دو شکل همنهشت، نسبت تشابه (<span class="math-expr">k</span>) برابر چند است؟</div>
+                        <div class="fc-ans">در دو شکل همنهشت، طول اضلاع متناظر برابرند؛ بنابراین <span class="math-expr">k = 1</span> است.</div>
+                    </div>
+                    <div class="flashcard-item" onclick="this.classList.toggle('flipped')">
+                        <div>نقاط واقع بر نیمساز یک زاویه چه ویژگی مهمی دارند؟</div>
+                        <div class="fc-ans">هر نقطه روی نیمساز یک زاویه، از دو ضلع آن زاویه به یک فاصله است.</div>
+                    </div>
+                </div>
+
+                <div style="margin-top:22px; text-align:left;">
+                    <button class="btn btn-emerald" onclick="completeActivity('summary', 10, 'مرور خلاصه هوشمند و فلش‌کارت‌ها ثبت شد.')">
+                        ثبت مرور خلاصه هوشمند (+10 XP) ✓
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ۳. بخش نکات تشریحی -->
+        <div id="view-descriptive_tips" class="app-subview" style="display:none;">
+            <div class="glass-panel">
+                <div class="section-header-bar">
+                    <h2 class="title-glow" style="margin:0;">تکنیک‌های کسب نمره کامل در امتحان تشریحی</h2>
+                    <button class="btn btn-outline" onclick="openSection('dashboard')">بازگشت به داشبورد</button>
+                </div>
+
+                <p>در تصحیح برگه‌های امتحانی ریاضی نهم، بارم هر سؤال اثبات هندسی به بخش‌های ریز تقسیم می‌شود. رعایت موارد زیر تضمین‌کننده نمره کامل است:</p>
+                <table class="edu-table">
+                    <thead>
+                        <tr>
+                            <th>بخش پاسخ</th>
+                            <th>انتظار مصحح</th>
+                            <th>خطای رایج دانش‌آموز</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><b>نوشتن فرض و حکم</b></td>
+                            <td>بیان با نمادهای دقیق ریاضی (مانند <span class="math-expr">AB = AC</span>)</td>
+                            <td>رونوشت کردن متن فارسی صورت سؤال</td>
+                        </tr>
+                        <tr>
+                            <td><b>معرفی دو مثلث</b></td>
+                            <td>نوشتن نام دو مثلث در ابتدای اثبات (مثلاً: در <span class="math-expr">△ABD</span> و <span class="math-expr">△ACD</span>)</td>
+                            <td>نوشتن تساوی اضلاع بدون مشخص کردن مثلث‌ها</td>
+                        </tr>
+                        <tr>
+                            <td><b>ذکر دلیل هر رابطه</b></td>
+                            <td>نوشتن علت در پرانتز: (فرض)، (ضلع مشترک)، (متقابل به رأس)</td>
+                            <td>نوشتن سه تساوی بدون ذکر علت</td>
+                        </tr>
+                        <tr>
+                            <td><b>نام حالت همنهشتی</b></td>
+                            <td>ذکر صریح حالت (مثلاً به حالت ض.ز.ض یا وتر و یک ضلع قائمه)</td>
+                            <td>نوشتن مستقیم نماد <span class="math-expr">≅</span> بدون ذکر حالت</td>
+                        </tr>
+                        <tr>
+                            <td><b>نتیجه‌گیری اجزای متناظر</b></td>
+                            <td>عبارت «از برابری اجزای متناظر دو مثلث همنهشت نتیجه می‌شود...»</td>
+                            <td>رها کردن اثبات در مرحله همنهشتی</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div style="margin-top:20px; text-align:left;">
+                    <button class="btn btn-emerald" onclick="completeActivity('descriptive_tips', 10, 'مطالعه نکات تشریحی ثبت گردید.')">
+                        ثبت مطالعه نکات تشریحی (+10 XP) ✓
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ۴. بخش نکات تستی و ۵. تله‌های طراح سؤال -->
+        <div id="view-test_traps" class="app-subview" style="display:none;">
+            <div class="glass-panel">
+                <div class="section-header-bar">
+                    <h2 class="title-glow" style="margin:0;">نکات تستی و تله‌های پرتکرار طراحان سؤال</h2>
+                    <button class="btn btn-outline" onclick="openSection('dashboard')">بازگشت به داشبورد</button>
+                </div>
+
+                <h3 style="color:var(--neon-amber); margin-bottom:10px;">تکنیک‌های حل سریع تست‌های هندسه</h3>
+                <ul class="guide-list">
+                    <li><b>ترتیب حروف در تشابه و همنهشتی:</b> وقتی در صورت تست داده می‌شود <span class="math-expr">△ABC ∼ △MNP</span>، بدون نیاز به رسم شکل می‌توانید تناسب اضلاع را از روی جایگاه حروف بنویسید: اول و دوم با اول و دوم (<span class="math-expr">AB / MN</span>)، دوم و سوم با دوم و سوم (<span class="math-expr">BC / NP</span>) و اول و سوم با اول و سوم (<span class="math-expr">AC / MP</span>).</li>
+                    <li><b>نسبت محیط‌ها در تشابه:</b> نسبت محیط دو مثلث متشابه دقیقاً برابر با همان نسبت تشابه (<span class="math-expr">k</span>) است، اما نسبت مساحت آن‌ها برابر با مجذور نسبت تشابه (<span class="math-expr">k²</span>) است.</li>
+                </ul>
+
+                <h3 style="color:var(--neon-rose); margin:18px 0 10px;">۴ تله خطرناک طراحان در امتحانات نهایی و آزمون‌ها</h3>
+                <div style="display:grid; gap:12px;">
+                    <div style="padding:14px; background:rgba(244,63,94,0.08); border:1px solid rgba(244,63,94,0.3); border-radius:12px;">
+                        <b>تله ۱: زاویه غیرمحصور (ض.ض.ز)</b><br>
+                        طراح دو ضلع مساوی و یک زاویه مساوی که بین آن دو ضلع نیست می‌دهد. فریب نخورید! این حالت همنهشتی ایجاد نمی‌کند مگر اینکه زاویه داده شده قائمه (<span class="math-expr">90°</span>) باشد.
+                    </div>
+                    <div style="padding:14px; background:rgba(244,63,94,0.08); border:1px solid rgba(244,63,94,0.3); border-radius:12px;">
+                        <b>تله ۲: فرض گرفتن حکم در میانه اثبات (مصادره به مطلوب)</b><br>
+                        در مسائل اثبات متساوی‌الساقین بودن مثلث، دانش‌آموز از برابری ساق‌ها (که خودش حکم است!) در داخل مراحل همنهشتی استفاده می‌کند.
+                    </div>
+                    <div style="padding:14px; background:rgba(244,63,94,0.08); border:1px solid rgba(244,63,94,0.3); border-radius:12px;">
+                        <b>تله ۳: اشتباه در تناسب مثلث‌های تو در تو (فرم تالس)</b><br>
+                        در مثلث <span class="math-expr">△ABC</span> که ضلع <span class="math-expr">DE ∥ BC</span> رسم شده، نسبت ضلع موازی <span class="math-expr">DE / BC</span> برابر است با ضلع کامل مثلث کوچک به ضلع کامل مثلث بزرگ (<span class="math-expr">AD / AB</span>)، نه <span class="math-expr">AD / DB</span>!
+                    </div>
+                </div>
+
+                <div style="margin-top:20px; text-align:left;">
+                    <button class="btn btn-emerald" onclick="completeActivity('test_traps', 10, 'مطالعه نکات تستی و تله‌های طراح ثبت گردید.')">
+                        ثبت مطالعه نکات تستی و تله‌ها (+10 XP) ✓
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ۶. بخش آزمایشگاه مجازی هندسه -->
+        <div id="view-lab" class="app-subview" style="display:none;">
+            <div class="glass-panel">
+                <div class="section-header-bar">
+                    <h2 class="title-glow" style="margin:0;">آزمایشگاه تعاملی همنهشتی و تشابه مثلث‌ها</h2>
+                    <button class="btn btn-outline" onclick="openSection('dashboard')">بازگشت به داشبورد</button>
+                </div>
+
+                <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:14px;">
+                    پارامترهای اضلاع، زاویه بین و ضریب مقیاس (<span class="math-expr">k</span>) را تغییر دهید و وضعیت همنهشتی (<span class="math-expr">≅</span>) یا تشابه (<span class="math-expr">∼</span>) دو مثلث <span class="math-expr">△ABC</span> و <span class="math-expr">△DEF</span> را به‌صورت زنده بررسی کنید.
+                </p>
+
+                <div class="lab-canvas-wrap">
+                    <canvas id="geometry-lab-canvas" width="900" height="360"></canvas>
+                </div>
+
+                <div class="lab-controls">
+                    <div>
+                        <label style="font-size:0.85rem;">ضلع <span class="math-expr">AB</span> (واحد): <b id="lbl-lab-c">100</b></label>
+                        <input type="range" id="rng-lab-c" min="60" max="150" value="100" style="width:100%;" oninput="updateGeometryLab()">
+                    </div>
+                    <div>
+                        <label style="font-size:0.85rem;">ضلع <span class="math-expr">AC</span> (واحد): <b id="lbl-lab-b">90</b></label>
+                        <input type="range" id="rng-lab-b" min="60" max="140" value="90" style="width:100%;" oninput="updateGeometryLab()">
+                    </div>
+                    <div>
+                        <label style="font-size:0.85rem;">زاویه بین <span class="math-expr">∠A</span> (درجه): <b id="lbl-lab-ang">60°</b></label>
+                        <input type="range" id="rng-lab-ang" min="30" max="120" value="60" style="width:100%;" oninput="updateGeometryLab()">
+                    </div>
+                    <div>
+                        <label style="font-size:0.85rem;">نسبت تشابه (<span class="math-expr">k</span>): <b id="lbl-lab-k">1.0</b></label>
+                        <input type="range" id="rng-lab-k" min="0.5" max="1.6" step="0.1" value="1.0" style="width:100%;" oninput="updateGeometryLab()">
+                    </div>
+                </div>
+
+                <div id="lab-live-report" style="margin-top:14px; padding:14px; border-radius:12px; background:rgba(0,242,254,0.08); border:1px solid rgba(0,242,254,0.25); font-size:0.92rem;"></div>
+
+                <div style="margin-top:18px; text-align:left;">
+                    <button class="btn btn-emerald" onclick="completeActivity('lab', 30, 'انجام آزمایشگاه تعاملی هندسه ثبت گردید.')">
+                        ثبت تکمیل آزمایشگاه مجازی (+30 XP) ✓
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ۷. بخش آزمون‌ها (تستی، نیمه‌تشریحی، تشریحی هوشمند) -->
+        <div id="view-exams" class="app-subview" style="display:none;">
+            <div class="glass-panel">
+                <div class="section-header-bar">
+                    <h2 class="title-glow" style="margin:0;">سامانه آزمون‌های استاندارد (تستی، نیمه‌تشریحی و تشریحی هوشمند)</h2>
+                    <button class="btn btn-outline" onclick="openSection('dashboard')">بازگشت به داشبورد</button>
+                </div>
+
+                <div class="sub-tabs">
+                    <button class="sub-tab-btn active" onclick="switchExamTab('ex-mcq', this)">۱. آزمون تستی چندسطحی (۵۰ XP)</button>
+                    <button class="sub-tab-btn" onclick="switchExamTab('ex-semi', this)">۲. آزمون نیمه‌تشریحی (۲۰ XP)</button>
+                    <button class="sub-tab-btn" onclick="switchExamTab('ex-desc', this)">۳. آزمون تشریحی هوشمند با کیبورد جامع (۴۰ XP)</button>
+                </div>
+
+                <!-- تب آزمون تستی -->
+                <div id="ex-mcq" class="exam-tab-pane">
+                    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; margin-bottom:14px; padding:10px 14px; background:rgba(255,255,255,0.04); border-radius:10px;">
+                        <span>تعداد سؤالات: ۶ سؤال استاندارد (سطوح آسان، متوسط و سخت)</span>
+                        <span style="color:var(--neon-amber); font-weight:bold;">زمان پیشنهادی: ۱۰ دقیقه</span>
+                    </div>
+                    <div id="mcq-questions-box"></div>
+                    <button class="btn btn-primary" id="btn-submit-mcq" style="width:100%; margin-top:14px;" onclick="submitMCQExam()">
+                        ثبت نهایی و تصحیح آزمون تستی
+                    </button>
+                    <div id="mcq-feedback-box" style="margin-top:16px; display:none;"></div>
+                </div>
+
+                <!-- تب آزمون نیمه‌تشریحی -->
+                <div id="ex-semi" class="exam-tab-pane" style="display:none;">
+                    <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:14px;">جاهای خالی زیر را با کلمات یا اعداد دقیق ریاضی کامل کنید (برای تایپ می‌توانید از کیبورد خود گوشی/سیستم یا کیبورد پایین صفحه استفاده کنید):</p>
+                    <div id="semi-questions-box"></div>
+                    <button class="btn btn-primary" id="btn-submit-semi" style="width:100%; margin-top:14px;" onclick="submitSemiExam()">
+                        ثبت نهایی و بررسی آزمون نیمه‌تشریحی
+                    </button>
+                    <div id="semi-feedback-box" style="margin-top:16px; display:none;"></div>
+                </div>
+
+                <!-- تب آزمون تشریحی هوشمند -->
+                <div id="ex-desc" class="exam-tab-pane" style="display:none;">
+                    <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:12px;">
+                        پاسخ هر سؤال را به‌صورت مرحله‌به‌مرحله بنویسید. موتور تصحیح هوشمند، مفاهیم، فرض و حکم، نمادهای معادل و فرآیند استدلال شما را بررسی و نمره‌دهی می‌کند. (روی هر کادر کلیک کنید تا کیبورد جامع روی آن کادر تایپ کند).
+                    </p>
+                    <div id="desc-questions-box"></div>
+
+                    <!-- کیبورد جامع فارسی، انگلیسی، اعداد و نمادهای هندسی -->
+                    <div class="smart-keyboard">
+                        <div style="font-size:0.8rem; color:var(--neon-cyan); margin-bottom:8px; text-align:center;">
+                            ⌨ کیبورد جامع کمکی (حروف فارسی، اعداد، نمادهای هندسی و عبارات پرتکرار اثبات)
+                        </div>
+                        <!-- ردیف نمادهای ریاضی و هندسه -->
+                        <div class="kb-row">
+                            <button type="button" class="kb-key math-key" onclick="insertToActiveInput('△')">△</button>
+                            <button type="button" class="kb-key math-key" onclick="insertToActiveInput('≅')">≅</button>
+                            <button type="button" class="kb-key math-key" onclick="insertToActiveInput('∼')">∼</button>
+                            <button type="button" class="kb-key math-key" onclick="insertToActiveInput('∠')">∠</button>
+                            <button type="button" class="kb-key math-key" onclick="insertToActiveInput('⊥')">⊥</button>
+                            <button type="button" class="kb-key math-key" onclick="insertToActiveInput('∥')">∥</button>
+                            <button type="button" class="kb-key math-key" onclick="insertToActiveInput('=')">=</button>
+                            <button type="button" class="kb-key math-key" onclick="insertToActiveInput('≠')">≠</button>
+                            <button type="button" class="kb-key math-key" onclick="insertToActiveInput('°')">°</button>
+                            <button type="button" class="kb-key math-key" onclick="insertToActiveInput('⟹')">⟹</button>
+                            <button type="button" class="kb-key math-key" onclick="insertToActiveInput('/')">/</button>
+                            <button type="button" class="kb-key math-key" onclick="insertToActiveInput('²')">²</button>
+                        </div>
+                        <!-- ردیف عبارات آماده اثبات هندسی -->
+                        <div class="kb-row">
+                            <button type="button" class="kb-key phrase-key" onclick="insertToActiveInput('فرض: ')">فرض:</button>
+                            <button type="button" class="kb-key phrase-key" onclick="insertToActiveInput('حکم: ')">حکم:</button>
+                            <button type="button" class="kb-key phrase-key" onclick="insertToActiveInput('(ضلع مشترک) ')">(ضلع مشترک)</button>
+                            <button type="button" class="kb-key phrase-key" onclick="insertToActiveInput('(متقابل به رأس) ')">(متقابل به رأس)</button>
+                            <button type="button" class="kb-key phrase-key" onclick="insertToActiveInput('ض.ز.ض ')">ض.ز.ض</button>
+                            <button type="button" class="kb-key phrase-key" onclick="insertToActiveInput('ض.ض.ض ')">ض.ض.ض</button>
+                            <button type="button" class="kb-key phrase-key" onclick="insertToActiveInput('ز.ض.ز ')">ز.ض.ز</button>
+                            <button type="button" class="kb-key phrase-key" onclick="insertToActiveInput('وتر و یک ضلع قائمه ')">وتر و یک ضلع قائمه</button>
+                            <button type="button" class="kb-key phrase-key" onclick="insertToActiveInput('وتر و یک زاویه تند ')">وتر و یک زاویه تند</button>
+                        </div>
+                        <!-- ردیف حروف لاتین هندسی و اعداد -->
+                        <div class="kb-row">
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('A')">A</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('B')">B</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('C')">C</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('D')">D</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('E')">E</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('F')">F</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('M')">M</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('H')">H</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('O')">O</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('1')">1</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('2')">2</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('3')">3</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('4')">4</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('5')">5</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('6')">6</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('7')">7</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('8')">8</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('9')">9</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('0')">0</button>
+                        </div>
+                        <!-- ردیف حروف فارسی -->
+                        <div class="kb-row">
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('ض')">ض</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('ص')">ص</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('ث')">ث</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('ق')">ق</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('ف')">ف</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('غ')">غ</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('ع')">ع</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('ه')">ه</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('خ')">خ</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('ح')">ح</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('ج')">ج</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('چ')">چ</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('پ')">پ</button>
+                        </div>
+                        <div class="kb-row">
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('ش')">ش</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('س')">س</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('ی')">ی</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('ب')">ب</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('ل')">ل</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('ا')">ا</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('آ')">آ</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('ت')">ت</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('ن')">ن</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('م')">م</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('ک')">ک</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('گ')">گ</button>
+                        </div>
+                        <div class="kb-row">
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('ظ')">ظ</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('ط')">ط</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('ز')">ز</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('ر')">ر</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('ذ')">ذ</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('د')">د</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('و')">و</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('ژ')">ژ</button>
+                            <button type="button" class="kb-key" style="min-width:90px;" onclick="insertToActiveInput(' ')">فاصله</button>
+                            <button type="button" class="kb-key" onclick="insertToActiveInput('\n')">خط بعد ↵</button>
+                            <button type="button" class="kb-key" style="background:rgba(244,63,94,0.25);" onclick="backspaceActiveInput()">پاک کردن ⌫</button>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" id="btn-submit-desc" style="width:100%; margin-top:16px;" onclick="submitDescriptiveExam()">
+                        تصحیح هوشمند آزمون تشریحی و ثبت نمره
+                    </button>
+                    <div id="desc-feedback-box" style="margin-top:16px; display:none;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ۸. بخش حضور و غیاب -->
+        <div id="view-attendance" class="app-subview" style="display:none;">
+            <div class="glass-panel">
+                <div class="section-header-bar">
+                    <h2 class="title-glow" style="margin:0;">ثبت حضور و غیاب جلسه</h2>
+                    <button class="btn btn-outline" onclick="openSection('dashboard')">بازگشت به داشبورد</button>
+                </div>
+                <p style="margin-bottom:16px;">جهت ثبت رسمی حضور خود در این جلسه آموزشی، وارد سامانه فرم زیر شده و مشخصات خود را ثبت نمایید:</p>
+                <div style="padding:20px; border-radius:14px; background:rgba(0,242,254,0.06); border:1px solid rgba(0,242,254,0.3); text-align:center;">
+                    <a id="attendance-link-anchor" href="#" target="_blank" class="btn btn-primary" style="font-size:1.05rem; padding:14px 28px;" onclick="completeActivity('attendance', 10, 'مراجعه به فرم حضور و غیاب ثبت گردید.')">
+                        ورود به فرم ثبت حضور ریاضی نهم 🔗
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ۹. بخش لینک‌های جلسه (ویدیوهای آموزشی) -->
+        <div id="view-links" class="app-subview" style="display:none;">
+            <div class="glass-panel">
+                <div class="section-header-bar">
+                    <h2 class="title-glow" style="margin:0;">لینک‌های آموزشی جلسه</h2>
+                    <button class="btn btn-outline" onclick="openSection('dashboard')">بازگشت به داشبورد</button>
+                </div>
+                <div id="session-links-container" style="display:grid; gap:16px;"></div>
+                <div style="margin-top:20px; text-align:left;">
+                    <button class="btn btn-emerald" onclick="completeActivity('links', 10, 'بررسی لینک‌های آموزشی جلسه ثبت گردید.')">
+                        تأیید مشاهده لینک‌های آموزشی (+10 XP) ✓
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ۱۰. بخش تکالیف -->
+        <div id="view-homework" class="app-subview" style="display:none;">
+            <div class="glass-panel">
+                <div class="section-header-bar">
+                    <h2 class="title-glow" style="margin:0;">تکالیف تعیین‌شده جلسه</h2>
+                    <button class="btn btn-outline" onclick="openSection('dashboard')">بازگشت به داشبورد</button>
+                </div>
+                <p style="color:var(--text-muted); margin-bottom:14px;">موارد زیر را با دقت در دفتر یا کتاب درسی حل نموده و وضعیت انجام هر مورد را مشخص نمایید:</p>
+                <div id="homework-list-container" style="display:grid; gap:12px;"></div>
+                <div style="margin-top:20px; text-align:left;">
+                    <button class="btn btn-emerald" onclick="completeActivity('homework', 10, 'مشاهده و ثبت تکالیف جلسه انجام شد.')">
+                        ثبت مشاهده تکالیف (+10 XP) ✓
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ۱۱. بخش اطلاعیه‌ها و پیش‌نیازها -->
+        <div id="view-announcements" class="app-subview" style="display:none;">
+            <div class="glass-panel">
+                <div class="section-header-bar">
+                    <h2 class="title-glow" style="margin:0;">اطلاعیه‌ها و پیش‌نیازهای جلسه</h2>
+                    <button class="btn btn-outline" onclick="openSection('dashboard')">بازگشت به داشبورد</button>
+                </div>
+                <div id="announcements-list-container" style="display:grid; gap:12px;"></div>
+                <div style="margin-top:20px; text-align:left;">
+                    <button class="btn btn-emerald" onclick="completeActivity('announcements', 5, 'مطالعه اطلاعیه‌های جلسه ثبت شد.')">
+                        تأیید مطالعه اطلاعیه‌ها (+5 XP) ✓
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ۱۲. بخش ثبت و ارسال گزارش نهایی به Supabase -->
+        <div id="view-report" class="app-subview" style="display:none;">
+            <div class="glass-panel">
+                <div class="section-header-bar">
+                    <h2 class="title-glow" style="margin:0;">ثبت گزارش</h2>
+                    <button class="btn btn-outline" onclick="openSection('dashboard')">بازگشت به داشبورد</button>
+                </div>
+
+                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:14px; margin-bottom:20px;">
+                    <div style="background:rgba(255,255,255,0.04); padding:14px; border-radius:12px; border:1px solid var(--border-glass);">
+                        <div style="color:var(--text-muted); font-size:0.82rem;">نام دانش‌آموز</div>
+                        <div style="font-weight:bold; font-size:1.05rem; margin-top:4px;" id="rep-student-name">---</div>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.04); padding:14px; border-radius:12px; border:1px solid var(--border-glass);">
+                        <div style="color:var(--text-muted); font-size:0.82rem;">مجموع XP کسب‌شده</div>
+                        <div style="font-weight:bold; font-size:1.05rem; color:var(--neon-cyan); margin-top:4px;" id="rep-total-xp">0</div>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.04); padding:14px; border-radius:12px; border:1px solid var(--border-glass);">
+                        <div style="color:var(--text-muted); font-size:0.82rem;">درصد پیشرفت کل</div>
+                        <div style="font-weight:bold; font-size:1.05rem; color:var(--neon-emerald); margin-top:4px;" id="rep-progress">0%</div>
+                    </div>
+                    <div style="background:rgba(255,255,255,0.04); padding:14px; border-radius:12px; border:1px solid var(--border-glass);">
+                        <div style="color:var(--text-muted); font-size:0.82rem;">زمان مطالعه و حضور</div>
+                        <div style="font-weight:bold; font-size:1.05rem; color:var(--neon-amber); margin-top:4px;" id="rep-time">0 دقیقه</div>
+                    </div>
+                </div>
+
+                <div style="background:rgba(0,0,0,0.4); border:1px solid var(--border-glass); border-radius:14px; padding:16px; margin-bottom:20px;">
+                    <h4 style="color:var(--neon-cyan); margin-bottom:8px;">خلاصه عملکرد و بخش‌های تکمیل‌شده:</h4>
+                    <div id="rep-details-preview" style="font-size:0.88rem; color:#cbd5e1; line-height:1.9; white-space:pre-wrap;"></div>
+                </div>
+
+                <button id="btn-final-supabase-send" class="btn btn-emerald" style="width:100%; padding:18px; font-size:1.15rem;" onclick="sendFinalReportToSupabase()">
+                    ثبت و ارسال گزارش
+                </button>
+                <div id="supabase-status-msg" style="margin-top:14px; text-align:center; font-weight:bold;"></div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<script>
+/* ============================================================================
+   بخش ۱: تنظیمات متغیرهای پروژه (قابل ویرایش توسط مدرس برای هر کلاس یا جلسه)
+   ============================================================================ */
+const PROJECT_CONFIG = {
+    schoolName: "مدرسه بهار دانش 4",
+    grade: "نهم",
+    subject: "ریاضی نهم - فصل سوم (استدلال و اثبات در هندسه)",
+    teacherName: "برزگری",
+    startDateJalali: "24 آبان",
+    startTimeText: "08:30",
+    startTimestampISO: "2026-11-15T08:30:00+03:30", // معادل ۲۴ آبان ساعت ۸:۳۰ صبح به وقت ایران
+    endDateJalali: "بدون محدودیت پس از شروع",
+    endTimeText: "فعال دائمی",
+    secretTeacherPin: "9162",
+
+    supabaseUrl: "https://tpwdrzwfzdbmwqlblntu.supabase.co",
+    supabaseKey: "sb_publishable_ASPIzP1XV1iSweCV43Oy9Q_PCkz5htN",
+    supabaseTable: "Students",
+
+    attendanceUrl: "https://a.digiform.ir/wb9922fb82",
+
+    sessionLinks: [
+        {
+            title: "ریاضی 9 - فصل 3 - بخش 1",
+            description: "توضیحات: استدلال، فرض و حکم | پیشنیاز: ریاضی هشتم فصل 3 و فصل 6 و فصل 9",
+            url: "https://www.aparat.com/v/q13823q"
+        },
+        {
+            title: "ریاضی 9 - فصل 3 - بخش 2",
+            description: "توضیحات: نحوه ی پیدا کردن فرض ها و اثبات حکم | پیشنیاز: ریاضی هشتم فصل 3 و فصل 6 و فصل 9",
+            url: "https://www.aparat.com/v/t85s1pe"
+        }
+    ],
+
+    sessionFiles: [],
+
+    homeworks: [
+        "تمرین صفحه ۳۵ کتاب ریاضی نهم",
+        "کار در کلاس صفحه ۳۸ کتاب ریاضی نهم",
+        "تمرین صفحه ۴۲ کتاب ریاضی نهم"
+    ],
+
+    announcements: [
+        "پیش‌نیازهای ضروری این فصل: مرور ریاضی هشتم (فصل ۳: چندضلعی‌ها و توازی، فصل ۶: مثلث و فیثاغورس، فصل ۹: دایره).",
+        "ثبت حضور در فرم مشخص شده و ارسال گزارش نهایی در پایان مطالعه الزامی است.",
+        "در نوشتن پاسخ‌های آزمون تشریحی، نوشتن دقیق فرض، حکم و حالت همنهشتی یا تشابه مورد انتظار است."
+    ],
+
+    enabledModules: [
+        { id: "teaching", title: "آموزش جلسه", icon: "📘", xp: 20 },
+        { id: "summary", title: "خلاصه هوشمند", icon: "🧠", xp: 10 },
+        { id: "descriptive_tips", title: "نکات تشریحی", icon: "✍️", xp: 10 },
+        { id: "test_traps", title: "نکات تستی و تله‌های سؤالات", icon: "🎯", xp: 10 },
+        { id: "lab", title: "آزمایشگاه هندسه", icon: "📐", xp: 30 },
+        { id: "exams", title: "آزمون‌های استاندارد", icon: "📝", xp: 110 },
+        { id: "attendance", title: "حضور و غیاب", icon: "✅", xp: 10 },
+        { id: "links", title: "لینک‌های جلسه", icon: "🎬", xp: 10 },
+        { id: "homework", title: "تکالیف", icon: "📚", xp: 10 },
+        { id: "announcements", title: "اطلاعیه‌ها", icon: "📢", xp: 5 },
+        { id: "report", title: "ثبت گزارش", icon: "🚀", xp: 0 }
+    ],
+
+    maxTotalXP: 230 // مجموع کل امتیازات قابل کسب (5 ورود + 225 فعالیت‌ها و آزمون‌ها)
+};
+
+/* ============================================================================
+   بخش ۲: مدیریت وضعیت دانش‌آموز و سیستم ضدتقلب (LocalStorage)
+   ============================================================================ */
+const STORAGE_KEY = "EDU_BAH4_RIAZI9_F3_STATE_V1";
+
+let appState = {
+    studentName: "",
+    loginCount: 0,
+    firstLoginTime: null,
+    lastActiveTime: null,
+    studySeconds: 0,
+    xp: 0,
+    completedActivities: {}, // { teaching: true, ... }
+    sectionScores: {},
+    mcqDone: false,
+    mcqScore: 0,
+    semiDone: false,
+    semiScore: 0,
+    descDone: false,
+    descScore: 0,
+    badges: [],
+    reportSent: false,
+    teacherUnlocked: false
+};
+
+function loadState() {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+            const parsed = JSON.parse(raw);
+            appState = Object.assign(appState, parsed);
+        }
+    } catch (e) {
+        console.error("Storage Error:", e);
+    }
+}
+
+function saveState() {
+    try {
+        appState.lastActiveTime = new Date().toLocaleString("fa-IR");
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+        updateNavbarStats();
+    } catch (e) {
+        console.error("Save Error:", e);
+    }
+}
+
+/* ============================================================================
+   بخش ۳: موتور صوتی سنتز داخلی (بدون نیاز به فایل خارجی)
+   ============================================================================ */
+let soundEnabled = true;
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let audioCtxInstance = null;
+
+function playBeep(freq = 520, duration = 0.12, type = "sine") {
+    if (!soundEnabled) return;
+    try {
+        if (!audioCtxInstance) audioCtxInstance = new AudioCtx();
+        const osc = audioCtxInstance.createOscillator();
+        const gain = audioCtxInstance.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtxInstance.currentTime);
+        gain.gain.setValueAtTime(0.08, audioCtxInstance.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtxInstance.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtxInstance.destination);
+        osc.start();
+        osc.stop(audioCtxInstance.currentTime + duration);
+    } catch (e) {}
+}
+
+function toggleAudioSound() {
+    soundEnabled = !soundEnabled;
+    document.getElementById("btn-sound-toggle").innerText = soundEnabled ? "🔊 صدا: فعال" : "🔇 صدا: غیرفعال";
+}
+
+function showToast(msg) {
+    const box = document.getElementById("toast-box");
+    const item = document.createElement("div");
+    item.className = "toast-item";
+    item.innerText = msg;
+    box.appendChild(item);
+    setTimeout(() => item.remove(), 4000);
+}
+
+/* ============================================================================
+   بخش ۴: قفل زمانی و پنل مخفی دبیر (بدون لو رفتن کد در ظاهر صفحه)
+   ============================================================================ */
+let lockClickCount = 0;
+let lockClickTimer = null;
+
+document.getElementById("secret-lock-trigger").addEventListener("click", () => {
+    lockClickCount++;
+    clearTimeout(lockClickTimer);
+    if (lockClickCount >= 5) {
+        lockClickCount = 0;
+        document.getElementById("teacher-secret-modal").classList.add("active");
+        document.getElementById("secret-pin-input").value = "";
+        document.getElementById("secret-pin-input").focus();
+    } else {
+        lockClickTimer = setTimeout(() => { lockClickCount = 0; }, 1800);
+    }
+});
+
+function closeTeacherModal() {
+    document.getElementById("teacher-secret-modal").classList.remove("active");
+}
+
+function handleTeacherPin(action) {
+    const pin = document.getElementById("secret-pin-input").value.trim();
+    if (pin !== PROJECT_CONFIG.secretTeacherPin) {
+        showToast("رمز مدیریتی وارد شده صحیح نیست.");
+        playBeep(220, 0.25, "sawtooth");
+        return;
+    }
+    if (action === "unlock") {
+        appState.teacherUnlocked = true;
+        saveState();
+        checkLockStatus();
+        closeTeacherModal();
+        showToast("قفل زمانی توسط دبیر بازگشایی دائم شد.");
+        playBeep(740, 0.2, "triangle");
+    } else {
+        appState.teacherUnlocked = false;
+        saveState();
+        checkLockStatus();
+        closeTeacherModal();
+        showToast("وضعیت قفل به حالت زمان‌بندی خودکار بازگشت.");
+    }
+}
+
+function checkLockStatus() {
+    const targetTime = new Date(PROJECT_CONFIG.startTimestampISO).getTime();
+    const now = Date.now();
+    const diff = targetTime - now;
+
+    const banner = document.getElementById("lock-status-banner");
+    const enterWrap = document.getElementById("enter-login-wrap");
+    const cdBox = document.getElementById("countdown-box");
+    const emblem = document.getElementById("secret-lock-trigger");
+
+    if (appState.teacherUnlocked || diff <= 0) {
+        emblem.innerText = "🔓";
+        banner.style.background = "rgba(16, 185, 129, 0.15)";
+        banner.style.borderColor = "rgba(16, 185, 129, 0.45)";
+        banner.style.color = "#6ee7b7";
+        banner.innerText = "وضعیت سامانه: فعال و آماده ورود";
+        cdBox.style.display = "none";
+        enterWrap.style.display = "block";
+    } else {
+        emblem.innerText = "🔒";
+        cdBox.style.display = "grid";
+        enterWrap.style.display = "none";
+
+        const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+        const mins = Math.floor((diff / 1000 / 60) % 60);
+        const secs = Math.floor((diff / 1000) % 60);
+
+        document.getElementById("cd-days").innerText = String(days).padStart(2, "0");
+        document.getElementById("cd-hours").innerText = String(hours).padStart(2, "0");
+        document.getElementById("cd-mins").innerText = String(mins).padStart(2, "0");
+        document.getElementById("cd-secs").innerText = String(secs).padStart(2, "0");
+    }
+}
+
+function proceedToLogin() {
+    playBeep(600, 0.12);
+    document.getElementById("login-school").value = PROJECT_CONFIG.schoolName;
+    document.getElementById("login-grade").value = PROJECT_CONFIG.grade;
+    document.getElementById("login-subject").value = PROJECT_CONFIG.subject;
+    document.getElementById("login-teacher").value = PROJECT_CONFIG.teacherName;
+    if (appState.studentName) {
+        document.getElementById("login-student-name").value = appState.studentName;
+    }
+    switchLayer("layer-login");
+}
+
+function submitStudentLogin() {
+    const nameVal = document.getElementById("login-student-name").value.trim();
+    if (nameVal.length < 3) {
+        showToast("وارد کردن نام و نام خانوادگی کامل الزامی است.");
+        playBeep(240, 0.2, "sawtooth");
+        return;
+    }
+    appState.studentName = nameVal;
+    appState.loginCount = (appState.loginCount || 0) + 1;
+    if (!appState.firstLoginTime) {
+        appState.firstLoginTime = new Date().toLocaleString("fa-IR");
+    }
+    // امتیاز ورود فقط یک بار
+    if (!appState.completedActivities["login"]) {
+        appState.completedActivities["login"] = true;
+        appState.xp += 5;
+        appState.sectionScores["ورود به سامانه"] = 5;
+        showToast("ورود موفق! ۵ امتیاز (XP) آغاز فعالیت ثبت شد.");
+    }
+    saveState();
+    initMainApplication();
+    switchLayer("layer-app");
+    playBeep(700, 0.15);
+}
+
+function switchLayer(layerId) {
+    document.querySelectorAll(".screen-layer").forEach(el => el.classList.remove("active"));
+    document.getElementById(layerId).classList.add("active");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+/* ============================================================================
+   بخش ۵: راه‌اندازی داشبورد و مدیریت بخش‌ها
+   ============================================================================ */
+let studyInterval = null;
+
+function initMainApplication() {
+    document.getElementById("nav-student-title").innerText = "دانش‌آموز: " + appState.studentName;
+    document.getElementById("nav-meta-title").innerText = `${PROJECT_CONFIG.schoolName} | پایه ${PROJECT_CONFIG.grade} | ${PROJECT_CONFIG.subject} | دبیر: ${PROJECT_CONFIG.teacherName}`;
+    document.getElementById("attendance-link-anchor").href = PROJECT_CONFIG.attendanceUrl;
+
+    renderDashboardCards();
+    renderSessionLinks();
+    renderHomeworks();
+    renderAnnouncements();
+    renderMCQQuestions();
+    renderSemiQuestions();
+    renderDescriptiveQuestions();
+    updateGeometryLab();
+    updateNavbarStats();
+
+    if (!studyInterval) {
+        studyInterval = setInterval(() => {
+            appState.studySeconds++;
+            if (appState.studySeconds % 10 === 0) saveState();
+            const m = String(Math.floor(appState.studySeconds / 60)).padStart(2, "0");
+            const s = String(appState.studySeconds % 60).padStart(2, "0");
+            document.getElementById("ui-timer").innerText = `${m}:${s}`;
+        }, 1000);
+    }
+}
+
+function renderDashboardCards() {
+    const container = document.getElementById("dashboard-cards-container");
+    container.innerHTML = "";
+    PROJECT_CONFIG.enabledModules.forEach(mod => {
+        const isDone = !!appState.completedActivities[mod.id];
+        const card = document.createElement("div");
+        card.className = "dash-card" + (isDone ? " done-card" : "");
+        card.onclick = () => openSection(mod.id);
+        card.innerHTML = `
+            <div class="dash-card-top">
+                <div class="dash-icon">${mod.icon}</div>
+                <div class="dash-xp-tag">${mod.xp > 0 ? (isDone ? "✓ دریافت شد (" + mod.xp + " XP)" : "+" + mod.xp + " XP") : "بخش پایانی"}</div>
+            </div>
+            <div>
+                <div class="dash-title">${mod.title}</div>
+                <div class="dash-status">${isDone ? "وضعیت: تکمیل شده" : "وضعیت: آماده مشاهده"}</div>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+function openSection(sectionId) {
+    playBeep(540, 0.08);
+    document.querySelectorAll(".app-subview").forEach(el => el.style.display = "none");
+    const target = document.getElementById("view-" + sectionId);
+    if (target) target.style.display = "block";
+    if (sectionId === "dashboard") renderDashboardCards();
+    if (sectionId === "lab") setTimeout(updateGeometryLab, 60);
+    if (sectionId === "report") populateReportPreview();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function completeActivity(actKey, xpReward, toastMessage) {
+    if (appState.completedActivities[actKey]) {
+        showToast("امتیاز این بخش قبلاً در کارنامه شما ثبت شده است.");
+        return;
+    }
+    appState.completedActivities[actKey] = true;
+    appState.xp += xpReward;
+    appState.sectionScores[actKey] = xpReward;
+    checkBadgesAndAchievements();
+    saveState();
+    renderDashboardCards();
+    playBeep(820, 0.18, "triangle");
+    showToast(toastMessage);
+}
+
+function checkBadgesAndAchievements() {
+    const b = new Set(appState.badges);
+    if (appState.xp >= 50) b.add("پژوهشگر هندسه");
+    if (appState.xp >= 120) b.add("استاد استدلال");
+    if (appState.completedActivities["lab"]) b.add("محقق آزمایشگاه");
+    if (appState.mcqDone && appState.descDone) b.add("قهرمان ارزشیابی");
+    appState.badges = Array.from(b);
+}
+
+function updateNavbarStats() {
+    document.getElementById("ui-xp").innerText = appState.xp;
+    const lvl = Math.floor(appState.xp / 50) + 1;
+    document.getElementById("ui-level").innerText = lvl;
+    const pct = Math.min(100, Math.round((appState.xp / PROJECT_CONFIG.maxTotalXP) * 100));
+    document.getElementById("ui-progress").innerText = pct + "%";
+}
+
+function switchEduTab(tabId, btnEl) {
+    document.querySelectorAll(".edu-tab-content").forEach(el => el.style.display = "none");
+    document.getElementById(tabId).style.display = "block";
+    btnEl.parentElement.querySelectorAll(".sub-tab-btn").forEach(b => b.classList.remove("active"));
+    btnEl.classList.add("active");
+}
+
+function switchExamTab(tabId, btnEl) {
+    document.querySelectorAll(".exam-tab-pane").forEach(el => el.style.display = "none");
+    document.getElementById(tabId).style.display = "block";
+    btnEl.parentElement.querySelectorAll(".sub-tab-btn").forEach(b => b.classList.remove("active"));
+    btnEl.classList.add("active");
+}
+
+/* ============================================================================
+   بخش ۶: رندر لینک‌های جلسه، تکالیف و اطلاعیه‌ها
+   ============================================================================ */
+function renderSessionLinks() {
+    const box = document.getElementById("session-links-container");
+    box.innerHTML = "";
+    PROJECT_CONFIG.sessionLinks.forEach((lnk, idx) => {
+        const div = document.createElement("div");
+        div.style.cssText = "padding:16px; border-radius:14px; background:rgba(255,255,255,0.04); border:1px solid var(--border-glass); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;";
+        div.innerHTML = `
+            <div>
+                <div style="font-weight:bold; font-size:1.02rem; color:var(--neon-cyan);">${idx + 1}. ${lnk.title}</div>
+                <div style="font-size:0.88rem; color:var(--text-muted); margin-top:4px;">${lnk.description}</div>
+            </div>
+            <a href="${lnk.url}" target="_blank" class="btn btn-primary">مشاهده ویدیوی آموزشی 🎬</a>
+        `;
+        box.appendChild(div);
+    });
+}
+
+function renderHomeworks() {
+    const box = document.getElementById("homework-list-container");
+    box.innerHTML = "";
+    PROJECT_CONFIG.homeworks.forEach((hw, i) => {
+        const div = document.createElement("div");
+        div.style.cssText = "padding:14px 16px; border-radius:12px; background:rgba(255,255,255,0.04); border:1px solid var(--border-glass); display:flex; align-items:center; gap:12px;";
+        div.innerHTML = `
+            <input type="checkbox" style="width:20px; height:20px; accent-color:var(--neon-emerald);">
+            <span style="font-size:0.96rem;">تکلیف شماره ${i + 1}: <b>${hw}</b></span>
+        `;
+        box.appendChild(div);
+    });
+}
+
+function renderAnnouncements() {
+    const box = document.getElementById("announcements-list-container");
+    box.innerHTML = "";
+    PROJECT_CONFIG.announcements.forEach(ann => {
+        const div = document.createElement("div");
+        div.style.cssText = "padding:14px 16px; border-radius:12px; background:rgba(245, 158, 11, 0.08); border-right:4px solid var(--neon-amber); font-size:0.94rem;";
+        div.innerText = ann;
+        box.appendChild(div);
+    });
+}
+
+/* ============================================================================
+   بخش ۷: آزمایشگاه تعاملی هندسه (همنهشتی و تشابه روی Canvas)
+   ============================================================================ */
+function updateGeometryLab() {
+    const canvas = document.getElementById("geometry-lab-canvas");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+
+    const sideC = parseFloat(document.getElementById("rng-lab-c").value);
+    const sideB = parseFloat(document.getElementById("rng-lab-b").value);
+    const angleADeg = parseFloat(document.getElementById("rng-lab-ang").value);
+    const scaleK = parseFloat(document.getElementById("rng-lab-k").value);
+
+    document.getElementById("lbl-lab-c").innerText = sideC;
+    document.getElementById("lbl-lab-b").innerText = sideB;
+    document.getElementById("lbl-lab-ang").innerText = angleADeg + "°";
+    document.getElementById("lbl-lab-k").innerText = scaleK.toFixed(1);
+
+    const rad = (angleADeg * Math.PI) / 180;
+    // قانون کسینوس‌ها برای محاسبه ضلع سوم BC
+    const sideA = Math.sqrt(sideB * sideB + sideC * sideC - 2 * sideB * sideC * Math.cos(rad));
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // رسم شبکه شطرنجی آزمایشگاه
+    ctx.strokeStyle = "rgba(255,255,255,0.04)";
+    ctx.lineWidth = 1;
+    for (let x = 0; x < canvas.width; x += 30) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+    }
+    for (let y = 0; y < canvas.height; y += 30) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+    }
+
+    // رسم مثلث اول △ABC
+    const ax = 120, ay = 280;
+    const bx = ax + sideC, by = ay;
+    const cx = ax + sideB * Math.cos(rad), cy = ay - sideB * Math.sin(rad);
+
+    drawTriangleOnLab(ctx, ax, ay, bx, by, cx, cy, "#00f2fe", "A", "B", "C");
+
+    // رسم مثلث دوم △DEF با مقیاس k
+    const dx = 480, dy = 280;
+    const ex = dx + sideC * scaleK, ey = dy;
+    const fx = dx + sideB * scaleK * Math.cos(rad), fy = dy - sideB * scaleK * Math.sin(rad);
+
+    drawTriangleOnLab(ctx, dx, dy, ex, ey, fx, fy, "#a855f7", "D", "E", "F");
+
+    const repBox = document.getElementById("lab-live-report");
+    if (Math.abs(scaleK - 1.0) < 0.01) {
+        repBox.innerHTML = `
+            <b>تحلیل لحظه‌ای آزمایشگاه:</b> از آنجا که نسبت تشابه <span class="math-expr">k = 1</span> است، دو مثلث دارای اضلاع و زوایای متناظر برابر هستند:<br>
+            <span class="math-expr">AB = DE = ${sideC}</span> ، <span class="math-expr">AC = DF = ${sideB}</span> ، <span class="math-expr">BC = EF = ${sideA.toFixed(1)}</span> و <span class="math-expr">∠A = ∠D = ${angleADeg}°</span>.<br>
+            نتیجه: دو مثلث <b>همنهشت</b> هستند (<span class="math-expr">△ABC ≅ △DEF</span> به حالت ض.ز.ض و ض.ض.ض).
+        `;
+    } else {
+        repBox.innerHTML = `
+            <b>تحلیل لحظه‌ای آزمایشگاه:</b> زوایای متناظر دو مثلث برابرند (<span class="math-expr">∠A = ∠D = ${angleADeg}°</span>) و نسبت اضلاع متناظر برابر <span class="math-expr">k = ${scaleK.toFixed(1)}</span> است:<br>
+            <span class="math-expr">DE = ${(sideC * scaleK).toFixed(1)}</span> ، <span class="math-expr">DF = ${(sideB * scaleK).toFixed(1)}</span> ، <span class="math-expr">EF = ${(sideA * scaleK).toFixed(1)}</span>.<br>
+            نتیجه: دو مثلث <b>متشابه</b> هستند (<span class="math-expr">△ABC ∼ △DEF</span>) ولی همنهشت نیستند.
+        `;
+    }
+}
+
+function drawTriangleOnLab(ctx, x1, y1, x2, y2, x3, y3, color, l1, l2, l3) {
+    ctx.save();
+    ctx.beginPath();
+    ctx.moveTo(x1, y1);
+    ctx.lineTo(x2, y2);
+    ctx.lineTo(x3, y3);
+    ctx.closePath();
+    ctx.fillStyle = color + "22";
+    ctx.fill();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 14px Tahoma";
+    ctx.fillText(l1, x1 - 14, y1 + 16);
+    ctx.fillText(l2, x2 + 8, y2 + 16);
+    ctx.fillText(l3, x3 - 6, y3 - 10);
+    ctx.restore();
+}
+
+/* ============================================================================
+   بخش ۸: بانک سؤالات و موتور تصحیح آزمون‌ها (تستی، نیمه‌تشریحی، تشریحی هوشمند)
+   ============================================================================ */
+const MCQ_BANK = [
+    {
+        level: "آسان",
+        q: "۱. در گزاره «هر چهارضلعی که قطرهایش منصف یکدیگر باشند، متوازی‌الاضلاع است»، حکم کدام است؟",
+        options: [
+            "چهارضلعی بودن شکل",
+            "قطرهای چهارضلعی منصف یکدیگرند",
+            "چهارضلعی متوازی‌الاضلاع است",
+            "قطرهای چهارضلعی با هم برابرند"
+        ],
+        ans: 2,
+        explain: "عبارت پس از شرط (نتیجه نهایی گزاره) یعنی «متوازی‌الاضلاع بودن چهارضلعی» حکم مسئله است."
+    },
+    {
+        level: "آسان",
+        q: "۲. کدام‌یک از حالت‌های زیر، یک حالت معتبر برای همنهشتی دو مثلث در حالت کلی نیست؟",
+        options: [
+            "سه ضلع (ض.ض.ض)",
+            "سه زاویه (ز.ز.ز)",
+            "دو ضلع و زاویه بین (ض.ز.ض)",
+            "دو زاویه و ضلع بین (ز.ض.ز)"
+        ],
+        ans: 1,
+        explain: "برابری سه زاویه (ز.ز.ز) صرفاً تشابه دو مثلث را نتیجه می‌دهد و برای همنهشتی کافی نیست."
+    },
+    {
+        level: "متوسط",
+        q: "۳. برای رد کردن ادعای نادرست «در هر چهارضلعی که قطرهایش برابر باشند، چهارضلعی مستطیل است» کدام شکل یک مثال نقض مناسب است؟",
+        options: [
+            "مربع",
+            "ذوزنقه متساوی‌الساقین (غیرمستطیل)",
+            "لوزی غیرمربع",
+            "متوازی‌الاضلاع"
+        ],
+        ans: 1,
+        explain: "در ذوزنقه متساوی‌الساقین قطرها با هم برابرند (فرض برقرار است)، اما شکل مستطیل نیست (حکم برقرار نیست)."
+    },
+    {
+        level: "متوسط",
+        q: "۴. دو مثلث △ABC و △DEF متشابه هستند (△ABC ∼ △DEF). اگر AB = 6، DE = 9 و BC = 8 باشد، طول ضلع EF چقدر است؟",
+        options: [
+            "10",
+            "12",
+            "14",
+            "15"
+        ],
+        ans: 1,
+        explain: "از تناسب اضلاع متناظر داریم: AB / DE = BC / EF ⟹ 6 / 9 = 8 / EF ⟹ EF = (8 × 9) / 6 = 12."
+    },
+    {
+        level: "سخت",
+        q: "۵. در مثلث متساوی‌الساقین △ABC (AB = AC)، اگر نقطه M وسط ضلع BC باشد، دو مثلث △ABM و △ACM به کدام حالت همنهشت می‌شوند (بدون استفاده از زاویه رأس)؟",
+        options: [
+            "سه ضلع (ض.ض.ض)",
+            "دو زاویه و ضلع بین (ز.ض.ز)",
+            "وتر و یک زاویه تند",
+            "همنهشت نمی‌شوند"
+        ],
+        ans: 0,
+        explain: "AB = AC (فرض)، BM = CM (چون M وسط BC است) و AM = AM (ضلع مشترک)؛ بنابراین به حالت ض.ض.ض همنهشت هستند."
+    },
+    {
+        level: "سخت",
+        q: "۶. اگر نسبت تشابه دو مثلث متشابه برابر k = 3 باشد و محیط مثلث کوچک‌تر 14 سانتی‌متر باشد، محیط مثلث بزرگ‌تر چند سانتی‌متر است؟",
+        options: [
+            "28",
+            "42",
+            "126",
+            "17"
+        ],
+        ans: 1,
+        explain: "نسبت محیط دو مثلث متشابه برابر با نسبت تشابه (k = 3) است؛ بنابراین محیط مثلث بزرگ‌تر 3 × 14 = 42 است."
+    }
+];
+
+let userMcqAnswers = {};
+
+function renderMCQQuestions() {
+    const box = document.getElementById("mcq-questions-box");
+    box.innerHTML = "";
+    MCQ_BANK.forEach((item, qIdx) => {
+        const card = document.createElement("div");
+        card.style.cssText = "padding:16px; border-radius:14px; background:rgba(255,255,255,0.03); border:1px solid var(--border-glass); margin-bottom:14px;";
+        let optsHtml = "";
+        item.options.forEach((opt, oIdx) => {
+            optsHtml += `<button type="button" class="quiz-option" id="mcq-opt-${qIdx}-${oIdx}" onclick="selectMcqOpt(${qIdx}, ${oIdx})">${oIdx + 1}) ${opt}</button>`;
+        });
+        card.innerHTML = `
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                <span style="font-weight:bold; color:#fff;">${item.q}</span>
+                <span style="font-size:0.78rem; padding:3px 9px; border-radius:8px; background:rgba(0,242,254,0.12); color:var(--neon-cyan);">سطح: ${item.level}</span>
+            </div>
+            <div>${optsHtml}</div>
+        `;
+        box.appendChild(card);
+    });
+}
+
+function selectMcqOpt(qIdx, oIdx) {
+    if (appState.mcqDone) return;
+    userMcqAnswers[qIdx] = oIdx;
+    for (let i = 0; i < 4; i++) {
+        const el = document.getElementById(`mcq-opt-${qIdx}-${i}`);
+        if (el) el.classList.remove("selected");
+    }
+    document.getElementById(`mcq-opt-${qIdx}-${oIdx}`).classList.add("selected");
+    playBeep(480, 0.06);
+}
+
+function submitMCQExam() {
+    if (appState.mcqDone) {
+        showToast("آزمون تستی قبلاً ثبت نهایی شده است.");
+        return;
+    }
+    let correctCount = 0;
+    let htmlReport = `<h4 style="color:var(--neon-cyan); margin-bottom:10px;">پاسخنامه تشریحی و تحلیل آزمون تستی:</h4>`;
+    MCQ_BANK.forEach((item, idx) => {
+        const uAns = userMcqAnswers[idx];
+        const isOk = (uAns === item.ans);
+        if (isOk) correctCount++;
+        htmlReport += `
+            <div style="padding:10px; border-radius:10px; margin-bottom:8px; background:${isOk ? 'rgba(16,185,129,0.12)' : 'rgba(244,63,94,0.12)'}; border:1px solid ${isOk ? '#10b981' : '#f43f5e'}; font-size:0.88rem;">
+                <b>سؤال ${idx + 1}:</b> ${isOk ? '✓ پاسخ صحیح' : '✗ پاسخ نادرست (گزینه صحیح: ' + (item.ans + 1) + ')'}<br>
+                <span style="color:#cbd5e1;">تحلیل: ${item.explain}</span>
+            </div>
+        `;
+    });
+
+    const earnedXP = Math.round((correctCount / MCQ_BANK.length) * 50);
+    appState.mcqDone = true;
+    appState.mcqScore = earnedXP;
+    appState.xp += earnedXP;
+    appState.sectionScores["آزمون تستی"] = earnedXP;
+    checkCompleteAllExamsFlag();
+    saveState();
+
+    const fb = document.getElementById("mcq-feedback-box");
+    fb.style.display = "block";
+    fb.innerHTML = `<div style="padding:14px; border-radius:12px; background:rgba(0,0,0,0.45); border:1px solid var(--neon-cyan); margin-bottom:12px;">
+        تعداد پاسخ صحیح: <b>${correctCount} از ${MCQ_BANK.length}</b> | امتیاز کسب‌شده: <b>${earnedXP} از 50 XP</b>
+    </div>` + htmlReport;
+
+    document.getElementById("btn-submit-mcq").disabled = true;
+    playBeep(780, 0.2, "triangle");
+    showToast(`آزمون تستی تصحیح شد: +${earnedXP} XP`);
+}
+
+/* --- آزمون نیمه‌تشریحی --- */
+const SEMI_BANK = [
+    {
+        q: "۱. برای رد کردن درستی یک گزاره کلی در ریاضی، آوردن یک نمونه که فرض را دارد ولی حکم را ندارد کافی است؛ به این نمونه «............» می‌گویند.",
+        accepted: ["مثال نقض", "نقض"]
+    },
+    {
+        q: "۲. در دو مثلث قائم‌الزاویه، اگر وتر و یک ضلع قائمه از یکی با وتر و یک ضلع ............ از دیگری برابر باشد، دو مثلث همنهشتند.",
+        accepted: ["قائمه", "زاویه قائمه"]
+    },
+    {
+        q: "۳. در دو شکل متشابه، زاویه‌های متناظر با هم برابر و طول ضلع‌های متناظر با هم ............ هستند.",
+        accepted: ["متناسب", "نسبت مساوی"]
+    },
+    {
+        q: "۴. هر نقطه روی نیمساز یک زاویه، از دو ضلع آن زاویه به یک ............ است.",
+        accepted: ["فاصله", "اندازه"]
+    }
+];
+
+let activeInputElement = null;
+
+function setActiveInput(el) {
+    activeInputElement = el;
+}
+
+function renderSemiQuestions() {
+    const box = document.getElementById("semi-questions-box");
+    box.innerHTML = "";
+    SEMI_BANK.forEach((item, idx) => {
+        const div = document.createElement("div");
+        div.style.cssText = "padding:14px; border-radius:12px; background:rgba(255,255,255,0.03); border:1px solid var(--border-glass); margin-bottom:12px;";
+        div.innerHTML = `
+            <div style="margin-bottom:8px;">${item.q}</div>
+            <input type="text" id="semi-inp-${idx}" class="form-input" placeholder="پاسخ کوتاه را بنویسید..." onfocus="setActiveInput(this)">
+        `;
+        box.appendChild(div);
+    });
+}
+
+function normalizePersianMathText(str) {
+    if (!str) return "";
+    return str
+        .replace(/ي/g, "ی")
+        .replace(/ك/g, "ک")
+        .replace(/‌/g, " ") // نیم‌فاصله به فاصله
+        .replace(/[۰-۹]/g, d => "۰۱۲۳۴۵۶۷۸۹".indexOf(d))
+        .replace(/\s+/g, " ")
+        .trim()
+        .toLowerCase();
+}
+
+function submitSemiExam() {
+    if (appState.semiDone) {
+        showToast("آزمون نیمه‌تشریحی قبلاً ثبت شده است.");
+        return;
+    }
+    let score = 0;
+    let feedbackHtml = "";
+    SEMI_BANK.forEach((item, idx) => {
+        const val = normalizePersianMathText(document.getElementById(`semi-inp-${idx}`).value);
+        const matched = item.accepted.some(acc => val.includes(normalizePersianMathText(acc)));
+        if (matched) score += 5;
+        feedbackHtml += `<div style="padding:8px 12px; margin-bottom:6px; border-radius:8px; background:${matched ? 'rgba(16,185,129,0.14)' : 'rgba(244,63,94,0.14)'};">
+            سؤال ${idx + 1}: ${matched ? '✓ صحیح (+5 XP)' : '✗ پاسخ استاندارد: «' + item.accepted[0] + '»'}
+        </div>`;
+    });
+
+    appState.semiDone = true;
+    appState.semiScore = score;
+    appState.xp += score;
+    appState.sectionScores["آزمون نیمه‌تشریحی"] = score;
+    checkCompleteAllExamsFlag();
+    saveState();
+
+    const fb = document.getElementById("semi-feedback-box");
+    fb.style.display = "block";
+    fb.innerHTML = `<div style="margin-bottom:10px; font-weight:bold; color:var(--neon-cyan);">امتیاز کسب‌شده از بخش نیمه‌تشریحی: ${score} از 20 XP</div>` + feedbackHtml;
+    document.getElementById("btn-submit-semi").disabled = true;
+    playBeep(760, 0.16);
+}
+
+/* --- آزمون تشریحی هوشمند و موتور تصحیح مفهومی --- */
+const DESC_BANK = [
+    {
+        title: "سؤال اول تشریحی (۲۰ امتیاز): تفکیک فرض و حکم",
+        question: "گزاره زیر را در نظر بگیرید:\n«در مثلث △ABC، اگر AB = AC باشد و نیمسازهای زاویه‌های ∠B و ∠C یکدیگر را در نقطه O قطع کنند، آنگاه مثلث △OBC متساوی‌الساقین است.»\nفرض و حکم این مسئله را به صورت دقیق (با نماد ریاضی یا بیان مفهومی) بنویسید.",
+        rubric: [
+            {
+                name: "تشخیص فرض برابری ساق‌ها (AB = AC یا متساوی‌الساقین بودن ABC)",
+                points: 7,
+                keywords: ["ab=ac", "ab = ac", "متساوی الساقین", "ساق"]
+            },
+            {
+                name: "تشخیص فرض نیمساز بودن BO و CO (یا برابری زاویه‌ها ∠B1=∠B2 و ∠C1=∠C2)",
+                points: 6,
+                keywords: ["نیمساز", "b1=b2", "c1=c2", "نصف"]
+            },
+            {
+                name: "تشخیص حکم (OB = OC یا متساوی‌الساقین بودن مثلث △OBC)",
+                points: 7,
+                keywords: ["ob=oc", "ob = oc", "obc", "حکم"]
+            }
+        ],
+        sampleAnswer: "فرض: در △ABC داریم AB = AC ، خط BO نیمساز ∠B (∠B₁ = ∠B₂) و خط CO نیمساز ∠C (∠C₁ = ∠C₂) است.\nحکم: OB = OC (مثلث △OBC متساوی‌الساقین است)."
+    },
+    {
+        title: "سؤال دوم تشریحی (۲۰ امتیاز): اثبات همنهشتی دو مثلث",
+        question: "در شکل مقابل فرض کنید دو پاره خط AB و CD در نقطه O همدیگر را نصف کرده‌اند (یعنی OA = OB و OC = OD). ثابت کنید دو مثلث △OAC و △OBD همنهشت هستند و نتیجه بگیرید AC = BD.",
+        rubric: [
+            {
+                name: "استفاده از برابری اضلاع فرض (OA = OB و OC = OD)",
+                points: 7,
+                keywords: ["oa=ob", "oa = ob", "oc=od", "oc = od", "نصف", "فرض"]
+            },
+            {
+                name: "اشاره به برابری زاویه‌های متقابل به رأس (∠O1 = ∠O2 یا متقابل به رأس)",
+                points: 7,
+                keywords: ["متقابل به راس", "متقابل به رأس", "o1=o2", "زاویه بین", "∠o"]
+            },
+            {
+                name: "ذکر حالت همنهشتی (ض.ز.ض) و نتیجه‌گیری حکم (AC = BD)",
+                points: 6,
+                keywords: ["ض.ز.ض", "ض ز ض", "دو ضلع و زاویه بین", "ac=bd", "ac = bd", "≅"]
+            }
+        ],
+        sampleAnswer: "اثبات: در دو مثلث △OAC و △OBD داریم:\n۱) OA = OB (فرض)\n۲) ∠O₁ = ∠O₂ (زاویه‌های متقابل به رأس)\n۳) OC = OD (فرض)\nبنابراین به حالت (ض.ز.ض) دو مثلث همنهشت هستند: △OAC ≅ △OBD. از برابری اجزای متناظر نتیجه می‌شود AC = BD."
+    }
+];
+
+function renderDescriptiveQuestions() {
+    const box = document.getElementById("desc-questions-box");
+    box.innerHTML = "";
+    DESC_BANK.forEach((item, idx) => {
+        const div = document.createElement("div");
+        div.style.cssText = "padding:16px; border-radius:14px; background:rgba(255,255,255,0.03); border:1px solid var(--border-glass); margin-bottom:16px;";
+        div.innerHTML = `
+            <h4 style="color:var(--neon-cyan); margin-bottom:8px;">${item.title}</h4>
+            <p style="white-space:pre-wrap; font-size:0.94rem; margin-bottom:12px;">${item.question}</p>
+            <textarea id="desc-ans-${idx}" rows="4" class="form-input" placeholder="پاسخ تشریحی، فرض، حکم و مراحل اثبات را اینجا بنویسید..." onfocus="setActiveInput(this)"></textarea>
+        `;
+        box.appendChild(div);
+    });
+    // انتخاب پیش‌فرض اولین کادر برای کیبورد
+    setTimeout(() => {
+        const firstTa = document.getElementById("desc-ans-0");
+        if (firstTa) activeInputElement = firstTa;
+    }, 100);
+}
+
+function insertToActiveInput(charStr) {
+    if (!activeInputElement) {
+        activeInputElement = document.getElementById("desc-ans-0");
+    }
+    if (!activeInputElement) return;
+    const start = activeInputElement.selectionStart || activeInputElement.value.length;
+    const end = activeInputElement.selectionEnd || activeInputElement.value.length;
+    const val = activeInputElement.value;
+    activeInputElement.value = val.substring(0, start) + charStr + val.substring(end);
+    activeInputElement.focus();
+    const newPos = start + charStr.length;
+    activeInputElement.setSelectionRange(newPos, newPos);
+    playBeep(620, 0.04);
+}
+
+function backspaceActiveInput() {
+    if (!activeInputElement) return;
+    const start = activeInputElement.selectionStart || activeInputElement.value.length;
+    const end = activeInputElement.selectionEnd || activeInputElement.value.length;
+    const val = activeInputElement.value;
+    if (start !== end) {
+        activeInputElement.value = val.substring(0, start) + val.substring(end);
+        activeInputElement.setSelectionRange(start, start);
+    } else if (start > 0) {
+        activeInputElement.value = val.substring(0, start - 1) + val.substring(end);
+        activeInputElement.setSelectionRange(start - 1, start - 1);
+    }
+    activeInputElement.focus();
+}
+
+function submitDescriptiveExam() {
+    if (appState.descDone) {
+        showToast("آزمون تشریحی قبلاً تصحیح و ثبت شده است.");
+        return;
+    }
+
+    let totalDescScore = 0;
+    let analysisHtml = `<h4 style="color:var(--neon-cyan); margin-bottom:10px;">کارنامه تحلیل مفهومی موتور تصحیح هوشمند:</h4>`;
+
+    DESC_BANK.forEach((item, qIdx) => {
+        const rawText = document.getElementById(`desc-ans-${qIdx}`).value;
+        const cleanText = normalizePersianMathText(rawText);
+        let qScore = 0;
+        let stepLogs = [];
+
+        item.rubric.forEach(step => {
+            const hit = step.keywords.some(kw => cleanText.includes(normalizePersianMathText(kw)));
+            if (hit) {
+                qScore += step.points;
+                stepLogs.push(`<span style="color:var(--neon-emerald);">✓ ${step.name} (+${step.points} امتیاز)</span>`);
+            } else {
+                stepLogs.push(`<span style="color:var(--neon-amber);">○ ${step.name} (نیاز به تصریح بیشتر در پاسخ)</span>`);
+            }
+        });
+
+        totalDescScore += qScore;
+        analysisHtml += `
+            <div style="padding:14px; border-radius:12px; background:rgba(255,255,255,0.04); border:1px solid var(--border-glass); margin-bottom:12px; font-size:0.9rem;">
+                <b>${item.title} — نمره کسب‌شده: ${qScore} از 20</b>
+                <div style="margin:8px 0; line-height:1.8;">${stepLogs.join("<br>")}</div>
+                <div style="padding:10px; border-radius:8px; background:rgba(0,242,254,0.08); color:#e2e8f0; white-space:pre-wrap;"><b>پاسخ استاندارد مرجع:</b>\n${item.sampleAnswer}</div>
+            </div>
+        `;
+    });
+
+    appState.descDone = true;
+    appState.descScore = totalDescScore;
+    appState.xp += totalDescScore;
+    appState.sectionScores["آزمون تشریحی"] = totalDescScore;
+    checkCompleteAllExamsFlag();
+    saveState();
+
+    const fb = document.getElementById("desc-feedback-box");
+    fb.style.display = "block";
+    fb.innerHTML = `<div style="padding:12px; border-radius:10px; background:rgba(16,185,129,0.15); border:1px solid #10b981; margin-bottom:12px; font-weight:bold;">
+        مجموع امتیاز کسب‌شده از آزمون تشریحی هوشمند: ${totalDescScore} از 40 XP
+    </div>` + analysisHtml;
+
+    document.getElementById("btn-submit-desc").disabled = true;
+    playBeep(860, 0.22, "triangle");
+    showToast(`آزمون تشریحی تصحیح شد: +${totalDescScore} XP`);
+}
+
+function checkCompleteAllExamsFlag() {
+    if (appState.mcqDone || appState.semiDone || appState.descDone) {
+        appState.completedActivities["exams"] = true;
+        checkBadgesAndAchievements();
+        renderDashboardCards();
+    }
+}
+
+/* ============================================================================
+   بخش ۹: ساخت گزارش جامع و ارسال مستقیم به Supabase (جدول Students)
+   ============================================================================ */
+function buildDetailsReportObject() {
+    const studyMinutes = Math.max(1, Math.round(appState.studySeconds / 60));
+    const progressPct = Math.min(100, Math.round((appState.xp / PROJECT_CONFIG.maxTotalXP) * 100));
+    const nowStr = new Date().toLocaleString("fa-IR");
+
+    const viewedEducations = appState.completedActivities["teaching"] ? "آموزش جامع فصل ۳ (کامل)" : "مشاهده نشده";
+    const viewedSummaries = appState.completedActivities["summary"] ? "خلاصه هوشمند و فلش‌کارت‌ها (کامل)" : "مشاهده نشده";
+    const labsDone = appState.completedActivities["lab"] ? "آزمایشگاه همنهشتی و تشابه (انجام شده)" : "انجام نشده";
+
+    const detailsText = [
+        `زمان ورود اولیه: ${appState.firstLoginTime || nowStr}`,
+        `زمان خروج / ثبت گزارش: ${nowStr}`,
+        `مدت حضور و مطالعه: ${studyMinutes} دقیقه (${appState.studySeconds} ثانیه)`,
+        `تعداد دفعات ورود: ${appState.loginCount || 1}`,
+        `آموزش‌های مشاهده‌شده: ${viewedEducations}`,
+        `خلاصه‌های مطالعه‌شده: ${viewedSummaries}`,
+        `آزمایشگاه‌های انجام‌شده: ${labsDone}`,
+        `آزمون‌های تستی: ${appState.mcqDone ? appState.mcqScore + ' از 50 XP' : 'انجام نشده'}`,
+        `آزمون نیمه‌تشریحی: ${appState.semiDone ? appState.semiScore + ' از 20 XP' : 'انجام نشده'}`,
+        `آزمون‌های تشریحی: ${appState.descDone ? appState.descScore + ' از 40 XP' : 'انجام نشده'}`,
+        `امتیاز هر بخش: ${JSON.stringify(appState.sectionScores)}`,
+        `XP کل: ${appState.xp} از ${PROJECT_CONFIG.maxTotalXP}`,
+        `درصد پیشرفت: ${progressPct}%`,
+        `تعداد Badge: ${appState.badges.length} (${appState.badges.join("، ") || "بدون نشان"})`,
+        `تعداد Achievement: ${Object.keys(appState.completedActivities).length}`,
+        `زمان ثبت گزارش: ${nowStr}`
+    ].join(" | ");
+
+    return {
+        studyMinutes,
+        progressPct,
+        detailsText
+    };
+}
+
+function populateReportPreview() {
+    const rep = buildDetailsReportObject();
+    document.getElementById("rep-student-name").innerText = appState.studentName || "---";
+    document.getElementById("rep-total-xp").innerText = `${appState.xp} از ${PROJECT_CONFIG.maxTotalXP} XP`;
+    document.getElementById("rep-progress").innerText = rep.progressPct + "%";
+    document.getElementById("rep-time").innerText = `${rep.studyMinutes} دقیقه`;
+    document.getElementById("rep-details-preview").innerText = rep.detailsText.split(" | ").join("\n");
+
+    const btn = document.getElementById("btn-final-supabase-send");
+    const statusEl = document.getElementById("supabase-status-msg");
+    if (appState.reportSent) {
+        btn.disabled = true;
+        btn.innerText = "گزارش عملکرد قبلاً با موفقیت ثبت و ارسال شده است ✓";
+        statusEl.style.color = "var(--neon-emerald)";
+        statusEl.innerText = "اطلاعات شما در پایگاه داده به ثبت رسیده است.";
+    }
+}
+
+async function sendFinalReportToSupabase() {
+    if (appState.reportSent) {
+        showToast("گزارش شما قبلاً ارسال شده است و فقط یک بار قابل ارسال می‌باشد.");
+        return;
+    }
+
+    const btn = document.getElementById("btn-final-supabase-send");
+    const statusEl = document.getElementById("supabase-status-msg");
+    btn.disabled = true;
+    btn.innerText = "در حال ارسال گزارش به پایگاه داده...";
+    statusEl.style.color = "var(--neon-cyan)";
+    statusEl.innerText = "لطفاً چند لحظه صبر کنید...";
+
+    const rep = buildDetailsReportObject();
+
+    // ساختار دقیق ستون‌های جدول Students در Supabase طبق دستورالعمل
+    const payload = {
+        Student_name: appState.studentName,
+        School_name: `پایه ${PROJECT_CONFIG.grade} - ${PROJECT_CONFIG.schoolName}`,
+        Subject: PROJECT_CONFIG.subject,
+        Score: Number(appState.xp),
+        Total_score: parseInt(PROJECT_CONFIG.maxTotalXP, 10),
+        Details: rep.detailsText
+    };
+
+    try {
+        const endpoint = `${PROJECT_CONFIG.supabaseUrl}/rest/v1/${PROJECT_CONFIG.supabaseTable}`;
+        const response = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "apikey": PROJECT_CONFIG.supabaseKey,
+                "Authorization": `Bearer ${PROJECT_CONFIG.supabaseKey}`,
+                "Prefer": "return=minimal"
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok || response.status === 201 || response.status === 204) {
+            appState.reportSent = true;
+            appState.completedActivities["report"] = true;
+            saveState();
+            btn.innerText = "گزارش نهایی با موفقیت در سامانه ثبت شد ✓";
+            statusEl.style.color = "var(--neon-emerald)";
+            statusEl.innerText = "عملکرد شما با موفقیت در جدول Students ثبت گردید.";
+            playBeep(900, 0.25, "triangle");
+            showToast("گزارش عملکرد با موفقیت به سرور ارسال شد.");
+        } else {
+            const errTxt = await response.text();
+            throw new Error(`HTTP ${response.status}: ${errTxt}`);
+        }
+    } catch (err) {
+        console.error("Supabase Send Error:", err);
+        btn.disabled = false;
+        btn.innerText = "تلاش مجدد برای ثبت و ارسال گزارش";
+        statusEl.style.color = "var(--neon-rose)";
+        statusEl.innerText = "خطا در برقراری ارتباط با سرور. اتصال اینترنت خود را بررسی و مجدداً تلاش کنید.";
+        playBeep(220, 0.25, "sawtooth");
+    }
+}
+
+/* ============================================================================
+   بخش ۱۰: انیمیشن پس‌زمینه ذرات هندسی 60FPS (Particle System)
+   ============================================================================ */
+function initParticleCanvas() {
+    const canvas = document.getElementById("particle-canvas");
+    const ctx = canvas.getContext("2d");
+    let width = canvas.width = window.innerWidth;
+    let height = canvas.height = window.innerHeight;
+
+    window.addEventListener("resize", () => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+    });
+
+    const particles = Array.from({ length: 45 }, () => ({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        vx: (Math.random() - 0.5) * 0.45,
+        vy: (Math.random() - 0.5) * 0.45,
+        r: Math.random() * 2 + 1
+    }));
+
+    function renderFrame() {
+        ctx.clearRect(0, 0, width, height);
+        for (let i = 0; i < particles.length; i++) {
+            const p = particles[i];
+            p.x += p.vx;
+            p.y += p.vy;
+            if (p.x < 0 || p.x > width) p.vx *= -1;
+            if (p.y < 0 || p.y > height) p.vy *= -1;
+
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fillStyle = "rgba(0, 242, 254, 0.45)";
+            ctx.fill();
+
+            for (let j = i + 1; j < particles.length; j++) {
+                const p2 = particles[j];
+                const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+                if (dist < 130) {
+                    ctx.beginPath();
+                    ctx.moveTo(p.x, p.y);
+                    ctx.lineTo(p2.x, p2.y);
+                    ctx.strokeStyle = `rgba(79, 172, 254, ${(1 - dist / 130) * 0.18})`;
+                    ctx.stroke();
+                }
+            }
+        }
+        requestAnimationFrame(renderFrame);
+    }
+    renderFrame();
+}
+
+/* ============================================================================
+   راه‌اندازی اولیه در لحظه بارگذاری صفحه
+   ============================================================================ */
+window.addEventListener("DOMContentLoaded", () => {
+    loadState();
+    initParticleCanvas();
+    checkLockStatus();
+    setInterval(checkLockStatus, 1000);
+});
+</script>
+</body>
+</html>
