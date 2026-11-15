@@ -1,0 +1,2508 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>سامانه پیشرفته آموزش مجازی تربیت بدنی - جلسه دوم بسکتبال</title>
+  <style>
+    /* ==================== متغیرها و تنظیمات ظاهری (Ultra Dark Glassmorphism) ==================== */
+    :root {
+      --bg-dark: #060911;
+      --glass-bg: rgba(15, 23, 42, 0.68);
+      --glass-border: rgba(255, 255, 255, 0.14);
+      --primary: #f97316;
+      --primary-glow: rgba(249, 115, 22, 0.55);
+      --secondary: #38bdf8;
+      --secondary-glow: rgba(56, 189, 248, 0.45);
+      --accent: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --shadow-glass: 0 16px 40px 0 rgba(0, 0, 0, 0.6);
+      --transition: all 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, 'Segoe UI', Tahoma, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.75;
+      position: relative;
+    }
+
+    #bgParticlesCanvas, #fxConfettiCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    #fxConfettiCanvas { z-index: 9998; }
+
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 16px var(--primary-glow), inset 0 0 8px rgba(249, 115, 22, 0.25); }
+      50% { box-shadow: 0 0 32px rgba(249, 115, 22, 0.85), inset 0 0 14px rgba(249, 115, 22, 0.45); }
+    }
+
+    @keyframes borderBeam {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes slideUpFade {
+      from { opacity: 0; transform: translateY(22px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes dashFlow {
+      to { stroke-dashoffset: -40; }
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px 16px 90px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .glass-panel {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-glass);
+      padding: 26px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glass-panel::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--primary), var(--secondary), transparent);
+      background-size: 200% 200%;
+      animation: borderBeam 5s ease infinite;
+    }
+
+    .glass-card {
+      background: rgba(15, 23, 42, 0.65);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      transition: transform 0.2s ease-out, border-color 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      transform-style: preserve-3d;
+    }
+
+    .glass-card:hover {
+      border-color: rgba(249, 115, 22, 0.55);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(249, 115, 22, 0.18);
+    }
+
+    .card-glare {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.12), transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .glass-card:hover .card-glare { opacity: 1; }
+
+    .section-title {
+      font-size: 1.38rem;
+      font-weight: 900;
+      color: var(--primary);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--glass-border);
+      padding-bottom: 12px;
+      text-shadow: 0 0 18px rgba(249, 115, 22, 0.35);
+    }
+
+    .badge-xp {
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      color: #fff;
+      padding: 5px 14px;
+      border-radius: 999px;
+      font-size: 0.86rem;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 15px rgba(249, 115, 22, 0.45);
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+      color: #fff;
+      border: none;
+      padding: 13px 26px;
+      border-radius: var(--radius-md);
+      font-size: 0.98rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 10px 25px var(--primary-glow);
+    }
+
+    .btn:active:not(:disabled) { transform: translateY(0) scale(0.98); }
+
+    .btn:disabled {
+      background: #1e293b;
+      color: #64748b;
+      border: 1px solid rgba(255,255,255,0.05);
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-secondary {
+      background: rgba(56, 189, 248, 0.14);
+      border: 1px solid rgba(56, 189, 248, 0.45);
+      color: var(--secondary);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: rgba(56, 189, 248, 0.28);
+      box-shadow: 0 8px 20px var(--secondary-glow);
+    }
+
+    .btn-success { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+    .btn-success:hover:not(:disabled) { box-shadow: 0 10px 25px rgba(16, 185, 129, 0.45); }
+
+    .top-bar {
+      position: sticky;
+      top: 12px;
+      z-index: 100;
+      margin-bottom: 24px;
+      display: none;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      padding: 14px 22px;
+    }
+
+    .progress-track {
+      width: 150px;
+      height: 11px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 99px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #f97316, #38bdf8, #10b981);
+      background-size: 200% 100%;
+      animation: borderBeam 3s linear infinite;
+      width: 0%;
+      transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px; }
+
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; margin-bottom: 6px; font-weight: 700; font-size: 0.92rem; color: #e2e8f0; }
+    .form-control {
+      width: 100%;
+      padding: 13px 16px;
+      background: rgba(9, 13, 22, 0.85);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      color: var(--text-main);
+      font-size: 0.98rem;
+      outline: none;
+      transition: var(--transition);
+    }
+    .form-control:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.22);
+    }
+    .form-control[readonly] {
+      background: rgba(30, 41, 59, 0.55);
+      color: var(--secondary);
+      font-weight: 800;
+    }
+
+    .custom-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 0.92rem;
+    }
+    .custom-table th, .custom-table td {
+      padding: 12px 14px;
+      text-align: right;
+      border-bottom: 1px solid var(--glass-border);
+    }
+    .custom-table th {
+      background: rgba(249, 115, 22, 0.16);
+      color: var(--primary);
+      font-weight: 800;
+    }
+
+    .timeline {
+      position: relative;
+      padding-right: 30px;
+      border-right: 3px solid var(--primary);
+      margin: 20px 0;
+    }
+    .timeline-item { position: relative; margin-bottom: 22px; }
+    .timeline-dot {
+      position: absolute;
+      right: -39px;
+      top: 6px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--primary);
+      border: 3px solid var(--bg-dark);
+      box-shadow: 0 0 14px var(--primary);
+    }
+
+    .hand-zone {
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .hand-zone:hover {
+      filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.9));
+      transform: scale(1.06);
+      transform-origin: center;
+    }
+
+    .tactic-line {
+      stroke-dasharray: 8 6;
+      animation: dashFlow 1.2s linear infinite;
+      pointer-events: none;
+    }
+
+    .flip-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+    }
+    .flip-card {
+      background-color: transparent;
+      height: 205px;
+      perspective: 1200px;
+      cursor: pointer;
+    }
+    .flip-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+      transform-style: preserve-3d;
+    }
+    .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+    .flip-front, .flip-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    }
+    .flip-front {
+      background: linear-gradient(145deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
+      color: var(--text-main);
+    }
+    .flip-back {
+      background: linear-gradient(135deg, #f97316, #c2410c);
+      color: #fff;
+      transform: rotateY(180deg);
+    }
+
+    .sub-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 22px;
+      border-bottom: 1px solid var(--glass-border);
+      padding-bottom: 14px;
+    }
+    .sub-tab-btn {
+      background: rgba(15, 23, 42, 0.75);
+      color: var(--text-muted);
+      border: 1px solid var(--glass-border);
+      padding: 9px 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.9rem;
+      transition: var(--transition);
+    }
+    .sub-tab-btn:hover { border-color: var(--primary); color: #fff; }
+    .sub-tab-btn.active {
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      color: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 6px 16px rgba(249, 115, 22, 0.35);
+    }
+
+    .equip-viewer {
+      perspective: 1000px;
+      height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 50% 60%, rgba(56, 189, 248, 0.2) 0%, rgba(15, 23, 42, 0.9) 75%);
+      border-radius: var(--radius-md);
+      margin-bottom: 14px;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+    .equip-viewer::after {
+      content: "";
+      position: absolute;
+      bottom: 18px;
+      width: 110px;
+      height: 18px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.6), transparent 70%);
+      filter: blur(4px);
+    }
+    .equip-3d-object {
+      transition: transform 0.15s ease-out;
+      transform-style: preserve-3d;
+      animation: floatSlow 3.2s ease-in-out infinite;
+    }
+
+    .view-section {
+      display: none;
+      animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .view-section.active { display: block; }
+
+    #toastBox {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .toast-item {
+      background: rgba(15, 23, 42, 0.95);
+      border-right: 4px solid var(--accent);
+      color: #fff;
+      padding: 13px 20px;
+      border-radius: 12px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.65);
+      font-size: 0.92rem;
+      font-weight: 600;
+      animation: slideUpFade 0.3s ease;
+    }
+
+    @media (max-width: 640px) {
+      .top-bar { position: static; }
+      .section-title { font-size: 1.15rem; }
+      .glass-panel { padding: 18px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- بوم ذرات معلق پس‌زمینه و بوم انفجار ذرات (Confetti) -->
+  <canvas id="bgParticlesCanvas"></canvas>
+  <canvas id="fxConfettiCanvas"></canvas>
+
+  <!-- باکس پیام‌های شناور -->
+  <div id="toastBox"></div>
+
+  <!-- ==================== نوار وضعیت بالای صفحه (پس از ورود) ==================== -->
+  <div class="container" style="padding-bottom: 0;">
+    <header id="topStatusBar" class="glass-panel top-bar">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div style="width:46px; height:46px; border-radius:50%; background:linear-gradient(135deg,#f97316,#ea580c); display:flex; align-items:center; justify-content:center; font-size:1.35rem; box-shadow:0 0 15px var(--primary-glow);">⛹️</div>
+        <div>
+          <div id="headerStudentName" style="font-weight:800; font-size:1.02rem;">نام دانش‌آموز</div>
+          <div id="headerSchoolInfo" style="font-size:0.82rem; color:var(--secondary);">مدرسه | پایه</div>
+        </div>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:18px; flex-wrap:wrap;">
+        <div>
+          <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:4px;">پیشرفت جلسه دوم: <span id="headerProgressText" style="color:#fff; font-weight:bold;">۰٪</span></div>
+          <div class="progress-track">
+            <div id="headerProgressFill" class="progress-fill"></div>
+          </div>
+        </div>
+        <div class="badge-xp">
+          <span>✨ امتیاز:</span>
+          <span id="headerXP">۰</span>
+          <span>XP</span>
+        </div>
+        <button class="btn btn-secondary" style="padding:8px 15px; font-size:0.86rem;" onclick="navigateTo('dashboardView')">🏠 داشبورد</button>
+      </div>
+    </header>
+  </div>
+
+  <!-- ==================== کانتینر اصلی سامانه ==================== -->
+  <main class="container">
+
+    <!-- =========================================================================
+         ۱. صفحه ورود و آغازین جلسه دوم (همراه با انیمیشن دریبل زنجیره‌ای)
+         ========================================================================= -->
+    <section id="loginView" class="view-section active">
+      <div class="glass-panel" style="text-align:center; margin-bottom:24px;">
+        <div style="font-size:0.8rem; color:var(--secondary); margin-bottom:4px;">💡 روی توپ در حال دریبل کلیک کنید تا تغییر جهت (کراس‌اور) بدهد!</div>
+        <canvas id="welcomeBallCanvas" width="520" height="185" style="width:100%; max-width:520px; margin:0 auto; display:block; cursor:pointer; border-radius:14px; background:radial-gradient(circle, rgba(249,115,22,0.12) 0%, rgba(15,23,42,0.6) 80%); border:1px solid var(--glass-border);"></canvas>
+        <h1 id="uiAppTitle" style="font-size:1.8rem; font-weight:900; color:var(--primary); margin-top:12px;">آموزش بسکتبال پایه هفتم</h1>
+        <h2 id="uiSessionTitle" style="font-size:1.22rem; color:var(--secondary); margin:6px 0;">جلسه دوم: وضعیت آمادگی، احساس توپ و مهارت دریبل پایه</h2>
+        <p style="color:var(--text-muted); font-size:0.96rem;">درس: <strong id="uiSubjectText" style="color:#fff;">تربیت بدنی</strong> | نام دبیر: <strong id="uiTeacherText" style="color:var(--accent);">برزگری</strong></p>
+      </div>
+
+      <div class="grid-2">
+        <!-- راهنمای رسمی و جدول امتیازدهی -->
+        <div class="glass-panel">
+          <div class="section-title">📋 راهنمای استفاده از سامانه (جلسه دوم)</div>
+          <ul style="list-style:none; font-size:0.92rem; color:#cbd5e1; display:flex; flex-direction:column; gap:10px; margin-bottom:20px;">
+            <li>🔹 <strong>نحوه ورود:</strong> مشخصات فردی، نام مدرسه و پایه تحصیلی خود را در فرم روبرو به صورت دقیق تکمیل نمایید تا دکمه ورود فعال گردد.</li>
+            <li>🔹 <strong>نحوه مطالعه آموزش:</strong> در بخش «آموزش جامع جلسه دوم»، وضعیت ایستادن سه گانه، تمرینات احساس توپ، آناتومی تماس دست و انواع دریبل را بررسی کنید.</li>
+            <li>🔹 <strong>نحوه انجام فعالیت‌ها:</strong> در بخش «فعالیت‌های عملی و تعاملی»، چالش‌های تشخیص خطای دریبل، مرتب‌سازی تکنیک و بازی ریتم دریبل با سر بالا را انجام دهید.</li>
+            <li>🔹 <strong>نحوه کسب امتیاز (XP):</strong> هر بخش آموزشی یا فعالیت عملی دارای امتیاز مشخصی است که تنها یک مرتبه در سامانه ثبت و ذخیره می‌گردد.</li>
+            <li>🔹 <strong>نحوه مشاهده پیشرفت:</strong> در بخش «گزارش پیشرفت»، درصد تکمیل جلسه دوم، زمان حضور و نشان‌های افتخار قابل مشاهده است.</li>
+            <li>🔹 <strong>نحوه ثبت و ارسال گزارش نهایی:</strong> پس از تکمیل بخش‌ها، به قسمت «ثبت گزارش» مراجعه کرده و عملکرد نهایی خود را برای دبیر ارسال نمایید.</li>
+          </ul>
+
+          <div class="section-title" style="margin-top:16px;">🏆 جدول امتیازدهی فعالیت‌ها (XP)</div>
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>عنوان فعالیت در سامانه</th>
+                <th>میزان امتیاز</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>ورود به سامانه</td><td>۵ XP</td></tr>
+              <tr><td>مشاهده آموزش کامل جلسه دوم</td><td>۲۰ XP</td></tr>
+              <tr><td>مطالعه خلاصه و نقشه ذهنی دریبل</td><td>۱۰ XP</td></tr>
+              <tr><td>انجام فعالیت‌های عملی و بازی دریبل</td><td>۳۰ XP</td></tr>
+              <tr><td>مشاهده فایل‌های آموزشی جلسه</td><td>۱۰ XP</td></tr>
+              <tr><td>مطالعه اطلاعیه‌های آموزشی</td><td>۵ XP</td></tr>
+              <tr><td>ثبت تکلیف عملی جلسه دوم</td><td>۱۰ XP</td></tr>
+              <tr><td>ثبت و ارسال گزارش نهایی</td><td>۲۰ XP</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- فرم ورود اجباری دانش‌آموز -->
+        <div class="glass-panel">
+          <div class="section-title">🔐 فرم ورود دانش‌آموز به جلسه دوم</div>
+          <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:18px;">تمامی فیلدها اجباری هستند. تا زمان تکمیل دقیق اطلاعات، دکمه شروع آموزش فعال نخواهد شد.</p>
+
+          <form id="loginForm" onsubmit="handleLoginSubmit(event)">
+            <div class="form-group">
+              <label class="form-label" for="studentNameInput">نام و نام خانوادگی دانش‌آموز (اجباری):</label>
+              <input type="text" id="studentNameInput" class="form-control" placeholder="مثال: محمد رضایی" required oninput="validateLoginForm()">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="schoolSelect">نام مدرسه (اجباری):</label>
+              <select id="schoolSelect" class="form-control" required onchange="validateLoginForm()">
+                <option value="">-- انتخاب مدرسه --</option>
+                <option value="مدرسه نور دوستکو">مدرسه نور دوستکو</option>
+                <option value="مدرسه اتحاد دوربنی">مدرسه اتحاد دوربنی</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="gradeSelect">پایه تحصیلی (اجباری):</label>
+              <select id="gradeSelect" class="form-control" required onchange="validateLoginForm()">
+                <option value="">-- انتخاب پایه تحصیلی --</option>
+                <option value="پایه هفتم">پایه هفتم</option>
+                <option value="پایه هشتم">پایه هشتم</option>
+                <option value="پایه نهم">پایه نهم</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">نام دبیر:</label>
+              <input type="text" id="fixedTeacherInput" class="form-control" value="برزگری" readonly>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">نام درس:</label>
+              <input type="text" id="fixedSubjectInput" class="form-control" value="تربیت بدنی" readonly>
+            </div>
+
+            <button type="submit" id="startBtn" class="btn" style="width:100%; margin-top:14px;" disabled>
+              🚀 ورود به سامانه و شروع جلسه دوم
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۲. داشبورد اصلی (کارت‌های سه‌بعدی حساس به حرکت موس)
+         ========================================================================= -->
+    <section id="dashboardView" class="view-section">
+      <div class="glass-panel" style="margin-bottom:22px;">
+        <div class="section-title">🎛️ داشبورد هوشمند جلسه دوم: تسلط بر توپ و مهارت دریبل</div>
+        <p style="font-size:0.92rem; color:var(--text-muted);">کارت‌های زیر دارای افکت سه‌بعدی تعاملی هستند. با تکمیل هر بخش، امتیاز XP آن همراه با افکت نوری به حساب شما افزوده می‌شود.</p>
+      </div>
+
+      <div id="dashboardModulesGrid" class="grid-3"></div>
+    </section>
+
+    <!-- =========================================================================
+         ۳. بخش جامع آموزش جلسه دوم بسکتبال
+         ========================================================================= -->
+    <section id="educationView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">📚 آموزش جامع جلسه دوم: وضعیت آمادگی، احساس توپ و دریبل</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <!-- تب‌های داخلی آموزش -->
+        <div class="sub-tabs">
+          <button class="sub-tab-btn active" onclick="switchEduTab('eduGoals', this)">۱. اهداف و وضعیت تهدید سه‌گانه</button>
+          <button class="sub-tab-btn" onclick="switchEduTab('eduBenefits', this)">۲. تمرینات احساس توپ و سلامت مچ</button>
+          <button class="sub-tab-btn" onclick="switchEduTab('eduHand', this)">۳. آناتومی تعاملی دست در دریبل</button>
+          <button class="sub-tab-btn" onclick="switchEduTab('eduEquip', this)">۴. هولوگرام سه‌بعدی پوزیشن دریبل</button>
+          <button class="sub-tab-btn" onclick="switchEduTab('eduRules', this)">۵. قوانین دریبل، تخلفات و داوری</button>
+          <button class="sub-tab-btn" onclick="switchEduTab('eduSkills', this)">۶. آزمایشگاه انیمیشنی انواع دریبل</button>
+        </div>
+
+        <!-- زیربخش ۱: اهداف جلسه و وضعیت تهدید سه‌گانه -->
+        <div id="eduGoals" class="edu-sub-view">
+          <h3 style="color:var(--secondary); margin-bottom:14px;">🎯 اهداف یادگیری جلسه دوم</h3>
+          <div class="grid-3" style="margin-bottom:28px;">
+            <div class="glass-card tilt-card"><div class="card-glare"></div><strong>۱. وضعیت تهدید سه‌گانه</strong><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">نحوه صحیح ایستادن با توپ (Triple Threat) برای آمادگی شوت، پاس یا دریبل را اجرا کند.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><strong>۲. احساس و تسلط بر توپ</strong><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">تمرینات چرخش توپ دور سر، کمر و زانو (Ball Handling) را بدون افتادن توپ انجام دهد.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><strong>۳. تکنیک تماس انگشتان</strong><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">تفاوت هدایت توپ با نرمه انگشتان و خطای ضربه زدن با کف دست را بداند.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><strong>۴. دریبل کنترلی (پایین)</strong><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">نحوه محافظت از توپ در برابر مدافع با زانوهای خم و دست محافظ (Arm Bar) را بیاموزد.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><strong>۵. دریبل سرعتی (بلند)</strong><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">نحوه هل دادن توپ به جلوتر از بدن برای دویدن سریع در ضدحمله‌ها را بشناسد.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><strong>۶. قوانین دبل و حمل توپ</strong><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">تخلفات دبل دریبل، حمل توپ (Carrying) و علائم داوری آن‌ها را تشخیص دهد.</p></div>
+          </div>
+
+          <h3 style="color:var(--secondary); margin-bottom:14px;">⚡ مراحل چهارگانه قرارگیری در وضعیت تهدید سه‌گانه (Triple Threat)</h3>
+          <div class="timeline">
+            <div class="timeline-item glass-card">
+              <div class="timeline-dot"></div>
+              <h4 style="color:var(--primary);">گام اول: تعادل پاها و خم شدن مفاصل</h4>
+              <p style="font-size:0.9rem; margin-top:6px;">پاها کمی بیشتر از عرض شانه باز می‌شوند، یک پا اندکی جلوتر قرار می‌گیرد و مچ پا، زانوها و مفصل ران خم می‌شوند تا مرکز ثقل بدن پایین بیاید و تعادل کامل ایجاد شود.</p>
+            </div>
+            <div class="timeline-item glass-card">
+              <div class="timeline-dot"></div>
+              <h4 style="color:var(--primary);">گام دوم: قرار دادن توپ در جیب شوت (Hip Pocket)</h4>
+              <p style="font-size:0.9rem; margin-top:6px;">توپ با دو دست در کنار پهلوی سمت دست برتر (کمی بالاتر از ران) نگه داشته می‌شود تا از دسترس مدافع دور بماند.</p>
+            </div>
+            <div class="timeline-item glass-card">
+              <div class="timeline-dot"></div>
+              <h4 style="color:var(--primary);">گام سوم: کمر صاف، سینه جلو و سر کاملاً بالا</h4>
+              <p style="font-size:0.9rem; margin-top:6px;">به جای خم کردن کمر به جلو، کمر صاف می‌ماند و سر بالا نگه داشته می‌شود تا بازیکن کل زمین، هم‌تیمی‌ها و حلقه را ببیند.</p>
+            </div>
+            <div class="timeline-item glass-card">
+              <div class="timeline-dot"></div>
+              <h4 style="color:var(--primary);">گام چهارم: آمادگی برای ۳ اقدام هم‌زمان</h4>
+              <p style="font-size:0.9rem; margin-top:6px;">چرا به آن «تهدید سه‌گانه» می‌گویند؟ زیرا بازیکن در این حالت می‌تواند در کسری از ثانیه یکی از ۳ حرکت <strong>۱. شوت زدن</strong>، <strong>۲. پاس دادن</strong> یا <strong>۳. شروع دریبل</strong> را انجام دهد و مدافع را غافلگیر کند.</p>
+            </div>
+          </div>
+
+          <h3 style="color:var(--secondary); margin:20px 0 12px;">📊 جدول مقایسه دریبل کنترلی (پایین) و دریبل سرعتی (بلند)</h3>
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>ویژگی فنی</th>
+                <th>دریبل کنترلی (Control Dribble)</th>
+                <th>دریبل سرعتی (Speed Dribble)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>کاربرد در مسابقه</td><td>هنگام نزدیک بودن مدافع و تحت فشار</td><td>در فضای باز و ضدحمله سریع (Fast Break)</td></tr>
+              <tr><td>ارتفاع پرش توپ</td><td>پایین (بین زانو و پایین کمر)</td><td>بلندتر (تا ارتفاع کمر و قفسه سینه)</td></tr>
+              <tr><td>محل برخورد توپ با زمین</td><td>در کنار و نزدیک پای عقبی بدن</td><td>جلوتر از بدن برای دویدن پشت سر توپ</td></tr>
+              <tr><td>وضعیت بدن و دست غیرتوپ</td><td>زانوها کاملاً خم، دست مخالف به عنوان سپر محافظ</td><td>بدن کمی متمایل به جلو در حالت دویدن سریع</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- زیربخش ۲: تمرینات احساس توپ (Ball Handling) و سلامت مچ و انگشتان -->
+        <div id="eduBenefits" class="edu-sub-view" style="display:none;">
+          <h3 style="color:var(--secondary); margin-bottom:14px;">🤹 ۶ تمرین طلایی احساس توپ (Ball Handling) بدون دریبل</h3>
+          <div class="grid-3" style="margin-bottom:26px;">
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:2rem; margin-bottom:8px;">👏🏀</div><h4 style="color:var(--primary);">ضربات سریع سرانگشتان</h4><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">نگه داشتن توپ روبروی صورت با آرنج‌های صاف و پاس دادن سریع توپ بین سرانگشتان دو دست (Fingertip Taps).</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:2rem; margin-bottom:8px;">🔄🗣️</div><h4 style="color:var(--primary);">چرخش توپ دور سر و گردن</h4><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">چرخاندن نرم و سریع توپ به دور سر در جهت عقربه‌های ساعت و برعکس بدون نگاه کردن به توپ.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:2rem; margin-bottom:8px;">🌀👕</div><h4 style="color:var(--primary);">چرخش توپ دور کمر</h4><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">انتقال توپ از دست راست به چپ از پشت و جلوی کمر با حداکثر سرعت برای افزایش هماهنگی عصب و عضله.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:2rem; margin-bottom:8px;">🦵🔄</div><h4 style="color:var(--primary);">چرخش توپ دور هر दो زانو</h4><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">جفت کردن پاها، خم کردن زانو و چرخاندن توپ به دور ساق پا برای عادت کردن به وضعیت خمیده.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:2rem; margin-bottom:8px;">♾️8️⃣</div><h4 style="color:var(--primary);">حرکت عدد هشت انگلیسی (Figure 8)</h4><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">باز کردن پاها و عبور دادن توپ از بین پاها به شکل علامت بی‌نهایت (∞) بدون برخورد توپ به زمین.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:2rem; margin-bottom:8px;">👁️⬆️</div><h4 style="color:var(--primary);">تسلط با چشمان بسته</h4><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">انجام تمام حرکات بالا با چشمان بسته جهت تقویت حس عمقی مفاصل دست و بی‌نیازی از نگاه به توپ.</p></div>
+          </div>
+
+          <h3 style="color:var(--secondary); margin-bottom:14px;">🩺 سلامت، گرم کردن اختصاصی مچ دست و پیشگیری از آسیب انگشتان</h3>
+          <div class="grid-2">
+            <div class="glass-card">
+              <h4 style="color:var(--accent);">۱. گرم کردن مفاصل انگشتان، مچ و آرنج</h4>
+              <p style="font-size:0.88rem; margin-top:6px;">• <strong>چرخش مچ دست:</strong> قفل کردن انگشتان دو دست در هم و چرخش آرام مچ‌ها به مدت ۳۰ ثانیه.<br>• <strong>کشش بازکننده‌ها و تاکننده‌های مچ:</strong> کشیدن آرام انگشتان به سمت عقب و پایین با دست مخالف.<br>• <strong>فشار نرم سرانگشتان:</strong> قرار دادن نوک انگشتان دو دست مقابل هم و فشار ملایم فنری برای آماده شدن تاندون‌ها.</p>
+            </div>
+            <div class="glass-card">
+              <h4 style="color:var(--accent);">۲. بهداشت ناخن‌ها و پیشگیری از دررفتگی انگشت (Jammed Finger)</h4>
+              <p style="font-size:0.88rem; margin-top:6px;">• <strong>کوتاه بودن ناخن‌ها:</strong> بلند بودن ناخن در بسکتبال باعث برگشتن ناخن هنگام برخورد با توپ یا آسیب به سایر دانش‌آموزان می‌شود.<br>• <strong>انگشتان باز و منعطف:</strong> هنگام دریبل و دریافت، انگشتان نباید خشک و سیخ باشند؛ بلکه باید مانند فنر نرم باشند تا ضربه توپ جذب شود.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- زیربخش ۳: آناتومی تعاملی دست در دریبل (به همراه صدا) -->
+        <div id="eduHand" class="edu-sub-view" style="display:none;">
+          <h3 style="color:var(--secondary); margin-bottom:8px;">✋ نقشه تعاملی آناتومی تماس دست با توپ هنگام دریبل</h3>
+          <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:16px;">روی نقاط مختلف دست کلیک کنید تا ببینید کدام بخش‌ها <strong>نقاط تماس صحیح (سبز)</strong> و کدام بخش <strong>نقطه خطا (قرمز)</strong> در مهارت دریبل هستند:</p>
+
+          <div style="display:flex; flex-direction:column; align-items:center; gap:18px;">
+            <svg viewBox="0 0 500 360" style="width:100%; max-width:520px; background:radial-gradient(circle, #1e293b 0%, #090d16 90%); border-radius:18px; border:2px solid var(--glass-border); box-shadow:0 12px 35px rgba(0,0,0,0.6);">
+              <!-- طرح شماتیک کف دست و انگشتان باز -->
+              <path d="M 200,330 L 185,230 L 115,175 C 105,165 115,148 130,155 L 185,190 L 160,85 C 158,70 178,68 182,82 L 210,175 L 225,60 C 227,44 248,44 250,60 L 252,175 L 285,72 C 290,58 310,63 306,78 L 282,182 L 335,112 C 344,100 362,110 352,124 L 302,225 L 290,330 Z" fill="rgba(255,255,255,0.08)" stroke="#94a3b8" stroke-width="3"/>
+
+              <!-- نقاط نرمه سرانگشتان (صحیح) -->
+              <circle class="hand-zone" cx="125" cy="162" r="18" fill="rgba(16,185,129,0.35)" stroke="#10b981" stroke-width="3" onclick="selectHandPart('thumb')"/>
+              <text x="125" y="167" fill="#fff" font-size="11" font-weight="bold" text-anchor="middle">شست</text>
+
+              <circle class="hand-zone" cx="172" cy="84" r="18" fill="rgba(16,185,129,0.35)" stroke="#10b981" stroke-width="3" onclick="selectHandPart('indexFinger')"/>
+              <text x="172" y="89" fill="#fff" font-size="11" font-weight="bold" text-anchor="middle">اشاره</text>
+
+              <circle class="hand-zone" cx="238" cy="62" r="18" fill="rgba(16,185,129,0.35)" stroke="#10b981" stroke-width="3" onclick="selectHandPart('middleFinger')"/>
+              <text x="238" y="67" fill="#fff" font-size="11" font-weight="bold" text-anchor="middle">میانی</text>
+
+              <circle class="hand-zone" cx="296" cy="76" r="18" fill="rgba(16,185,129,0.35)" stroke="#10b981" stroke-width="3" onclick="selectHandPart('ringFinger')"/>
+              <text x="296" y="81" fill="#fff" font-size="11" font-weight="bold" text-anchor="middle">حلقه</text>
+
+              <circle class="hand-zone" cx="344" cy="118" r="17" fill="rgba(16,185,129,0.35)" stroke="#10b981" stroke-width="3" onclick="selectHandPart('pinkyFinger')"/>
+              <text x="344" y="123" fill="#fff" font-size="11" font-weight="bold" text-anchor="middle">کوچک</text>
+
+              <!-- مرکز کف دست (خطا - نباید با توپ برخورد کند) -->
+              <circle class="hand-zone" cx="242" cy="230" r="34" fill="rgba(239,68,68,0.35)" stroke="#ef4444" stroke-width="3" onclick="selectHandPart('palmError')"/>
+              <text x="242" y="227" fill="#fff" font-size="12" font-weight="bold" text-anchor="middle">کف دست</text>
+              <text x="242" y="244" fill="#fca5a5" font-size="10" text-anchor="middle">(ممنوع!)</text>
+
+              <!-- مفصل مچ دست -->
+              <rect class="hand-zone" x="195" y="295" width="95" height="32" rx="10" fill="rgba(56,189,248,0.3)" stroke="#38bdf8" stroke-width="3" onclick="selectHandPart('wristJoint')"/>
+              <text x="242" y="316" fill="#fff" font-size="12" font-weight="bold" text-anchor="middle">مفصل مچ (فنر)</text>
+            </svg>
+
+            <div id="handInfoPanel" class="glass-card" style="width:100%; max-width:680px; border-right:4px solid var(--primary);">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <h4 id="handPartTitle" style="color:var(--primary); font-size:1.1rem;">یکی از نقاط دست را روی تصویر بالا لمس کنید</h4>
+                <button class="btn btn-secondary" style="padding:6px 12px; font-size:0.8rem;" onclick="speakCurrentHandInfo()">🔊 پخش توضیح صوتی</button>
+              </div>
+              <p id="handPartDesc" style="font-size:0.92rem; color:#e2e8f0;">با کلیک روی نرمه انگشتان، کف دست یا مچ، نقش دقیق آن بخش در کنترل توپ بسکتبال نمایش داده می‌شود.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- زیربخش ۴: هولوگرام سه‌بعدی پوزیشن دریبل -->
+        <div id="eduEquip" class="edu-sub-view" style="display:none;">
+          <h3 style="color:var(--secondary); margin-bottom:10px;">🕶️ ویترین هولوگرافیک سه‌بعدی عناصر کلیدی دریبل</h3>
+          <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:16px;">با اسلایدر زیر یا دکمه چرخش خودکار، زاویه دید سه‌بعدی را تغییر دهید و ۳ اصل مهم دریبل را بررسی کنید:</p>
+
+          <div style="margin-bottom:20px; background:rgba(15,23,42,0.8); padding:14px; border-radius:14px; display:flex; align-items:center; gap:14px; flex-wrap:wrap; border:1px solid var(--glass-border);">
+            <label style="font-weight:700; color:var(--primary);">🔄 زاویه چرخش سه‌بعدی:</label>
+            <input type="range" id="equipRotateRange" min="-180" max="180" value="0" style="flex:1; accent-color:var(--primary);" oninput="rotateEquipments(this.value)">
+            <span id="equipRotateLabel" style="min-width:65px; font-weight:700; color:var(--secondary);">۰ درجه</span>
+            <button id="autoSpinBtn" class="btn btn-secondary" style="padding:7px 14px; font-size:0.84rem;" onclick="toggleAutoSpinEquip()">▶️ چرخش خودکار ۳۶۰ درجه</button>
+          </div>
+
+          <div class="grid-3">
+            <div class="glass-card">
+              <div class="equip-viewer">
+                <div class="equip-3d-object">
+                  <svg width="115" height="115" viewBox="0 0 100 100">
+                    <circle cx="50" cy="55" r="35" fill="#ea580c" stroke="#fff" stroke-width="2"/>
+                    <path d="M22,25 C35,10 65,10 78,25" fill="none" stroke="#38bdf8" stroke-width="5" stroke-linecap="round"/>
+                    <circle cx="25" cy="24" r="5" fill="#10b981"/>
+                    <circle cx="40" cy="15" r="5" fill="#10b981"/>
+                    <circle cx="60" cy="15" r="5" fill="#10b981"/>
+                    <circle cx="75" cy="24" r="5" fill="#10b981"/>
+                  </svg>
+                </div>
+              </div>
+              <h4 style="color:var(--primary);">۱. کاسه کردن دست روی توپ</h4>
+              <p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">انگشتان دست کاملاً باز شده و حالت کاسه‌ای روی نیمه بالایی توپ می‌گیرند تا فضای خالی بین کف دست و توپ حفظ شود.</p>
+            </div>
+
+            <div class="glass-card">
+              <div class="equip-viewer">
+                <div class="equip-3d-object">
+                  <svg width="125" height="115" viewBox="0 0 120 100">
+                    <circle cx="60" cy="22" r="11" fill="#38bdf8"/>
+                    <path d="M60,34 L55,62 L40,88 M55,62 L75,88" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+                    <path d="M58,42 L32,48 L25,38" fill="none" stroke="#10b981" stroke-width="5" stroke-linecap="round"/>
+                    <circle cx="84" cy="68" r="14" fill="#f97316"/>
+                  </svg>
+                </div>
+              </div>
+              <h4 style="color:var(--primary);">۲. گارد محافظ (Arm Bar)</h4>
+              <p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">در هنگام دریبل با یک دست، ساعد دست دیگر در مقابل بدن بالا می‌آید تا مانند یک سپر قانونی، مانع رسیدن دست مدافع به توپ شود.</p>
+            </div>
+
+            <div class="glass-card">
+              <div class="equip-viewer">
+                <div class="equip-3d-object">
+                  <svg width="125" height="115" viewBox="0 0 120 100">
+                    <circle cx="38" cy="30" r="12" fill="#38bdf8"/>
+                    <path d="M48,26 L105,15 M48,32 L105,45" stroke="#fef08a" stroke-width="2.5" stroke-dasharray="4,4"/>
+                    <polygon points="48,28 102,18 102,42" fill="rgba(250,204,21,0.22)"/>
+                    <circle cx="38" cy="76" r="13" fill="#f97316"/>
+                  </svg>
+                </div>
+              </div>
+              <h4 style="color:var(--primary);">۳. میدان دید باز (Head Up)</h4>
+              <p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">بازیکن حرفه‌ای هرگز به توپ نگاه نمی‌کند؛ سر کاملاً بالاست تا هم‌زمان هر ۴ هم‌تیمی، مدافعان و حلقه در میدان دید باشند.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- زیربخش ۵: قوانین دریبل، تخلفات و علائم داوری -->
+        <div id="eduRules" class="edu-sub-view" style="display:none;">
+          <h3 style="color:var(--secondary); margin-bottom:14px;">⚖️ قوانین رسمی و تخلفات مرتبط با دریبل در بسکتبال</h3>
+          <div class="grid-3" style="margin-bottom:24px;">
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:1.6rem;">🙌🚫</div><h4 style="color:var(--primary);">۱. تخلف دبل (Double Dribble)</h4><p style="font-size:0.86rem; color:var(--text-muted);">اگر بازیکن پس از اتمام دریبل و گرفتن توپ با یک یا دو دست، دوباره شروع به دریبل کند، یا با هر دو دست هم‌زمان به توپ ضربه بزند، تخلف «دبل» رخ داده است.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:1.6rem;">🤲⬆️</div><h4 style="color:var(--primary);">۲. تخلف حمل توپ (Carrying / Palming)</h4><p style="font-size:0.86rem; color:var(--text-muted);">اگر در حین دریبل، کف دست بازیکن به زیر توپ برود و توپ لحظه‌ای در دست متوقف یا چرخانده شود، داور تخلف «حمل توپ» اعلام می‌کند.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:1.6rem;">👟🚫</div><h4 style="color:var(--primary);">۳. شروع دریبل و تراولینگ</h4><p style="font-size:0.86rem; color:var(--text-muted);">هنگام شروع حرکت از حالت ایستاده، توپ باید <strong>قبل از بلند شدن پای محور از روی زمین</strong> از دست بازیکن رها شده و به سمت زمین برود.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:1.6rem;">⏱️ ۵ ثانیه</div><h4 style="color:var(--primary);">۴. قانون ۵ ثانیه تحت فشار</h4><p style="font-size:0.86rem; color:var(--text-muted);">اگر بازیکن حامل توپ توسط مدافع از نزدیک (کمتر از ۱ متر) دفاع شود و تا ۵ ثانیه شوت، پاس یا دریبل نکند، توپ به تیم حریف واگذار می‌شود.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:1.6rem;">⏱️ ۸ ثانیه</div><h4 style="color:var(--primary);">۵. قانون ۸ ثانیه انتقال توپ</h4><p style="font-size:0.86rem; color:var(--text-muted);">تیم مهاجم حداکثر ۸ ثانیه زمان دارد تا با دریبل یا پاس، توپ را از نیمه دفاعی خود رد کرده و وارد نیمه حمله کند.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:1.6rem;">↩️🚫</div><h4 style="color:var(--primary);">۶. تخلف بازگشت به نیمه عقب</h4><p style="font-size:0.86rem; color:var(--text-muted);">وقتی بازیکن مهاجم با دریبل هر دو پا و توپ را وارد نیمه حریف کرد، دیگر اجازه ندارد با دریبل به نیمه دفاعی خود برگردد (خطای نیمه).</p></div>
+          </div>
+
+          <div class="grid-2">
+            <div class="glass-card">
+              <h4 style="color:var(--warning); margin-bottom:8px;">⚠️ ۴ خطای رایج مبتدیان در دریبل و روش اصلاح آن</h4>
+              <ul style="font-size:0.88rem; padding-right:18px; color:#e2e8f0;">
+                <li><strong>سیلی زدن به توپ با کف دست:</strong> باعث صدای بلند و از دست رفتن کنترل می‌شود ← <em>اصلاح: فشار مچ و تماس فقط با نرمه انگشتان.</em></li>
+                <li><strong>نگاه کردن به توپ:</strong> باعث ندیدن یاران خودی می‌شود ← <em>اصلاح: تمرین دریبل و خواندن عدد انگشتان دست دبیر.</em></li>
+                <li><strong>ایستادن با پاهای صاف:</strong> باعث کندی و لو رفتن توپ می‌شود ← <em>اصلاح: خم کردن زانوها در تمام طول دریبل.</em></li>
+                <li><strong>دریبل کردن فقط با دست راست:</strong> بازیکن را قابل پیش‌بینی می‌کند ← <em>اصلاح: اختصاص ۵۰٪ زمان تمرین به دست غیربرتر (چپ).</em></li>
+              </ul>
+            </div>
+
+            <div class="glass-card">
+              <h4 style="color:var(--secondary); margin-bottom:8px;">✋ علائم داوری تخلفات دریبل</h4>
+              <ul style="font-size:0.88rem; padding-right:18px; color:#e2e8f0;">
+                <li><strong>علامت داور برای دبل دریبل:</strong> سوت زدن به نشانه توقف بازی و حرکت متناوب دو کف دست به صورت بالا و پایین (شبیه دریبل با دو دست).</li>
+                <li><strong>علامت داور برای حمل توپ (Carrying):</strong> سوت زدن و چرخاندن نیم‌دایره‌ای کف یک دست از رو به زیر (نشان دادن رفتن دست زیر توپ).</li>
+                <li><strong>مجازات هر دو تخلف:</strong> مالکیت توپ از تیم خاطی گرفته شده و از نزدیک‌ترین نقطه خارج زمین به تیم حریف داده می‌شود.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- زیربخش ۶: آزمایشگاه انیمیشنی انواع دریبل + کارت‌های چرخشی دانستنی‌ها -->
+        <div id="eduSkills" class="edu-sub-view" style="display:none;">
+          <h3 style="color:var(--secondary); margin-bottom:10px;">🔬 آزمایشگاه انیمیشنی جلسه دوم (شبیه‌ساز زنده انواع دریبل و تسلط بر توپ)</h3>
+          <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:14px;">روی هر یک از ۳ مهارت زیر کلیک کنید تا تفاوت بیومکانیکی آن‌ها را به صورت زنده مشاهده نمایید:</p>
+
+          <div class="glass-card" style="margin-bottom:24px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="sub-tab-btn active" onclick="setSkillSimMode('controlDribble', this)">🛡️ ۱. دریبل کنترلی (پایین و محافظتی)</button>
+                <button class="sub-tab-btn" onclick="setSkillSimMode('speedDribble', this)">🏃 ۲. دریبل سرعتی (در حال دویدن)</button>
+                <button class="sub-tab-btn" onclick="setSkillSimMode('ballHandling', this)">🌀 ۳. احساس توپ (چرخش دور کمر و پا)</button>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:0.85rem; color:var(--secondary);">سرعت انیمیشن:</span>
+                <button class="sub-tab-btn" style="padding:5px 10px;" onclick="setSkillSimSpeed(0.35)">🐢 صحنه آهسته</button>
+                <button class="sub-tab-btn" style="padding:5px 10px;" onclick="setSkillSimSpeed(1)">⚡ عادی</button>
+              </div>
+            </div>
+
+            <canvas id="skillSimCanvas" width="680" height="225" style="width:100%; max-width:680px; height:auto; display:block; margin:0 auto; background:rgba(9,13,22,0.85); border-radius:14px; border:1px solid var(--glass-border);"></canvas>
+          </div>
+
+          <h3 style="color:var(--secondary); margin-bottom:12px;">🌟 دانستنی‌های جذاب درباره مهارت دریبل (کارت‌های Flip سه‌بعدی)</h3>
+          <div class="flip-grid">
+            <div class="flip-card" onclick="this.classList.toggle('flipped')">
+              <div class="flip-card-inner">
+                <div class="flip-front">
+                  <div style="font-size:2.2rem; margin-bottom:8px;">📜🚫</div>
+                  <h4>آیا می‌دانستید در ابتدا دریبل وجود نداشت؟</h4>
+                  <span style="font-size:0.78rem; color:var(--primary); margin-top:8px;">کلیک کنید تا بچرخد ↺</span>
+                </div>
+                <div class="flip-back">
+                  <p style="font-size:0.86rem;">در ۱۳ قانون اولیه دکتر نای‌اسمیت در سال ۱۸۹۱، دریبل کردن وجود نداشت و بازیکنان فقط باید از همان جایی که توپ را می‌گرفتند پاس می‌دادند! دریبل چند سال بعد به عنوان «پاس دادن به خود» ابداع شد.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="flip-card" onclick="this.classList.toggle('flipped')">
+              <div class="flip-card-inner">
+                <div class="flip-front">
+                  <div style="font-size:2.2rem; margin-bottom:8px;">⚡🏀</div>
+                  <h4>رکورد بیشترین دریبل در یک دقیقه</h4>
+                  <span style="font-size:0.78rem; color:var(--primary); margin-top:8px;">کلیک کنید تا بچرخد ↺</span>
+                </div>
+                <div class="flip-back">
+                  <p style="font-size:0.86rem;">رکورد جهانی گینس برای بیشترین تعداد ضربه دریبل بسکتبال در یک دقیقه، بیش از ۴۳۰ ضربه (بیش از ۷ دریبل در هر ثانیه) است!</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="flip-card" onclick="this.classList.toggle('flipped')">
+              <div class="flip-card-inner">
+                <div class="flip-front">
+                  <div style="font-size:2.2rem; margin-bottom:8px;">🏀🏀</div>
+                  <h4>راز تمرین با دو توپ هم‌زمان</h4>
+                  <span style="font-size:0.78rem; color:var(--primary); margin-top:8px;">کلیک کنید تا بچرخد ↺</span>
+                </div>
+                <div class="flip-back">
+                  <p style="font-size:0.86rem;">ستارگان بزرگ بسکتبال مانند «استفن کری» قبل از هر مسابقه با ۲ توپ هم‌زمان دریبل می‌زنند تا هر دو نیمکره مغز و دست چپ و راست به یک اندازه فعال شوند.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="flip-card" onclick="this.classList.toggle('flipped')">
+              <div class="flip-card-inner">
+                <div class="flip-front">
+                  <div style="font-size:2.2rem; margin-bottom:8px;">💨📏</div>
+                  <h4>فشار باد استاندارد توپ برای دریبل</h4>
+                  <span style="font-size:0.78rem; color:var(--primary); margin-top:8px;">کلیک کنید تا بچرخد ↺</span>
+                </div>
+                <div class="flip-back">
+                  <p style="font-size:0.86rem;">طبق قانون FIBA، اگر توپ بسکتبال از ارتفاع ۱/۸۰ متری رها شود، باید پس از برخورد به زمین تا ارتفاع ۱/۲۰ الی ۱/۴۰ متری به بالا برگردد.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- دکمه ثبت مطالعه آموزش کامل (۲۰ XP) -->
+        <div style="margin-top:28px; padding-top:18px; border-top:1px solid var(--glass-border); text-align:center;">
+          <button id="claimEducationBtn" class="btn btn-success" onclick="completeSectionXP('education', 20, 'آموزش کامل جلسه دوم (وضعیت آمادگی و دریبل)')">
+            ✅ مطالعه کامل تمام بخش‌های آموزش جلسه دوم را به پایان رساندم (دریافت ۲۰ XP)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۴. بخش خلاصه جلسه دوم و نقشه ذهنی (Mind Map SVG)
+         ========================================================================= -->
+    <section id="summaryView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">🧠 جمع‌بندی و نقشه ذهنی زنده جلسه دوم (مهارت دریبل)</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <p style="font-size:0.92rem; color:var(--text-muted); margin-bottom:18px;">نقشه ذهنی زیر با جریان‌های نوری متحرک، چکیده تمامی مفاهیم کلیدی جلسه دوم (ایستادن، احساس توپ و دریبل) را نمایش می‌دهد:</p>
+
+        <div style="overflow-x:auto; background:rgba(9,13,22,0.85); border-radius:var(--radius-md); padding:18px; border:1px solid var(--glass-border); margin-bottom:20px;">
+          <svg viewBox="0 0 860 400" style="width:100%; min-width:650px; height:auto;">
+            <!-- خطوط اتصال پایه -->
+            <path d="M430,200 C320,200 280,80 190,80" stroke="rgba(249,115,22,0.3)" stroke-width="4" fill="none"/>
+            <path d="M430,200 C320,200 280,200 190,200" stroke="rgba(56,189,248,0.3)" stroke-width="4" fill="none"/>
+            <path d="M430,200 C320,200 280,320 190,320" stroke="rgba(16,185,129,0.3)" stroke-width="4" fill="none"/>
+            <path d="M430,200 C540,200 580,80 670,80" stroke="rgba(245,158,11,0.3)" stroke-width="4" fill="none"/>
+            <path d="M430,200 C540,200 580,200 670,200" stroke="rgba(236,72,153,0.3)" stroke-width="4" fill="none"/>
+            <path d="M430,200 C540,200 580,320 670,320" stroke="rgba(168,85,247,0.3)" stroke-width="4" fill="none"/>
+
+            <!-- خطوط پالس انرژی متحرک -->
+            <path class="tactic-line" d="M430,200 C320,200 280,80 190,80" stroke="#f97316" stroke-width="3" fill="none"/>
+            <path class="tactic-line" d="M430,200 C320,200 280,200 190,200" stroke="#38bdf8" stroke-width="3" fill="none"/>
+            <path class="tactic-line" d="M430,200 C320,200 280,320 190,320" stroke="#10b981" stroke-width="3" fill="none"/>
+            <path class="tactic-line" d="M430,200 C540,200 580,80 670,80" stroke="#f59e0b" stroke-width="3" fill="none"/>
+            <path class="tactic-line" d="M430,200 C540,200 580,200 670,200" stroke="#ec4899" stroke-width="3" fill="none"/>
+            <path class="tactic-line" d="M430,200 C540,200 580,320 670,320" stroke="#a855f7" stroke-width="3" fill="none"/>
+
+            <!-- هسته مرکزی -->
+            <ellipse cx="430" cy="200" rx="102" ry="48" fill="#ea580c" stroke="#fff" stroke-width="3"/>
+            <text x="430" y="196" fill="#fff" font-size="15" font-weight="bold" text-anchor="middle">تسلط بر توپ و دریبل</text>
+            <text x="430" y="218" fill="#fef08a" font-size="13" text-anchor="middle">خلاصه جلسه دوم</text>
+
+            <!-- شاخه‌ها -->
+            <rect x="20" y="45" width="180" height="70" rx="12" fill="#1e293b" stroke="#f97316" stroke-width="2.5"/>
+            <text x="110" y="72" fill="#f97316" font-size="14" font-weight="bold" text-anchor="middle">تهدید سه‌گانه</text>
+            <text x="110" y="95" fill="#cbd5e1" font-size="12" text-anchor="middle">آمادگی شوت، پاس یا دریبل</text>
+
+            <rect x="20" y="165" width="180" height="70" rx="12" fill="#1e293b" stroke="#38bdf8" stroke-width="2.5"/>
+            <text x="110" y="192" fill="#38bdf8" font-size="14" font-weight="bold" text-anchor="middle">تماس دست با توپ</text>
+            <text x="110" y="215" fill="#cbd5e1" font-size="12" text-anchor="middle">نرمه انگشتان و مچ (نه کف دست)</text>
+
+            <rect x="20" y="285" width="180" height="70" rx="12" fill="#1e293b" stroke="#10b981" stroke-width="2.5"/>
+            <text x="110" y="312" fill="#10b981" font-size="14" font-weight="bold" text-anchor="middle">احساس توپ</text>
+            <text x="110" y="335" fill="#cbd5e1" font-size="12" text-anchor="middle">چرخش دور سر، کمر و عدد ۸</text>
+
+            <rect x="660" y="45" width="180" height="70" rx="12" fill="#1e293b" stroke="#f59e0b" stroke-width="2.5"/>
+            <text x="750" y="72" fill="#f59e0b" font-size="14" font-weight="bold" text-anchor="middle">دریبل کنترلی</text>
+            <text x="750" y="95" fill="#cbd5e1" font-size="12" text-anchor="middle">ارتفاع زانو + دست محافظ</text>
+
+            <rect x="660" y="165" width="180" height="70" rx="12" fill="#1e293b" stroke="#ec4899" stroke-width="2.5"/>
+            <text x="750" y="192" fill="#ec4899" font-size="14" font-weight="bold" text-anchor="middle">دریبل سرعتی</text>
+            <text x="750" y="215" fill="#cbd5e1" font-size="12" text-anchor="middle">ارتفاع کمر + هل دادن به جلو</text>
+
+            <rect x="660" y="285" width="180" height="70" rx="12" fill="#1e293b" stroke="#a855f7" stroke-width="2.5"/>
+            <text x="750" y="312" fill="#a855f7" font-size="14" font-weight="bold" text-anchor="middle">تخلفات دریبل</text>
+            <text x="750" y="335" fill="#cbd5e1" font-size="12" text-anchor="middle">دبل دریبل و حمل توپ (کف دست زیر توپ)</text>
+          </svg>
+        </div>
+
+        <div style="text-align:center;">
+          <button id="claimSummaryBtn" class="btn btn-success" onclick="completeSectionXP('summary', 10, 'مطالعه خلاصه و نقشه ذهنی جلسه دوم')">
+            ✅ نقشه ذهنی و خلاصه جلسه دوم را مرور کردم (دریافت ۱۰ XP)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۵. بخش فعالیت‌های عملی، تشخیصی و بازی ریتم دریبل با سر بالا (۳۰ XP)
+         ========================================================================= -->
+    <section id="activitiesView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">🎮 فعالیت‌های عملی، تشخیصی و شبیه‌ساز دریبل (۳۰ XP)</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <p style="font-size:0.92rem; color:var(--text-muted); margin-bottom:20px;">برای دریافت ۳۰ امتیاز کامل این بخش، هر ۳ فعالیت عملی و تعاملی زیر را با موفقیت تکمیل نمایید:</p>
+
+        <!-- فعالیت ۱: تشخیص اصول صحیح دریبل از خطاها -->
+        <div class="glass-card" style="margin-bottom:20px;">
+          <h4 style="color:var(--primary); margin-bottom:8px;">فعالیت ۱: تشخیص ۴ تکنیک صحیح در اجرای مهارت دریبل <span id="act1Status" style="color:var(--text-muted); font-size:0.85rem;">(تکمیل نشده)</span></h4>
+          <p style="font-size:0.88rem; margin-bottom:12px;">از میان گزینه‌های زیر، <strong>۴ رفتار فنی کاملاً صحیح</strong> هنگام دریبل کردن را انتخاب کنید:</p>
+          <div class="grid-3" id="equipGameGrid">
+            <button class="sub-tab-btn" onclick="toggleEquipSelect(this, true)">🖐️ هدایت توپ با نرمه انگشتان و مچ</button>
+            <button class="sub-tab-btn" onclick="toggleEquipSelect(this, false)">👋 سیلی زدن محکم به توپ با کف دست</button>
+            <button class="sub-tab-btn" onclick="toggleEquipSelect(this, true)">👀 بالا نگه داشتن سر و دیدن زمین</button>
+            <button class="sub-tab-btn" onclick="toggleEquipSelect(this, true)">🦵 خم بودن زانوها و پایین بودن مرکز ثقل</button>
+            <button class="sub-tab-btn" onclick="toggleEquipSelect(this, false)">🙌 دریبل هم‌زمان یک توپ با دو دست</button>
+            <button class="sub-tab-btn" onclick="toggleEquipSelect(this, true)">🛡️ بالا آوردن دست مخالف برای محافظت از توپ</button>
+          </div>
+        </div>
+
+        <!-- فعالیت ۲: مرتب‌سازی مراحل اجرای دریبل کنترلی از حالت تهدید سه‌گانه -->
+        <div class="glass-card" style="margin-bottom:20px;">
+          <h4 style="color:var(--primary); margin-bottom:8px;">فعالیت ۲: مرتب‌سازی مراحل علمی شروع دریبل از حالت ایستاده <span id="act2Status" style="color:var(--text-muted); font-size:0.85rem;">(تکمیل نشده)</span></h4>
+          <p style="font-size:0.88rem; margin-bottom:12px;">مراحل زیر را به ترتیب صحیح قانونی و فنی (از گام ۱ تا ۴) کلیک کنید:</p>
+          <div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:12px;" id="orderStepsContainer">
+            <button class="btn btn-secondary" onclick="selectOrderStep(3, 'فشار نرمه انگشتان و مچ به توپ در کنار بدن تا ارتفاع زانو', this)">فشار نرمه انگشتان و مچ به توپ در کنار بدن تا ارتفاع زانو</button>
+            <button class="btn btn-secondary" onclick="selectOrderStep(1, 'قرارگیری در وضعیت تهدید سه‌گانه با زانوهای خم و سر بالا', this)">قرارگیری در وضعیت تهدید سه‌گانه با زانوهای خم و سر بالا</button>
+            <button class="btn btn-secondary" onclick="selectOrderStep(4, 'حفظ گارد محافظ با دست مخالف و نگاه به هم‌تیمی‌ها', this)">حفظ گارد محافظ با دست مخالف و نگاه به هم‌تیمی‌ها</button>
+            <button class="btn btn-secondary" onclick="selectOrderStep(2, 'رها کردن توپ به سمت زمین قبل از بلند شدن پای محوری', this)">رها کردن توپ به سمت زمین قبل از بلند شدن پای محوری</button>
+          </div>
+          <div id="orderFeedback" style="font-size:0.88rem; color:var(--secondary);">ترتیب انتخاب‌شده: هنوز موردی انتخاب نشده است.</div>
+          <button class="sub-tab-btn" style="margin-top:8px;" onclick="resetOrderActivity()">🔄 شروع مجدد مرتب‌سازی</button>
+        </div>
+
+        <!-- فعالیت ۳: بازی تعاملی ریتم دریبل و دید محیطی (Head-Up Dribble Trainer) -->
+        <div class="glass-card">
+          <h4 style="color:var(--primary); margin-bottom:8px;">فعالیت ۳: شبیه‌ساز «دریبل با سر بالا» (تشخیص عدد دست مربی حین دریبل) <span id="act3Status" style="color:var(--text-muted); font-size:0.85rem;">(تکمیل نشده)</span></h4>
+          <p style="font-size:0.88rem; margin-bottom:10px;">یک بازیکن حرفه‌ای هنگام دریبل به توپ نگاه نمی‌کند بلکه به دست مربی یا هم‌تیمی در بالای صفحه نگاه می‌کند! در حالی که توپ در حال دریبل است، <strong>عددی که مربی در بالای بوم نشان می‌دهد</strong> را از دکمه‌های زیر انتخاب کنید (کسب ۳ پاسخ صحیح):</p>
+
+          <div style="background:rgba(9,13,22,0.9); padding:10px 16px; border-radius:10px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <strong id="visionMissionText" style="color:var(--warning);">👁️ به بالای تصویر نگاه کنید: مربی چه عددی را نشان می‌دهد؟</strong>
+            <span style="color:var(--accent); font-weight:800;">امتیاز دید محیطی: <span id="visionGameScore">۰</span> از ۳</span>
+          </div>
+
+          <canvas id="visionDribbleCanvas" width="600" height="250" style="width:100%; max-width:600px; background:radial-gradient(circle at 50% 30%, #1e293b, #090d16); border:2px solid var(--glass-border); border-radius:14px; display:block; margin:0 auto 14px;"></canvas>
+
+          <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
+            <button class="btn btn-secondary" onclick="submitVisionNumber(1)">عدد ۱</button>
+            <button class="btn btn-secondary" onclick="submitVisionNumber(2)">عدد ۲</button>
+            <button class="btn btn-secondary" onclick="submitVisionNumber(3)">عدد ۳</button>
+            <button class="btn btn-secondary" onclick="submitVisionNumber(4)">عدد ۴</button>
+            <button class="btn btn-secondary" onclick="submitVisionNumber(5)">عدد ۵</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۶. بخش فایل‌ها و لینک کلاس
+         ========================================================================= -->
+    <section id="filesView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">📁 فایل‌های آموزشی و لینک جلسه دوم (۱۰ XP)</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <div id="filesListContainer" class="grid-2" style="margin-bottom:20px;"></div>
+
+        <div class="glass-card" style="margin-bottom:20px;">
+          <h4 style="color:var(--secondary);">🔗 لینک ارتباطی جلسه مجازی</h4>
+          <p id="sessionLinkDisplay" style="font-size:0.9rem; margin:8px 0; color:#cbd5e1;"></p>
+        </div>
+
+        <div style="text-align:center;">
+          <button id="claimFilesBtn" class="btn btn-success" onclick="completeSectionXP('files', 10, 'مشاهده فایل‌ها و منابع جلسه دوم')">
+            ✅ فایل‌ها و منابع جلسه دوم را بررسی کردم (دریافت ۱۰ XP)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۷. بخش اطلاعیه‌های جلسه (۵ XP)
+         ========================================================================= -->
+    <section id="noticesView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">📢 اطلاعیه‌های رسمی درس تربیت بدنی (۵ XP)</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <div id="noticesListContainer" style="display:flex; flex-direction:column; gap:14px; margin-bottom:22px;"></div>
+
+        <div style="text-align:center;">
+          <button id="claimNoticesBtn" class="btn btn-success" onclick="completeSectionXP('notices', 5, 'مطالعه اطلاعیه‌های آموزشی جلسه دوم')">
+            ✅ اطلاعیه‌های جلسه دوم را مطالعه کردم (دریافت ۵ XP)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۸. بخش تکالیف جلسه دوم (۱۰ XP)
+         ========================================================================= -->
+    <section id="homeworkView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">📝 تکلیف عملی جلسه دوم بسکتبال (۱۰ XP)</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <p style="font-size:0.92rem; color:var(--text-muted); margin-bottom:16px;">برای تسلط عملی بر مهارت‌های جلسه دوم، سه تمرین زیر را در منزل انجام داده و تیک تأیید هر کدام را فعال نمایید:</p>
+
+        <div id="homeworkChecklist" style="display:flex; flex-direction:column; gap:12px; margin-bottom:18px;"></div>
+
+        <div class="form-group">
+          <label class="form-label" for="homeworkNoteInput">گزارش کوتاه دانش‌آموز از انجام تمرین دریبل با دست راست و چپ (الزامی):</label>
+          <input type="text" id="homeworkNoteInput" class="form-control" placeholder="مثال: چرخش توپ دور کمر و ۵۰ دریبل با هر دو دست را بدون نگاه کردن به توپ انجام دادم.">
+        </div>
+
+        <div style="text-align:center; margin-top:18px;">
+          <button id="claimHomeworkBtn" class="btn btn-success" onclick="submitHomeworkTask()">
+            ✅ ثبت تکلیف جلسه دوم (دریافت ۱۰ XP)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۹. بخش گزارش پیشرفت، زمان حضور و نشان‌های افتخار (Badges)
+         ========================================================================= -->
+    <section id="progressView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">📊 گزارش پیشرفت و دستاوردهای انفرادی (جلسه دوم)</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <div class="grid-3" style="margin-bottom:22px;">
+          <div class="glass-card" style="text-align:center;">
+            <div style="font-size:0.88rem; color:var(--text-muted);">مجموع امتیاز کسب‌شده</div>
+            <div id="progXPValue" style="font-size:2rem; font-weight:900; color:var(--primary); margin:6px 0;">۰ / ۱۱۰ XP</div>
+          </div>
+          <div class="glass-card" style="text-align:center;">
+            <div style="font-size:0.88rem; color:var(--text-muted);">درصد پیشرفت کل جلسه دوم</div>
+            <div id="progPercentValue" style="font-size:2rem; font-weight:900; color:var(--accent); margin:6px 0;">۰٪</div>
+          </div>
+          <div class="glass-card" style="text-align:center;">
+            <div style="font-size:0.88rem; color:var(--text-muted);">مدت زمان حضور و مطالعه</div>
+            <div id="progTimeValue" style="font-size:1.6rem; font-weight:900; color:var(--secondary); margin:8px 0;">۰ دقیقه و ۰ ثانیه</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="glass-card">
+            <h4 style="color:var(--primary); margin-bottom:10px;">🏅 نشان‌های افتخار جلسه دوم (Badges & Achievements)</h4>
+            <div id="badgesContainer" style="display:flex; flex-direction:column; gap:10px;"></div>
+          </div>
+          <div class="glass-card">
+            <h4 style="color:var(--secondary); margin-bottom:10px;">✔️ فهرست فعالیت‌های تکمیل‌شده</h4>
+            <ul id="completedLogsList" style="font-size:0.9rem; padding-right:18px; color:#cbd5e1;"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۱۰. بخش ثبت و ارسال گزارش نهایی به Supabase + پایان جلسه دوم
+         ========================================================================= -->
+    <section id="reportView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">📤 ثبت و ارسال گزارش نهایی جلسه دوم به دبیر</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <div class="glass-card" style="margin-bottom:22px;">
+          <table class="custom-table">
+            <tbody>
+              <tr><th>نام و نام خانوادگی دانش‌آموز</th><td id="repStudentName">-</td></tr>
+              <tr><th>نام مدرسه</th><td id="repSchoolName">-</td></tr>
+              <tr><th>پایه تحصیلی</th><td id="repGrade">-</td></tr>
+              <tr><th>نام دبیر</th><td id="repTeacherName">برزگری</td></tr>
+              <tr><th>عنوان جلسه</th><td>جلسه دوم: وضعیت آمادگی، احساس توپ و دریبل پایه</td></tr>
+              <tr><th>امتیاز کل (XP)</th><td id="repTotalXP" style="font-weight:bold; color:var(--primary);">۰ XP</td></tr>
+              <tr><th>درصد پیشرفت جلسه</th><td id="repProgressPercent" style="font-weight:bold; color:var(--accent);">۰٪</td></tr>
+              <tr><th>مدت حضور در جلسه</th><td id="repDuration">-</td></tr>
+              <tr><th>فعالیت‌های انجام‌شده</th><td id="repCompletedItems">-</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="text-align:center;">
+          <button id="finalSubmitReportBtn" class="btn" style="font-size:1.15rem; padding:16px 38px; animation: pulseGlow 2s infinite;" onclick="handleFinalReportSubmission()">
+            🚀 ثبت و ارسال گزارش نهایی جلسه دوم (+۲۰ XP)
+          </button>
+          <p id="supabaseStatusMsg" style="margin-top:14px; font-size:0.95rem;"></p>
+        </div>
+
+        <!-- کارت تبریک پایان جلسه دوم -->
+        <div id="sessionCompletionBox" class="glass-card" style="display:none; margin-top:26px; text-align:center; border-color:var(--accent);">
+          <canvas id="celebrationCanvas" width="320" height="140" style="margin:0 auto; display:block;"></canvas>
+          <h3 style="color:var(--accent); font-size:1.4rem; margin-top:8px;">🎉 تبریک! جلسه دوم آموزش بسکتبال با موفقیت به پایان رسید</h3>
+          <p style="font-size:0.95rem; color:#cbd5e1; margin:8px 0 18px;">گزارش عملکرد جلسه دوم شما با موفقیت در پایگاه داده ثبت گردید.</p>
+          <button class="btn btn-secondary" onclick="showToast('جلسه سوم (تغییر جهت با دریبل، استپ‌ها و گام محوری Pivot) در جلسه آینده فعال خواهد شد.')">
+            ⏭️ آمادگی برای ورود به جلسه سوم بسکتبال
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    /* ============================================================================
+       تنظیمات پروژه (PROJECT_CONFIG) - تمام تنظیمات جلسه دوم از این قسمت قابل تغییر است
+       ============================================================================ */
+    const PROJECT_CONFIG = {
+      systemTitle: "سامانه آموزش مجازی تربیت بدنی متوسطه اول",
+      sessionTitle: "جلسه دوم: وضعیت آمادگی، احساس توپ و مهارت دریبل پایه",
+      subjectName: "تربیت بدنی",
+      teacherName: "برزگری",
+      supabaseUrl: "https://tpwdrzwfzdbmwqlblntu.supabase.co",
+      supabaseKey: "sb_publishable_ASPIzP1XV1iSweCV43Oy9Q_PCkz5htN",
+      sessionLink: "برگزاری کلاس به صورت آفلاین در سامانه و ارسال تمرینات عملی در شبکه شاد",
+      activeModules: {
+        education: true,
+        summary: true,
+        activities: true,
+        files: true,
+        notices: true,
+        homework: true,
+        progress: true,
+        report: true
+      },
+      sessionFiles: [
+        {
+          title: "راهنمای گام‌به‌گام تمرینات احساس توپ (Ball Handling) در منزل",
+          desc: "شامل برنامه روزانه ۱۰ دقیقه‌ای ضربات سرانگشتان، چرخش توپ دور سر، کمر، زانو و حرکت عدد هشت انگلیسی."
+        },
+        {
+          title: "جدول نکات کلیدی دریبل کنترلی و دریبل سرعتی",
+          desc: "بررسی وضعیت زانوها، ارتفاع پرش توپ، نقش گارد محافظ (Arm Bar) و قوانین تخلف دبل و حمل توپ."
+        }
+      ],
+      homeworks: [
+        "۱- تمرینات احساس توپ (چرخش توپ دور سر، کمر و زانوها) را در ۳ نوبت ۱ دقیقه‌ای بدون افتادن توپ انجام دهید.",
+        "۲- ۵۰ مرتبه دریبل کنترلی درجا با دست راست و ۵۰ مرتبه با دست چپ (فقط با نرمه انگشتان و سر رو به بالا) تمرین کنید.",
+        "۳- مقابل آینه یا دیوار، وضعیت ایستادن «تهدید سه‌گانه» (زانوها خم، کمر صاف، توپ کنار پهلو) را ۵ بار تمرین نمایید."
+      ],
+      notices: [
+        "دانش‌آموزان عزیز، پیش از شروع تمرین دریبل حتماً ناخن‌های دست خود را کوتاه کرده و مفاصل مچ و انگشتان را گرم کنید.",
+        "هنگام تمرین دریبل، هرگز با کف دست به توپ سیلی نزنید؛ توپ باید با فشار نرم مچ و سرانگشتان هدایت شود.",
+        "پس از تکمیل تمام بخش‌های جلسه دوم و رسیدن به امتیاز ۹۰، دکمه «ثبت و ارسال گزارش نهایی» را در حالت اتصال به اینترنت بفشارید."
+      ]
+    };
+
+    /* ============================================================================
+       اتصال مستقیم به جدول Students در Supabase
+       ============================================================================ */
+    const SUPABASE_URL = PROJECT_CONFIG.supabaseUrl;
+    const SUPABASE_KEY = PROJECT_CONFIG.supabaseKey;
+    let ACTIVE_SCHOOL = "";
+    let ACTIVE_SUBJECT = PROJECT_CONFIG.subjectName;
+
+    async function sendToSupabase(studentName, score, totalScore, detailsText) {
+      const payload = {
+        Student_name: studentName,
+        School_name: ACTIVE_SCHOOL,
+        Subject: ACTIVE_SUBJECT,
+        Score: parseFloat(score),
+        Total_score: parseFloat(totalScore),
+        Details: detailsText
+      };
+
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/Students`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${SUPABASE_KEY}`,
+          "Prefer": "return=minimal"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error(`خطای سرور: ${response.status}`);
+      }
+      return true;
+    }
+
+    /* ============================================================================
+       مدیریت وضعیت دانش‌آموز و سیستم ضدتقلب در LocalStorage (ویژه جلسه دوم)
+       ============================================================================ */
+    const STORAGE_KEY = "PE_BASKETBALL_SESSION2_STATE_V1";
+    const MAX_TOTAL_XP = 110;
+
+    let appState = {
+      studentName: "",
+      schoolName: "",
+      grade: "",
+      loginCount: 0,
+      firstLoginTime: "",
+      totalSeconds: 0,
+      xp: 0,
+      awardedFlags: {
+        login: false,      // 5 XP
+        education: false,  // 20 XP
+        summary: false,    // 10 XP
+        activities: false, // 30 XP
+        files: false,      // 10 XP
+        notices: false,    // 5 XP
+        homework: false,   // 10 XP
+        report: false      // 20 XP
+      },
+      activitySubFlags: {
+        equipDone: false,
+        orderDone: false,
+        visionDone: false
+      },
+      homeworkNote: "",
+      reportSent: false,
+      reportTime: ""
+    };
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          appState = {
+            ...appState,
+            ...parsed,
+            awardedFlags: { ...appState.awardedFlags, ...(parsed.awardedFlags || {}) },
+            activitySubFlags: { ...appState.activitySubFlags, ...(parsed.activitySubFlags || {}) }
+          };
+        }
+      } catch (e) {}
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      } catch (e) {}
+      updateStatusBarUI();
+    }
+
+    /* ============================================================================
+       مقداردهی اولیه کل سامانه و موتورهای گرافیکی جلسه دوم
+       ============================================================================ */
+    window.addEventListener("DOMContentLoaded", () => {
+      loadState();
+      applyProjectConfig();
+      initBackgroundParticles();
+      initConfettiEngine();
+      initWelcomeDribbleCanvas();
+      initSkillSimulatorCanvas();
+      initVisionDribbleTrainer();
+      init3DTiltCards();
+
+      if (appState.studentName && appState.schoolName && appState.grade) {
+        document.getElementById("studentNameInput").value = appState.studentName;
+        document.getElementById("schoolSelect").value = appState.schoolName;
+        document.getElementById("gradeSelect").value = appState.grade;
+        validateLoginForm();
+      }
+
+      setInterval(() => {
+        if (appState.studentName && !document.getElementById("loginView").classList.contains("active")) {
+          appState.totalSeconds++;
+          if (appState.totalSeconds % 5 === 0) saveState();
+          const progTimeEl = document.getElementById("progTimeValue");
+          if (progTimeEl) progTimeEl.textContent = formatDuration(appState.totalSeconds);
+        }
+      }, 1000);
+    });
+
+    function applyProjectConfig() {
+      document.getElementById("uiAppTitle").textContent = PROJECT_CONFIG.systemTitle;
+      document.getElementById("uiSessionTitle").textContent = PROJECT_CONFIG.sessionTitle;
+      document.getElementById("uiSubjectText").textContent = PROJECT_CONFIG.subjectName;
+      document.getElementById("uiTeacherText").textContent = PROJECT_CONFIG.teacherName;
+      document.getElementById("fixedTeacherInput").value = PROJECT_CONFIG.teacherName;
+      document.getElementById("fixedSubjectInput").value = PROJECT_CONFIG.subjectName;
+
+      const filesBox = document.getElementById("filesListContainer");
+      filesBox.innerHTML = PROJECT_CONFIG.sessionFiles.map(f => `
+        <div class="glass-card tilt-card">
+          <div class="card-glare"></div>
+          <h4 style="color:var(--primary); margin-bottom:6px;">📄 ${f.title}</h4>
+          <p style="font-size:0.88rem; color:#cbd5e1;">${f.desc}</p>
+        </div>
+      `).join("");
+      document.getElementById("sessionLinkDisplay").textContent = PROJECT_CONFIG.sessionLink;
+
+      const noticesBox = document.getElementById("noticesListContainer");
+      noticesBox.innerHTML = PROJECT_CONFIG.notices.map((n, idx) => `
+        <div class="glass-card" style="border-right:4px solid var(--secondary);">
+          <strong>اطلاعیه شماره ${(idx + 1).toLocaleString('fa-IR')}:</strong>
+          <p style="font-size:0.9rem; margin-top:4px; color:#e2e8f0;">${n}</p>
+        </div>
+      `).join("");
+
+      const hwBox = document.getElementById("homeworkChecklist");
+      hwBox.innerHTML = PROJECT_CONFIG.homeworks.map(h => `
+        <label class="glass-card" style="display:flex; align-items:center; gap:12px; cursor:pointer;">
+          <input type="checkbox" class="hw-check" style="width:20px; height:20px; accent-color:var(--primary);">
+          <span style="font-size:0.92rem;">${h}</span>
+        </label>
+      `).join("");
+    }
+
+    /* ============================================================================
+       ۱. موتور پس‌زمینه ذرات و خطوط تاکتیکی تعاملی (60FPS Particle Network)
+       ============================================================================ */
+    function initBackgroundParticles() {
+      const canvas = document.getElementById("bgParticlesCanvas");
+      const ctx = canvas.getContext("2d");
+      let w = canvas.width = window.innerWidth;
+      let h = canvas.height = window.innerHeight;
+
+      window.addEventListener("resize", () => {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+      });
+
+      const mouse = { x: -500, y: -500 };
+      window.addEventListener("mousemove", e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+
+      const count = Math.min(48, Math.floor(w / 28));
+      const nodes = Array.from({ length: count }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.65,
+        vy: (Math.random() - 0.5) * 0.65,
+        r: Math.random() * 2.2 + 1.2,
+        isOrange: Math.random() > 0.5
+      }));
+
+      function renderBg() {
+        ctx.clearRect(0, 0, w, h);
+        for (let i = 0; i < nodes.length; i++) {
+          const p = nodes[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.x < 0 || p.x > w) p.vx *= -1;
+          if (p.y < 0 || p.y > h) p.vy *= -1;
+
+          const dxM = p.x - mouse.x;
+          const dyM = p.y - mouse.y;
+          const distM = Math.hypot(dxM, dyM);
+          if (distM < 110 && distM > 0) {
+            p.x += (dxM / distM) * 1.1;
+            p.y += (dyM / distM) * 1.1;
+          }
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = p.isOrange ? "rgba(249, 115, 22, 0.55)" : "rgba(56, 189, 248, 0.45)";
+          ctx.fill();
+
+          for (let j = i + 1; j < nodes.length; j++) {
+            const q = nodes[j];
+            const dist = Math.hypot(p.x - q.x, p.y - q.y);
+            if (dist < 135) {
+              ctx.beginPath();
+              ctx.moveTo(p.x, p.y);
+              ctx.lineTo(q.x, q.y);
+              ctx.strokeStyle = `rgba(148, 163, 184, ${(1 - dist / 135) * 0.14})`;
+              ctx.lineWidth = 1;
+              ctx.stroke();
+            }
+          }
+        }
+        requestAnimationFrame(renderBg);
+      }
+      renderBg();
+    }
+
+    /* ============================================================================
+       ۲. موتور انفجار ذرات نوری و کنفتی
+       ============================================================================ */
+    let confettiParticles = [];
+
+    function initConfettiEngine() {
+      const canvas = document.getElementById("fxConfettiCanvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      window.addEventListener("resize", () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      });
+
+      function loopConfetti() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let i = confettiParticles.length - 1; i >= 0; i--) {
+          const c = confettiParticles[i];
+          c.x += c.vx;
+          c.y += c.vy;
+          c.vy += 0.25;
+          c.rot += c.vRot;
+          c.life -= 0.014;
+
+          if (c.life <= 0) {
+            confettiParticles.splice(i, 1);
+            continue;
+          }
+
+          ctx.save();
+          ctx.translate(c.x, c.y);
+          ctx.rotate(c.rot);
+          ctx.globalAlpha = Math.max(0, c.life);
+          ctx.fillStyle = c.color;
+          ctx.fillRect(-c.size / 2, -c.size / 2, c.size, c.size * 0.65);
+          ctx.restore();
+        }
+        requestAnimationFrame(loopConfetti);
+      }
+      loopConfetti();
+    }
+
+    function triggerParticleBurst(originX = window.innerWidth / 2, originY = window.innerHeight / 2) {
+      const colors = ["#f97316", "#38bdf8", "#10b981", "#facc15", "#ec4899"];
+      for (let i = 0; i < 45; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * 8 + 3;
+        confettiParticles.push({
+          x: originX,
+          y: originY,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed - 4,
+          size: Math.random() * 8 + 5,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rot: Math.random() * Math.PI,
+          vRot: (Math.random() - 0.5) * 0.2,
+          life: 1.0
+        });
+      }
+    }
+
+    /* ============================================================================
+       ۳. افکت سه بعدی کارت‌ها (3D Perspective Tilt)
+       ============================================================================ */
+    function init3DTiltCards() {
+      document.addEventListener("mousemove", (e) => {
+        const card = e.target.closest(".tilt-card");
+        if (!card) return;
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const rotateX = ((y - rect.height / 2) / (rect.height / 2)) * -7;
+        const rotateY = ((x - rect.width / 2) / (rect.width / 2)) * 7;
+
+        card.style.transform = `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px)`;
+        const glare = card.querySelector(".card-glare");
+        if (glare) {
+          glare.style.background = `radial-gradient(circle at ${(x / rect.width) * 100}% ${(y / rect.height) * 100}%, rgba(255,255,255,0.16), transparent 60%)`;
+        }
+      });
+
+      document.addEventListener("mouseout", (e) => {
+        const card = e.target.closest(".tilt-card");
+        if (card && !card.contains(e.relatedTarget)) {
+          card.style.transform = "perspective(900px) rotateX(0deg) rotateY(0deg) translateY(0)";
+        }
+      });
+    }
+
+    /* ============================================================================
+       اعتبارسنجی فرم ورود و شروع جلسه دوم
+       ============================================================================ */
+    function validateLoginForm() {
+      const nameVal = document.getElementById("studentNameInput").value.trim();
+      const schoolVal = document.getElementById("schoolSelect").value;
+      const gradeVal = document.getElementById("gradeSelect").value;
+      document.getElementById("startBtn").disabled = !(nameVal.length >= 3 && schoolVal !== "" && gradeVal !== "");
+    }
+
+    function handleLoginSubmit(e) {
+      e.preventDefault();
+      const nameVal = document.getElementById("studentNameInput").value.trim();
+      const schoolVal = document.getElementById("schoolSelect").value;
+      const gradeVal = document.getElementById("gradeSelect").value;
+
+      appState.studentName = nameVal;
+      appState.schoolName = schoolVal;
+      appState.grade = gradeVal;
+      appState.loginCount += 1;
+
+      ACTIVE_SCHOOL = schoolVal;
+      ACTIVE_SUBJECT = `${PROJECT_CONFIG.subjectName} (${gradeVal})`;
+
+      if (!appState.firstLoginTime) {
+        appState.firstLoginTime = new Date().toLocaleTimeString("fa-IR");
+      }
+
+      if (!appState.awardedFlags.login) {
+        appState.awardedFlags.login = true;
+        appState.xp += 5;
+        triggerParticleBurst();
+        showToast("خوش آمدید! ۵ امتیاز (XP) بابت ورود به جلسه دوم دریافت کردید.");
+      }
+
+      saveState();
+      document.getElementById("topStatusBar").style.display = "flex";
+      renderDashboardCards();
+      navigateTo("dashboardView");
+    }
+
+    /* ============================================================================
+       رندر داشبورد جلسه دوم
+       ============================================================================ */
+    function renderDashboardCards() {
+      const modules = [
+        { key: "education", title: "آموزش جامع دریبل و تسلط بر توپ", xp: "۲۰ XP", icon: "⛹️", view: "educationView", desc: "وضعیت تهدید سه‌گانه، آناتومی تعاملی دست و آزمایشگاه انواع دریبل" },
+        { key: "summary", title: "خلاصه و نقشه ذهنی جلسه دوم", xp: "۱۰ XP", icon: "🧠", view: "summaryView", desc: "مرور تصویری و نمودار درختی پویا از نکات کلیدی دریبل" },
+        { key: "activities", title: "فعالیت عملی و بازی دید محیطی", xp: "۳۰ XP", icon: "🎮", view: "activitiesView", desc: "تشخیص تکنیک صحیح، مرتب‌سازی مراحل و بازی دریبل با سر بالا" },
+        { key: "files", title: "فایل‌ها و لینک کلاس", xp: "۱۰ XP", icon: "📁", view: "filesView", desc: "برنامه تمرین احساس توپ و جزوه مقایسه دریبل‌ها" },
+        { key: "notices", title: "اطلاعیه‌های آموزشی", xp: "۵ XP", icon: "📢", view: "noticesView", desc: "نکات ایمنی ناخن‌ها، مچ دست و مقررات کلاس" },
+        { key: "homework", title: "تکلیف عملی جلسه دوم", xp: "۱۰ XP", icon: "📝", view: "homeworkView", desc: "تمرین عملی دریبل با دست راست و چپ در منزل" },
+        { key: "progress", title: "گزارش پیشرفت و نشان‌ها", xp: "مشاهده", icon: "📊", view: "progressView", desc: "بررسی درصد پیشرفت، زمان حضور و نشان‌های افتخار جلسه دوم" },
+        { key: "report", title: "ثبت و ارسال گزارش نهایی", xp: "۲۰ XP", icon: "📤", view: "reportView", desc: "ثبت نهایی عملکرد جلسه دوم و ارسال مستقیم برای دبیر" }
+      ];
+
+      const grid = document.getElementById("dashboardModulesGrid");
+      grid.innerHTML = modules
+        .filter(m => PROJECT_CONFIG.activeModules[m.key])
+        .map(m => {
+          const isDone = appState.awardedFlags[m.key] === true;
+          return `
+            <div class="glass-card tilt-card" style="cursor:pointer; display:flex; flex-direction:column; justify-content:space-between;" onclick="navigateTo('${m.view}')">
+              <div class="card-glare"></div>
+              <div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                  <span style="font-size:2.1rem;">${m.icon}</span>
+                  <span class="badge-xp" style="background:${isDone ? 'var(--accent)' : ''};">
+                    ${isDone ? '✓ تکمیل شده' : m.xp}
+                  </span>
+                </div>
+                <h3 style="font-size:1.12rem; color:var(--text-main); margin-bottom:6px;">${m.title}</h3>
+                <p style="font-size:0.85rem; color:var(--text-muted);">${m.desc}</p>
+              </div>
+              <div style="margin-top:16px; font-size:0.85rem; color:var(--secondary); font-weight:800;">ورود به بخش ←</div>
+            </div>
+          `;
+        }).join("");
+    }
+
+    function navigateTo(viewId) {
+      document.querySelectorAll(".view-section").forEach(sec => sec.classList.remove("active"));
+      document.getElementById(viewId).classList.add("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
+      if (viewId === "dashboardView") renderDashboardCards();
+      if (viewId === "progressView") renderProgressView();
+      if (viewId === "reportView") renderReportView();
+      updateStatusBarUI();
+    }
+
+    function switchEduTab(tabId, btnEl) {
+      document.querySelectorAll(".edu-sub-view").forEach(el => el.style.display = "none");
+      document.getElementById(tabId).style.display = "block";
+      btnEl.parentElement.querySelectorAll(".sub-tab-btn").forEach(b => b.classList.remove("active"));
+      btnEl.classList.add("active");
+    }
+
+    function calculateProgressPercent() {
+      const keys = ["login", "education", "summary", "activities", "files", "notices", "homework", "report"];
+      const doneCount = keys.filter(k => appState.awardedFlags[k]).length;
+      return Math.round((doneCount / keys.length) * 100);
+    }
+
+    function updateStatusBarUI() {
+      document.getElementById("headerStudentName").textContent = appState.studentName || "دانش‌آموز";
+      document.getElementById("headerSchoolInfo").textContent = `${appState.schoolName} | ${appState.grade}`;
+      document.getElementById("headerXP").textContent = appState.xp.toLocaleString("fa-IR");
+
+      const pct = calculateProgressPercent();
+      document.getElementById("headerProgressText").textContent = `${pct.toLocaleString("fa-IR")}٪`;
+      document.getElementById("headerProgressFill").style.width = `${pct}%`;
+
+      const btnMap = [
+        { key: "education", id: "claimEducationBtn" },
+        { key: "summary", id: "claimSummaryBtn" },
+        { key: "files", id: "claimFilesBtn" },
+        { key: "notices", id: "claimNoticesBtn" },
+        { key: "homework", id: "claimHomeworkBtn" }
+      ];
+      btnMap.forEach(item => {
+        const btn = document.getElementById(item.id);
+        if (btn && appState.awardedFlags[item.key]) {
+          btn.disabled = true;
+          btn.textContent = "✓ امتیاز این بخش قبلاً در حساب شما ثبت شده است";
+        }
+      });
+    }
+
+    function completeSectionXP(key, xpAmount, title) {
+      if (appState.awardedFlags[key]) {
+        showToast("امتیاز این بخش قبلاً ثبت شده است.");
+        return;
+      }
+      appState.awardedFlags[key] = true;
+      appState.xp += xpAmount;
+      saveState();
+      playBeepSound(880, 0.22);
+      triggerParticleBurst();
+      showToast(`آفرین! ${xpAmount.toLocaleString("fa-IR")} امتیاز (XP) بابت «${title}» دریافت کردید.`);
+    }
+
+    /* ============================================================================
+       ۴. آناتومی تعاملی دست در دریبل + پخش صوتی
+       ============================================================================ */
+    const HAND_ANATOMY_DATA = {
+      thumb: {
+        title: "✅ نرمه انگشت شست (ایجاد تعادل جانبی توپ)",
+        desc: "انگشت شست با باز شدن کامل، مانع از لغزش توپ به سمت داخل می‌شود و مانند یک ستون کناری، کنترل جهت دریبل را بر عهده دارد."
+      },
+      indexFinger: {
+        title: "✅ نرمه انگشت اشاره (فرمان اصلی هدایت توپ)",
+        desc: "انگشت اشاره به همراه انگشت میانی بیشترین نیرو و دقت را در هدایت توپ به سمت زمین و تغییر جهت‌های سریع اعمال می‌کند."
+      },
+      middleFinger: {
+        title: "✅ نرمه انگشت میانی (مرکز ثقل کنترل توپ)",
+        desc: "بلندترین انگشت دست که دقیقاً در محور مرکزی بالای توپ قرار می‌گیرد و فشار فنری مچ را به توپ منتقل می‌نماید."
+      },
+      ringFinger: {
+        title: "✅ نرمه انگشت حلقه (حفظ پوشش کاسه‌ای دست)",
+        desc: "به همراه سایر انگشتان با فاصله مناسب باز می‌شود تا سطح تماس سرانگشتان روی نیمه بالایی توپ افزایش یابد."
+      },
+      pinkyFinger: {
+        title: "✅ نرمه انگشت کوچک (کنترل بیرونی و تغییر جهت)",
+        desc: "نگهبان بخش بیرونی توپ است و هنگام اجرای دریبل‌های تغییر جهت (کراس‌اور)، نقش کلیدی در جمع کردن توپ دارد."
+      },
+      palmError: {
+        title: "❌ خطای بزرگ: تماس کف دست با توپ (Slapping)",
+        desc: "کف دست هرگز نباید با توپ برخورد کند! سیلی زدن با کف دست باعث صدای بلند، کاهش کنترل و لو رفتن توپ می‌شود. بین کف دست و توپ همیشه باید فضای خالی وجود داشته باشد."
+      },
+      wristJoint: {
+        title: "⚙️ مفصل مچ دست (موتور فنری دریبل)",
+        desc: "نیروی دریبل از شکستن نرم و فنری مچ دست به سمت پایین و باز شدن ملایم آرنج تأمین می‌شود، نه از کوبیدن کل شانه."
+      }
+    };
+
+    let currentHandPartKey = null;
+
+    function playBeepSound(freq = 520, duration = 0.12) {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.14, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    function selectHandPart(partKey) {
+      currentHandPartKey = partKey;
+      const info = HAND_ANATOMY_DATA[partKey];
+      if (!info) return;
+      document.getElementById("handPartTitle").textContent = info.title;
+      document.getElementById("handPartDesc").textContent = info.desc;
+      playBeepSound(partKey === "palmError" ? 240 : 720, 0.16);
+      speakCurrentHandInfo();
+    }
+
+    function speakCurrentHandInfo() {
+      if (!currentHandPartKey) {
+        showToast("لطفاً ابتدا روی یکی از نقاط دست در تصویر کلیک کنید.");
+        return;
+      }
+      const info = HAND_ANATOMY_DATA[currentHandPartKey];
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(`${info.title}. ${info.desc}`);
+        utter.lang = "fa-IR";
+        utter.rate = 1.0;
+        window.speechSynthesis.speak(utter);
+      }
+    }
+
+    /* ============================================================================
+       ۵. چرخش سه‌بعدی هولوگرام پوزیشن دریبل
+       ============================================================================ */
+    let autoSpinInterval = null;
+
+    function rotateEquipments(deg) {
+      document.getElementById("equipRotateLabel").textContent = `${Number(deg).toLocaleString("fa-IR")} درجه`;
+      document.querySelectorAll(".equip-3d-object").forEach(el => {
+        el.style.transform = `rotateY(${deg}deg) rotateX(${Math.sin(deg * 0.04) * 14}deg)`;
+      });
+    }
+
+    function toggleAutoSpinEquip() {
+      const btn = document.getElementById("autoSpinBtn");
+      const slider = document.getElementById("equipRotateRange");
+      if (autoSpinInterval) {
+        clearInterval(autoSpinInterval);
+        autoSpinInterval = null;
+        btn.textContent = "▶️ چرخش خودکار ۳۶۰ درجه";
+        return;
+      }
+      btn.textContent = "⏸️ توقف چرخش خودکار";
+      let angle = Number(slider.value);
+      autoSpinInterval = setInterval(() => {
+        angle += 2;
+        if (angle > 180) angle = -180;
+        slider.value = angle;
+        rotateEquipments(angle);
+      }, 30);
+    }
+
+    /* ============================================================================
+       ۶. آزمایشگاه انیمیشنی شبیه‌ساز انواع دریبل و احساس توپ
+       ============================================================================ */
+    let skillSimMode = "controlDribble";
+    let skillSimSpeed = 1.0;
+
+    function setSkillSimMode(mode, btnEl) {
+      skillSimMode = mode;
+      btnEl.parentElement.querySelectorAll(".sub-tab-btn").forEach(b => b.classList.remove("active"));
+      btnEl.classList.add("active");
+    }
+
+    function setSkillSimSpeed(spd) {
+      skillSimSpeed = spd;
+      showToast(spd < 1 ? "حالت صحنه آهسته (Slow Motion) برای مشاهده دقیق زاویه زانو و مچ فعال شد." : "سرعت عادی انیمیشن فعال شد.");
+    }
+
+    function initSkillSimulatorCanvas() {
+      const canvas = document.getElementById("skillSimCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      let t = 0;
+
+      function animateSkills() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        t += 0.09 * skillSimSpeed;
+
+        // خط زمین
+        ctx.strokeStyle = "rgba(255,255,255,0.25)";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(20, 190);
+        ctx.lineTo(660, 190);
+        ctx.stroke();
+
+        if (skillSimMode === "controlDribble") {
+          // دریبل کنترلی پایین با زانوهای خم و گارد محافظ
+          const bounce = Math.abs(Math.sin(t * 1.6));
+          const x = 320, y = 148;
+
+          ctx.strokeStyle = "#38bdf8";
+          ctx.lineWidth = 4.5;
+          ctx.lineCap = "round";
+
+          // سر (رو به بالا)
+          ctx.beginPath();
+          ctx.arc(x, y - 55, 12, 0, Math.PI * 2);
+          ctx.fillStyle = "#0ea5e9";
+          ctx.fill();
+          ctx.stroke();
+
+          // تنه و پاهای کاملاً خمیده
+          ctx.beginPath();
+          ctx.moveTo(x, y - 42);
+          ctx.lineTo(x - 10, y);
+          ctx.lineTo(x + 15, y + 20);
+          ctx.lineTo(x + 10, y + 40);
+          ctx.moveTo(x - 10, y);
+          ctx.lineTo(x - 28, y + 20);
+          ctx.lineTo(x - 32, y + 40);
+          ctx.stroke();
+
+          // دست چپ (گارد محافظ Arm Bar به رنگ سبز)
+          ctx.strokeStyle = "#10b981";
+          ctx.beginPath();
+          ctx.moveTo(x - 4, y - 35);
+          ctx.lineTo(x + 32, y - 28);
+          ctx.stroke();
+
+          // دست دریبل‌زن و توپ در ارتفاع پایین زانو
+          const handY = y - 8 + (1 - bounce) * 10;
+          ctx.strokeStyle = "#38bdf8";
+          ctx.beginPath();
+          ctx.moveTo(x - 4, y - 35);
+          ctx.lineTo(x - 38, handY);
+          ctx.stroke();
+
+          const ballY = 177 - bounce * 32;
+          ctx.beginPath();
+          ctx.arc(x - 40, ballY, 13, 0, Math.PI * 2);
+          ctx.fillStyle = "#f97316";
+          ctx.fill();
+
+          ctx.fillStyle = "#e2e8f0";
+          ctx.font = "bold 13px Tahoma";
+          ctx.fillText("دریبل کنترلی: زانوها کاملاً خم، توپ زیر ارتفاع زانو و دست سبز به عنوان سپر محافظ (Arm Bar)", 475, 42);
+        } else if (skillSimMode === "speedDribble") {
+          // دریبل سرعتی در حال دویدن به جلو
+          const runX = 120 + ((t * 45) % 420);
+          const bounce = Math.abs(Math.sin(t * 1.5));
+          const y = 138;
+
+          ctx.strokeStyle = "#38bdf8";
+          ctx.lineWidth = 4;
+
+          // سر و تنه متمایل به جلو
+          ctx.beginPath();
+          ctx.arc(runX + 12, y - 58, 11, 0, Math.PI * 2);
+          ctx.fillStyle = "#0ea5e9";
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.moveTo(runX + 8, y - 46);
+          ctx.lineTo(runX - 8, y - 5);
+          // حرکت قیچی پاها
+          const legSwing = Math.sin(t * 1.5) * 22;
+          ctx.moveTo(runX - 8, y - 5);
+          ctx.lineTo(runX + legSwing, y + 48);
+          ctx.moveTo(runX - 8, y - 5);
+          ctx.lineTo(runX - legSwing, y + 48);
+          ctx.stroke();
+
+          // توپ جلوتر از بدن تا ارتفاع کمر
+          const ballX = runX + 42;
+          const ballY = 176 - bounce * 55;
+          ctx.beginPath();
+          ctx.moveTo(runX + 5, y - 36);
+          ctx.lineTo(runX + 35, y - 18);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.arc(ballX, ballY, 13, 0, Math.PI * 2);
+          ctx.fillStyle = "#f97316";
+          ctx.fill();
+
+          ctx.fillStyle = "#e2e8f0";
+          ctx.font = "bold 13px Tahoma";
+          ctx.fillText("دریبل سرعتی: هل دادن توپ به جلوتر از بدن تا ارتفاع کمر برای دویدن با حداکثر سرعت", 465, 42);
+        } else if (skillSimMode === "ballHandling") {
+          // چرخش توپ به دور کمر (Ball Handling Orbit)
+          const cx = 340, cy = 135;
+          const orbitAngle = t * 1.8;
+          const ballX = cx + Math.cos(orbitAngle) * 42;
+          const ballY = cy - 12 + Math.sin(orbitAngle) * 14;
+          const inFront = Math.sin(orbitAngle) >= 0;
+
+          // اگر توپ پشت کمر است ابتدا توپ رسم شود
+          if (!inFront) {
+            ctx.beginPath();
+            ctx.arc(ballX, ballY, 13, 0, Math.PI * 2);
+            ctx.fillStyle = "#ea580c";
+            ctx.fill();
+          }
+
+          // ترسیم بازیکن از روبرو
+          ctx.strokeStyle = "#38bdf8";
+          ctx.lineWidth = 5;
+          ctx.beginPath();
+          ctx.arc(cx, cy - 60, 12, 0, Math.PI * 2);
+          ctx.fillStyle = "#0ea5e9";
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.moveTo(cx, cy - 46);
+          ctx.lineTo(cx, cy);
+          ctx.lineTo(cx - 22, cy + 52);
+          ctx.moveTo(cx, cy);
+          ctx.lineTo(cx + 22, cy + 52);
+          ctx.stroke();
+
+          // مسیر مدار چرخش توپ
+          ctx.setLineDash([4, 4]);
+          ctx.strokeStyle = "rgba(249,115,22,0.4)";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.ellipse(cx, cy - 12, 42, 14, 0, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          if (inFront) {
+            ctx.beginPath();
+            ctx.arc(ballX, ballY, 14, 0, Math.PI * 2);
+            ctx.fillStyle = "#f97316";
+            ctx.fill();
+            ctx.strokeStyle = "#fff";
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+          }
+
+          ctx.fillStyle = "#e2e8f0";
+          ctx.font = "bold 13px Tahoma";
+          ctx.fillText("احساس توپ (Ball Handling): چرخش سریع توپ به دور کمر با نگاه رو به جلو", 450, 42);
+        }
+
+        requestAnimationFrame(animateSkills);
+      }
+      animateSkills();
+    }
+
+    /* ============================================================================
+       ۷. فعالیت‌های عملی و بازی تعاملی دریبل با سر بالا (Head-Up Vision Trainer)
+       ============================================================================ */
+    let selectedCorrectEquips = 0;
+    let selectedWrongEquips = 0;
+
+    function toggleEquipSelect(btn, isCorrect) {
+      if (appState.activitySubFlags.equipDone) return;
+      const active = btn.classList.toggle("active");
+      if (isCorrect) {
+        selectedCorrectEquips += active ? 1 : -1;
+      } else {
+        selectedWrongEquips += active ? 1 : -1;
+        if (active) showToast("توجه: این مورد یک خطای تکنیکی یا قانونی در دریبل است!");
+      }
+
+      if (selectedCorrectEquips === 4 && selectedWrongEquips === 0) {
+        appState.activitySubFlags.equipDone = true;
+        document.getElementById("act1Status").textContent = "(✓ تکمیل شد)";
+        document.getElementById("act1Status").style.color = "var(--accent)";
+        playBeepSound(880, 0.2);
+        triggerParticleBurst();
+        showToast("فعالیت ۱ با موفقیت تکمیل شد!");
+        checkAllActivitiesCompletion();
+      }
+    }
+
+    let userOrderList = [];
+    let userOrderTitles = [];
+
+    function selectOrderStep(stepNum, stepTitle, btnEl) {
+      if (appState.activitySubFlags.orderDone) return;
+      btnEl.disabled = true;
+      userOrderList.push(stepNum);
+      userOrderTitles.push(stepTitle);
+      document.getElementById("orderFeedback").textContent = "ترتیب انتخابی شما: " + userOrderTitles.join(" ← ");
+
+      if (userOrderList.length === 4) {
+        const isRight = userOrderList.every((val, idx) => val === idx + 1);
+        if (isRight) {
+          appState.activitySubFlags.orderDone = true;
+          document.getElementById("act2Status").textContent = "(✓ تکمیل شد)";
+          document.getElementById("act2Status").style.color = "var(--accent)";
+          playBeepSound(880, 0.2);
+          triggerParticleBurst();
+          showToast("فعالیت ۲ (مرتب‌سازی مراحل دریبل) به درستی انجام شد!");
+          checkAllActivitiesCompletion();
+        } else {
+          showToast("ترتیب مراحل نادرست بود. دکمه شروع مجدد را بزنید.");
+        }
+      }
+    }
+
+    function resetOrderActivity() {
+      if (appState.activitySubFlags.orderDone) return;
+      userOrderList = [];
+      userOrderTitles = [];
+      document.getElementById("orderFeedback").textContent = "ترتیب انتخاب‌شده: هنوز موردی انتخاب نشده است.";
+      document.querySelectorAll("#orderStepsContainer button").forEach(b => b.disabled = false);
+    }
+
+    // فعالیت ۳: شبیه‌ساز دریبل با سر بالا و خواندن عدد دست مربی
+    let currentCoachNumber = 3;
+    let visionScore = 0;
+
+    function pickNewCoachNumber() {
+      let next = Math.floor(Math.random() * 5) + 1;
+      if (next === currentCoachNumber) next = (next % 5) + 1;
+      currentCoachNumber = next;
+    }
+
+    function initVisionDribbleTrainer() {
+      const canvas = document.getElementById("visionDribbleCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      let t = 0;
+
+      function renderVisionTrainer() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        t += 0.1;
+
+        // بخش بالای بوم: کارت مربی که عدد انگشتان را نشان می‌دهد
+        ctx.fillStyle = "rgba(56, 189, 248, 0.15)";
+        ctx.strokeStyle = "#38bdf8";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.roundRect(190, 14, 220, 74, 14);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = "#e2e8f0";
+        ctx.font = "bold 13px Tahoma";
+        ctx.textAlign = "center";
+        ctx.fillText("👋 عدد نشان داده‌شده توسط دست مربی:", 300, 38);
+
+        ctx.fillStyle = "#facc15";
+        ctx.font = "900 28px Tahoma";
+        ctx.fillText(currentCoachNumber.toLocaleString("fa-IR"), 300, 74);
+
+        // بخش پایین بوم: بازیکن در حال دریبل پیوسته با سر رو به بالا
+        const bounce = Math.abs(Math.sin(t));
+        const ballY = 222 - bounce * 52;
+
+        // پرتو دید بازیکن از چشم به سمت کارت مربی
+        ctx.setLineDash([4, 4]);
+        ctx.strokeStyle = "rgba(250, 204, 21, 0.45)";
+        ctx.beginPath();
+        ctx.moveTo(135, 130);
+        ctx.lineTo(250, 60);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // بازیکن
+        ctx.strokeStyle = "#10b981";
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.arc(130, 132, 11, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(130, 143);
+        ctx.lineTo(124, 195);
+        ctx.lineTo(140, 235);
+        ctx.moveTo(124, 195);
+        ctx.lineTo(108, 235);
+        ctx.moveTo(128, 155);
+        ctx.lineTo(168, 168);
+        ctx.stroke();
+
+        // توپ در حال دریبل
+        ctx.beginPath();
+        ctx.arc(172, ballY, 14, 0, Math.PI * 2);
+        ctx.fillStyle = "#f97316";
+        ctx.fill();
+        ctx.strokeStyle = "#fff";
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        requestAnimationFrame(renderVisionTrainer);
+      }
+      renderVisionTrainer();
+    }
+
+    function submitVisionNumber(num) {
+      if (appState.activitySubFlags.visionDone) {
+        showToast("این فعالیت قبلاً با موفقیت تکمیل شده است.");
+        return;
+      }
+
+      if (num === currentCoachNumber) {
+        visionScore++;
+        playBeepSound(920, 0.16);
+        document.getElementById("visionGameScore").textContent = visionScore.toLocaleString("fa-IR");
+
+        if (visionScore >= 3) {
+          appState.activitySubFlags.visionDone = true;
+          document.getElementById("visionMissionText").textContent = "🎉 عالی! مهارت دریبل با سر بالا و دید محیطی را کامل کردید!";
+          document.getElementById("act3Status").textContent = "(✓ تکمیل شد)";
+          document.getElementById("act3Status").style.color = "var(--accent)";
+          triggerParticleBurst();
+          checkAllActivitiesCompletion();
+        } else {
+          pickNewCoachNumber();
+          showToast("تشخیص صحیح! حالا عدد جدید مربی را اعلام کنید.");
+        }
+      } else {
+        playBeepSound(240, 0.2);
+        showToast("عدد اشتباه بود؛ سر خود را بالا نگه دارید و به تابلو مربی دقت کنید!");
+      }
+    }
+
+    function checkAllActivitiesCompletion() {
+      const sub = appState.activitySubFlags;
+      if (sub.equipDone && sub.orderDone && sub.visionDone && !appState.awardedFlags.activities) {
+        completeSectionXP("activities", 30, "انجام کامل فعالیت‌های عملی جلسه دوم");
+      }
+      saveState();
+    }
+
+    /* ============================================================================
+       ثبت تکلیف، گزارش پیشرفت و ارسال به Supabase
+       ============================================================================ */
+    function submitHomeworkTask() {
+      const checks = document.querySelectorAll(".hw-check:checked");
+      const note = document.getElementById("homeworkNoteInput").value.trim();
+      if (checks.length < 3 || note.length < 5) {
+        showToast("لطفاً هر ۳ مورد چک‌لیست را تیک بزنید و گزارش کوتاه تمرین خود را بنویسید.");
+        return;
+      }
+      appState.homeworkNote = note;
+      completeSectionXP("homework", 10, "ثبت تکلیف عملی جلسه دوم");
+    }
+
+    function getEarnedBadges() {
+      const badges = [];
+      if (appState.awardedFlags.login) badges.push({ title: "نشان حضور در جلسه دوم", desc: "ورود رسمی به جلسه آموزش دریبل و تسلط بر توپ" });
+      if (appState.awardedFlags.education && appState.awardedFlags.summary) badges.push({ title: "نشان متخصص بیومکانیک دریبل", desc: "مطالعه کامل آناتومی تماس دست، وضعیت تهدید سه‌گانه و نقشه ذهنی" });
+      if (appState.awardedFlags.activities) badges.push({ title: "نشان استاد دریبل با سر بالا (Head-Up Master)", desc: "تکمیل هر ۳ چالش عملی و تشخیص اعداد مربی حین دریبل" });
+      if (appState.xp >= 90) badges.push({ title: "ستاره کنترل توپ جلسه دوم (Achievement ویژه)", desc: "کسب بیش از ۹۰ امتیاز تجربه در جلسه دوم" });
+      return badges;
+    }
+
+    function renderProgressView() {
+      const pct = calculateProgressPercent();
+      document.getElementById("progXPValue").textContent = `${appState.xp.toLocaleString("fa-IR")} / ۱۱۰ XP`;
+      document.getElementById("progPercentValue").textContent = `${pct.toLocaleString("fa-IR")}٪`;
+      document.getElementById("progTimeValue").textContent = formatDuration(appState.totalSeconds);
+
+      const badges = getEarnedBadges();
+      const bBox = document.getElementById("badgesContainer");
+      if (badges.length === 0) {
+        bBox.innerHTML = `<p style="color:var(--text-muted); font-size:0.88rem;">هنوز نشانی دریافت نشده است.</p>`;
+      } else {
+        bBox.innerHTML = badges.map(b => `
+          <div style="background:rgba(249,115,22,0.14); border:1px solid rgba(249,115,22,0.45); padding:10px 14px; border-radius:10px;">
+            <strong style="color:var(--primary);">🏅 ${b.title}</strong>
+            <div style="font-size:0.82rem; color:#cbd5e1;">${b.desc}</div>
+          </div>
+        `).join("");
+      }
+
+      const labels = {
+        login: "ورود به سامانه جلسه دوم (۵ XP)",
+        education: "مشاهده آموزش کامل دریبل و احساس توپ (۲۰ XP)",
+        summary: "مطالعه خلاصه و نقشه ذهنی دریبل (۱۰ XP)",
+        activities: "انجام فعالیت‌های عملی و بازی دید محیطی (۳۰ XP)",
+        files: "بررسی فایل‌ها و منابع جلسه دوم (۱۰ XP)",
+        notices: "مطالعه اطلاعیه‌های آموزشی (۵ XP)",
+        homework: "ثبت تکلیف عملی دریبل در منزل (۱۰ XP)",
+        report: "ثبت و ارسال گزارش نهایی جلسه دوم (۲۰ XP)"
+      };
+      const doneList = Object.keys(labels).filter(k => appState.awardedFlags[k]).map(k => `<li>${labels[k]}</li>`);
+      document.getElementById("completedLogsList").innerHTML = doneList.length ? doneList.join("") : "<li>هنوز فعالیتی تکمیل نشده است.</li>";
+    }
+
+    function getCompletedNamesSummary() {
+      const names = [];
+      if (appState.awardedFlags.login) names.push("ورود");
+      if (appState.awardedFlags.education) names.push("آموزش کامل جلسه ۲");
+      if (appState.awardedFlags.summary) names.push("خلاصه جلسه ۲");
+      if (appState.awardedFlags.activities) names.push("فعالیت عملی دریبل");
+      if (appState.awardedFlags.files) names.push("مشاهده فایل");
+      if (appState.awardedFlags.notices) names.push("مطالعه اطلاعیه");
+      if (appState.awardedFlags.homework) names.push("ثبت تکلیف دریبل");
+      if (appState.awardedFlags.report) names.push("ثبت گزارش نهایی");
+      return names.join("، ") || "هیچ‌کدام";
+    }
+
+    function renderReportView() {
+      document.getElementById("repStudentName").textContent = appState.studentName;
+      document.getElementById("repSchoolName").textContent = appState.schoolName;
+      document.getElementById("repGrade").textContent = appState.grade;
+      document.getElementById("repTeacherName").textContent = PROJECT_CONFIG.teacherName;
+      document.getElementById("repTotalXP").textContent = `${appState.xp.toLocaleString("fa-IR")} از ۱۱۰ XP`;
+      document.getElementById("repProgressPercent").textContent = `${calculateProgressPercent().toLocaleString("fa-IR")}٪`;
+      document.getElementById("repDuration").textContent = formatDuration(appState.totalSeconds);
+      document.getElementById("repCompletedItems").textContent = getCompletedNamesSummary();
+
+      const btn = document.getElementById("finalSubmitReportBtn");
+      if (appState.reportSent) {
+        btn.disabled = true;
+        btn.textContent = "✓ گزارش نهایی جلسه دوم شما قبلاً ثبت و ارسال شده است";
+        document.getElementById("sessionCompletionBox").style.display = "block";
+        initCelebrationCanvas();
+      }
+    }
+
+    async function handleFinalReportSubmission() {
+      if (appState.reportSent) {
+        showToast("گزارش شما قبلاً یک مرتبه ارسال شده است.");
+        return;
+      }
+
+      const btn = document.getElementById("finalSubmitReportBtn");
+      const statusMsg = document.getElementById("supabaseStatusMsg");
+      btn.disabled = true;
+      btn.textContent = "در حال ثبت و ارسال گزارش جلسه دوم به سرور...";
+      statusMsg.style.color = "var(--secondary)";
+      statusMsg.textContent = "لطفاً چند لحظه صبر کنید...";
+
+      if (!appState.awardedFlags.report) {
+        appState.awardedFlags.report = true;
+        appState.xp += 20;
+      }
+
+      const nowStr = new Date().toLocaleString("fa-IR");
+      const pct = calculateProgressPercent();
+      const badgesCount = getEarnedBadges().length;
+      const achievementsCount = appState.xp >= 90 ? 1 : 0;
+
+      ACTIVE_SCHOOL = appState.schoolName;
+      ACTIVE_SUBJECT = `${PROJECT_CONFIG.subjectName} - ${appState.grade} (${PROJECT_CONFIG.sessionTitle})`;
+
+      const detailsText = [
+        `جلسه دوم بسکتبال`,
+        `پایه: ${appState.grade}`,
+        `دبیر: ${PROJECT_CONFIG.teacherName}`,
+        `زمان ورود: ${appState.firstLoginTime}`,
+        `زمان خروج و ثبت گزارش: ${nowStr}`,
+        `مدت حضور: ${formatDuration(appState.totalSeconds)}`,
+        `تعداد دفعات ورود: ${appState.loginCount}`,
+        `آموزش‌های مشاهده‌شده: ${appState.awardedFlags.education ? 'کامل' : 'خیر'}`,
+        `خلاصه‌های مطالعه‌شده: ${appState.awardedFlags.summary ? 'کامل' : 'خیر'}`,
+        `فعالیت‌های انجام‌شده: ${getCompletedNamesSummary()}`,
+        `توضیح تکلیف: ${appState.homeworkNote || 'ثبت نشده'}`,
+        `امتیاز XP: ${appState.xp} از ${MAX_TOTAL_XP}`,
+        `درصد پیشرفت: ${pct}%`,
+        `تعداد Badge: ${badgesCount}`,
+        `تعداد Achievement: ${achievementsCount}`
+      ].join(" | ");
+
+      try {
+        await sendToSupabase(appState.studentName, appState.xp, MAX_TOTAL_XP, detailsText);
+        appState.reportSent = true;
+        appState.reportTime = nowStr;
+        saveState();
+        renderReportView();
+        triggerParticleBurst();
+        statusMsg.style.color = "var(--accent)";
+        statusMsg.textContent = "✅ گزارش عملکرد جلسه دوم شما با موفقیت در سامانه دبیر ثبت گردید.";
+        showToast("گزارش نهایی جلسه دوم با موفقیت ارسال شد (+۲۰ XP).");
+      } catch (err) {
+        saveState();
+        renderReportView();
+        btn.disabled = false;
+        btn.textContent = "🔄 تلاش مجدد برای ارسال گزارش به سرور";
+        statusMsg.style.color = "var(--warning)";
+        statusMsg.textContent = `امتیاز ثبت گزارش (+۲۰ XP) در دستگاه شما ذخیره شد، اما ارسال اینترنتی با خطا مواجه گردید (${err.message}). در صورت اتصال به اینترنت مجدداً دکمه را بزنید.`;
+      }
+    }
+
+    /* ============================================================================
+       ۸. انیمیشن تعاملی دریبل و تغییر جهت در صفحه آغازین جلسه دوم
+       ============================================================================ */
+    function initWelcomeDribbleCanvas() {
+      const canvas = document.getElementById("welcomeBallCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+
+      let ball = { x: 180, y: 60, vx: 3.2, vy: 0, rot: 0, targetRight: true };
+      const gravity = 0.45;
+      const ground = 148;
+      let trail = [];
+
+      canvas.addEventListener("click", () => {
+        ball.targetRight = !ball.targetRight;
+        ball.vx = ball.targetRight ? 5.5 : -5.5;
+        ball.vy = -8.5;
+        playBeepSound(680, 0.12);
+      });
+
+      function animateWelcome() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // نشانگر دست راست و چپ در بالای بوم
+        ctx.fillStyle = "rgba(56, 189, 248, 0.25)";
+        ctx.beginPath();
+        ctx.roundRect(130, 22, 90, 26, 8);
+        ctx.roundRect(300, 22, 90, 26, 8);
+        ctx.fill();
+
+        ctx.fillStyle = "#e2e8f0";
+        ctx.font = "bold 12px Tahoma";
+        ctx.textAlign = "center";
+        ctx.fillText("🖐️ دست راست", 175, 40);
+        ctx.fillText("🖐️ دست چپ", 345, 40);
+
+        // فیزیک دریبل بین دو دست
+        ball.vy += gravity;
+        ball.x += ball.vx;
+        ball.y += ball.vy;
+        ball.rot += ball.vx * 0.04;
+
+        if (ball.x > 345) {
+          ball.x = 345;
+          ball.vx = -3.4;
+        }
+        if (ball.x < 175) {
+          ball.x = 175;
+          ball.vx = 3.4;
+        }
+
+        let scaleX = 1, scaleY = 1;
+        if (ball.y > ground) {
+          ball.y = ground;
+          ball.vy = -9.2;
+          scaleX = 1.22;
+          scaleY = 0.78;
+        }
+
+        trail.push({ x: ball.x, y: ball.y });
+        if (trail.length > 14) trail.shift();
+
+        for (let i = 0; i < trail.length; i++) {
+          ctx.beginPath();
+          ctx.arc(trail[i].x, trail[i].y, (i / trail.length) * 18, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(249, 115, 22, ${(i / trail.length) * 0.25})`;
+          ctx.fill();
+        }
+
+        // سایه توپ
+        const shadowWidth = Math.max(12, 36 - (ground - ball.y) * 0.25);
+        ctx.beginPath();
+        ctx.ellipse(ball.x, 172, shadowWidth, 6, 0, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+        ctx.fill();
+
+        // ترسیم توپ
+        ctx.save();
+        ctx.translate(ball.x, ball.y);
+        ctx.scale(scaleX, scaleY);
+        ctx.rotate(ball.rot);
+
+        const grad = ctx.createRadialGradient(-6, -6, 3, 0, 0, 24);
+        grad.addColorStop(0, "#fb923c");
+        grad.addColorStop(1, "#c2410c");
+
+        ctx.beginPath();
+        ctx.arc(0, 0, 23, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = "#1e293b";
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(-23, 0); ctx.lineTo(23, 0);
+        ctx.moveTo(0, -23); ctx.lineTo(0, 23);
+        ctx.stroke();
+
+        ctx.restore();
+        requestAnimationFrame(animateWelcome);
+      }
+      animateWelcome();
+    }
+
+    function initCelebrationCanvas() {
+      const canvas = document.getElementById("celebrationCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      let angle = 0;
+
+      function loop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        angle += 0.06;
+        const bounceY = 70 + Math.sin(angle * 2) * 24;
+
+        ctx.save();
+        ctx.translate(160, bounceY);
+        ctx.rotate(angle);
+        ctx.beginPath();
+        ctx.arc(0, 0, 28, 0, Math.PI * 2);
+        ctx.fillStyle = "#f97316";
+        ctx.fill();
+        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = "#fff";
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(-28, 0); ctx.lineTo(28, 0);
+        ctx.moveTo(0, -28); ctx.lineTo(0, 28);
+        ctx.stroke();
+        ctx.restore();
+
+        requestAnimationFrame(loop);
+      }
+      loop();
+    }
+
+    function formatDuration(sec) {
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      return `${m.toLocaleString("fa-IR")} دقیقه و ${s.toLocaleString("fa-IR")} ثانیه`;
+    }
+
+    function showToast(msg) {
+      const box = document.getElementById("toastBox");
+      const item = document.createElement("div");
+      item.className = "toast-item";
+      item.textContent = msg;
+      box.appendChild(item);
+      setTimeout(() => item.remove(), 3800);
+    }
+  </script>
+</body>
+</html>
