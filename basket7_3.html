@@ -1,0 +1,2514 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>سامانه پیشرفته آموزش مجازی تربیت بدنی - جلسه سوم بسکتبال</title>
+  <style>
+    /* ==================== متغیرها و تنظیمات ظاهری (Ultra Dark Glassmorphism) ==================== */
+    :root {
+      --bg-dark: #060911;
+      --glass-bg: rgba(15, 23, 42, 0.68);
+      --glass-border: rgba(255, 255, 255, 0.14);
+      --primary: #f97316;
+      --primary-glow: rgba(249, 115, 22, 0.55);
+      --secondary: #38bdf8;
+      --secondary-glow: rgba(56, 189, 248, 0.45);
+      --accent: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --shadow-glass: 0 16px 40px 0 rgba(0, 0, 0, 0.6);
+      --transition: all 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, 'Segoe UI', Tahoma, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.75;
+      position: relative;
+    }
+
+    #bgParticlesCanvas, #fxConfettiCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    #fxConfettiCanvas { z-index: 9998; }
+
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 16px var(--primary-glow), inset 0 0 8px rgba(249, 115, 22, 0.25); }
+      50% { box-shadow: 0 0 32px rgba(249, 115, 22, 0.85), inset 0 0 14px rgba(249, 115, 22, 0.45); }
+    }
+
+    @keyframes borderBeam {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes slideUpFade {
+      from { opacity: 0; transform: translateY(22px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes dashFlow {
+      to { stroke-dashoffset: -40; }
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px 16px 90px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .glass-panel {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-glass);
+      padding: 26px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glass-panel::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--primary), var(--secondary), transparent);
+      background-size: 200% 200%;
+      animation: borderBeam 5s ease infinite;
+    }
+
+    .glass-card {
+      background: rgba(15, 23, 42, 0.65);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      transition: transform 0.2s ease-out, border-color 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      transform-style: preserve-3d;
+    }
+
+    .glass-card:hover {
+      border-color: rgba(249, 115, 22, 0.55);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(249, 115, 22, 0.18);
+    }
+
+    .card-glare {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.12), transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .glass-card:hover .card-glare { opacity: 1; }
+
+    .section-title {
+      font-size: 1.38rem;
+      font-weight: 900;
+      color: var(--primary);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--glass-border);
+      padding-bottom: 12px;
+      text-shadow: 0 0 18px rgba(249, 115, 22, 0.35);
+    }
+
+    .badge-xp {
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      color: #fff;
+      padding: 5px 14px;
+      border-radius: 999px;
+      font-size: 0.86rem;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 15px rgba(249, 115, 22, 0.45);
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+      color: #fff;
+      border: none;
+      padding: 13px 26px;
+      border-radius: var(--radius-md);
+      font-size: 0.98rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 10px 25px var(--primary-glow);
+    }
+
+    .btn:active:not(:disabled) { transform: translateY(0) scale(0.98); }
+
+    .btn:disabled {
+      background: #1e293b;
+      color: #64748b;
+      border: 1px solid rgba(255,255,255,0.05);
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-secondary {
+      background: rgba(56, 189, 248, 0.14);
+      border: 1px solid rgba(56, 189, 248, 0.45);
+      color: var(--secondary);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: rgba(56, 189, 248, 0.28);
+      box-shadow: 0 8px 20px var(--secondary-glow);
+    }
+
+    .btn-success { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+    .btn-success:hover:not(:disabled) { box-shadow: 0 10px 25px rgba(16, 185, 129, 0.45); }
+
+    .top-bar {
+      position: sticky;
+      top: 12px;
+      z-index: 100;
+      margin-bottom: 24px;
+      display: none;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      padding: 14px 22px;
+    }
+
+    .progress-track {
+      width: 150px;
+      height: 11px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 99px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #f97316, #38bdf8, #10b981);
+      background-size: 200% 100%;
+      animation: borderBeam 3s linear infinite;
+      width: 0%;
+      transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px; }
+
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; margin-bottom: 6px; font-weight: 700; font-size: 0.92rem; color: #e2e8f0; }
+    .form-control {
+      width: 100%;
+      padding: 13px 16px;
+      background: rgba(9, 13, 22, 0.85);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      color: var(--text-main);
+      font-size: 0.98rem;
+      outline: none;
+      transition: var(--transition);
+    }
+    .form-control:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.22);
+    }
+    .form-control[readonly] {
+      background: rgba(30, 41, 59, 0.55);
+      color: var(--secondary);
+      font-weight: 800;
+    }
+
+    .custom-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 0.92rem;
+    }
+    .custom-table th, .custom-table td {
+      padding: 12px 14px;
+      text-align: right;
+      border-bottom: 1px solid var(--glass-border);
+    }
+    .custom-table th {
+      background: rgba(249, 115, 22, 0.16);
+      color: var(--primary);
+      font-weight: 800;
+    }
+
+    .timeline {
+      position: relative;
+      padding-right: 30px;
+      border-right: 3px solid var(--primary);
+      margin: 20px 0;
+    }
+    .timeline-item { position: relative; margin-bottom: 22px; }
+    .timeline-dot {
+      position: absolute;
+      right: -39px;
+      top: 6px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--primary);
+      border: 3px solid var(--bg-dark);
+      box-shadow: 0 0 14px var(--primary);
+    }
+
+    .foot-zone {
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .foot-zone:hover {
+      filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.95));
+      transform: scale(1.05);
+      transform-origin: center;
+    }
+
+    .tactic-line {
+      stroke-dasharray: 8 6;
+      animation: dashFlow 1.2s linear infinite;
+      pointer-events: none;
+    }
+
+    .flip-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+    }
+    .flip-card {
+      background-color: transparent;
+      height: 205px;
+      perspective: 1200px;
+      cursor: pointer;
+    }
+    .flip-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+      transform-style: preserve-3d;
+    }
+    .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+    .flip-front, .flip-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    }
+    .flip-front {
+      background: linear-gradient(145deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
+      color: var(--text-main);
+    }
+    .flip-back {
+      background: linear-gradient(135deg, #f97316, #c2410c);
+      color: #fff;
+      transform: rotateY(180deg);
+    }
+
+    .sub-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 22px;
+      border-bottom: 1px solid var(--glass-border);
+      padding-bottom: 14px;
+    }
+    .sub-tab-btn {
+      background: rgba(15, 23, 42, 0.75);
+      color: var(--text-muted);
+      border: 1px solid var(--glass-border);
+      padding: 9px 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.9rem;
+      transition: var(--transition);
+    }
+    .sub-tab-btn:hover { border-color: var(--primary); color: #fff; }
+    .sub-tab-btn.active {
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      color: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 6px 16px rgba(249, 115, 22, 0.35);
+    }
+
+    .equip-viewer {
+      perspective: 1000px;
+      height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 50% 60%, rgba(56, 189, 248, 0.2) 0%, rgba(15, 23, 42, 0.9) 75%);
+      border-radius: var(--radius-md);
+      margin-bottom: 14px;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+    .equip-viewer::after {
+      content: "";
+      position: absolute;
+      bottom: 18px;
+      width: 110px;
+      height: 18px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.6), transparent 70%);
+      filter: blur(4px);
+    }
+    .equip-3d-object {
+      transition: transform 0.15s ease-out;
+      transform-style: preserve-3d;
+      animation: floatSlow 3.2s ease-in-out infinite;
+    }
+
+    .view-section {
+      display: none;
+      animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .view-section.active { display: block; }
+
+    #toastBox {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .toast-item {
+      background: rgba(15, 23, 42, 0.95);
+      border-right: 4px solid var(--accent);
+      color: #fff;
+      padding: 13px 20px;
+      border-radius: 12px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.65);
+      font-size: 0.92rem;
+      font-weight: 600;
+      animation: slideUpFade 0.3s ease;
+    }
+
+    @media (max-width: 640px) {
+      .top-bar { position: static; }
+      .section-title { font-size: 1.15rem; }
+      .glass-panel { padding: 18px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- بوم ذرات معلق پس‌زمینه و بوم انفجار ذرات (Confetti) -->
+  <canvas id="bgParticlesCanvas"></canvas>
+  <canvas id="fxConfettiCanvas"></canvas>
+
+  <!-- باکس پیام‌های شناور -->
+  <div id="toastBox"></div>
+
+  <!-- ==================== نوار وضعیت بالای صفحه (پس از ورود) ==================== -->
+  <div class="container" style="padding-bottom: 0;">
+    <header id="topStatusBar" class="glass-panel top-bar">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div style="width:46px; height:46px; border-radius:50%; background:linear-gradient(135deg,#f97316,#ea580c); display:flex; align-items:center; justify-content:center; font-size:1.35rem; box-shadow:0 0 15px var(--primary-glow);">⚡</div>
+        <div>
+          <div id="headerStudentName" style="font-weight:800; font-size:1.02rem;">نام دانش‌آموز</div>
+          <div id="headerSchoolInfo" style="font-size:0.82rem; color:var(--secondary);">مدرسه | پایه</div>
+        </div>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:18px; flex-wrap:wrap;">
+        <div>
+          <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:4px;">پیشرفت جلسه سوم: <span id="headerProgressText" style="color:#fff; font-weight:bold;">۰٪</span></div>
+          <div class="progress-track">
+            <div id="headerProgressFill" class="progress-fill"></div>
+          </div>
+        </div>
+        <div class="badge-xp">
+          <span>✨ امتیاز:</span>
+          <span id="headerXP">۰</span>
+          <span>XP</span>
+        </div>
+        <button class="btn btn-secondary" style="padding:8px 15px; font-size:0.86rem;" onclick="navigateTo('dashboardView')">🏠 داشبورد</button>
+      </div>
+    </header>
+  </div>
+
+  <!-- ==================== کانتینر اصلی سامانه ==================== -->
+  <main class="container">
+
+    <!-- =========================================================================
+         ۱. صفحه ورود و آغازین جلسه سوم (همراه با انیمیشن کراس‌اور V-Shape)
+         ========================================================================= -->
+    <section id="loginView" class="view-section active">
+      <div class="glass-panel" style="text-align:center; margin-bottom:24px;">
+        <div style="font-size:0.8rem; color:var(--secondary); margin-bottom:4px;">💡 روی بوم زیر کلیک کنید تا شتاب دریبل ضربدری (V-Crossover) افزایش یابد!</div>
+        <canvas id="welcomeBallCanvas" width="520" height="185" style="width:100%; max-width:520px; margin:0 auto; display:block; cursor:pointer; border-radius:14px; background:radial-gradient(circle, rgba(249,115,22,0.12) 0%, rgba(15,23,42,0.6) 80%); border:1px solid var(--glass-border);"></canvas>
+        <h1 id="uiAppTitle" style="font-size:1.8rem; font-weight:900; color:var(--primary); margin-top:12px;">آموزش بسکتبال پایه هفتم</h1>
+        <h2 id="uiSessionTitle" style="font-size:1.22rem; color:var(--secondary); margin:6px 0;">جلسه سوم: تغییر جهت با دریبل (کراس‌اور)، استپ‌ها و گام محوری (Pivot)</h2>
+        <p style="color:var(--text-muted); font-size:0.96rem;">درس: <strong id="uiSubjectText" style="color:#fff;">تربیت بدنی</strong> | نام دبیر: <strong id="uiTeacherText" style="color:var(--accent);">برزگری</strong></p>
+      </div>
+
+      <div class="grid-2">
+        <!-- راهنمای رسمی و جدول امتیازدهی -->
+        <div class="glass-panel">
+          <div class="section-title">📋 راهنمای استفاده از سامانه (جلسه سوم)</div>
+          <ul style="list-style:none; font-size:0.92rem; color:#cbd5e1; display:flex; flex-direction:column; gap:10px; margin-bottom:20px;">
+            <li>🔹 <strong>نحوه ورود:</strong> مشخصات فردی، نام مدرسه و پایه تحصیلی خود را در فرم روبرو به صورت دقیق تکمیل نمایید تا دکمه ورود فعال گردد.</li>
+            <li>🔹 <strong>نحوه مطالعه آموزش:</strong> در بخش «آموزش جامع جلسه سوم»، تکنیک دریبل کراس‌اور، استپ یک‌ضرب و دوضرب، و قانون پای محور (Pivot) را بررسی کنید.</li>
+            <li>🔹 <strong>نحوه انجام فعالیت‌ها:</strong> در بخش «فعالیت‌های عملی و تعاملی»، چالش‌های تشخیص قوانین گام محوری، مرتب‌سازی مراحل کراس‌اور و بازی عبور از مدافع را انجام دهید.</li>
+            <li>🔹 <strong>نحوه کسب امتیاز (XP):</strong> هر بخش آموزشی یا فعالیت عملی دارای امتیاز مشخصی است که تنها یک مرتبه در سامانه ثبت و ذخیره می‌گردد.</li>
+            <li>🔹 <strong>نحوه مشاهده پیشرفت:</strong> در بخش «گزارش پیشرفت»، درصد تکمیل جلسه سوم، زمان حضور و نشان‌های افتخار قابل مشاهده است.</li>
+            <li>🔹 <strong>نحوه ثبت و ارسال گزارش نهایی:</strong> پس از تکمیل بخش‌ها، به قسمت «ثبت گزارش» مراجعه کرده و عملکرد نهایی خود را برای دبیر ارسال نمایید.</li>
+          </ul>
+
+          <div class="section-title" style="margin-top:16px;">🏆 جدول امتیازدهی فعالیت‌ها (XP)</div>
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>عنوان فعالیت در سامانه</th>
+                <th>میزان امتیاز</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>ورود به سامانه</td><td>۵ XP</td></tr>
+              <tr><td>مشاهده آموزش کامل جلسه سوم</td><td>۲۰ XP</td></tr>
+              <tr><td>مطالعه خلاصه و نقشه ذهنی جلسه سوم</td><td>۱۰ XP</td></tr>
+              <tr><td>انجام فعالیت‌های عملی و بازی عبور از مدافع</td><td>۳۰ XP</td></tr>
+              <tr><td>مشاهده فایل‌های آموزشی جلسه</td><td>۱۰ XP</td></tr>
+              <tr><td>مطالعه اطلاعیه‌های آموزشی</td><td>۵ XP</td></tr>
+              <tr><td>ثبت تکلیف عملی جلسه سوم</td><td>۱۰ XP</td></tr>
+              <tr><td>ثبت و ارسال گزارش نهایی</td><td>۲۰ XP</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- فرم ورود اجباری دانش‌آموز -->
+        <div class="glass-panel">
+          <div class="section-title">🔐 فرم ورود دانش‌آموز به جلسه سوم</div>
+          <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:18px;">تمامی فیلدها اجباری هستند. تا زمان تکمیل دقیق اطلاعات، دکمه شروع آموزش فعال نخواهد شد.</p>
+
+          <form id="loginForm" onsubmit="handleLoginSubmit(event)">
+            <div class="form-group">
+              <label class="form-label" for="studentNameInput">نام و نام خانوادگی دانش‌آموز (اجباری):</label>
+              <input type="text" id="studentNameInput" class="form-control" placeholder="مثال: محمد رضایی" required oninput="validateLoginForm()">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="schoolSelect">نام مدرسه (اجباری):</label>
+              <select id="schoolSelect" class="form-control" required onchange="validateLoginForm()">
+                <option value="">-- انتخاب مدرسه --</option>
+                <option value="مدرسه نور دوستکو">مدرسه نور دوستکو</option>
+                <option value="مدرسه اتحاد دوربنی">مدرسه اتحاد دوربنی</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="gradeSelect">پایه تحصیلی (اجباری):</label>
+              <select id="gradeSelect" class="form-control" required onchange="validateLoginForm()">
+                <option value="">-- انتخاب پایه تحصیلی --</option>
+                <option value="پایه هفتم">پایه هفتم</option>
+                <option value="پایه هشتم">پایه هشتم</option>
+                <option value="پایه نهم">پایه نهم</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">نام دبیر:</label>
+              <input type="text" id="fixedTeacherInput" class="form-control" value="برزگری" readonly>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">نام درس:</label>
+              <input type="text" id="fixedSubjectInput" class="form-control" value="تربیت بدنی" readonly>
+            </div>
+
+            <button type="submit" id="startBtn" class="btn" style="width:100%; margin-top:14px;" disabled>
+              🚀 ورود به سامانه و شروع جلسه سوم
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۲. داشبورد اصلی (کارت‌های سه‌بعدی حساس به حرکت موس)
+         ========================================================================= -->
+    <section id="dashboardView" class="view-section">
+      <div class="glass-panel" style="margin-bottom:22px;">
+        <div class="section-title">🎛️ داشبورد هوشمند جلسه سوم: کراس‌اور، استپ‌ها و گام محوری (Pivot)</div>
+        <p style="font-size:0.92rem; color:var(--text-muted);">کارت‌های زیر دارای افکت سه‌بعدی تعاملی هستند. با تکمیل هر بخش، امتیاز XP آن همراه با افکت نوری به حساب شما افزوده می‌شود.</p>
+      </div>
+
+      <div id="dashboardModulesGrid" class="grid-3"></div>
+    </section>
+
+    <!-- =========================================================================
+         ۳. بخش جامع آموزش جلسه سوم بسکتبال
+         ========================================================================= -->
+    <section id="educationView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">📚 آموزش جامع جلسه سوم: تغییر جهت (کراس‌اور)، استپ‌ها و پیوت</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <!-- تب‌های داخلی آموزش -->
+        <div class="sub-tabs">
+          <button class="sub-tab-btn active" onclick="switchEduTab('eduGoals', this)">۱. اهداف، کراس‌اور و استپ‌ها</button>
+          <button class="sub-tab-btn" onclick="switchEduTab('eduBenefits', this)">۲. چابکی و سلامت زانو و مچ پا</button>
+          <button class="sub-tab-btn" onclick="switchEduTab('eduFootwork', this)">۳. نقشه تعاملی پای محور (Pivot)</button>
+          <button class="sub-tab-btn" onclick="switchEduTab('eduEquip', this)">۴. هولوگرام سه‌بعدی تکنیک‌ها</button>
+          <button class="sub-tab-btn" onclick="switchEduTab('eduRules', this)">۵. قوانین تراولینگ در توقف و چرخش</button>
+          <button class="sub-tab-btn" onclick="switchEduTab('eduSkills', this)">۶. آزمایشگاه انیمیشنی جلسه سوم</button>
+        </div>
+
+        <!-- زیربخش ۱: اهداف جلسه، کراس‌اور و جدول مقایسه استپ‌ها -->
+        <div id="eduGoals" class="edu-sub-view">
+          <h3 style="color:var(--secondary); margin-bottom:14px;">🎯 اهداف یادگیری جلسه سوم</h3>
+          <div class="grid-3" style="margin-bottom:28px;">
+            <div class="glass-card tilt-card"><div class="card-glare"></div><strong>۱. دریبل تغییر جهت (Crossover)</strong><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">انتقال سریع توپ از یک دست به دست دیگر به شکل حرف V در زیر ارتفاع زانو.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><strong>۲. توقف یک‌ضرب (Jump Stop)</strong><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">فرود هم‌زمان روی هر دو پا پس از دریبل یا دریافت پاس با حفظ تعادل کامل.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><strong>۳. توقف دوضرب (Stride Stop)</strong><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">فرود پیاپی روی پای اول (گام ۱) و سپس پای دوم (گام ۲) در سرعت‌های بالا.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><strong>۴. شناخت پای محور (Pivot Foot)</strong><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">تشخیص پایی که باید روی سینه‌پا ثابت بماند و پایی که اجازه چرخش دارد.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><strong>۵. چرخش جلو و عقب (Front/Reverse)</strong><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">چرخش روی سینه پای محور به سمت سینه (جلو) یا به سمت پشت (عقب) برای دور کردن توپ از مدافع.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><strong>۶. پیشگیری از خطای تراولینگ</strong><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">آگاهی از قوانین جابه‌جایی یا لیز خوردن پای محور پیش از رها شدن توپ.</p></div>
+          </div>
+
+          <h3 style="color:var(--secondary); margin-bottom:14px;">⚡ مراحل چهارگانه اجرای صحیح دریبل تغییر جهت (Crossover)</h3>
+          <div class="timeline">
+            <div class="timeline-item glass-card">
+              <div class="timeline-dot"></div>
+              <h4 style="color:var(--primary);">گام اول: نزدیک شدن به مدافع و گام فریب (Fake Step)</h4>
+              <p style="font-size:0.9rem; margin-top:6px;">بازیکن با دریبل به مدافع نزدیک شده و با برداشتن یک گام سریع و تغییر زاویه شانه به یک سمت، مدافع را فریب می‌دهد تا وزن خود را به آن سمت منتقل کند.</p>
+            </div>
+            <div class="timeline-item glass-card">
+              <div class="timeline-dot"></div>
+              <h4 style="color:var(--primary);">گام دوم: پایین آوردن مرکز ثقل و ضربه مورب (V-Shape)</h4>
+              <p style="font-size:0.9rem; margin-top:6px;">زانوها کاملاً خم می‌شوند و توپ با زاویه مورب (به شکل حرف V انگلیسی) دقیقاً در جلوی پاها و <strong>پایین‌تر از ارتفاع زانو</strong> به زمین زده می‌شود تا از یک دست به دست دیگر منتقل گردد.</p>
+            </div>
+            <div class="timeline-item glass-card">
+              <div class="timeline-dot"></div>
+              <h4 style="color:var(--primary);">گام سوم: تعویض دست محافظ و چرخش شانه</h4>
+              <p style="font-size:0.9rem; margin-top:6px;">به محض رسیدن توپ به دست جدید، بدن بین مدافع و توپ قرار می‌گیرد و دست آزاد قبلی بلافاصله به عنوان سپر محافظ (Arm Bar) بالا می‌آید.</p>
+            </div>
+            <div class="timeline-item glass-card">
+              <div class="timeline-dot"></div>
+              <h4 style="color:var(--primary);">گام چهارم: گام انفجاری و عبور از کنار مدافع</h4>
+              <p style="font-size:0.9rem; margin-top:6px;">با فشار قوی سینه‌پا به زمین، بازیکن با یک گام بلند و سریع از کنار پای جلویی مدافع عبور کرده و به سمت سبد نفوذ می‌کند.</p>
+            </div>
+          </div>
+
+          <h3 style="color:var(--secondary); margin:20px 0 12px;">📊 جدول مقایسه توقف یک‌ضرب (Jump Stop) و توقف دوضرب (Stride Stop)</h3>
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>ویژگی فنی و قانونی</th>
+                <th>توقف یک‌ضرب (Jump Stop)</th>
+                <th>توقف دوضرب (Stride Stop)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>نحوه برخورد پاها با زمین</td><td>هر دو پا <strong>هم‌زمان</strong> و با هم روی زمین فرود می‌آیند.</td><td>ابتدا یک پا (شماره ۱) و سپس پای دیگر (شماره ۲) روی زمین قرار می‌گیرد.</td></tr>
+              <tr><td>قانون انتخاب پای محور (Pivot)</td><td>بازیکن می‌تواند <strong>هر کدام از دو پا (چپ یا راست)</strong> را به دلخواه به عنوان پای محور انتخاب کند!</td><td>فقط و فقط <strong>پایی که اول به زمین رسیده (پای شماره ۱)</strong> پای محور است.</td></tr>
+              <tr><td>وضعیت پاها هنگام ایستادن</td><td>پاها موازی هم و به اندازه عرض شانه باز هستند.</td><td>یک پا جلوتر و یک پا عقب‌تر قرار می‌گیرد (تعادل طولی عالی).</td></tr>
+              <tr><td>بهترین زمان استفاده</td><td>هنگام نفوذ به منطقه سه ثانیه و تصمیم‌گیری سریع برای شوت یا پاس.</td><td>هنگام دویدن با سرعت بالا و نیاز به ترمز نرم و کنترل‌شده.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- زیربخش ۲: تمرینات چابکی و سلامت زانو و مچ پا -->
+        <div id="eduBenefits" class="edu-sub-view" style="display:none;">
+          <h3 style="color:var(--secondary); margin-bottom:14px;">🔥 ۶ فایده و تمرین اختصاصی برای تغییر جهت، استپ و پیوت</h3>
+          <div class="grid-3" style="margin-bottom:26px;">
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:2rem; margin-bottom:8px;">⚡🦵</div><h4 style="color:var(--primary);">افزایش چابکی (Agility)</h4><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">توانایی تغییر جهت ناگهانی بدن بدون از دست دادن تعادل و سرعت در فضای کم.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:2rem; margin-bottom:8px;">⚖️🧘</div><h4 style="color:var(--primary);">تعادل پویا و ایستا</h4><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">نگه داشتن وزن بدن روی سینه‌پا در استپ‌های ناگهانی، عضلات مرکزی بدن (Core) را تقویت می‌کند.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:2rem; margin-bottom:8px;">🛡️🏀</div><h4 style="color:var(--primary);">حفظ مالکیت توپ تحت فشار</h4><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">وقتی دریبل شما تمام شده و مدافع نزدیک است، چرخش صحیح پیوت توپ را کاملاً از دسترس حریف دور می‌کند.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:2rem; margin-bottom:8px;">📐👀</div><h4 style="color:var(--primary);">ایجاد زاویه پاس و شوت</h4><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">با یک گام محوری به چپ یا راست، می‌توانید از پشت دست مدافع، مسیر جدیدی برای پاس دادن باز کنید.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:2rem; margin-bottom:8px;">🔄👟</div><h4 style="color:var(--primary);">تمرین قطب‌نما (۴ ربع چرخش)</h4><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">ایستادن روی پای چپ و چرخاندن پای راست در ۴ نوبت ۹۰ درجه‌ای تا تکمیل یک دایره کامل ۳۶۰ درجه.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:2rem; margin-bottom:8px;">🛑🏃</div><h4 style="color:var(--primary);">تمرین فرمان ایست ناگهانی</h4><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">دریبل به جلو و اجرای بلافاصله استپ یک‌ضرب با شنیدن صدای سوت بدون برداشتن گام اضافه.</p></div>
+          </div>
+
+          <h3 style="color:var(--secondary); margin-bottom:14px;">🩺 اصول بیومکانیک سلامت زانو و مچ پا در توقف‌های ناگهانی</h3>
+          <div class="grid-2">
+            <div class="glass-card">
+              <h4 style="color:var(--accent);">۱. جذب ضربه با خم کردن مفاصل (جلوگیری از قفل شدن زانو)</h4>
+              <p style="font-size:0.88rem; margin-top:6px;">• <strong>خطر فرود با پای صاف:</strong> اگر در استپ یک‌ضرب یا دوضرب با زانوهای صاف و قفل‌شده متوقف شوید، تمام فشار به غضروف و رباط‌های زانو وارد می‌شود.<br>• <strong>فرود نرم (Soft Landing):</strong> هنگام توقف، مفاصل مچ پا، زانو و ران باید هم‌زمان خم شوند تا مانند کمک‌فنر، انرژی حرکت را جذب کنند.</p>
+            </div>
+            <div class="glass-card">
+              <h4 style="color:var(--accent);">۲. چرخش روی «سینه‌پا» برای محافظت از رباط زانو</h4>
+              <p style="font-size:0.88rem; margin-top:6px;">• <strong>چرا پاشنه باید کمی از زمین بلند شود؟</strong> اگر کل کف پا و پاشنه به زمین بچسبد و بدن بچرخد، مچ و زانو دچار پیچ‌خوردگی می‌شوند.<br>• <strong>قانون طلایی پیوت:</strong> چرخش همیشه روی بخش جلویی کف پا (سینه‌پا / Ball of the foot) انجام می‌شود تا چرخش نرم و ایمن باشد.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- زیربخش ۳: نقشه تعاملی پای محور (Pivot) و قطب‌نمای چرخش (به همراه صدا) -->
+        <div id="eduFootwork" class="edu-sub-view" style="display:none;">
+          <h3 style="color:var(--secondary); margin-bottom:8px;">🧭 نقشه تعاملی گام محوری (Pivot) و قطب‌نمای چرخش</h3>
+          <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:16px;">روی هر یک از بخش‌های زیر (پای محور، سینه‌پا، پاشنه، پای آزاد و مسیرهای چرخش) کلیک کنید تا توضیح متنی و صوتی آن پخش شود:</p>
+
+          <div style="display:flex; flex-direction:column; align-items:center; gap:18px;">
+            <svg viewBox="0 0 600 350" style="width:100%; max-width:580px; background:radial-gradient(circle, #1e293b 0%, #090d16 90%); border-radius:18px; border:2px solid var(--glass-border); box-shadow:0 12px 35px rgba(0,0,0,0.6);">
+              <!-- دایره قطب‌نمای چرخش ۳۶۰ درجه -->
+              <circle cx="210" cy="175" r="135" fill="none" stroke="rgba(56,189,248,0.22)" stroke-width="2" stroke-dasharray="6,6"/>
+
+              <!-- کمان چرخش رو به جلو (Front Pivot) -->
+              <path class="foot-zone" d="M 335,175 A 125,125 0 0,0 210,50" fill="none" stroke="#10b981" stroke-width="14" stroke-linecap="round" onclick="selectFootPart('frontPivot')"/>
+              <text x="315" y="75" fill="#10b981" font-size="13" font-weight="bold">↗ چرخش رو به جلو (Front Pivot)</text>
+
+              <!-- کمان چرخش رو به عقب (Reverse Pivot) -->
+              <path class="foot-zone" d="M 335,175 A 125,125 0 0,1 210,300" fill="none" stroke="#f59e0b" stroke-width="14" stroke-linecap="round" onclick="selectFootPart('reversePivot')"/>
+              <text x="315" y="290" fill="#f59e0b" font-size="13" font-weight="bold">↘ چرخش رو به عقب (Reverse Pivot)</text>
+
+              <!-- پای چپ: پای محور (Pivot Foot) -->
+              <g class="foot-zone" onclick="selectFootPart('pivotFoot')">
+                <rect x="175" y="115" width="68" height="125" rx="32" fill="rgba(249,115,22,0.25)" stroke="#f97316" stroke-width="3"/>
+                <text x="209" y="102" fill="#f97316" font-size="13" font-weight="bold" text-anchor="middle">پای محور (ثابت)</text>
+              </g>
+
+              <!-- سینه‌پای محور (نقطه چرخش میخ‌شده به زمین) -->
+              <g class="foot-zone" onclick="selectFootPart('ballOfFoot')">
+                <circle cx="209" cy="148" r="24" fill="rgba(16,185,129,0.55)" stroke="#fff" stroke-width="2.5"/>
+                <text x="209" y="153" fill="#fff" font-size="11" font-weight="bold" text-anchor="middle">سینه‌پا (میخ)</text>
+              </g>
+
+              <!-- پاشنه پای محور (کمی بلند شده از زمین) -->
+              <g class="foot-zone" onclick="selectFootPart('liftedHeel')">
+                <circle cx="209" cy="212" r="20" fill="rgba(239,68,68,0.45)" stroke="#ef4444" stroke-width="2"/>
+                <text x="209" y="216" fill="#fff" font-size="10" font-weight="bold" text-anchor="middle">پاشنه آزاد</text>
+              </g>
+
+              <!-- پای راست: پای آزاد متحرک (Free Foot) -->
+              <g class="foot-zone" onclick="selectFootPart('freeFoot')">
+                <rect x="305" y="115" width="68" height="125" rx="32" fill="rgba(56,189,248,0.3)" stroke="#38bdf8" stroke-width="3"/>
+                <text x="339" y="175" fill="#fff" font-size="12" font-weight="bold" text-anchor="middle">پای آزاد</text>
+                <text x="339" y="193" fill="#bae6fd" font-size="10" text-anchor="middle">(متحرک)</text>
+              </g>
+            </svg>
+
+            <div id="footInfoPanel" class="glass-card" style="width:100%; max-width:680px; border-right:4px solid var(--primary);">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <h4 id="footPartTitle" style="color:var(--primary); font-size:1.1rem;">یکی از بخش‌های نقشه پا و چرخش را لمس کنید</h4>
+                <button class="btn btn-secondary" style="padding:6px 12px; font-size:0.8rem;" onclick="speakCurrentFootInfo()">🔊 پخش توضیح صوتی</button>
+              </div>
+              <p id="footPartDesc" style="font-size:0.92rem; color:#e2e8f0;">با کلیک روی سینه‌پا، پاشنه، پای آزاد یا پیکان‌های چرخش، قوانین دقیق گام محوری (Pivot) برای شما توضیح داده می‌شود.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- زیربخش ۴: هولوگرام سه‌بعدی تکنیک‌های جلسه سوم -->
+        <div id="eduEquip" class="edu-sub-view" style="display:none;">
+          <h3 style="color:var(--secondary); margin-bottom:10px;">🕶️ ویترین هولوگرافیک سه‌بعدی تکنیک‌های جلسه سوم</h3>
+          <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:16px;">با اسلایدر زیر یا دکمه چرخش خودکار، زاویه دید سه‌بعدی را تغییر دهید و ۳ مفهوم کلیدی این جلسه را بررسی کنید:</p>
+
+          <div style="margin-bottom:20px; background:rgba(15,23,42,0.8); padding:14px; border-radius:14px; display:flex; align-items:center; gap:14px; flex-wrap:wrap; border:1px solid var(--glass-border);">
+            <label style="font-weight:700; color:var(--primary);">🔄 زاویه چرخش سه‌بعدی:</label>
+            <input type="range" id="equipRotateRange" min="-180" max="180" value="0" style="flex:1; accent-color:var(--primary);" oninput="rotateEquipments(this.value)">
+            <span id="equipRotateLabel" style="min-width:65px; font-weight:700; color:var(--secondary);">۰ درجه</span>
+            <button id="autoSpinBtn" class="btn btn-secondary" style="padding:7px 14px; font-size:0.84rem;" onclick="toggleAutoSpinEquip()">▶️ چرخش خودکار ۳۶۰ درجه</button>
+          </div>
+
+          <div class="grid-3">
+            <div class="glass-card">
+              <div class="equip-viewer">
+                <div class="equip-3d-object">
+                  <svg width="120" height="115" viewBox="0 0 120 100">
+                    <polyline points="20,25 60,82 100,25" fill="none" stroke="#38bdf8" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="60" cy="80" r="14" fill="#f97316" stroke="#fff" stroke-width="2"/>
+                    <line x1="15" y1="50" x2="105" y2="50" stroke="#10b981" stroke-width="2" stroke-dasharray="4,4"/>
+                  </svg>
+                </div>
+              </div>
+              <h4 style="color:var(--primary);">۱. هندسه V در کراس‌اور</h4>
+              <p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">توپ دقیقاً در مرکز بین دو پا به زمین برخورد کرده و یک مسیر V شکل در زیر خط زانو (خط چین سبز) می‌سازد.</p>
+            </div>
+
+            <div class="glass-card">
+              <div class="equip-viewer">
+                <div class="equip-3d-object">
+                  <svg width="120" height="115" viewBox="0 0 120 100">
+                    <rect x="22" y="55" width="30" height="18" rx="6" fill="#10b981" stroke="#fff" stroke-width="2"/>
+                    <rect x="68" y="55" width="30" height="18" rx="6" fill="#10b981" stroke="#fff" stroke-width="2"/>
+                    <path d="M37,20 L37,48 M83,20 L83,48" stroke="#f97316" stroke-width="4" stroke-linecap="round"/>
+                    <line x1="10" y1="78" x2="110" y2="78" stroke="#94a3b8" stroke-width="3"/>
+                  </svg>
+                </div>
+              </div>
+              <h4 style="color:var(--primary);">۲. تقارن استپ یک‌ضرب</h4>
+              <p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">فرود هم‌زمان هر دو کف پا روی زمین به صورت موازی و به عرض شانه، که به بازیکن آزادی انتخاب هر دو پا را برای پیوت می‌دهد.</p>
+            </div>
+
+            <div class="glass-card">
+              <div class="equip-viewer">
+                <div class="equip-3d-object">
+                  <svg width="120" height="115" viewBox="0 0 120 100">
+                    <circle cx="45" cy="55" r="10" fill="#f97316"/>
+                    <circle cx="45" cy="55" r="34" fill="none" stroke="#38bdf8" stroke-width="3" stroke-dasharray="6,4"/>
+                    <line x1="45" y1="55" x2="78" y2="42" stroke="#10b981" stroke-width="4"/>
+                    <circle cx="78" cy="42" r="8" fill="#10b981"/>
+                  </svg>
+                </div>
+              </div>
+              <h4 style="color:var(--primary);">۳. پرگار گام محوری (Pivot)</h4>
+              <p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">پای محور دقیقاً مانند سوزن ثابت پرگار عمل می‌کند و پای آزاد مانند مداد پرگار در هر جهتی به دور آن می‌چرخد.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- زیربخش ۵: قوانین تراولینگ در توقف و چرخش + علائم داوری -->
+        <div id="eduRules" class="edu-sub-view" style="display:none;">
+          <h3 style="color:var(--secondary); margin-bottom:14px;">⚖️ قوانین رسمی فدراسیون جهانی (FIBA) درباره توقف، پیوت و تراولینگ</h3>
+          <div class="grid-3" style="margin-bottom:24px;">
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:1.6rem;">📌👟</div><h4 style="color:var(--primary);">۱. ممنوعیت تغییر پای محور</h4><p style="font-size:0.86rem; color:var(--text-muted);">وقتی بازیکن با چرخاندن یک پا، پای دیگر را به عنوان پای محور انتخاب کرد، تا زمان پاس یا شوت حق ندارد پای محور خود را عوض کند.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:1.6rem;">⛸️🚫</div><h4 style="color:var(--primary);">۲. خطای کشیدن یا سر خوردن پا</h4><p style="font-size:0.86rem; color:var(--text-muted);">اگر در حین چرخش پیوت، سینه‌پای محور روی زمین کشیده شود یا چند سانتی‌متر جابه‌جا گردد، داور بلافاصله تخلف تراولینگ اعلام می‌کند.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:1.6rem;">🏀🏃</div><h4 style="color:var(--primary);">۳. قانون شروع دریبل از پیوت</h4><p style="font-size:0.86rem; color:var(--text-muted);">برای شروع دریبل، توپ باید <strong>قبل از جدا شدن پای محور از زمین</strong> از دست بازیکن رها شود؛ در غیر این صورت خطای تراولینگ است.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:1.6rem;">🎯⬆️</div><h4 style="color:var(--primary);">۴. قانون شوت و پاس از پیوت</h4><p style="font-size:0.86rem; color:var(--text-muted);">هنگام شوت زدن یا پاس دادن، بازیکن <strong>می‌تواند پای محور را از زمین بلند کند</strong>، به شرط آنکه قبل از برگشتن آن پا به زمین، توپ از دستش رها شده باشد.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:1.6rem;">1️⃣2️⃣</div><h4 style="color:var(--primary);">۵. قانون توقف دوضرب</h4><p style="font-size:0.86rem; color:var(--text-muted);">در توقف دوضرب (گام ۱ و ۲)، تنها پای اولی که با زمین تماس پیدا کرده پای محور است و بلند کردن و گذاشتن مجدد آن تخلف است.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:1.6rem;">🛡️💪</div><h4 style="color:var(--primary);">۶. خطای تهاجمی با آرنج در پیوت</h4><p style="font-size:0.86rem; color:var(--text-muted);">هنگام چرخش با توپ، بازیکن باید توپ را محکم بگیرد اما حق ندارد آرنج‌های خود را به صورت مدافع بکوبد (خطای مهاجم).</p></div>
+          </div>
+
+          <div class="grid-2">
+            <div class="glass-card">
+              <h4 style="color:var(--warning); margin-bottom:8px;">⚠️ ۴ خطای رایج دانش‌آموزان در کراس‌اور و پیوت</h4>
+              <ul style="font-size:0.88rem; padding-right:18px; color:#e2e8f0;">
+                <li><strong>کراس‌اور بلند در ارتفاع سینه:</strong> باعث می‌شود مدافع به راحتی توپ را بدزدد ← <em>اصلاح: خم کردن زانو و زدن توپ زیر ارتفاع زانو.</em></li>
+                <li><strong>چرخش روی پاشنه پا:</strong> باعث برهم خوردن تعادل و افتادن به عقب می‌شود ← <em>اصلاح: انتقال وزن به سینه‌پا و بلند کردن جزئی پاشنه.</em></li>
+                <li><strong>پرش کوچک قبل از رها کردن توپ برای دریبل:</strong> شایع‌ترین خطای تراولینگ در مدارس ← <em>اصلاح: ابتدا توپ از دست جدا شود، سپس پای محور برداشته شود.</em></li>
+                <li><strong>خم شدن بیش از حد کمر در استپ‌ها:</strong> باعث زمین خوردن به جلو می‌شود ← <em>اصلاح: خم کردن زانوها و نگه داشتن سر و سینه رو به بالا.</em></li>
+              </ul>
+            </div>
+
+            <div class="glass-card">
+              <h4 style="color:var(--secondary); margin-bottom:8px;">✋ یادآوری علائم داوری مرتبط با جلسه سوم</h4>
+              <ul style="font-size:0.88rem; padding-right:18px; color:#e2e8f0;">
+                <li><strong>اعلام تخلف تراولینگ (Traveling):</strong> سوت داور به نشانه توقف زمان و چرخاندن دو مشت بسته به دور یکدیگر در جلوی سینه.</li>
+                <li><strong>اعلام خطای مهاجم (Charging / Elbow):</strong> سوت داور، مشت کردن دست و اشاره به سمت سبد تیم مدافع.</li>
+                <li><strong>اعلام شمارش ۵ ثانیه:</strong> حرکت دادن ساعد یک دست به صورت افقی برای شمارش ثانیه‌ها هنگام دفاع نزدیک روی بازیکن در حال پیوت.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- زیربخش ۶: آزمایشگاه انیمیشنی جلسه سوم + کارت‌های چرخشی دانستنی‌ها -->
+        <div id="eduSkills" class="edu-sub-view" style="display:none;">
+          <h3 style="color:var(--secondary); margin-bottom:10px;">🔬 آزمایشگاه انیمیشنی جلسه سوم (شبیه‌ساز زنده کراس‌اور، استپ و پیوت)</h3>
+          <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:14px;">روی هر یک از ۳ مهارت زیر کلیک کنید تا اجرای دقیق آن را ببینید. می‌توانید سرعت را روی حالت صحنه آهسته (Slow Motion) قرار دهید:</p>
+
+          <div class="glass-card" style="margin-bottom:24px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="sub-tab-btn active" onclick="setSkillSimMode('crossover', this)">⚡ ۱. شبیه‌ساز کراس‌اور (V-Dribble)</button>
+                <button class="sub-tab-btn" onclick="setSkillSimMode('jumpStop', this)">🛑 ۲. شبیه‌ساز استپ یک‌ضرب و دوضرب</button>
+                <button class="sub-tab-btn" onclick="setSkillSimMode('pivotSpin', this)">🧭 ۳. شبیه‌ساز چرخش پای محور (Pivot)</button>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:0.85rem; color:var(--secondary);">سرعت انیمیشن:</span>
+                <button class="sub-tab-btn" style="padding:5px 10px;" onclick="setSkillSimSpeed(0.35)">🐢 صحنه آهسته</button>
+                <button class="sub-tab-btn" style="padding:5px 10px;" onclick="setSkillSimSpeed(1)">⚡ عادی</button>
+              </div>
+            </div>
+
+            <canvas id="skillSimCanvas" width="680" height="225" style="width:100%; max-width:680px; height:auto; display:block; margin:0 auto; background:rgba(9,13,22,0.85); border-radius:14px; border:1px solid var(--glass-border);"></canvas>
+          </div>
+
+          <h3 style="color:var(--secondary); margin-bottom:12px;">🌟 دانستنی‌های جذاب درباره کراس‌اور و حرکات پا (کارت‌های Flip سه‌بعدی)</h3>
+          <div class="flip-grid">
+            <div class="flip-card" onclick="this.classList.toggle('flipped')">
+              <div class="flip-card-inner">
+                <div class="flip-front">
+                  <div style="font-size:2.2rem; margin-bottom:8px;">👑⚡</div>
+                  <h4>پادشاه کراس‌اور تاریخ بسکتبال</h4>
+                  <span style="font-size:0.78rem; color:var(--primary); margin-top:8px;">کلیک کنید تا بچرخد ↺</span>
+                </div>
+                <div class="flip-back">
+                  <p style="font-size:0.86rem;">«آلن آیورسون» و «کایری اروینگ» به دلیل سرعت فوق‌العاده در تغییر جهت شانه و اجرای کراس‌اورهای نزدیک به زمین، مشهورترین دریبل‌زنان تاریخ NBA محسوب می‌شوند.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="flip-card" onclick="this.classList.toggle('flipped')">
+              <div class="flip-card-inner">
+                <div class="flip-front">
+                  <div style="font-size:2.2rem; margin-bottom:8px;">🩰🏀</div>
+                  <h4>رقص پا (Footwork) حکیم اولاجوان</h4>
+                  <span style="font-size:0.78rem; color:var(--primary); margin-top:8px;">کلیک کنید تا بچرخد ↺</span>
+                </div>
+                <div class="flip-back">
+                  <p style="font-size:0.86rem;">حرکت معروف «Dream Shake» توسط حکیم اولاجوان، ترکیبی از توقف یک‌ضرب و چرخش‌های فریبنده روی پای محور بود که هیچ مدافعی نمی‌توانست آن را متوقف کند.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="flip-card" onclick="this.classList.toggle('flipped')">
+              <div class="flip-card-inner">
+                <div class="flip-front">
+                  <div style="font-size:2.2rem; margin-bottom:8px;">👟🔊</div>
+                  <h4>چرا صدای جیرجیر کفش در سالن مهم است؟</h4>
+                  <span style="font-size:0.78rem; color:var(--primary); margin-top:8px;">کلیک کنید تا بچرخد ↺</span>
+                </div>
+                <div class="flip-back">
+                  <p style="font-size:0.86rem;">صدای اصطکاک کفش بسکتبال روی پارکت نشان‌دهنده چسبندگی بالای کفی کفش هنگام اجرای استپ‌های ناگهانی و تغییر جهت‌های سریع (کراس‌اور) است.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="flip-card" onclick="this.classList.toggle('flipped')">
+              <div class="flip-card-inner">
+                <div class="flip-front">
+                  <div style="font-size:2.2rem; margin-bottom:8px;">⏱️0️⃣</div>
+                  <h4>قانون جدید گام صفر (Gather Step)</h4>
+                  <span style="font-size:0.78rem; color:var(--primary); margin-top:8px;">کلیک کنید تا بچرخد ↺</span>
+                </div>
+                <div class="flip-back">
+                  <p style="font-size:0.86rem;">در قوانین جدید FIBA، پایی که در لحظه جمع کردن توپ در حین حرکت روی زمین است «گام صفر» محسوب شده و گام بعدی پس از آن به عنوان پای محور (گام ۱) شناخته می‌شود.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- دکمه ثبت مطالعه آموزش کامل (۲۰ XP) -->
+        <div style="margin-top:28px; padding-top:18px; border-top:1px solid var(--glass-border); text-align:center;">
+          <button id="claimEducationBtn" class="btn btn-success" onclick="completeSectionXP('education', 20, 'آموزش کامل جلسه سوم (کراس‌اور، استپ و پیوت)')">
+            ✅ مطالعه کامل تمام بخش‌های آموزش جلسه سوم را به پایان رساندم (دریافت ۲۰ XP)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۴. بخش خلاصه جلسه سوم و نقشه ذهنی (Mind Map SVG)
+         ========================================================================= -->
+    <section id="summaryView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">🧠 جمع‌بندی و نقشه ذهنی زنده جلسه سوم</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <p style="font-size:0.92rem; color:var(--text-muted); margin-bottom:18px;">نقشه ذهنی زیر با جریان‌های نوری متحرک، چکیده تمامی مفاهیم کلیدی جلسه سوم (تغییر جهت با دریبل، استپ‌ها و گام محوری) را نمایش می‌دهد:</p>
+
+        <div style="overflow-x:auto; background:rgba(9,13,22,0.85); border-radius:var(--radius-md); padding:18px; border:1px solid var(--glass-border); margin-bottom:20px;">
+          <svg viewBox="0 0 860 400" style="width:100%; min-width:650px; height:auto;">
+            <!-- خطوط اتصال پایه -->
+            <path d="M430,200 C320,200 280,80 190,80" stroke="rgba(249,115,22,0.3)" stroke-width="4" fill="none"/>
+            <path d="M430,200 C320,200 280,200 190,200" stroke="rgba(56,189,248,0.3)" stroke-width="4" fill="none"/>
+            <path d="M430,200 C320,200 280,320 190,320" stroke="rgba(16,185,129,0.3)" stroke-width="4" fill="none"/>
+            <path d="M430,200 C540,200 580,80 670,80" stroke="rgba(245,158,11,0.3)" stroke-width="4" fill="none"/>
+            <path d="M430,200 C540,200 580,200 670,200" stroke="rgba(236,72,153,0.3)" stroke-width="4" fill="none"/>
+            <path d="M430,200 C540,200 580,320 670,320" stroke="rgba(168,85,247,0.3)" stroke-width="4" fill="none"/>
+
+            <!-- خطوط پالس انرژی متحرک -->
+            <path class="tactic-line" d="M430,200 C320,200 280,80 190,80" stroke="#f97316" stroke-width="3" fill="none"/>
+            <path class="tactic-line" d="M430,200 C320,200 280,200 190,200" stroke="#38bdf8" stroke-width="3" fill="none"/>
+            <path class="tactic-line" d="M430,200 C320,200 280,320 190,320" stroke="#10b981" stroke-width="3" fill="none"/>
+            <path class="tactic-line" d="M430,200 C540,200 580,80 670,80" stroke="#f59e0b" stroke-width="3" fill="none"/>
+            <path class="tactic-line" d="M430,200 C540,200 580,200 670,200" stroke="#ec4899" stroke-width="3" fill="none"/>
+            <path class="tactic-line" d="M430,200 C540,200 580,320 670,320" stroke="#a855f7" stroke-width="3" fill="none"/>
+
+            <!-- هسته مرکزی -->
+            <ellipse cx="430" cy="200" rx="105" ry="48" fill="#ea580c" stroke="#fff" stroke-width="3"/>
+            <text x="430" y="196" fill="#fff" font-size="14" font-weight="bold" text-anchor="middle">کراس‌اور، استپ و پیوت</text>
+            <text x="430" y="218" fill="#fef08a" font-size="13" text-anchor="middle">خلاصه جلسه سوم</text>
+
+            <!-- شاخه‌ها -->
+            <rect x="20" y="45" width="180" height="70" rx="12" fill="#1e293b" stroke="#f97316" stroke-width="2.5"/>
+            <text x="110" y="72" fill="#f97316" font-size="14" font-weight="bold" text-anchor="middle">دریبل کراس‌اور</text>
+            <text x="110" y="95" fill="#cbd5e1" font-size="12" text-anchor="middle">مسیر V شکل زیر ارتفاع زانو</text>
+
+            <rect x="20" y="165" width="180" height="70" rx="12" fill="#1e293b" stroke="#38bdf8" stroke-width="2.5"/>
+            <text x="110" y="192" fill="#38bdf8" font-size="14" font-weight="bold" text-anchor="middle">استپ یک‌ضرب</text>
+            <text x="110" y="215" fill="#cbd5e1" font-size="12" text-anchor="middle">فرود هم‌زمان دو پا (هر دو پا محور)</text>
+
+            <rect x="20" y="285" width="180" height="70" rx="12" fill="#1e293b" stroke="#10b981" stroke-width="2.5"/>
+            <text x="110" y="312" fill="#10b981" font-size="14" font-weight="bold" text-anchor="middle">استپ دوضرب</text>
+            <text x="110" y="335" fill="#cbd5e1" font-size="12" text-anchor="middle">فرود گام ۱ و ۲ (فقط گام ۱ محور)</text>
+
+            <rect x="660" y="45" width="180" height="70" rx="12" fill="#1e293b" stroke="#f59e0b" stroke-width="2.5"/>
+            <text x="750" y="72" fill="#f59e0b" font-size="14" font-weight="bold" text-anchor="middle">تکنیک پیوت (Pivot)</text>
+            <text x="750" y="95" fill="#cbd5e1" font-size="12" text-anchor="middle">چرخش روی سینه‌پای ثابت</text>
+
+            <rect x="660" y="165" width="180" height="70" rx="12" fill="#1e293b" stroke="#ec4899" stroke-width="2.5"/>
+            <text x="750" y="192" fill="#ec4899" font-size="14" font-weight="bold" text-anchor="middle">انواع چرخش پیوت</text>
+            <text x="750" y="215" fill="#cbd5e1" font-size="12" text-anchor="middle">چرخش به جلو و چرخش به عقب</text>
+
+            <rect x="660" y="285" width="180" height="70" rx="12" fill="#1e293b" stroke="#a855f7" stroke-width="2.5"/>
+            <text x="750" y="312" fill="#a855f7" font-size="14" font-weight="bold" text-anchor="middle">خطای تراولینگ</text>
+            <text x="750" y="335" fill="#cbd5e1" font-size="12" text-anchor="middle">بلند شدن پای محور قبل از دریبل</text>
+          </svg>
+        </div>
+
+        <div style="text-align:center;">
+          <button id="claimSummaryBtn" class="btn btn-success" onclick="completeSectionXP('summary', 10, 'مطالعه خلاصه و نقشه ذهنی جلسه سوم')">
+            ✅ نقشه ذهنی و خلاصه جلسه سوم را مرور کردم (دریافت ۱۰ XP)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۵. بخش فعالیت‌های عملی، تشخیصی و بازی عبور از مدافع (۳۰ XP)
+         ========================================================================= -->
+    <section id="activitiesView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">🎮 فعالیت‌های عملی، تشخیصی و شبیه‌ساز عبور از مدافع (۳۰ XP)</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <p style="font-size:0.92rem; color:var(--text-muted); margin-bottom:20px;">برای دریافت ۳۰ امتیاز کامل این بخش، هر ۳ فعالیت عملی و تعاملی زیر را با موفقیت تکمیل نمایید:</p>
+
+        <!-- فعالیت ۱: تشخیص قوانین صحیح استپ و پای محور -->
+        <div class="glass-card" style="margin-bottom:20px;">
+          <h4 style="color:var(--primary); margin-bottom:8px;">فعالیت ۱: تشخیص ۴ قانون و تکنیک صحیح در کراس‌اور، استپ و پیوت <span id="act1Status" style="color:var(--text-muted); font-size:0.85rem;">(تکمیل نشده)</span></h4>
+          <p style="font-size:0.88rem; margin-bottom:12px;">از میان گزینه‌های زیر، <strong>۴ گزاره کاملاً صحیح</strong> را انتخاب کنید:</p>
+          <div class="grid-3" id="equipGameGrid">
+            <button class="sub-tab-btn" onclick="toggleEquipSelect(this, true)">⚡ دریبل کراس‌اور به شکل V و زیر ارتفاع زانو انجام می‌شود</button>
+            <button class="sub-tab-btn" onclick="toggleEquipSelect(this, false)">❌ در استپ دوضرب، پای دوم پای محور است</button>
+            <button class="sub-tab-btn" onclick="toggleEquipSelect(this, true)">👟 چرخش پیوت فقط روی «سینه‌پا» انجام می‌شود نه پاشنه</button>
+            <button class="sub-tab-btn" onclick="toggleEquipSelect(this, true)">🛑 در استپ یک‌ضرب، هر کدام از دو پا می‌تواند پای محور باشد</button>
+            <button class="sub-tab-btn" onclick="toggleEquipSelect(this, false)">❌ بازیکن می‌تواند پای محور خود را حین چرخش عوض کند</button>
+            <button class="sub-tab-btn" onclick="toggleEquipSelect(this, true)">🏀 برای شروع دریبل، توپ باید قبل از بلند شدن پای محور رها شود</button>
+          </div>
+        </div>
+
+        <!-- فعالیت ۲: مرتب‌سازی مراحل اجرای دریبل کراس‌اور و عبور از مدافع -->
+        <div class="glass-card" style="margin-bottom:20px;">
+          <h4 style="color:var(--primary); margin-bottom:8px;">فعالیت ۲: مرتب‌سازی مراحل علمی عبور از مدافع با کراس‌اور و توقف <span id="act2Status" style="color:var(--text-muted); font-size:0.85rem;">(تکمیل نشده)</span></h4>
+          <p style="font-size:0.88rem; margin-bottom:12px;">مراحل زیر را به ترتیب صحیح (از گام ۱ تا ۴) کلیک کنید:</p>
+          <div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:12px;" id="orderStepsContainer">
+            <button class="btn btn-secondary" onclick="selectOrderStep(3, 'انفجار سرعت از کنار مدافع و نفوذ به سمت سبد با دست جدید', this)">انفجار سرعت از کنار مدافع و نفوذ به سمت سبد با دست جدید</button>
+            <button class="btn btn-secondary" onclick="selectOrderStep(1, 'نزدیک شدن به مدافع و اجرای گام فریب (Fake) به یک سمت', this)">نزدیک شدن به مدافع و اجرای گام فریب (Fake) به یک سمت</button>
+            <button class="btn btn-secondary" onclick="selectOrderStep(4, 'اجرای استپ یک‌ضرب متعادل و حفظ پای محور برای پاس یا شوت', this)">اجرای استپ یک‌ضرب متعادل و حفظ پای محور برای پاس یا شوت</button>
+            <button class="btn btn-secondary" onclick="selectOrderStep(2, 'خم کردن زانوها و زدن دریبل مورب V شکل زیر زانو به دست دیگر', this)">خم کردن زانوها و زدن دریبل مورب V شکل زیر زانو به دست دیگر</button>
+          </div>
+          <div id="orderFeedback" style="font-size:0.88rem; color:var(--secondary);">ترتیب انتخاب‌شده: هنوز موردی انتخاب نشده است.</div>
+          <button class="sub-tab-btn" style="margin-top:8px;" onclick="resetOrderActivity()">🔄 شروع مجدد مرتب‌سازی</button>
+        </div>
+
+        <!-- فعالیت ۳: بازی تعاملی تصمیم‌گیری در برابر مدافع (Crossover & Pivot Challenge) -->
+        <div class="glass-card">
+          <h4 style="color:var(--primary); margin-bottom:8px;">فعالیت ۳: شبیه‌ساز «عبور از مدافع با کراس‌اور و پیوت» <span id="act3Status" style="color:var(--text-muted); font-size:0.85rem;">(تکمیل نشده)</span></h4>
+          <p style="font-size:0.88rem; margin-bottom:10px;">به وضعیت مدافع (قرمز رنگ) در بوم زیر دقت کنید و بر اساس جهت حمله او، <strong>واکنش تکنیکی صحیح</strong> را از دکمه‌های زیر انتخاب کنید (کسب ۳ امتیاز موفق):</p>
+
+          <div style="background:rgba(9,13,22,0.9); padding:10px 16px; border-radius:10px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <strong id="defenderMissionText" style="color:var(--warning);">🛡️ موقعیت ۱: مدافع به سمت راست شما هجوم آورده است؛ کدام حرکت را انجام می‌دهید؟</strong>
+            <span style="color:var(--accent); font-weight:800;">امتیاز عبور از مدافع: <span id="defenderGameScore">۰</span> از ۳</span>
+          </div>
+
+          <canvas id="defenderSimCanvas" width="600" height="240" style="width:100%; max-width:600px; background:radial-gradient(circle at 50% 40%, #1e293b, #090d16); border:2px solid var(--glass-border); border-radius:14px; display:block; margin:0 auto 14px;"></canvas>
+
+          <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
+            <button class="btn btn-secondary" onclick="submitDefenderAction('crossLeft')">⬅️ کراس‌اور سریع به سمت چپ</button>
+            <button class="btn btn-secondary" onclick="submitDefenderAction('crossRight')">➡️ کراس‌اور سریع به سمت راست</button>
+            <button class="btn btn-secondary" onclick="submitDefenderAction('reversePivot')">🧭 استپ و چرخش پیوت به عقب (محافظت از توپ)</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۶. بخش فایل‌ها و لینک کلاس
+         ========================================================================= -->
+    <section id="filesView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">📁 فایل‌های آموزشی و لینک جلسه سوم (۱۰ XP)</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <div id="filesListContainer" class="grid-2" style="margin-bottom:20px;"></div>
+
+        <div class="glass-card" style="margin-bottom:20px;">
+          <h4 style="color:var(--secondary);">🔗 لینک ارتباطی جلسه مجازی</h4>
+          <p id="sessionLinkDisplay" style="font-size:0.9rem; margin:8px 0; color:#cbd5e1;"></p>
+        </div>
+
+        <div style="text-align:center;">
+          <button id="claimFilesBtn" class="btn btn-success" onclick="completeSectionXP('files', 10, 'مشاهده فایل‌ها و منابع جلسه سوم')">
+            ✅ فایل‌ها و منابع جلسه سوم را بررسی کردم (دریافت ۱۰ XP)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۷. بخش اطلاعیه‌های جلسه (۵ XP)
+         ========================================================================= -->
+    <section id="noticesView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">📢 اطلاعیه‌های رسمی درس تربیت بدنی (۵ XP)</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <div id="noticesListContainer" style="display:flex; flex-direction:column; gap:14px; margin-bottom:22px;"></div>
+
+        <div style="text-align:center;">
+          <button id="claimNoticesBtn" class="btn btn-success" onclick="completeSectionXP('notices', 5, 'مطالعه اطلاعیه‌های آموزشی جلسه سوم')">
+            ✅ اطلاعیه‌های جلسه سوم را مطالعه کردم (دریافت ۵ XP)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۸. بخش تکالیف جلسه سوم (۱۰ XP)
+         ========================================================================= -->
+    <section id="homeworkView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">📝 تکلیف عملی جلسه سوم بسکتبال (۱۰ XP)</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <p style="font-size:0.92rem; color:var(--text-muted); margin-bottom:16px;">برای تسلط عملی بر مهارت‌های جلسه سوم، سه تمرین زیر را در منزل انجام داده و تیک تأیید هر کدام را فعال نمایید:</p>
+
+        <div id="homeworkChecklist" style="display:flex; flex-direction:column; gap:12px; margin-bottom:18px;"></div>
+
+        <div class="form-group">
+          <label class="form-label" for="homeworkNoteInput">گزارش کوتاه دانش‌آموز از انجام تمرین کراس‌اور، استپ و چرخش روی پای محور (الزامی):</label>
+          <input type="text" id="homeworkNoteInput" class="form-control" placeholder="مثال: ۳۰ دریبل کراس‌اور V شکل و تمرین چرخش قطب‌نما روی سینه‌پا را انجام دادم.">
+        </div>
+
+        <div style="text-align:center; margin-top:18px;">
+          <button id="claimHomeworkBtn" class="btn btn-success" onclick="submitHomeworkTask()">
+            ✅ ثبت تکلیف جلسه سوم (دریافت ۱۰ XP)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۹. بخش گزارش پیشرفت، زمان حضور و نشان‌های افتخار (Badges)
+         ========================================================================= -->
+    <section id="progressView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">📊 گزارش پیشرفت و دستاوردهای انفرادی (جلسه سوم)</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <div class="grid-3" style="margin-bottom:22px;">
+          <div class="glass-card" style="text-align:center;">
+            <div style="font-size:0.88rem; color:var(--text-muted);">مجموع امتیاز کسب‌شده</div>
+            <div id="progXPValue" style="font-size:2rem; font-weight:900; color:var(--primary); margin:6px 0;">۰ / ۱۱۰ XP</div>
+          </div>
+          <div class="glass-card" style="text-align:center;">
+            <div style="font-size:0.88rem; color:var(--text-muted);">درصد پیشرفت کل جلسه سوم</div>
+            <div id="progPercentValue" style="font-size:2rem; font-weight:900; color:var(--accent); margin:6px 0;">۰٪</div>
+          </div>
+          <div class="glass-card" style="text-align:center;">
+            <div style="font-size:0.88rem; color:var(--text-muted);">مدت زمان حضور و مطالعه</div>
+            <div id="progTimeValue" style="font-size:1.6rem; font-weight:900; color:var(--secondary); margin:8px 0;">۰ دقیقه و ۰ ثانیه</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="glass-card">
+            <h4 style="color:var(--primary); margin-bottom:10px;">🏅 نشان‌های افتخار جلسه سوم (Badges & Achievements)</h4>
+            <div id="badgesContainer" style="display:flex; flex-direction:column; gap:10px;"></div>
+          </div>
+          <div class="glass-card">
+            <h4 style="color:var(--secondary); margin-bottom:10px;">✔️ فهرست فعالیت‌های تکمیل‌شده</h4>
+            <ul id="completedLogsList" style="font-size:0.9rem; padding-right:18px; color:#cbd5e1;"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۱۰. بخش ثبت و ارسال گزارش نهایی به Supabase + پایان جلسه سوم
+         ========================================================================= -->
+    <section id="reportView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">📤 ثبت و ارسال گزارش نهایی جلسه سوم به دبیر</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <div class="glass-card" style="margin-bottom:22px;">
+          <table class="custom-table">
+            <tbody>
+              <tr><th>نام و نام خانوادگی دانش‌آموز</th><td id="repStudentName">-</td></tr>
+              <tr><th>نام مدرسه</th><td id="repSchoolName">-</td></tr>
+              <tr><th>پایه تحصیلی</th><td id="repGrade">-</td></tr>
+              <tr><th>نام دبیر</th><td id="repTeacherName">برزگری</td></tr>
+              <tr><th>عنوان جلسه</th><td>جلسه سوم: تغییر جهت با دریبل (کراس‌اور)، استپ‌ها و گام محوری (Pivot)</td></tr>
+              <tr><th>امتیاز کل (XP)</th><td id="repTotalXP" style="font-weight:bold; color:var(--primary);">۰ XP</td></tr>
+              <tr><th>درصد پیشرفت جلسه</th><td id="repProgressPercent" style="font-weight:bold; color:var(--accent);">۰٪</td></tr>
+              <tr><th>مدت حضور در جلسه</th><td id="repDuration">-</td></tr>
+              <tr><th>فعالیت‌های انجام‌شده</th><td id="repCompletedItems">-</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="text-align:center;">
+          <button id="finalSubmitReportBtn" class="btn" style="font-size:1.15rem; padding:16px 38px; animation: pulseGlow 2s infinite;" onclick="handleFinalReportSubmission()">
+            🚀 ثبت و ارسال گزارش نهایی جلسه سوم (+۲۰ XP)
+          </button>
+          <p id="supabaseStatusMsg" style="margin-top:14px; font-size:0.95rem;"></p>
+        </div>
+
+        <!-- کارت تبریک پایان جلسه سوم -->
+        <div id="sessionCompletionBox" class="glass-card" style="display:none; margin-top:26px; text-align:center; border-color:var(--accent);">
+          <canvas id="celebrationCanvas" width="320" height="140" style="margin:0 auto; display:block;"></canvas>
+          <h3 style="color:var(--accent); font-size:1.4rem; margin-top:8px;">🎉 تبریک! جلسه سوم آموزش بسکتبال با موفقیت به پایان رسید</h3>
+          <p style="font-size:0.95rem; color:#cbd5e1; margin:8px 0 18px;">گزارش عملکرد جلسه سوم شما با موفقیت در پایگاه داده ثبت گردید.</p>
+          <button class="btn btn-secondary" onclick="showToast('جلسه چهارم (آموزش جامع پاس سینه، پاس زمین و تکنیک دریافت توپ) در جلسه آینده فعال خواهد شد.')">
+            ⏭️ آمادگی برای ورود به جلسه چهارم بسکتبال
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    /* ============================================================================
+       تنظیمات پروژه (PROJECT_CONFIG) - تمام تنظیمات جلسه سوم از این قسمت قابل تغییر است
+       ============================================================================ */
+    const PROJECT_CONFIG = {
+      systemTitle: "سامانه آموزش مجازی تربیت بدنی متوسطه اول",
+      sessionTitle: "جلسه سوم: تغییر جهت با دریبل (کراس‌اور)، استپ‌ها و گام محوری (Pivot)",
+      subjectName: "تربیت بدنی",
+      teacherName: "برزگری",
+      supabaseUrl: "https://tpwdrzwfzdbmwqlblntu.supabase.co",
+      supabaseKey: "sb_publishable_ASPIzP1XV1iSweCV43Oy9Q_PCkz5htN",
+      sessionLink: "برگزاری کلاس به صورت آفلاین در سامانه و ارسال تمرینات عملی در شبکه شاد",
+      activeModules: {
+        education: true,
+        summary: true,
+        activities: true,
+        files: true,
+        notices: true,
+        homework: true,
+        progress: true,
+        report: true
+      },
+      sessionFiles: [
+        {
+          title: "جزوه آموزشی تکنیک دریبل کراس‌اور (V-Dribble) و عبور از مدافع",
+          desc: "شامل زاویه برخورد توپ با زمین، ارتفاع زیر زانو، گام فریب (Fake Step) و تعویض دست محافظ."
+        },
+        {
+          title: "راهنمای کامل قوانین استپ یک‌ضرب، استپ دوضرب و پای محور (Pivot)",
+          desc: "بررسی تفاوت‌های قانونی انتخاب پای محور در استپ‌ها و راه‌های جلوگیری از تخلف تراولینگ."
+        }
+      ],
+      homeworks: [
+        "۱- تمرین دریبل ضربدری (کراس‌اور V شکل) در حالت ایستاده بین دست راست و چپ به تعداد ۴۰ مرتبه (زیر ارتفاع زانو و با سر بالا).",
+        "۲- تمرین حرکت به جلو، اجرای «استپ یک‌ضرب» و سپس «استپ دوضرب» با حفظ تعادل کامل و خم بودن زانوها (۱۰ مرتبه).",
+        "۳- تمرین چرخش قطب‌نما (۴ چرخش ۹۰ درجه‌ای به جلو و عقب) روی سینه‌پای چپ و سپس روی سینه‌پای راست بدون کشیده شدن پا روی زمین."
+      ],
+      notices: [
+        "دانش‌آموزان گرامی، هنگام تمرین استپ‌های ناگهانی و چرخش پیوت، حتماً از کفش ورزشی مناسب روی سطح غیرلغزنده استفاده نمایید.",
+        "در اجرای گام محوری (Pivot)، دقت کنید که چرخش باید روی «سینه‌پا» انجام شود تا به مفاصل مچ و زانوی شما هیچ فشاری وارد نگردد.",
+        "پس از تکمیل تمامی بخش‌های جلسه سوم و رسیدن به امتیاز ۹۰، دکمه «ثبت و ارسال گزارش نهایی» را در حالت اتصال به اینترنت بفشارید."
+      ]
+    };
+
+    /* ============================================================================
+       اتصال مستقیم به جدول Students در Supabase
+       ============================================================================ */
+    const SUPABASE_URL = PROJECT_CONFIG.supabaseUrl;
+    const SUPABASE_KEY = PROJECT_CONFIG.supabaseKey;
+    let ACTIVE_SCHOOL = "";
+    let ACTIVE_SUBJECT = PROJECT_CONFIG.subjectName;
+
+    async function sendToSupabase(studentName, score, totalScore, detailsText) {
+      const payload = {
+        Student_name: studentName,
+        School_name: ACTIVE_SCHOOL,
+        Subject: ACTIVE_SUBJECT,
+        Score: parseFloat(score),
+        Total_score: parseFloat(totalScore),
+        Details: detailsText
+      };
+
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/Students`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${SUPABASE_KEY}`,
+          "Prefer": "return=minimal"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error(`خطای سرور: ${response.status}`);
+      }
+      return true;
+    }
+
+    /* ============================================================================
+       مدیریت وضعیت دانش‌آموز و سیستم ضدتقلب در LocalStorage (ویژه جلسه سوم)
+       ============================================================================ */
+    const STORAGE_KEY = "PE_BASKETBALL_SESSION3_STATE_V1";
+    const MAX_TOTAL_XP = 110;
+
+    let appState = {
+      studentName: "",
+      schoolName: "",
+      grade: "",
+      loginCount: 0,
+      firstLoginTime: "",
+      totalSeconds: 0,
+      xp: 0,
+      awardedFlags: {
+        login: false,      // 5 XP
+        education: false,  // 20 XP
+        summary: false,    // 10 XP
+        activities: false, // 30 XP
+        files: false,      // 10 XP
+        notices: false,    // 5 XP
+        homework: false,   // 10 XP
+        report: false      // 20 XP
+      },
+      activitySubFlags: {
+        equipDone: false,
+        orderDone: false,
+        defenderDone: false
+      },
+      homeworkNote: "",
+      reportSent: false,
+      reportTime: ""
+    };
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          appState = {
+            ...appState,
+            ...parsed,
+            awardedFlags: { ...appState.awardedFlags, ...(parsed.awardedFlags || {}) },
+            activitySubFlags: { ...appState.activitySubFlags, ...(parsed.activitySubFlags || {}) }
+          };
+        }
+      } catch (e) {}
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      } catch (e) {}
+      updateStatusBarUI();
+    }
+
+    /* ============================================================================
+       مقداردهی اولیه کل سامانه و موتورهای گرافیکی جلسه سوم
+       ============================================================================ */
+    window.addEventListener("DOMContentLoaded", () => {
+      loadState();
+      applyProjectConfig();
+      initBackgroundParticles();
+      initConfettiEngine();
+      initWelcomeCrossoverCanvas();
+      initSkillSimulatorCanvas();
+      initDefenderSimGame();
+      init3DTiltCards();
+
+      if (appState.studentName && appState.schoolName && appState.grade) {
+        document.getElementById("studentNameInput").value = appState.studentName;
+        document.getElementById("schoolSelect").value = appState.schoolName;
+        document.getElementById("gradeSelect").value = appState.grade;
+        validateLoginForm();
+      }
+
+      setInterval(() => {
+        if (appState.studentName && !document.getElementById("loginView").classList.contains("active")) {
+          appState.totalSeconds++;
+          if (appState.totalSeconds % 5 === 0) saveState();
+          const progTimeEl = document.getElementById("progTimeValue");
+          if (progTimeEl) progTimeEl.textContent = formatDuration(appState.totalSeconds);
+        }
+      }, 1000);
+    });
+
+    function applyProjectConfig() {
+      document.getElementById("uiAppTitle").textContent = PROJECT_CONFIG.systemTitle;
+      document.getElementById("uiSessionTitle").textContent = PROJECT_CONFIG.sessionTitle;
+      document.getElementById("uiSubjectText").textContent = PROJECT_CONFIG.subjectName;
+      document.getElementById("uiTeacherText").textContent = PROJECT_CONFIG.teacherName;
+      document.getElementById("fixedTeacherInput").value = PROJECT_CONFIG.teacherName;
+      document.getElementById("fixedSubjectInput").value = PROJECT_CONFIG.subjectName;
+
+      const filesBox = document.getElementById("filesListContainer");
+      filesBox.innerHTML = PROJECT_CONFIG.sessionFiles.map(f => `
+        <div class="glass-card tilt-card">
+          <div class="card-glare"></div>
+          <h4 style="color:var(--primary); margin-bottom:6px;">📄 ${f.title}</h4>
+          <p style="font-size:0.88rem; color:#cbd5e1;">${f.desc}</p>
+        </div>
+      `).join("");
+      document.getElementById("sessionLinkDisplay").textContent = PROJECT_CONFIG.sessionLink;
+
+      const noticesBox = document.getElementById("noticesListContainer");
+      noticesBox.innerHTML = PROJECT_CONFIG.notices.map((n, idx) => `
+        <div class="glass-card" style="border-right:4px solid var(--secondary);">
+          <strong>اطلاعیه شماره ${(idx + 1).toLocaleString('fa-IR')}:</strong>
+          <p style="font-size:0.9rem; margin-top:4px; color:#e2e8f0;">${n}</p>
+        </div>
+      `).join("");
+
+      const hwBox = document.getElementById("homeworkChecklist");
+      hwBox.innerHTML = PROJECT_CONFIG.homeworks.map(h => `
+        <label class="glass-card" style="display:flex; align-items:center; gap:12px; cursor:pointer;">
+          <input type="checkbox" class="hw-check" style="width:20px; height:20px; accent-color:var(--primary);">
+          <span style="font-size:0.92rem;">${h}</span>
+        </label>
+      `).join("");
+    }
+
+    /* ============================================================================
+       ۱. موتور پس‌زمینه ذرات و خطوط تاکتیکی تعاملی (60FPS Particle Network)
+       ============================================================================ */
+    function initBackgroundParticles() {
+      const canvas = document.getElementById("bgParticlesCanvas");
+      const ctx = canvas.getContext("2d");
+      let w = canvas.width = window.innerWidth;
+      let h = canvas.height = window.innerHeight;
+
+      window.addEventListener("resize", () => {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+      });
+
+      const mouse = { x: -500, y: -500 };
+      window.addEventListener("mousemove", e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+
+      const count = Math.min(48, Math.floor(w / 28));
+      const nodes = Array.from({ length: count }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.65,
+        vy: (Math.random() - 0.5) * 0.65,
+        r: Math.random() * 2.2 + 1.2,
+        isOrange: Math.random() > 0.5
+      }));
+
+      function renderBg() {
+        ctx.clearRect(0, 0, w, h);
+        for (let i = 0; i < nodes.length; i++) {
+          const p = nodes[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.x < 0 || p.x > w) p.vx *= -1;
+          if (p.y < 0 || p.y > h) p.vy *= -1;
+
+          const dxM = p.x - mouse.x;
+          const dyM = p.y - mouse.y;
+          const distM = Math.hypot(dxM, dyM);
+          if (distM < 110 && distM > 0) {
+            p.x += (dxM / distM) * 1.1;
+            p.y += (dyM / distM) * 1.1;
+          }
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = p.isOrange ? "rgba(249, 115, 22, 0.55)" : "rgba(56, 189, 248, 0.45)";
+          ctx.fill();
+
+          for (let j = i + 1; j < nodes.length; j++) {
+            const q = nodes[j];
+            const dist = Math.hypot(p.x - q.x, p.y - q.y);
+            if (dist < 135) {
+              ctx.beginPath();
+              ctx.moveTo(p.x, p.y);
+              ctx.lineTo(q.x, q.y);
+              ctx.strokeStyle = `rgba(148, 163, 184, ${(1 - dist / 135) * 0.14})`;
+              ctx.lineWidth = 1;
+              ctx.stroke();
+            }
+          }
+        }
+        requestAnimationFrame(renderBg);
+      }
+      renderBg();
+    }
+
+    /* ============================================================================
+       ۲. موتور انفجار ذرات نوری و کنفتی
+       ============================================================================ */
+    let confettiParticles = [];
+
+    function initConfettiEngine() {
+      const canvas = document.getElementById("fxConfettiCanvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      window.addEventListener("resize", () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      });
+
+      function loopConfetti() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let i = confettiParticles.length - 1; i >= 0; i--) {
+          const c = confettiParticles[i];
+          c.x += c.vx;
+          c.y += c.vy;
+          c.vy += 0.25;
+          c.rot += c.vRot;
+          c.life -= 0.014;
+
+          if (c.life <= 0) {
+            confettiParticles.splice(i, 1);
+            continue;
+          }
+
+          ctx.save();
+          ctx.translate(c.x, c.y);
+          ctx.rotate(c.rot);
+          ctx.globalAlpha = Math.max(0, c.life);
+          ctx.fillStyle = c.color;
+          ctx.fillRect(-c.size / 2, -c.size / 2, c.size, c.size * 0.65);
+          ctx.restore();
+        }
+        requestAnimationFrame(loopConfetti);
+      }
+      loopConfetti();
+    }
+
+    function triggerParticleBurst(originX = window.innerWidth / 2, originY = window.innerHeight / 2) {
+      const colors = ["#f97316", "#38bdf8", "#10b981", "#facc15", "#ec4899"];
+      for (let i = 0; i < 45; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * 8 + 3;
+        confettiParticles.push({
+          x: originX,
+          y: originY,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed - 4,
+          size: Math.random() * 8 + 5,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rot: Math.random() * Math.PI,
+          vRot: (Math.random() - 0.5) * 0.2,
+          life: 1.0
+        });
+      }
+    }
+
+    /* ============================================================================
+       ۳. افکت سه بعدی کارت‌ها (3D Perspective Tilt)
+       ============================================================================ */
+    function init3DTiltCards() {
+      document.addEventListener("mousemove", (e) => {
+        const card = e.target.closest(".tilt-card");
+        if (!card) return;
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const rotateX = ((y - rect.height / 2) / (rect.height / 2)) * -7;
+        const rotateY = ((x - rect.width / 2) / (rect.width / 2)) * 7;
+
+        card.style.transform = `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px)`;
+        const glare = card.querySelector(".card-glare");
+        if (glare) {
+          glare.style.background = `radial-gradient(circle at ${(x / rect.width) * 100}% ${(y / rect.height) * 100}%, rgba(255,255,255,0.16), transparent 60%)`;
+        }
+      });
+
+      document.addEventListener("mouseout", (e) => {
+        const card = e.target.closest(".tilt-card");
+        if (card && !card.contains(e.relatedTarget)) {
+          card.style.transform = "perspective(900px) rotateX(0deg) rotateY(0deg) translateY(0)";
+        }
+      });
+    }
+
+    /* ============================================================================
+       اعتبارسنجی فرم ورود و شروع جلسه سوم
+       ============================================================================ */
+    function validateLoginForm() {
+      const nameVal = document.getElementById("studentNameInput").value.trim();
+      const schoolVal = document.getElementById("schoolSelect").value;
+      const gradeVal = document.getElementById("gradeSelect").value;
+      document.getElementById("startBtn").disabled = !(nameVal.length >= 3 && schoolVal !== "" && gradeVal !== "");
+    }
+
+    function handleLoginSubmit(e) {
+      e.preventDefault();
+      const nameVal = document.getElementById("studentNameInput").value.trim();
+      const schoolVal = document.getElementById("schoolSelect").value;
+      const gradeVal = document.getElementById("gradeSelect").value;
+
+      appState.studentName = nameVal;
+      appState.schoolName = schoolVal;
+      appState.grade = gradeVal;
+      appState.loginCount += 1;
+
+      ACTIVE_SCHOOL = schoolVal;
+      ACTIVE_SUBJECT = `${PROJECT_CONFIG.subjectName} (${gradeVal})`;
+
+      if (!appState.firstLoginTime) {
+        appState.firstLoginTime = new Date().toLocaleTimeString("fa-IR");
+      }
+
+      if (!appState.awardedFlags.login) {
+        appState.awardedFlags.login = true;
+        appState.xp += 5;
+        triggerParticleBurst();
+        showToast("خوش آمدید! ۵ امتیاز (XP) بابت ورود به جلسه سوم دریافت کردید.");
+      }
+
+      saveState();
+      document.getElementById("topStatusBar").style.display = "flex";
+      renderDashboardCards();
+      navigateTo("dashboardView");
+    }
+
+    /* ============================================================================
+       رندر داشبورد جلسه سوم
+       ============================================================================ */
+    function renderDashboardCards() {
+      const modules = [
+        { key: "education", title: "آموزش جامع کراس‌اور، استپ و پیوت", xp: "۲۰ XP", icon: "⚡", view: "educationView", desc: "تغییر جهت V شکل، استپ‌های ۱ و ۲ ضرب، نقشه تعاملی پا و شبیه‌سازها" },
+        { key: "summary", title: "خلاصه و نقشه ذهنی جلسه سوم", xp: "۱۰ XP", icon: "🧠", view: "summaryView", desc: "مرور تصویری و نمودار درختی پویا از قوانین استپ و گام محوری" },
+        { key: "activities", title: "فعالیت عملی و بازی عبور از مدافع", xp: "۳۰ XP", icon: "🎮", view: "activitiesView", desc: "تشخیص قوانین پیوت، مرتب‌سازی مراحل کراس‌اور و شبیه‌ساز تقابل با مدافع" },
+        { key: "files", title: "فایل‌ها و لینک کلاس", xp: "۱۰ XP", icon: "📁", view: "filesView", desc: "جزوه تکنیک کراس‌اور و راهنمای قوانین تراولینگ در توقف‌ها" },
+        { key: "notices", title: "اطلاعیه‌های آموزشی", xp: "۵ XP", icon: "📢", view: "noticesView", desc: "نکات ایمنی زانو و مچ پا در تغییر جهت‌ها و توقف‌های ناگهانی" },
+        { key: "homework", title: "تکلیف عملی جلسه سوم", xp: "۱۰ XP", icon: "📝", view: "homeworkView", desc: "تمرین عملی دریبل ضربدری، استپ و چرخش قطب‌نما در منزل" },
+        { key: "progress", title: "گزارش پیشرفت و نشان‌ها", xp: "مشاهده", icon: "📊", view: "progressView", desc: "بررسی درصد پیشرفت، زمان حضور و نشان‌های افتخار جلسه سوم" },
+        { key: "report", title: "ثبت و ارسال گزارش نهایی", xp: "۲۰ XP", icon: "📤", view: "reportView", desc: "ثبت نهایی عملکرد جلسه سوم و ارسال مستقیم برای دبیر" }
+      ];
+
+      const grid = document.getElementById("dashboardModulesGrid");
+      grid.innerHTML = modules
+        .filter(m => PROJECT_CONFIG.activeModules[m.key])
+        .map(m => {
+          const isDone = appState.awardedFlags[m.key] === true;
+          return `
+            <div class="glass-card tilt-card" style="cursor:pointer; display:flex; flex-direction:column; justify-content:space-between;" onclick="navigateTo('${m.view}')">
+              <div class="card-glare"></div>
+              <div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                  <span style="font-size:2.1rem;">${m.icon}</span>
+                  <span class="badge-xp" style="background:${isDone ? 'var(--accent)' : ''};">
+                    ${isDone ? '✓ تکمیل شده' : m.xp}
+                  </span>
+                </div>
+                <h3 style="font-size:1.12rem; color:var(--text-main); margin-bottom:6px;">${m.title}</h3>
+                <p style="font-size:0.85rem; color:var(--text-muted);">${m.desc}</p>
+              </div>
+              <div style="margin-top:16px; font-size:0.85rem; color:var(--secondary); font-weight:800;">ورود به بخش ←</div>
+            </div>
+          `;
+        }).join("");
+    }
+
+    function navigateTo(viewId) {
+      document.querySelectorAll(".view-section").forEach(sec => sec.classList.remove("active"));
+      document.getElementById(viewId).classList.add("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
+      if (viewId === "dashboardView") renderDashboardCards();
+      if (viewId === "progressView") renderProgressView();
+      if (viewId === "reportView") renderReportView();
+      updateStatusBarUI();
+    }
+
+    function switchEduTab(tabId, btnEl) {
+      document.querySelectorAll(".edu-sub-view").forEach(el => el.style.display = "none");
+      document.getElementById(tabId).style.display = "block";
+      btnEl.parentElement.querySelectorAll(".sub-tab-btn").forEach(b => b.classList.remove("active"));
+      btnEl.classList.add("active");
+    }
+
+    function calculateProgressPercent() {
+      const keys = ["login", "education", "summary", "activities", "files", "notices", "homework", "report"];
+      const doneCount = keys.filter(k => appState.awardedFlags[k]).length;
+      return Math.round((doneCount / keys.length) * 100);
+    }
+
+    function updateStatusBarUI() {
+      document.getElementById("headerStudentName").textContent = appState.studentName || "دانش‌آموز";
+      document.getElementById("headerSchoolInfo").textContent = `${appState.schoolName} | ${appState.grade}`;
+      document.getElementById("headerXP").textContent = appState.xp.toLocaleString("fa-IR");
+
+      const pct = calculateProgressPercent();
+      document.getElementById("headerProgressText").textContent = `${pct.toLocaleString("fa-IR")}٪`;
+      document.getElementById("headerProgressFill").style.width = `${pct}%`;
+
+      const btnMap = [
+        { key: "education", id: "claimEducationBtn" },
+        { key: "summary", id: "claimSummaryBtn" },
+        { key: "files", id: "claimFilesBtn" },
+        { key: "notices", id: "claimNoticesBtn" },
+        { key: "homework", id: "claimHomeworkBtn" }
+      ];
+      btnMap.forEach(item => {
+        const btn = document.getElementById(item.id);
+        if (btn && appState.awardedFlags[item.key]) {
+          btn.disabled = true;
+          btn.textContent = "✓ امتیاز این بخش قبلاً در حساب شما ثبت شده است";
+        }
+      });
+    }
+
+    function completeSectionXP(key, xpAmount, title) {
+      if (appState.awardedFlags[key]) {
+        showToast("امتیاز این بخش قبلاً ثبت شده است.");
+        return;
+      }
+      appState.awardedFlags[key] = true;
+      appState.xp += xpAmount;
+      saveState();
+      playBeepSound(880, 0.22);
+      triggerParticleBurst();
+      showToast(`آفرین! ${xpAmount.toLocaleString("fa-IR")} امتیاز (XP) بابت «${title}» دریافت کردید.`);
+    }
+
+    /* ============================================================================
+       ۴. نقشه تعاملی گام محوری (Pivot) و قطب‌نمای چرخش + پخش صوتی
+       ============================================================================ */
+    const FOOTWORK_DATA = {
+      pivotFoot: {
+        title: "📌 پای محور (Pivot Foot - ستون ثابت بازیکن)",
+        desc: "پایی که روی زمین ثابت می‌ماند و بازیکن حق ندارد آن را از جا بلند کرده و دوباره زمین بگذارد یا روی کف سالن بکشد."
+      },
+      ballOfFoot: {
+        title: "✅ سینه‌پای محور (نقطه تماس و چرخش قانونی)",
+        desc: "بخش جلویی کف پا (پشت انگشتان) که دقیقاً مانند سوزن پرگار به زمین میخ می‌شود و تمام چرخش‌های بدن روی این نقطه انجام می‌گیرد."
+      },
+      liftedHeel: {
+        title: "⚠️ پاشنه پای محور (کمی بلند شده از سطح زمین)",
+        desc: "برای اینکه چرخش پیوت نرم باشد و به زانو فشار نیاید، پاشنه پای محور چند میلی‌متر از زمین جدا می‌شود تا کل وزن روی سینه‌پا قرار گیرد."
+      },
+      freeFoot: {
+        title: "👟 پای آزاد یا متحرک (Free / Stepping Foot)",
+        desc: "پایی که اجازه دارد هرچند بار که بازیکن بخواهد از زمین بلند شود و در هر جهتی (جلو، عقب یا طرفین) گام بردارد."
+      },
+      frontPivot: {
+        title: "↗ چرخش رو به جلو (Front Pivot)",
+        desc: "زمانی که بازیکن روی سینه‌پای محور می‌چرخد و پای آزاد خود را در جهت سینه و رو به جلو حرکت می‌دهد تا به سمت سبد زاویه بسازد."
+      },
+      reversePivot: {
+        title: "↘ چرخش رو به عقب یا معکوس (Reverse / Drop Pivot)",
+        desc: "زمانی که مدافع بسیار نزدیک است و بازیکن پای آزاد را به سمت پشت و پاشنه خود می‌چرخاند تا بدن خود را حائل توپ و مدافع کند."
+      }
+    };
+
+    let currentFootPartKey = null;
+
+    function playBeepSound(freq = 520, duration = 0.12) {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.14, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    function selectFootPart(partKey) {
+      currentFootPartKey = partKey;
+      const info = FOOTWORK_DATA[partKey];
+      if (!info) return;
+      document.getElementById("footPartTitle").textContent = info.title;
+      document.getElementById("footPartDesc").textContent = info.desc;
+      playBeepSound(720, 0.15);
+      speakCurrentFootInfo();
+    }
+
+    function speakCurrentFootInfo() {
+      if (!currentFootPartKey) {
+        showToast("لطفاً ابتدا روی یکی از بخش‌های نقشه پا کلیک کنید.");
+        return;
+      }
+      const info = FOOTWORK_DATA[currentFootPartKey];
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(`${info.title}. ${info.desc}`);
+        utter.lang = "fa-IR";
+        utter.rate = 1.0;
+        window.speechSynthesis.speak(utter);
+      }
+    }
+
+    /* ============================================================================
+       ۵. چرخش سه‌بعدی هولوگرام تکنیک‌ها
+       ============================================================================ */
+    let autoSpinInterval = null;
+
+    function rotateEquipments(deg) {
+      document.getElementById("equipRotateLabel").textContent = `${Number(deg).toLocaleString("fa-IR")} درجه`;
+      document.querySelectorAll(".equip-3d-object").forEach(el => {
+        el.style.transform = `rotateY(${deg}deg) rotateX(${Math.sin(deg * 0.04) * 14}deg)`;
+      });
+    }
+
+    function toggleAutoSpinEquip() {
+      const btn = document.getElementById("autoSpinBtn");
+      const slider = document.getElementById("equipRotateRange");
+      if (autoSpinInterval) {
+        clearInterval(autoSpinInterval);
+        autoSpinInterval = null;
+        btn.textContent = "▶️ چرخش خودکار ۳۶۰ درجه";
+        return;
+      }
+      btn.textContent = "⏸️ توقف چرخش خودکار";
+      let angle = Number(slider.value);
+      autoSpinInterval = setInterval(() => {
+        angle += 2;
+        if (angle > 180) angle = -180;
+        slider.value = angle;
+        rotateEquipments(angle);
+      }, 30);
+    }
+
+    /* ============================================================================
+       ۶. آزمایشگاه انیمیشنی جلسه سوم (کراس‌اور، استپ‌ها و چرخش پیوت)
+       ============================================================================ */
+    let skillSimMode = "crossover";
+    let skillSimSpeed = 1.0;
+
+    function setSkillSimMode(mode, btnEl) {
+      skillSimMode = mode;
+      btnEl.parentElement.querySelectorAll(".sub-tab-btn").forEach(b => b.classList.remove("active"));
+      btnEl.classList.add("active");
+    }
+
+    function setSkillSimSpeed(spd) {
+      skillSimSpeed = spd;
+      showToast(spd < 1 ? "حالت صحنه آهسته (Slow Motion) برای مشاهده دقیق حرکت پاها و زاویه V فعال شد." : "سرعت عادی انیمیشن فعال شد.");
+    }
+
+    function initSkillSimulatorCanvas() {
+      const canvas = document.getElementById("skillSimCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      let t = 0;
+
+      function animateSkills() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        t += 0.075 * skillSimSpeed;
+
+        // خط زمین
+        ctx.strokeStyle = "rgba(255,255,255,0.25)";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(20, 192);
+        ctx.lineTo(660, 192);
+        ctx.stroke();
+
+        if (skillSimMode === "crossover") {
+          // نمایش از روبرو: بازیکن با زانوهای خم و حرکت توپ به شکل V بین دو دست
+          const cx = 340, cy = 135;
+          const phase = Math.sin(t * 1.4); // بین -1 (چپ) و +1 (راست)
+          const sway = phase * 10;
+
+          // خط فرضی ارتفاع زانو
+          ctx.setLineDash([5, 5]);
+          ctx.strokeStyle = "rgba(16, 185, 129, 0.45)";
+          ctx.beginPath();
+          ctx.moveTo(220, 148);
+          ctx.lineTo(460, 148);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          // مسیر V شکل راهنما
+          ctx.strokeStyle = "rgba(56, 189, 248, 0.35)";
+          ctx.lineWidth = 4;
+          ctx.beginPath();
+          ctx.moveTo(cx - 48, 138);
+          ctx.lineTo(cx, 182);
+          ctx.lineTo(cx + 48, 138);
+          ctx.stroke();
+
+          // بازیکن از روبرو
+          ctx.strokeStyle = "#38bdf8";
+          ctx.lineWidth = 4.5;
+          ctx.lineCap = "round";
+          ctx.beginPath();
+          ctx.arc(cx + sway, cy - 58, 12, 0, Math.PI * 2);
+          ctx.fillStyle = "#0ea5e9";
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.moveTo(cx + sway, cy - 45);
+          ctx.lineTo(cx, cy);
+          // پاها باز و زانوها خم
+          ctx.lineTo(cx - 32, cy + 22);
+          ctx.lineTo(cx - 36, 190);
+          ctx.moveTo(cx, cy);
+          ctx.lineTo(cx + 32, cy + 22);
+          ctx.lineTo(cx + 36, 190);
+          // دست‌ها
+          ctx.moveTo(cx + sway, cy - 35);
+          ctx.lineTo(cx - 48, 136);
+          ctx.moveTo(cx + sway, cy - 35);
+          ctx.lineTo(cx + 48, 136);
+          ctx.stroke();
+
+          // موقعیت توپ روی مسیر V
+          const ballX = cx + phase * 48;
+          const ballY = 180 - Math.abs(phase) * 42;
+          ctx.beginPath();
+          ctx.arc(ballX, ballY, 13, 0, Math.PI * 2);
+          ctx.fillStyle = "#f97316";
+          ctx.fill();
+          ctx.strokeStyle = "#fff";
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+
+          ctx.fillStyle = "#e2e8f0";
+          ctx.font = "bold 13px Tahoma";
+          ctx.fillText("دریبل کراس‌اور (V-Shape): عبور مورب توپ از زیر خط زانو (خط‌چین سبز) همراه با تغییر زاویه شانه", 485, 38);
+        } else if (skillSimMode === "jumpStop") {
+          // مقایسه استپ یک‌ضرب (سمت راست بوم) و استپ دوضرب (سمت چپ بوم)
+          const cycle = (t * 0.45) % 2; // 0 تا 2
+
+          // استپ یک‌ضرب (Jump Stop)
+          ctx.fillStyle = "#38bdf8";
+          ctx.font = "bold 13px Tahoma";
+          ctx.fillText("۱. استپ یک‌ضرب (فرود هم‌زمان دو پا)", 500, 42);
+
+          const jumpY = cycle < 0.8 ? Math.sin((cycle / 0.8) * Math.PI) * -28 : 0;
+          const footY1 = 175 + jumpY;
+          ctx.fillStyle = cycle >= 0.8 ? "#10b981" : "#0ea5e9";
+          ctx.beginPath();
+          ctx.roundRect(445, footY1, 36, 16, 6);
+          ctx.roundRect(505, footY1, 36, 16, 6);
+          ctx.fill();
+
+          if (cycle >= 0.8) {
+            ctx.fillStyle = "#fef08a";
+            ctx.font = "12px Tahoma";
+            ctx.fillText("✓ هر دو پا هم‌زمان روی زمین (انتخاب آزاد پای محور)", 500, 155);
+          }
+
+          // استپ دوضرب (Stride Stop)
+          ctx.fillStyle = "#f97316";
+          ctx.font = "bold 13px Tahoma";
+          ctx.fillText("۲. استپ دوضرب (فرود گام ۱ و سپس گام ۲)", 190, 42);
+
+          const step1Landed = cycle >= 0.5;
+          const step2Landed = cycle >= 1.0;
+
+          ctx.fillStyle = step1Landed ? "#f97316" : "#64748b";
+          ctx.beginPath();
+          ctx.roundRect(125, step1Landed ? 175 : 152, 40, 16, 6);
+          ctx.fill();
+          ctx.fillStyle = "#fff";
+          ctx.font = "bold 11px Tahoma";
+          ctx.fillText("گام ۱ (محور)", 145, step1Landed ? 166 : 144);
+
+          ctx.fillStyle = step2Landed ? "#38bdf8" : "#64748b";
+          ctx.beginPath();
+          ctx.roundRect(195, step2Landed ? 175 : 148, 40, 16, 6);
+          ctx.fill();
+          ctx.fillStyle = "#fff";
+          ctx.fillText("گام ۲ (آزاد)", 215, step2Landed ? 166 : 140);
+        } else if (skillSimMode === "pivotSpin") {
+          // نمای از بالا (Top-Down) از چرخش پیوت روی پای محور چپ
+          const pivotX = 310, pivotY = 125;
+          const radius = 58;
+          const angle = Math.sin(t * 0.9) * 1.65; // چرخش جلو و عقب
+
+          // دایره مسیر چرخش پای آزاد
+          ctx.setLineDash([5, 5]);
+          ctx.strokeStyle = "rgba(56, 189, 248, 0.45)";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(pivotX, pivotY, radius, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          // پای محور ثابت (میخ‌شده در مرکز)
+          ctx.fillStyle = "#f97316";
+          ctx.beginPath();
+          ctx.arc(pivotX, pivotY, 15, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.strokeStyle = "#fff";
+          ctx.lineWidth = 2;
+          ctx.stroke();
+
+          // پای آزاد در حال چرخش روی محیط دایره
+          const freeX = pivotX + Math.cos(angle) * radius;
+          const freeY = pivotY + Math.sin(angle) * radius;
+
+          // خط اتصال دو پا و شانه‌های بازیکن
+          ctx.strokeStyle = "#10b981";
+          ctx.lineWidth = 5;
+          ctx.beginPath();
+          ctx.moveTo(pivotX, pivotY);
+          ctx.lineTo(freeX, freeY);
+          ctx.stroke();
+
+          ctx.fillStyle = "#38bdf8";
+          ctx.beginPath();
+          ctx.arc(freeX, freeY, 13, 0, Math.PI * 2);
+          ctx.fill();
+
+          // توپ در دست بازیکن (دور از مرکز)
+          const ballX = pivotX + Math.cos(angle + 0.5) * (radius * 0.75);
+          const ballY = pivotY + Math.sin(angle + 0.5) * (radius * 0.75);
+          ctx.fillStyle = "#ea580c";
+          ctx.beginPath();
+          ctx.arc(ballX, ballY, 11, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.fillStyle = "#e2e8f0";
+          ctx.font = "bold 13px Tahoma";
+          ctx.fillText("نمای بالا از پیوت: دایره نارنجی (سینه‌پای محور ثابت) و دایره آبی (پای آزاد چرخان)", 465, 36);
+        }
+
+        requestAnimationFrame(animateSkills);
+      }
+      animateSkills();
+    }
+
+    /* ============================================================================
+       ۷. فعالیت‌های عملی و بازی تعاملی عبور از مدافع (Crossover & Pivot Game)
+       ============================================================================ */
+    let selectedCorrectEquips = 0;
+    let selectedWrongEquips = 0;
+
+    function toggleEquipSelect(btn, isCorrect) {
+      if (appState.activitySubFlags.equipDone) return;
+      const active = btn.classList.toggle("active");
+      if (isCorrect) {
+        selectedCorrectEquips += active ? 1 : -1;
+      } else {
+        selectedWrongEquips += active ? 1 : -1;
+        if (active) showToast("توجه: این گزاره از نظر قوانین بسکتبال نادرست است!");
+      }
+
+      if (selectedCorrectEquips === 4 && selectedWrongEquips === 0) {
+        appState.activitySubFlags.equipDone = true;
+        document.getElementById("act1Status").textContent = "(✓ تکمیل شد)";
+        document.getElementById("act1Status").style.color = "var(--accent)";
+        playBeepSound(880, 0.2);
+        triggerParticleBurst();
+        showToast("فعالیت ۱ با موفقیت تکمیل شد!");
+        checkAllActivitiesCompletion();
+      }
+    }
+
+    let userOrderList = [];
+    let userOrderTitles = [];
+
+    function selectOrderStep(stepNum, stepTitle, btnEl) {
+      if (appState.activitySubFlags.orderDone) return;
+      btnEl.disabled = true;
+      userOrderList.push(stepNum);
+      userOrderTitles.push(stepTitle);
+      document.getElementById("orderFeedback").textContent = "ترتیب انتخابی شما: " + userOrderTitles.join(" ← ");
+
+      if (userOrderList.length === 4) {
+        const isRight = userOrderList.every((val, idx) => val === idx + 1);
+        if (isRight) {
+          appState.activitySubFlags.orderDone = true;
+          document.getElementById("act2Status").textContent = "(✓ تکمیل شد)";
+          document.getElementById("act2Status").style.color = "var(--accent)";
+          playBeepSound(880, 0.2);
+          triggerParticleBurst();
+          showToast("فعالیت ۲ (مرتب‌سازی مراحل کراس‌اور و استپ) به درستی انجام شد!");
+          checkAllActivitiesCompletion();
+        } else {
+          showToast("ترتیب مراحل نادرست بود. دکمه شروع مجدد را بزنید.");
+        }
+      }
+    }
+
+    function resetOrderActivity() {
+      if (appState.activitySubFlags.orderDone) return;
+      userOrderList = [];
+      userOrderTitles = [];
+      document.getElementById("orderFeedback").textContent = "ترتیب انتخاب‌شده: هنوز موردی انتخاب نشده است.";
+      document.querySelectorAll("#orderStepsContainer button").forEach(b => b.disabled = false);
+    }
+
+    // فعالیت ۳: شبیه‌ساز تقابل با مدافع
+    const DEFENDER_SCENARIOS = [
+      {
+        prompt: "🛡️ موقعیت ۱: مدافع به شدت به سمت راست شما متمایل شده و مسیر راست را بسته است؛ کدام حرکت صحیح است؟",
+        defenderOffset: 55, // مدافع در سمت راست
+        correctAction: "crossLeft"
+      },
+      {
+        prompt: "🛡️ موقعیت ۲: مدافع مسیر سمت چپ شما را کاملاً بسته و سمت راست زمین خالی است؛ کدام حرکت صحیح است؟",
+        defenderOffset: -55, // مدافع در سمت چپ
+        correctAction: "crossRight"
+      },
+      {
+        prompt: "🛡️ موقعیت ۳: دریبل شما تمام شده (توپ را با دو دست گرفته‌اید) و مدافع از روبرو فشار می‌آورد؛ چه می‌کنید؟",
+        defenderOffset: 0, // مدافع دقیقاً روبرو و نزدیک
+        correctAction: "reversePivot"
+      }
+    ];
+    let currentScenarioIdx = 0;
+    let defenderScore = 0;
+
+    function initDefenderSimGame() {
+      const canvas = document.getElementById("defenderSimCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      let t = 0;
+
+      function renderDefenderLoop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        t += 0.08;
+
+        const scen = DEFENDER_SCENARIOS[Math.min(currentScenarioIdx, DEFENDER_SCENARIOS.length - 1)];
+        const pulse = Math.sin(t) * 6;
+
+        // ترسیم منطقه حمله و سبد در بالای بوم
+        ctx.strokeStyle = "rgba(255,255,255,0.2)";
+        ctx.lineWidth = 2;
+        ctx.strokeRect(180, 10, 240, 75);
+        ctx.beginPath();
+        ctx.arc(300, 28, 12, 0, Math.PI * 2);
+        ctx.strokeStyle = "#f97316";
+        ctx.lineWidth = 3;
+        ctx.stroke();
+
+        // ترسیم مدافع (قرمز رنگ)
+        const defX = 300 + scen.defenderOffset;
+        const defY = 105 + pulse;
+        ctx.fillStyle = "rgba(239, 68, 68, 0.25)";
+        ctx.beginPath();
+        ctx.arc(defX, defY, 32, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = "#ef4444";
+        ctx.beginPath();
+        ctx.arc(defX, defY, 16, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#fff";
+        ctx.font = "bold 11px Tahoma";
+        ctx.textAlign = "center";
+        ctx.fillText("مدافع", defX, defY + 4);
+
+        // ترسیم بازیکن مهاجم (آبی رنگ در پایین)
+        const attX = 300, attY = 185;
+        ctx.fillStyle = "#0ea5e9";
+        ctx.beginPath();
+        ctx.arc(attX, attY, 17, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = "#fff";
+        ctx.fillText("شما", attX, attY + 4);
+
+        // توپ در دست بازیکن
+        ctx.fillStyle = "#f97316";
+        ctx.beginPath();
+        ctx.arc(attX + 22, attY - 6, 10, 0, Math.PI * 2);
+        ctx.fill();
+
+        // نمایش مسیر باز با فلش سبز
+        ctx.strokeStyle = "#10b981";
+        ctx.lineWidth = 3;
+        ctx.setLineDash([5, 4]);
+        ctx.beginPath();
+        if (scen.correctAction === "crossLeft") {
+          ctx.moveTo(attX, attY);
+          ctx.lineTo(210, 95);
+        } else if (scen.correctAction === "crossRight") {
+          ctx.moveTo(attX, attY);
+          ctx.lineTo(390, 95);
+        } else {
+          ctx.arc(attX, attY, 34, 0, Math.PI);
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        requestAnimationFrame(renderDefenderLoop);
+      }
+      renderDefenderLoop();
+    }
+
+    function submitDefenderAction(actionKey) {
+      if (appState.activitySubFlags.defenderDone) {
+        showToast("این شبیه‌ساز قبلاً با موفقیت تکمیل شده است.");
+        return;
+      }
+
+      const scen = DEFENDER_SCENARIOS[currentScenarioIdx];
+      if (scen && scen.correctAction === actionKey) {
+        defenderScore++;
+        currentScenarioIdx++;
+        playBeepSound(920, 0.16);
+        document.getElementById("defenderGameScore").textContent = defenderScore.toLocaleString("fa-IR");
+
+        if (defenderScore >= 3) {
+          appState.activitySubFlags.defenderDone = true;
+          document.getElementById("defenderMissionText").textContent = "🎉 فوق‌العاده! هر ۳ موقعیت عبور از مدافع و حفظ پای محور را با موفقیت اجرا کردید!";
+          document.getElementById("act3Status").textContent = "(✓ تکمیل شد)";
+          document.getElementById("act3Status").style.color = "var(--accent)";
+          triggerParticleBurst();
+          checkAllActivitiesCompletion();
+        } else {
+          document.getElementById("defenderMissionText").textContent = DEFENDER_SCENARIOS[currentScenarioIdx].prompt;
+          showToast("تصمیم تاکتیکی صحیح! حالا موقعیت بعدی مدافع را بررسی کنید.");
+        }
+      } else {
+        playBeepSound(240, 0.2);
+        showToast("واکنش انتخاب‌شده مناسب موقعیت مدافع نیست؛ به فضای خالی و وضعیت دریبل دقت کنید!");
+      }
+    }
+
+    function checkAllActivitiesCompletion() {
+      const sub = appState.activitySubFlags;
+      if (sub.equipDone && sub.orderDone && sub.defenderDone && !appState.awardedFlags.activities) {
+        completeSectionXP("activities", 30, "انجام کامل فعالیت‌های عملی جلسه سوم");
+      }
+      saveState();
+    }
+
+    /* ============================================================================
+       ثبت تکلیف، گزارش پیشرفت و ارسال به Supabase
+       ============================================================================ */
+    function submitHomeworkTask() {
+      const checks = document.querySelectorAll(".hw-check:checked");
+      const note = document.getElementById("homeworkNoteInput").value.trim();
+      if (checks.length < 3 || note.length < 5) {
+        showToast("لطفاً هر ۳ مورد چک‌لیست را تیک بزنید و گزارش کوتاه تمرین خود را بنویسید.");
+        return;
+      }
+      appState.homeworkNote = note;
+      completeSectionXP("homework", 10, "ثبت تکلیف عملی جلسه سوم");
+    }
+
+    function getEarnedBadges() {
+      const badges = [];
+      if (appState.awardedFlags.login) badges.push({ title: "نشان حضور در جلسه سوم", desc: "ورود رسمی به جلسه آموزش کراس‌اور، استپ و پیوت" });
+      if (appState.awardedFlags.education && appState.awardedFlags.summary) badges.push({ title: "نشان متخصص قوانین گام محوری", desc: "مطالعه کامل تکنیک‌های استپ یک‌ضرب، دوضرب و چرخش پیوت" });
+      if (appState.awardedFlags.activities) badges.push({ title: "نشان استاد کراس‌اور و عبور از مدافع", desc: "تکمیل هر ۳ چالش عملی و تصمیم‌گیری صحیح در برابر مدافع" });
+      if (appState.xp >= 90) badges.push({ title: "ستاره تکنیکی جلسه سوم (Achievement ویژه)", desc: "کسب بیش از ۹۰ امتیاز تجربه در جلسه سوم" });
+      return badges;
+    }
+
+    function renderProgressView() {
+      const pct = calculateProgressPercent();
+      document.getElementById("progXPValue").textContent = `${appState.xp.toLocaleString("fa-IR")} / ۱۱۰ XP`;
+      document.getElementById("progPercentValue").textContent = `${pct.toLocaleString("fa-IR")}٪`;
+      document.getElementById("progTimeValue").textContent = formatDuration(appState.totalSeconds);
+
+      const badges = getEarnedBadges();
+      const bBox = document.getElementById("badgesContainer");
+      if (badges.length === 0) {
+        bBox.innerHTML = `<p style="color:var(--text-muted); font-size:0.88rem;">هنوز نشانی دریافت نشده است.</p>`;
+      } else {
+        bBox.innerHTML = badges.map(b => `
+          <div style="background:rgba(249,115,22,0.14); border:1px solid rgba(249,115,22,0.45); padding:10px 14px; border-radius:10px;">
+            <strong style="color:var(--primary);">🏅 ${b.title}</strong>
+            <div style="font-size:0.82rem; color:#cbd5e1;">${b.desc}</div>
+          </div>
+        `).join("");
+      }
+
+      const labels = {
+        login: "ورود به سامانه جلسه سوم (۵ XP)",
+        education: "مشاهده آموزش کامل کراس‌اور، استپ و پیوت (۲۰ XP)",
+        summary: "مطالعه خلاصه و نقشه ذهنی جلسه سوم (۱۰ XP)",
+        activities: "انجام فعالیت‌های عملی و بازی عبور از مدافع (۳۰ XP)",
+        files: "بررسی فایل‌ها و منابع جلسه سوم (۱۰ XP)",
+        notices: "مطالعه اطلاعیه‌های آموزشی (۵ XP)",
+        homework: "ثبت تکلیف عملی جلسه سوم در منزل (۱۰ XP)",
+        report: "ثبت و ارسال گزارش نهایی جلسه سوم (۲۰ XP)"
+      };
+      const doneList = Object.keys(labels).filter(k => appState.awardedFlags[k]).map(k => `<li>${labels[k]}</li>`);
+      document.getElementById("completedLogsList").innerHTML = doneList.length ? doneList.join("") : "<li>هنوز فعالیتی تکمیل نشده است.</li>";
+    }
+
+    function getCompletedNamesSummary() {
+      const names = [];
+      if (appState.awardedFlags.login) names.push("ورود");
+      if (appState.awardedFlags.education) names.push("آموزش کامل جلسه ۳");
+      if (appState.awardedFlags.summary) names.push("خلاصه جلسه ۳");
+      if (appState.awardedFlags.activities) names.push("فعالیت عملی کراس‌اور و پیوت");
+      if (appState.awardedFlags.files) names.push("مشاهده فایل");
+      if (appState.awardedFlags.notices) names.push("مطالعه اطلاعیه");
+      if (appState.awardedFlags.homework) names.push("ثبت تکلیف جلسه ۳");
+      if (appState.awardedFlags.report) names.push("ثبت گزارش نهایی");
+      return names.join("، ") || "هیچ‌کدام";
+    }
+
+    function renderReportView() {
+      document.getElementById("repStudentName").textContent = appState.studentName;
+      document.getElementById("repSchoolName").textContent = appState.schoolName;
+      document.getElementById("repGrade").textContent = appState.grade;
+      document.getElementById("repTeacherName").textContent = PROJECT_CONFIG.teacherName;
+      document.getElementById("repTotalXP").textContent = `${appState.xp.toLocaleString("fa-IR")} از ۱۱۰ XP`;
+      document.getElementById("repProgressPercent").textContent = `${calculateProgressPercent().toLocaleString("fa-IR")}٪`;
+      document.getElementById("repDuration").textContent = formatDuration(appState.totalSeconds);
+      document.getElementById("repCompletedItems").textContent = getCompletedNamesSummary();
+
+      const btn = document.getElementById("finalSubmitReportBtn");
+      if (appState.reportSent) {
+        btn.disabled = true;
+        btn.textContent = "✓ گزارش نهایی جلسه سوم شما قبلاً ثبت و ارسال شده است";
+        document.getElementById("sessionCompletionBox").style.display = "block";
+        initCelebrationCanvas();
+      }
+    }
+
+    async function handleFinalReportSubmission() {
+      if (appState.reportSent) {
+        showToast("گزارش شما قبلاً یک مرتبه ارسال شده است.");
+        return;
+      }
+
+      const btn = document.getElementById("finalSubmitReportBtn");
+      const statusMsg = document.getElementById("supabaseStatusMsg");
+      btn.disabled = true;
+      btn.textContent = "در حال ثبت و ارسال گزارش جلسه سوم به سرور...";
+      statusMsg.style.color = "var(--secondary)";
+      statusMsg.textContent = "لطفاً چند لحظه صبر کنید...";
+
+      if (!appState.awardedFlags.report) {
+        appState.awardedFlags.report = true;
+        appState.xp += 20;
+      }
+
+      const nowStr = new Date().toLocaleString("fa-IR");
+      const pct = calculateProgressPercent();
+      const badgesCount = getEarnedBadges().length;
+      const achievementsCount = appState.xp >= 90 ? 1 : 0;
+
+      ACTIVE_SCHOOL = appState.schoolName;
+      ACTIVE_SUBJECT = `${PROJECT_CONFIG.subjectName} - ${appState.grade} (${PROJECT_CONFIG.sessionTitle})`;
+
+      const detailsText = [
+        `جلسه سوم بسکتبال`,
+        `پایه: ${appState.grade}`,
+        `دبیر: ${PROJECT_CONFIG.teacherName}`,
+        `زمان ورود: ${appState.firstLoginTime}`,
+        `زمان خروج و ثبت گزارش: ${nowStr}`,
+        `مدت حضور: ${formatDuration(appState.totalSeconds)}`,
+        `تعداد دفعات ورود: ${appState.loginCount}`,
+        `آموزش‌های مشاهده‌شده: ${appState.awardedFlags.education ? 'کامل' : 'خیر'}`,
+        `خلاصه‌های مطالعه‌شده: ${appState.awardedFlags.summary ? 'کامل' : 'خیر'}`,
+        `فعالیت‌های انجام‌شده: ${getCompletedNamesSummary()}`,
+        `توضیح تکلیف: ${appState.homeworkNote || 'ثبت نشده'}`,
+        `امتیاز XP: ${appState.xp} از ${MAX_TOTAL_XP}`,
+        `درصد پیشرفت: ${pct}%`,
+        `تعداد Badge: ${badgesCount}`,
+        `تعداد Achievement: ${achievementsCount}`
+      ].join(" | ");
+
+      try {
+        await sendToSupabase(appState.studentName, appState.xp, MAX_TOTAL_XP, detailsText);
+        appState.reportSent = true;
+        appState.reportTime = nowStr;
+        saveState();
+        renderReportView();
+        triggerParticleBurst();
+        statusMsg.style.color = "var(--accent)";
+        statusMsg.textContent = "✅ گزارش عملکرد جلسه سوم شما با موفقیت در سامانه دبیر ثبت گردید.";
+        showToast("گزارش نهایی جلسه سوم با موفقیت ارسال شد (+۲۰ XP).");
+      } catch (err) {
+        saveState();
+        renderReportView();
+        btn.disabled = false;
+        btn.textContent = "🔄 تلاش مجدد برای ارسال گزارش به سرور";
+        statusMsg.style.color = "var(--warning)";
+        statusMsg.textContent = `امتیاز ثبت گزارش (+۲۰ XP) در دستگاه شما ذخیره شد، اما ارسال اینترنتی با خطا مواجه گردید (${err.message}). در صورت اتصال به اینترنت مجدداً دکمه را بزنید.`;
+      }
+    }
+
+    /* ============================================================================
+       ۸. انیمیشن تعاملی دریبل ضربدری (V-Shape Crossover) در صفحه آغازین جلسه سوم
+       ============================================================================ */
+    function initWelcomeCrossoverCanvas() {
+      const canvas = document.getElementById("welcomeBallCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+
+      let phase = 0;
+      let speedMult = 1;
+      let trail = [];
+
+      canvas.addEventListener("click", () => {
+        speedMult = 2.4;
+        playBeepSound(740, 0.12);
+        setTimeout(() => { speedMult = 1; }, 900);
+      });
+
+      function animateWelcome() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        phase += 0.055 * speedMult;
+
+        // ترسیم الگوی V نئونی در پس‌زمینه
+        ctx.strokeStyle = "rgba(56, 189, 248, 0.28)";
+        ctx.lineWidth = 6;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(155, 55);
+        ctx.lineTo(260, 152);
+        ctx.lineTo(365, 55);
+        ctx.stroke();
+
+        // محاسبه مکان توپ روی مسیر V
+        const s = Math.sin(phase); // -1 تا +1
+        const ballX = 260 + s * 105;
+        const ballY = 152 - Math.abs(s) * 95;
+
+        trail.push({ x: ballX, y: ballY });
+        if (trail.length > 16) trail.shift();
+
+        for (let i = 0; i < trail.length; i++) {
+          ctx.beginPath();
+          ctx.arc(trail[i].x, trail[i].y, (i / trail.length) * 18, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(249, 115, 22, ${(i / trail.length) * 0.3})`;
+          ctx.fill();
+        }
+
+        // سایه روی زمین
+        ctx.beginPath();
+        ctx.ellipse(ballX, 172, 22, 5, 0, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(0, 0, 0, 0.5)";
+        ctx.fill();
+
+        // ترسیم توپ
+        ctx.save();
+        ctx.translate(ballX, ballY);
+        ctx.rotate(phase * 1.5);
+
+        const grad = ctx.createRadialGradient(-6, -6, 3, 0, 0, 24);
+        grad.addColorStop(0, "#fb923c");
+        grad.addColorStop(1, "#c2410c");
+
+        ctx.beginPath();
+        ctx.arc(0, 0, 22, 0, Math.PI * 2);
+        ctx.fillStyle = grad;
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = "#1e293b";
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(-22, 0); ctx.lineTo(22, 0);
+        ctx.moveTo(0, -22); ctx.lineTo(0, 22);
+        ctx.stroke();
+
+        ctx.restore();
+        requestAnimationFrame(animateWelcome);
+      }
+      animateWelcome();
+    }
+
+    function initCelebrationCanvas() {
+      const canvas = document.getElementById("celebrationCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      let angle = 0;
+
+      function loop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        angle += 0.06;
+        const bounceY = 70 + Math.sin(angle * 2) * 24;
+
+        ctx.save();
+        ctx.translate(160, bounceY);
+        ctx.rotate(angle);
+        ctx.beginPath();
+        ctx.arc(0, 0, 28, 0, Math.PI * 2);
+        ctx.fillStyle = "#f97316";
+        ctx.fill();
+        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = "#fff";
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(-28, 0); ctx.lineTo(28, 0);
+        ctx.moveTo(0, -28); ctx.lineTo(0, 28);
+        ctx.stroke();
+        ctx.restore();
+
+        requestAnimationFrame(loop);
+      }
+      loop();
+    }
+
+    function formatDuration(sec) {
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      return `${m.toLocaleString("fa-IR")} دقیقه و ${s.toLocaleString("fa-IR")} ثانیه`;
+    }
+
+    function showToast(msg) {
+      const box = document.getElementById("toastBox");
+      const item = document.createElement("div");
+      item.className = "toast-item";
+      item.textContent = msg;
+      box.appendChild(item);
+      setTimeout(() => item.remove(), 3800);
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,2409 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>سامانه پیشرفته آموزش مجازی تربیت بدنی - جلسه چهارم بسکتبال</title>
+  <style>
+    /* ==================== متغیرها و تنظیمات ظاهری (Ultra Dark Glassmorphism) ==================== */
+    :root {
+      --bg-dark: #060911;
+      --glass-bg: rgba(15, 23, 42, 0.68);
+      --glass-border: rgba(255, 255, 255, 0.14);
+      --primary: #f97316;
+      --primary-glow: rgba(249, 115, 22, 0.55);
+      --secondary: #38bdf8;
+      --secondary-glow: rgba(56, 189, 248, 0.45);
+      --accent: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --shadow-glass: 0 16px 40px 0 rgba(0, 0, 0, 0.6);
+      --transition: all 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, 'Segoe UI', Tahoma, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.75;
+      position: relative;
+    }
+
+    #bgParticlesCanvas, #fxConfettiCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    #fxConfettiCanvas { z-index: 9998; }
+
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 16px var(--primary-glow), inset 0 0 8px rgba(249, 115, 22, 0.25); }
+      50% { box-shadow: 0 0 32px rgba(249, 115, 22, 0.85), inset 0 0 14px rgba(249, 115, 22, 0.45); }
+    }
+
+    @keyframes borderBeam {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes slideUpFade {
+      from { opacity: 0; transform: translateY(22px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes dashFlow {
+      to { stroke-dashoffset: -40; }
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px 16px 90px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .glass-panel {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-glass);
+      padding: 26px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glass-panel::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--primary), var(--secondary), transparent);
+      background-size: 200% 200%;
+      animation: borderBeam 5s ease infinite;
+    }
+
+    .glass-card {
+      background: rgba(15, 23, 42, 0.65);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      transition: transform 0.2s ease-out, border-color 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      transform-style: preserve-3d;
+    }
+
+    .glass-card:hover {
+      border-color: rgba(249, 115, 22, 0.55);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(249, 115, 22, 0.18);
+    }
+
+    .card-glare {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.12), transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .glass-card:hover .card-glare { opacity: 1; }
+
+    .section-title {
+      font-size: 1.38rem;
+      font-weight: 900;
+      color: var(--primary);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--glass-border);
+      padding-bottom: 12px;
+      text-shadow: 0 0 18px rgba(249, 115, 22, 0.35);
+    }
+
+    .badge-xp {
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      color: #fff;
+      padding: 5px 14px;
+      border-radius: 999px;
+      font-size: 0.86rem;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 15px rgba(249, 115, 22, 0.45);
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+      color: #fff;
+      border: none;
+      padding: 13px 26px;
+      border-radius: var(--radius-md);
+      font-size: 0.98rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 10px 25px var(--primary-glow);
+    }
+
+    .btn:active:not(:disabled) { transform: translateY(0) scale(0.98); }
+
+    .btn:disabled {
+      background: #1e293b;
+      color: #64748b;
+      border: 1px solid rgba(255,255,255,0.05);
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-secondary {
+      background: rgba(56, 189, 248, 0.14);
+      border: 1px solid rgba(56, 189, 248, 0.45);
+      color: var(--secondary);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: rgba(56, 189, 248, 0.28);
+      box-shadow: 0 8px 20px var(--secondary-glow);
+    }
+
+    .btn-success { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+    .btn-success:hover:not(:disabled) { box-shadow: 0 10px 25px rgba(16, 185, 129, 0.45); }
+
+    .top-bar {
+      position: sticky;
+      top: 12px;
+      z-index: 100;
+      margin-bottom: 24px;
+      display: none;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      padding: 14px 22px;
+    }
+
+    .progress-track {
+      width: 150px;
+      height: 11px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 99px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #f97316, #38bdf8, #10b981);
+      background-size: 200% 100%;
+      animation: borderBeam 3s linear infinite;
+      width: 0%;
+      transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px; }
+
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; margin-bottom: 6px; font-weight: 700; font-size: 0.92rem; color: #e2e8f0; }
+    .form-control {
+      width: 100%;
+      padding: 13px 16px;
+      background: rgba(9, 13, 22, 0.85);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      color: var(--text-main);
+      font-size: 0.98rem;
+      outline: none;
+      transition: var(--transition);
+    }
+    .form-control:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.22);
+    }
+    .form-control[readonly] {
+      background: rgba(30, 41, 59, 0.55);
+      color: var(--secondary);
+      font-weight: 800;
+    }
+
+    .custom-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 0.92rem;
+    }
+    .custom-table th, .custom-table td {
+      padding: 12px 14px;
+      text-align: right;
+      border-bottom: 1px solid var(--glass-border);
+    }
+    .custom-table th {
+      background: rgba(249, 115, 22, 0.16);
+      color: var(--primary);
+      font-weight: 800;
+    }
+
+    .timeline {
+      position: relative;
+      padding-right: 30px;
+      border-right: 3px solid var(--primary);
+      margin: 20px 0;
+    }
+    .timeline-item { position: relative; margin-bottom: 22px; }
+    .timeline-dot {
+      position: absolute;
+      right: -39px;
+      top: 6px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--primary);
+      border: 3px solid var(--bg-dark);
+      box-shadow: 0 0 14px var(--primary);
+    }
+
+    .catch-zone {
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .catch-zone:hover {
+      filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.95));
+      transform: scale(1.05);
+      transform-origin: center;
+    }
+
+    .tactic-line {
+      stroke-dasharray: 8 6;
+      animation: dashFlow 1.2s linear infinite;
+      pointer-events: none;
+    }
+
+    .flip-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+    }
+    .flip-card {
+      background-color: transparent;
+      height: 205px;
+      perspective: 1200px;
+      cursor: pointer;
+    }
+    .flip-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+      transform-style: preserve-3d;
+    }
+    .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+    .flip-front, .flip-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    }
+    .flip-front {
+      background: linear-gradient(145deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
+      color: var(--text-main);
+    }
+    .flip-back {
+      background: linear-gradient(135deg, #f97316, #c2410c);
+      color: #fff;
+      transform: rotateY(180deg);
+    }
+
+    .sub-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 22px;
+      border-bottom: 1px solid var(--glass-border);
+      padding-bottom: 14px;
+    }
+    .sub-tab-btn {
+      background: rgba(15, 23, 42, 0.75);
+      color: var(--text-muted);
+      border: 1px solid var(--glass-border);
+      padding: 9px 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.9rem;
+      transition: var(--transition);
+    }
+    .sub-tab-btn:hover { border-color: var(--primary); color: #fff; }
+    .sub-tab-btn.active {
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      color: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 6px 16px rgba(249, 115, 22, 0.35);
+    }
+
+    .equip-viewer {
+      perspective: 1000px;
+      height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 50% 60%, rgba(56, 189, 248, 0.2) 0%, rgba(15, 23, 42, 0.9) 75%);
+      border-radius: var(--radius-md);
+      margin-bottom: 14px;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+    .equip-viewer::after {
+      content: "";
+      position: absolute;
+      bottom: 18px;
+      width: 110px;
+      height: 18px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.6), transparent 70%);
+      filter: blur(4px);
+    }
+    .equip-3d-object {
+      transition: transform 0.15s ease-out;
+      transform-style: preserve-3d;
+      animation: floatSlow 3.2s ease-in-out infinite;
+    }
+
+    .view-section {
+      display: none;
+      animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .view-section.active { display: block; }
+
+    #toastBox {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .toast-item {
+      background: rgba(15, 23, 42, 0.95);
+      border-right: 4px solid var(--accent);
+      color: #fff;
+      padding: 13px 20px;
+      border-radius: 12px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.65);
+      font-size: 0.92rem;
+      font-weight: 600;
+      animation: slideUpFade 0.3s ease;
+    }
+
+    @media (max-width: 640px) {
+      .top-bar { position: static; }
+      .section-title { font-size: 1.15rem; }
+      .glass-panel { padding: 18px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- بوم ذرات معلق پس‌زمینه و بوم انفجار ذرات (Confetti) -->
+  <canvas id="bgParticlesCanvas"></canvas>
+  <canvas id="fxConfettiCanvas"></canvas>
+
+  <!-- باکس پیام‌های شناور -->
+  <div id="toastBox"></div>
+
+  <!-- ==================== نوار وضعیت بالای صفحه (پس از ورود) ==================== -->
+  <div class="container" style="padding-bottom: 0;">
+    <header id="topStatusBar" class="glass-panel top-bar">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div style="width:46px; height:46px; border-radius:50%; background:linear-gradient(135deg,#f97316,#ea580c); display:flex; align-items:center; justify-content:center; font-size:1.35rem; box-shadow:0 0 15px var(--primary-glow);">🤝</div>
+        <div>
+          <div id="headerStudentName" style="font-weight:800; font-size:1.02rem;">نام دانش‌آموز</div>
+          <div id="headerSchoolInfo" style="font-size:0.82rem; color:var(--secondary);">مدرسه | پایه</div>
+        </div>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:18px; flex-wrap:wrap;">
+        <div>
+          <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:4px;">پیشرفت جلسه چهارم: <span id="headerProgressText" style="color:#fff; font-weight:bold;">۰٪</span></div>
+          <div class="progress-track">
+            <div id="headerProgressFill" class="progress-fill"></div>
+          </div>
+        </div>
+        <div class="badge-xp">
+          <span>✨ امتیاز:</span>
+          <span id="headerXP">۰</span>
+          <span>XP</span>
+        </div>
+        <button class="btn btn-secondary" style="padding:8px 15px; font-size:0.86rem;" onclick="navigateTo('dashboardView')">🏠 داشبورد</button>
+      </div>
+    </header>
+  </div>
+
+  <!-- ==================== کانتینر اصلی سامانه ==================== -->
+  <main class="container">
+
+    <!-- =========================================================================
+         ۱. صفحه ورود و آغازین جلسه چهارم (همراه با شبیه‌ساز پاس متقابل دوطرفه)
+         ========================================================================= -->
+    <section id="loginView" class="view-section active">
+      <div class="glass-panel" style="text-align:center; margin-bottom:24px;">
+        <div style="font-size:0.8rem; color:var(--secondary); margin-bottom:4px;">💡 روی بوم زیر کلیک کنید تا سرعت پاس‌کاری و گردش توپ بین دو بازیکن افزایش یابد!</div>
+        <canvas id="welcomeBallCanvas" width="520" height="185" style="width:100%; max-width:520px; margin:0 auto; display:block; cursor:pointer; border-radius:14px; background:radial-gradient(circle, rgba(249,115,22,0.12) 0%, rgba(15,23,42,0.6) 80%); border:1px solid var(--glass-border);"></canvas>
+        <h1 id="uiAppTitle" style="font-size:1.8rem; font-weight:900; color:var(--primary); margin-top:12px;">آموزش بسکتبال پایه هفتم</h1>
+        <h2 id="uiSessionTitle" style="font-size:1.22rem; color:var(--secondary); margin:6px 0;">جلسه چهارم: آموزش جامع پاس سینه، پاس زمین و تکنیک دریافت صحیح توپ</h2>
+        <p style="color:var(--text-muted); font-size:0.96rem;">درس: <strong id="uiSubjectText" style="color:#fff;">تربیت بدنی</strong> | نام دبیر: <strong id="uiTeacherText" style="color:var(--accent);">برزگری</strong></p>
+      </div>
+
+      <div class="grid-2">
+        <!-- راهنمای رسمی و جدول امتیازدهی -->
+        <div class="glass-panel">
+          <div class="section-title">📋 راهنمای استفاده از سامانه (جلسه چهارم)</div>
+          <ul style="list-style:none; font-size:0.92rem; color:#cbd5e1; display:flex; flex-direction:column; gap:10px; margin-bottom:20px;">
+            <li>🔹 <strong>نحوه ورود:</strong> مشخصات فردی، نام مدرسه و پایه تحصیلی خود را در فرم روبرو به صورت دقیق تکمیل نمایید تا دکمه ورود فعال گردد.</li>
+            <li>🔹 <strong>نحوه مطالعه آموزش:</strong> در بخش «آموزش جامع جلسه چهارم»، اصول پاس سینه، پاس زمین، مکانیسم جذب توپ و هماهنگی تیمی را بررسی کنید.</li>
+            <li>🔹 <strong>نحوه انجام فعالیت‌ها:</strong> در بخش «فعالیت‌های عملی و تعاملی»، چالش‌های تشخیص نوع پاس، مرتب‌سازی مراحل پاس سینه و بازی مسابقه پاس‌کاری هدفمند را انجام دهید.</li>
+            <li>🔹 <strong>نحوه کسب امتیاز (XP):</strong> هر بخش آموزشی یا فعالیت عملی دارای امتیاز مشخصی است که تنها یک مرتبه در سامانه ثبت و ذخیره می‌گردد.</li>
+            <li>🔹 <strong>نحوه مشاهده پیشرفت:</strong> در بخش «گزارش پیشرفت»، درصد تکمیل جلسه چهارم، زمان حضور و نشان‌های افتخار قابل مشاهده است.</li>
+            <li>🔹 <strong>نحوه ثبت و ارسال گزارش نهایی:</strong> پس از تکمیل بخش‌ها، به قسمت «ثبت گزارش» مراجعه کرده و عملکرد نهایی خود را برای دبیر ارسال نمایید.</li>
+          </ul>
+
+          <div class="section-title" style="margin-top:16px;">🏆 جدول امتیازدهی فعالیت‌ها (XP)</div>
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>عنوان فعالیت در سامانه</th>
+                <th>میزان امتیاز</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>ورود به سامانه</td><td>۵ XP</td></tr>
+              <tr><td>مشاهده آموزش کامل جلسه چهارم</td><td>۲۰ XP</td></tr>
+              <tr><td>مطالعه خلاصه و نقشه ذهنی جلسه چهارم</td><td>۱۰ XP</td></tr>
+              <tr><td>انجام فعالیت‌های عملی و بازی پاس هدفمند</td><td>۳۰ XP</td></tr>
+              <tr><td>مشاهده فایل‌های آموزشی جلسه</td><td>۱۰ XP</td></tr>
+              <tr><td>مطالعه اطلاعیه‌های آموزشی</td><td>۵ XP</td></tr>
+              <tr><td>ثبت تکلیف عملی جلسه چهارم</td><td>۱۰ XP</td></tr>
+              <tr><td>ثبت و ارسال گزارش نهایی</td><td>۲۰ XP</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- فرم ورود اجباری دانش‌آموز -->
+        <div class="glass-panel">
+          <div class="section-title">🔐 فرم ورود دانش‌آموز به جلسه چهارم</div>
+          <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:18px;">تمامی فیلدها اجباری هستند. تا زمان تکمیل دقیق اطلاعات، دکمه شروع آموزش فعال نخواهد شد.</p>
+
+          <form id="loginForm" onsubmit="handleLoginSubmit(event)">
+            <div class="form-group">
+              <label class="form-label" for="studentNameInput">نام و نام خانوادگی دانش‌آموز (اجباری):</label>
+              <input type="text" id="studentNameInput" class="form-control" placeholder="مثال: محمد رضایی" required oninput="validateLoginForm()">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="schoolSelect">نام مدرسه (اجباری):</label>
+              <select id="schoolSelect" class="form-control" required onchange="validateLoginForm()">
+                <option value="">-- انتخاب مدرسه --</option>
+                <option value="مدرسه نور دوستکو">مدرسه نور دوستکو</option>
+                <option value="مدرسه اتحاد دوربنی">مدرسه اتحاد دوربنی</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="gradeSelect">پایه تحصیلی (اجباری):</label>
+              <select id="gradeSelect" class="form-control" required onchange="validateLoginForm()">
+                <option value="">-- انتخاب پایه تحصیلی --</option>
+                <option value="پایه هفتم">پایه هفتم</option>
+                <option value="پایه هشتم">پایه هشتم</option>
+                <option value="پایه نهم">پایه نهم</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">نام دبیر:</label>
+              <input type="text" id="fixedTeacherInput" class="form-control" value="برزگری" readonly>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">نام درس:</label>
+              <input type="text" id="fixedSubjectInput" class="form-control" value="تربیت بدنی" readonly>
+            </div>
+
+            <button type="submit" id="startBtn" class="btn" style="width:100%; margin-top:14px;" disabled>
+              🚀 ورود به سامانه و شروع جلسه چهارم
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۲. داشبورد اصلی (کارت‌های سه‌بعدی حساس به حرکت موس)
+         ========================================================================= -->
+    <section id="dashboardView" class="view-section">
+      <div class="glass-panel" style="margin-bottom:22px;">
+        <div class="section-title">🎛️ داشبورد هوشمند جلسه چهارم: پاس سینه، پاس زمین و دریافت توپ</div>
+        <p style="font-size:0.92rem; color:var(--text-muted);">کارت‌های زیر دارای افکت سه‌بعدی تعاملی هستند. با تکمیل هر بخش، امتیاز XP آن همراه با افکت نوری به حساب شما افزوده می‌شود.</p>
+      </div>
+
+      <div id="dashboardModulesGrid" class="grid-3"></div>
+    </section>
+
+    <!-- =========================================================================
+         ۳. بخش جامع آموزش جلسه چهارم بسکتبال
+         ========================================================================= -->
+    <section id="educationView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">📚 آموزش جامع جلسه چهارم: پاس سینه، پاس زمین و دریافت توپ</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <!-- تب‌های داخلی آموزش -->
+        <div class="sub-tabs">
+          <button class="sub-tab-btn active" onclick="switchEduTab('eduGoals', this)">۱. اهداف، پاس سینه و پاس زمین</button>
+          <button class="sub-tab-btn" onclick="switchEduTab('eduBenefits', this)">۲. فواید پاس‌کاری و سلامت انگشتان</button>
+          <button class="sub-tab-btn" onclick="switchEduTab('eduCatching', this)">۳. نقشه تعاملی جذب و دریافت توپ</button>
+          <button class="sub-tab-btn" onclick="switchEduTab('eduEquip', this)">۴. هولوگرام سه‌بعدی مسیر پاس</button>
+          <button class="sub-tab-btn" onclick="switchEduTab('eduRules', this)">۵. قوانین خطای پاس و مالکیت</button>
+          <button class="sub-tab-btn" onclick="switchEduTab('eduSkills', this)">۶. آزمایشگاه انیمیشنی جلسه چهارم</button>
+        </div>
+
+        <!-- زیربخش ۱: اهداف جلسه، پاس سینه و پاس زمین -->
+        <div id="eduGoals" class="edu-sub-view">
+          <h3 style="color:var(--secondary); margin-bottom:14px;">🎯 اهداف یادگیری جلسه چهارم</h3>
+          <div class="grid-3" style="margin-bottom:28px;">
+            <div class="glass-card tilt-card"><div class="card-glare"></div><strong>۱. پاس سینه (Chest Pass)</strong><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">ارسال مستقیم و پرقدرت توپ از روبروی سینه به سینه هم‌تیمی با چرخش مچ‌ها.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><strong>۲. پاس زمین (Bounce Pass)</strong><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">زدن توپ به زمین در فاصله دو سوم مسیر برای عبور از زیر دست مدافع قدبلند.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><strong>۳. مکانیسم جذب توپ (Soft Hands)</strong><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">نرمی و عقب کشیدن ملایم دست‌ها هنگام دریافت توپ برای جلوگیری از آسیب انگشتان.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><strong>۴. هدف‌گیری دقیق (Targeting)</strong><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">ارسال پاس دقیق به سمت سینه یا دستان باز هم‌تیمی بدون نیاز به جابه‌جایی او.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><strong>۵. گام برداشتن به جلو</strong><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">برداشتن یک گام رو به جلو هم‌زمان با رها کردن پاس برای افزودن قدرت و شتاب.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><strong>۶. سرعت گردش توپ (Ball Movement)</strong><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">درک اهمیت پاس‌کاری سریع به جای حمل طولانی توپ با دریبل.</p></div>
+          </div>
+
+          <h3 style="color:var(--secondary); margin-bottom:14px;">⚡ مراحل چهارگانه اجرای صحیح پاس سینه (Chest Pass)</h3>
+          <div class="timeline">
+            <div class="timeline-item glass-card">
+            <div class="timeline-dot"></div>
+              <h4 style="color:var(--primary);">گام اول: گرفتن توپ مقابل سینه با فرم حرف W</h4>
+              <p style="font-size:0.9rem; margin-top:6px;">توپ با دو دست در ارتفاع سینه نگه داشته می‌شود؛ انگشتان شست به سمت هم و پشت توپ شکل حرف W انگلیسی را می‌سازند و آرنج‌ها نزدیک پهلو قرار می‌گیرند.</p>
+            </div>
+            <div class="timeline-item glass-card">
+              <div class="timeline-dot"></div>
+              <h4 style="color:var(--primary);">گام دوم: برداشتن یک گام رو به جلو</h4>
+              <p style="font-size:0.9rem; margin-top:6px;">هم‌زمان با شروع پاس، بازیکن یک گام رو به جلو به سمت یار مقابل برمی‌دارد تا وزن بدن از پای عقب به پای جلو منتقل شود.</p>
+            </div>
+            <div class="timeline-item glass-card">
+              <div class="timeline-dot"></div>
+              <h4 style="color:var(--primary);">گام سوم: باز شدن ناگهانی آرنج‌ها و چرخش مچ (Snap)</h4>
+              <p style="font-size:0.9rem; margin-top:6px;">آرنج‌ها به سرعت باز شده و در انتهای مسیر، مچ دست‌ها به سمت بیرون چرخش تندی (Snap) پیدا می‌کنند تا انگشتان شست به سمت زمین اشاره کنند.</p>
+            </div>
+            <div class="timeline-item glass-card">
+              <div class="timeline-dot"></div>
+              <h4 style="color:var(--primary);">گام چهارم: پیگیری حرکت (Follow Through)</h4>
+              <p style="font-size:0.9rem; margin-top:6px;">پس از رها شدن توپ، دست‌ها کاملاً به سمت جلو کشیده می‌شوند و کف دست‌ها به طرفین باز می‌مانند تا از دقت و صاف بودن مسیر پاس اطمینان حاصل شود.</p>
+            </div>
+          </div>
+
+          <h3 style="color:var(--secondary); margin:20px 0 12px;">📊 جدول مقایسه پاس سینه (Chest Pass) و پاس زمین (Bounce Pass)</h3>
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>ویژگی فنی</th>
+                <th>پاس سینه مستقیم (Chest Pass)</th>
+                <th>پاس زمین (Bounce Pass)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>محل برخورد توپ با زمین</td><td>ندارد (مسیر مستقیم از سینه پاس‌دهنده به سینه گیرنده).</td><td>در فاصله <strong>دو سوم مسیر</strong> (نزدیک‌تر به بازیکن گیرنده) به زمین برخورد می‌کند.</td></tr>
+              <tr><td>کاربرد اصلی در مسابقه</td><td>ارسال پاس سریع در فضای باز و وقتی مدافع فاصله دارد.</td><td>عبور دادن توپ از زیر دست مدافع قدبلند یا نزدیک به مدافع.</td></tr>
+              <tr><td>سرعت و ارتفاع حرکت</td><td>سریع، مستقیم و هم‌سطح با سینه گیرنده.</td><td>کمی کندتر به دلیل برخورد با زمین، در ارتفاع کمر گیرنده.</td></tr>
+              <tr><td>نحوه چرخش مچ دست</td><td>چرخش مچ به سمت بیرون و پایین (شست‌ها رو به زمین).</td><td>مشابه پاس سینه با این تفاوت که کمی رو به پایین‌تر هدایت می‌شود.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- زیربخش ۲: فواید پاس‌کاری و سلامت انگشتان -->
+        <div id="eduBenefits" class="edu-sub-view" style="display:none;">
+          <h3 style="color:var(--secondary); margin-bottom:14px;">🤝 فواید حیاتی پاس‌کاری در بسکتبال تیمی</h3>
+          <div class="grid-3" style="margin-bottom:26px;">
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:2rem; margin-bottom:8px;">⚡🏃‍♂️</div><h4 style="color:var(--primary);">گردش سریع توپ</h4><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">توپ همیشه از دویدن بازیکن سریع‌تر حرکت می‌کند؛ پاس‌کاری باعث خستگی مدافعان حریف می‌شود.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:2rem; margin-bottom:8px;">🎯🤝</div><h4 style="color:var(--primary);">تقویت کار گروهی</h4><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">بسکتبال ورزش فردی نیست؛ پاس دقیق نشانه احترام به هم‌تیمی و کلید اصلی گلزنی است.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:2rem; margin-bottom:8px;">🧠👀</div><h4 style="color:var(--primary);">دید محیطی و تصمیم‌گیری</h4><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">قبل از اینکه توپ به دست شما برسد، باید با چشم باز به دنبال هم‌تیمی خالی از دفاع باشید.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:2rem; margin-bottom:8px;">🛡️🏀</div><h4 style="color:var(--primary);">عبور از سد دفاع فشرده</h4><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">وقتی مدافعان راه نفوذ با دریبل را بسته‌اند، فقط پاس‌های کوتاه و سریع می‌تواند خط دفاع را بشکند.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:2rem; margin-bottom:8px;">🌟🏆</div><h4 style="color:var(--primary);">کاهش خطاهای فردی</h4><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">نگه‌داشتن بیش از حد توپ زیر دریبل باعث خطای تراولینگ یا دزدیده شدن توپ می‌شود.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:2rem; margin-bottom:8px;">🔄💪</div><h4 style="color:var(--primary);">تقویت هماهنگی عصب و عضله</h4><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">دریافت نرم و ارسال پرقدرت پاس، عضلات مچ، ساعد و سینه را به طور هم‌زمان ورزیده می‌کند.</p></div>
+          </div>
+
+          <h3 style="color:var(--secondary); margin-bottom:14px;">🩺 اصول ایمنی دریافت توپ و جلوگیری از آسیب صدمه به انگشتان</h3>
+          <div class="grid-2">
+            <div class="glass-card">
+              <h4 style="color:var(--accent);">۱. مکانیسم جذب توپ (Soft Hands / Giving with the Ball)</h4>
+              <p style="font-size:0.88rem; margin-top:6px;">• <strong>خطر دست‌های خشک و سیخ:</strong> اگر هنگام دریافت پاس، دستان خود را سفت و صاف نگه دارید، ضربه توپ مستقیم به بند انگشتان خورده و باعث دررفتگی یا کبودی می‌شود.<br>• <strong>روش صحیح:</strong> دستان به شکل قیف باز به سمت توپ می‌روند و به محض برخورد توپ، دست‌ها به آرامی به سمت سینه عقب کشیده می‌شوند تا شتاب توپ خنثی شود.</p>
+            </div>
+            <div class="glass-card">
+              <h4 style="color:var(--accent);">۲. همیشه آماده باش (Ready Position)</h4>
+              <p style="font-size:0.88rem; margin-top:6px;">• <strong>دست‌های آماده:</strong> بازیکن همیشه باید در حالی که زانوها خم و دستانش رو به هم‌تیمی پاس‌دهنده است، فریاد «پاس!» یا علامت دست را نشان دهد.<br>• <strong>چشمان باز تا لحظه آخر:</strong> چشم بازیکن نباید قبل از رسیدن کامل توپ بسته شود؛ نگاه باید تا ثانیه آخر به خطوط روی توپ دوخته شود.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- زیربخش ۳: نقشه تعاملی جذب و دریافت توپ (به همراه صدا) -->
+        <div id="eduCatching" class="edu-sub-view" style="display:none;">
+          <h3 style="color:var(--secondary); margin-bottom:8px;">🤝 نقشه تعاملی بیومکانیک جذب و دریافت توپ (Soft Hands)</h3>
+          <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:16px;">روی هر یک از بخش‌های تصویر زیر (سرانگشتان، فرم قیف دست، آرنج جاذب و بالاتنه) کلیک کنید تا توضیح صوتی و متنی آن پخش شود:</p>
+
+          <div style="display:flex; flex-direction:column; align-items:center; gap:18px;">
+            <svg viewBox="0 0 600 340" style="width:100%; max-width:580px; background:radial-gradient(circle, #1e293b 0%, #090d16 90%); border-radius:18px; border:2px solid var(--glass-border); box-shadow:0 12px 35px rgba(0,0,0,0.6);">
+              <!-- مسیر پرواز توپ به سمت بازیکن -->
+              <path d="M 80,170 Q 210,120 280,170" fill="none" stroke="#f97316" stroke-width="4" stroke-dasharray="6,4"/>
+              <circle cx="210" cy="142" r="14" fill="#f97316"/>
+
+              <!-- دستان باز بازیکن به شکل قیف -->
+              <g class="catch-zone" onclick="selectCatchPart('fingersOpen')">
+                <path d="M 320,100 L 270,140 L 270,200 L 320,240" fill="none" stroke="#38bdf8" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+                <text x="250" y="85" fill="#38bdf8" font-size="13" font-weight="bold">✋ سرانگشتان باز و منعطف</text>
+              </g>
+
+              <g class="catch-zone" onclick="selectCatchPart('funnelShape')">
+                <rect x="300" y="115" width="45" height="110" rx="14" fill="rgba(56,189,248,0.25)" stroke="#38bdf8" stroke-width="3"/>
+                <text x="322" y="178" fill="#fff" font-size="11" font-weight="bold" text-anchor="middle">شکل قیف</text>
+              </g>
+
+              <!-- آرنج‌های جاذب ضربه -->
+              <g class="catch-zone" onclick="selectCatchPart('absorbingElbow')">
+                <circle cx="395" cy="115" r="22" fill="rgba(16,185,129,0.35)" stroke="#10b981" stroke-width="3"/>
+                <circle cx="395" cy="225" r="22" fill="rgba(16,185,129,0.35)" stroke="#10b981" stroke-width="3"/>
+                <text x="428" y="119" fill="#10b981" font-size="12" font-weight="bold">⚙️ آرنج فنری (عقب‌کشیدن)</text>
+              </g>
+
+              <!-- بالاتنه و سینه (نقطه نهایی جذب توپ) -->
+              <g class="catch-zone" onclick="selectCatchPart('chestPocket')">
+                <rect x="460" y="105" width="55" height="135" rx="16" fill="rgba(249,115,22,0.3)" stroke="#f97316" stroke-width="3"/>
+                <text x="487" y="178" fill="#fef08a" font-size="12" font-weight="bold" text-anchor="middle">جیب سینه</text>
+              </g>
+            </svg>
+
+            <div id="catchInfoPanel" class="glass-card" style="width:100%; max-width:680px; border-right:4px solid var(--primary);">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <h4 id="catchPartTitle" style="color:var(--primary); font-size:1.1rem;">یکی از بخش‌های تصویر جذب توپ را لمس کنید</h4>
+                <button class="btn btn-secondary" style="padding:6px 12px; font-size:0.8rem;" onclick="speakCurrentCatchInfo()">🔊 پخش توضیح صوتی</button>
+              </div>
+              <p id="catchPartDesc" style="font-size:0.92rem; color:#e2e8f0;">با کلیک روی سرانگشتان، شکل قیف دست، آرنج فنری یا جیب سینه، اصول علمی دریافت نرم (Soft Hands) نمایش داده می‌شود.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- زیربخش ۴: هولوگرام سه‌بعدی مسیر پاس -->
+        <div id="eduEquip" class="edu-sub-view" style="display:none;">
+          <h3 style="color:var(--secondary); margin-bottom:10px;">🕶️ ویترین هولوگرافیک سه‌بعدی فیزیک و مسیر پاس‌کاری</h3>
+          <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:16px;">با اسلایدر زیر یا دکمه چرخش خودکار، زاویه دید سه‌بعدی را تغییر دهید و ۳ مدل مسیر پاس را بررسی کنید:</p>
+
+          <div style="margin-bottom:20px; background:rgba(15,23,42,0.8); padding:14px; border-radius:14px; display:flex; align-items:center; gap:14px; flex-wrap:wrap; border:1px solid var(--glass-border);">
+            <label style="font-weight:700; color:var(--primary);">🔄 زاویه چرخش سه‌بعدی:</label>
+            <input type="range" id="equipRotateRange" min="-180" max="180" value="0" style="flex:1; accent-color:var(--primary);" oninput="rotateEquipments(this.value)">
+            <span id="equipRotateLabel" style="min-width:65px; font-weight:700; color:var(--secondary);">۰ درجه</span>
+            <button id="autoSpinBtn" class="btn btn-secondary" style="padding:7px 14px; font-size:0.84rem;" onclick="toggleAutoSpinEquip()">▶️ چرخش خودکار ۳۶۰ درجه</button>
+          </div>
+
+          <div class="grid-3">
+            <div class="glass-card">
+              <div class="equip-viewer">
+                <div class="equip-3d-object">
+                  <svg width="120" height="115" viewBox="0 0 120 100">
+                    <line x1="15" y1="50" x2="105" y2="50" stroke="#f97316" stroke-width="5" stroke-linecap="round"/>
+                    <circle cx="60" cy="50" r="12" fill="#38bdf8"/>
+                    <path d="M45,35 L60,50 L45,65" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+              </div>
+              <h4 style="color:var(--primary);">۱. مسیر مستقیم پاس سینه</h4>
+              <p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">کوتاه‌ترین و سریع‌ترین فاصله بین دو بازیکن (خط مستقیم از سینه تا سینه) مخصوص فضاهای باز بدون مدافع.</p>
+            </div>
+
+            <div class="glass-card">
+              <div class="equip-viewer">
+                <div class="equip-3d-object">
+                  <svg width="120" height="115" viewBox="0 0 120 100">
+                    <path d="M15,25 Q60,95 105,25" fill="none" stroke="#10b981" stroke-width="5" stroke-linecap="round"/>
+                    <circle cx="60" cy="68" r="11" fill="#f97316"/>
+                    <ellipse cx="60" cy="85" rx="35" ry="6" fill="rgba(16,185,129,0.3)"/>
+                  </svg>
+                </div>
+              </div>
+              <h4 style="color:var(--primary);">۲. مسیر کمانی پاس زمین</h4>
+              <p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">مسیر قوسی‌شکل که توپ با برخورد در دو سوم راه به زمین، از زیر دست مدافع حریف عبور می‌کند.</p>
+            </div>
+
+            <div class="glass-card">
+              <div class="equip-viewer">
+                <div class="equip-3d-object">
+                  <svg width="120" height="115" viewBox="0 0 120 100">
+                    <circle cx="60" cy="50" r="30" fill="none" stroke="#38bdf8" stroke-width="4" stroke-dasharray="6,4"/>
+                    <circle cx="60" cy="50" r="14" fill="#f97316"/>
+                    <path d="M75,35 L95,20 M25,65 L45,80" stroke="#fef08a" stroke-width="3" stroke-linecap="round"/>
+                  </svg>
+                </div>
+              </div>
+              <h4 style="color:var(--primary);">۳. چرخش مچ (Wrist Snap)</h4>
+              <p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">نیروی نهایی پرتاب از مچ دست تأمین می‌شود تا توپ با چرخش رو به عقب (Backspin) به نرمی حرکت کند.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- زیربخش ۵: قوانین خطای پاس و مالکیت + علائم داوری -->
+        <div id="eduRules" class="edu-sub-view" style="display:none;">
+          <h3 style="color:var(--secondary); margin-bottom:14px;">⚖️ قوانین رسمی فدراسیون جهانی (FIBA) درباره پاس‌کاری و تخلفات آن</h3>
+          <div class="grid-3" style="margin-bottom:24px;">
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:1.6rem;">👟⚽</div><h4 style="color:var(--primary);">۱. خطای عمدی با پا (Kicking)</h4><p style="font-size:0.86rem; color:var(--text-muted);">اگر بازیکن مدافع به طور عمدی با پا یا ساق پا به توپ پاس‌کاری‌شده ضربه بزند، خطای لِگ یا کیکینگ اعلام شده و زمان ۲۴ ثانیه حمله مجدد تنظیم می‌شود.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:1.6rem;">⏱️ ۵ ثانیه</div><h4 style="color:var(--primary);">۲. قانون ۵ ثانیه پرتاب از اوت</h4><p style="font-size:0.86rem; color:var(--text-muted);">بازیکنی که می‌خواهد توپ را از بیرون زمین (اوت) به داخل پاس دهد، حداکثر ۵ ثانیه فرصت دارد توپ را به زمین بازی بفرستد.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:1.6rem;">✋🚫</div><h4 style="color:var(--primary);">۳. لمس غیرمجاز توپ از اوت</h4><p style="font-size:0.86rem; color:var(--text-muted);">پرتاب‌کننده توپ از اوت حق ندارد پس از پاس دادن، قبل از اینکه توپ به بازیکن دیگری برخورد کند دوباره خودش به توپ دست بزند.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:1.6rem;">🥅🚫</div><h4 style="color:var(--primary);">۴. خطای مداخله روی پاس (GoalTending)</h4><p style="font-size:0.86rem; color:var(--text-muted);">مدافع حق ندارد به توپی که به سمت سبد در حال پایین آمدن یا روی حلقه است (حتی اگر پاس ارسالی بوده) دست بزند.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:1.6rem;">🔄⚖️</div><h4 style="color:var(--primary);">۵. توپ اوت (Out of Bounds)</h4><p style="font-size:0.86rem; color:var(--text-muted);">اگر پاسی به قدری محکم یا خطا ارسال شود که به خطوط کناری یا پایانی زمین برخورد کند، مالکیت توپ به تیم مقابل واگذار می‌شود.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:1.6rem;">👥⚠️</div><h4 style="color:var(--primary);">۶. خطای برخورد بدنی حین پاس</h4><p style="font-size:0.86rem; color:var(--text-muted);">هل دادن یا گرفتن دست بازیکنی که در حال دریافت پاس است توسط مدافع، خطای شخصی (Personal Foul) محسوب می‌شود.</p></div>
+          </div>
+
+          <div class="grid-2">
+            <div class="glass-card">
+              <h4 style="color:var(--warning); margin-bottom:8px;">⚠️ ۴ خطای رایج مبتدیان در پاس‌کاری و روش اصلاح آن</h4>
+              <ul style="font-size:0.88rem; padding-right:18px; color:#e2e8f0;">
+                <li><strong>پاس دادن بدون نگاه کردن (پاس کور کورانه):</strong> باعث لو رفتن توپ و ضدحمله حریف می‌شود ← <em>اصلاح: همیشه قبل از پاس، یار خودی را ببینید.</em></li>
+                <li><strong>پرتاب توپ با کل دست و شانه بدون استفاده از مچ:</strong> پاس کند و ضعیف می‌شود ← <em>اصلاح: استفاده از ضربه نهایی مچ (Snap).</em></li>
+                <li><strong>دریافت پاس با دستان سفت و صاف:</strong> باعث درد و آسیب انگشتان می‌شود ← <em>اصلاح: عقب کشیدن نرم دست‌ها به سمت سینه (Soft Hands).</em></li>
+                <li><strong>ارسال پاس خیلی آرام و ارتفاع‌دار (پاس هوایی خطرناک):</strong> مدافعان بلندقامت به راحتی آن را می‌دزدند ← <em>اصلاح: پاس سینه سریع یا پاس زمین دقیق.</em></li>
+              </ul>
+            </div>
+
+            <div class="glass-card">
+              <h4 style="color:var(--secondary); margin-bottom:8px;">✋ علائم داوری مرتبط با پاس‌کاری</h4>
+              <ul style="font-size:0.88rem; padding-right:18px; color:#e2e8f0;">
+                <li><strong>اعلام خطای لگ (Kick Ball):</strong> سوت داور و اشاره با انگشت به سمت پای خود برای نشان دادن برخورد عمدی با پا.</li>
+                <li><strong>اعلام خروج توپ از اوت:</strong> بالا بردن دست به سمت خط طولی یا عرضی زمین و اعلام جهت تیم مالک توپ جدید.</li>
+                <li><strong>اعلام خطای ۵ ثانیه اوت:</strong> نشان دادن عدد ۵ با دست باز در هوا برای بازیکنی که پشت خط اوت معطل کرده است.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- زیربخش ۶: آزمایشگاه انیمیشنی جلسه چهارم + کارت‌های چرخشی دانستنی‌ها -->
+        <div id="eduSkills" class="edu-sub-view" style="display:none;">
+          <h3 style="color:var(--secondary); margin-bottom:10px;">🔬 آزمایشگاه انیمیشنی جلسه چهارم (شبیه‌ساز پاس سینه، پاس زمین و جذب توپ)</h3>
+          <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:14px;">روی هر یک از ۳ مهارت زیر کلیک کنید تا بیومکانیک دقیق ارسال و دریافت را ببینید. می‌توانید سرعت را روی حالت صحنه آهسته (Slow Motion) قرار دهید:</p>
+
+          <div class="glass-card" style="margin-bottom:24px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="sub-tab-btn active" onclick="setSkillSimMode('chestPass', this)">🤝 ۱. شبیه‌ساز پاس سینه (Chest Pass)</button>
+                <button class="sub-tab-btn" onclick="setSkillSimMode('bouncePass', this)">🏀 ۲. شبیه‌ساز پاس زمین (Bounce Pass)</button>
+                <button class="sub-tab-btn" onclick="setSkillSimMode('softCatch', this)">🤲 ۳. شبیه‌ساز جذب نرم توپ (Soft Hands)</button>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:0.85rem; color:var(--secondary);">سرعت انیمیشن:</span>
+                <button class="sub-tab-btn" style="padding:5px 10px;" onclick="setSkillSimSpeed(0.35)">🐢 صحنه آهسته</button>
+                <button class="sub-tab-btn" style="padding:5px 10px;" onclick="setSkillSimSpeed(1)">⚡ عادی</button>
+              </div>
+            </div>
+
+            <canvas id="skillSimCanvas" width="680" height="225" style="width:100%; max-width:680px; height:auto; display:block; margin:0 auto; background:rgba(9,13,22,0.85); border-radius:14px; border:1px solid var(--glass-border);"></canvas>
+          </div>
+
+          <h3 style="color:var(--secondary); margin-bottom:12px;">🌟 دانستنی‌های جذاب درباره هنر پاس‌کاری در بسکتبال (کارت‌های Flip سه‌بعدی)</h3>
+          <div class="flip-grid">
+            <div class="flip-card" onclick="this.classList.toggle('flipped')">
+              <div class="flip-card-inner">
+                <div class="flip-front">
+                  <div style="font-size:2.2rem; margin-bottom:8px;">🧙‍♂️🏀</div>
+                  <h4>جادوگر پاس در تاریخ بسکتبال</h4>
+                  <span style="font-size:0.78rem; color:var(--primary); margin-top:8px;">کلیک کنید تا بچرخد ↺</span>
+                </div>
+                <div class="flip-back">
+                  <p style="font-size:0.86rem;">«مجیک جانسون» (Magic Johnson) به خاطر پاس‌های فوق‌العاده چشم‌بسته و نوآورانه، زیباترین و موثرترین پاس‌کارهای تاریخ NBA شناخته می‌شود.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="flip-card" onclick="this.classList.toggle('flipped')">
+              <div class="flip-card-inner">
+                <div class="flip-front">
+                  <div style="font-size:2.2rem; margin-bottom:8px;">📊🎯</div>
+                  <h4>رکورد بیشترین پاس گل (Assists)</h4>
+                  <span style="font-size:0.78rem; color:var(--primary); margin-top:8px;">کلیک کنید تا بچرخد ↺</span>
+                </div>
+                <div class="flip-back">
+                  <p style="font-size:0.86rem;">«جان استاکتون» (John Stockton) با ثبت بیش از ۱۵۸۰۰ پاس گل رسمی در طول دوران حرفه‌ای خود، رکورددار مطلق و دست‌نیافتنی تاریخ بسکتبال است.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="flip-card" onclick="this.classList.toggle('flipped')">
+              <div class="flip-card-inner">
+                <div class="flip-front">
+                  <div style="font-size:2.2rem; margin-bottom:8px;">⚡🤝</div>
+                  <h4>اهمیت پاس در کسری از ثانیه</h4>
+                  <span style="font-size:0.78rem; color:var(--primary); margin-top:8px;">کلیک کنید تا بچرخد ↺</span>
+                </div>
+                <div class="flip-back">
+                  <p style="font-size:0.86rem;">در تیم‌های حرفه‌ای بسکتبال، میانگین زمان نگه داشتن توپ توسط هر بازیکن قبل از ارسال پاس یا شوت، کمتر از ۲ ثانیه است!</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="flip-card" onclick="this.classList.toggle('flipped')">
+              <div class="flip-card-inner">
+                <div class="flip-front">
+                  <div style="font-size:2.2rem; margin-bottom:8px;">👁️‍🗨️🔄</div>
+                  <h4>پاس بدون نگاه (No-Look Pass)</h4>
+                  <span style="font-size:0.78rem; color:var(--primary); margin-top:8px;">کلیک کنید تا بچرخد ↺</span>
+                </div>
+                <div class="flip-back">
+                  <p style="font-size:0.86rem;">پاس بدون نگاه یعنی نگاه کردن به مدافع برای فریب دادن او، در حالی که توپ با چرخش مچ به سمتی دیگر ارسال می‌شود؛ مهارتی پیشرفته که از دید محیطی عالی سرچشمه می‌گیرد.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- دکمه ثبت مطالعه آموزش کامل (۲۰ XP) -->
+        <div style="margin-top:28px; padding-top:18px; border-top:1px solid var(--glass-border); text-align:center;">
+          <button id="claimEducationBtn" class="btn btn-success" onclick="completeSectionXP('education', 20, 'آموزش کامل جلسه چهارم (پاس سینه، پاس زمین و دریافت توپ)')">
+            ✅ مطالعه کامل تمام بخش‌های آموزش جلسه چهارم را به پایان رساندم (دریافت ۲۰ XP)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۴. بخش خلاصه جلسه چهارم و نقشه ذهنی (Mind Map SVG)
+         ========================================================================= -->
+    <section id="summaryView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">🧠 جمع‌بندی و نقشه ذهنی زنده جلسه چهارم</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <p style="font-size:0.92rem; color:var(--text-muted); margin-bottom:18px;">نقشه ذهنی زیر با جریان‌های نوری متحرک، چکیده تمامی مفاهیم کلیدی جلسه چهارم (پاس سینه، پاس زمین و جذب نرم توپ) را نمایش می‌دهد:</p>
+
+        <div style="overflow-x:auto; background:rgba(9,13,22,0.85); border-radius:var(--radius-md); padding:18px; border:1px solid var(--glass-border); margin-bottom:20px;">
+          <svg viewBox="0 0 860 400" style="width:100%; min-width:650px; height:auto;">
+            <!-- خطوط اتصال پایه -->
+            <path d="M430,200 C320,200 280,80 190,80" stroke="rgba(249,115,22,0.3)" stroke-width="4" fill="none"/>
+            <path d="M430,200 C320,200 280,200 190,200" stroke="rgba(56,189,248,0.3)" stroke-width="4" fill="none"/>
+            <path d="M430,200 C320,200 280,320 190,320" stroke="rgba(16,185,129,0.3)" stroke-width="4" fill="none"/>
+            <path d="M430,200 C540,200 580,80 670,80" stroke="rgba(245,158,11,0.3)" stroke-width="4" fill="none"/>
+            <path d="M430,200 C540,200 580,200 670,200" stroke="rgba(236,72,153,0.3)" stroke-width="4" fill="none"/>
+            <path d="M430,200 C540,200 580,320 670,320" stroke="rgba(168,85,247,0.3)" stroke-width="4" fill="none"/>
+
+            <!-- خطوط پالس انرژی متحرک -->
+            <path class="tactic-line" d="M430,200 C320,200 280,80 190,80" stroke="#f97316" stroke-width="3" fill="none"/>
+            <path class="tactic-line" d="M430,200 C320,200 280,200 190,200" stroke="#38bdf8" stroke-width="3" fill="none"/>
+            <path class="tactic-line" d="M430,200 C320,200 280,320 190,320" stroke="#10b981" stroke-width="3" fill="none"/>
+            <path class="tactic-line" d="M430,200 C540,200 580,80 670,80" stroke="#f59e0b" stroke-width="3" fill="none"/>
+            <path class="tactic-line" d="M430,200 C540,200 580,200 670,200" stroke="#ec4899" stroke-width="3" fill="none"/>
+            <path class="tactic-line" d="M430,200 C540,200 580,320 670,320" stroke="#a855f7" stroke-width="3" fill="none"/>
+
+            <!-- هسته مرکزی -->
+            <ellipse cx="430" cy="200" rx="105" ry="48" fill="#ea580c" stroke="#fff" stroke-width="3"/>
+            <text x="430" y="196" fill="#fff" font-size="14" font-weight="bold" text-anchor="middle">پاس و دریافت توپ</text>
+            <text x="430" y="218" fill="#fef08a" font-size="13" text-anchor="middle">خلاصه جلسه چهارم</text>
+
+            <!-- شاخه‌ها -->
+            <rect x="20" y="45" width="180" height="70" rx="12" fill="#1e293b" stroke="#f97316" stroke-width="2.5"/>
+            <text x="110" y="72" fill="#f97316" font-size="14" font-weight="bold" text-anchor="middle">پاس سینه مستقیم</text>
+            <text x="110" y="95" fill="#cbd5e1" font-size="12" text-anchor="middle">فرم حرف W و چرخش مچ Snap</text>
+
+            <rect x="20" y="165" width="180" height="70" rx="12" fill="#1e293b" stroke="#38bdf8" stroke-width="2.5"/>
+            <text x="110" y="192" fill="#38bdf8" font-size="14" font-weight="bold" text-anchor="middle">پاس زمین (Bounce)</text>
+            <text x="110" y="215" fill="#cbd5e1" font-size="12" text-anchor="middle">برخورد در دو سوم مسیر به زمین</text>
+
+            <rect x="20" y="285" width="180" height="70" rx="12" fill="#1e293b" stroke="#10b981" stroke-width="2.5"/>
+            <text x="110" y="312" fill="#10b981" font-size="14" font-weight="bold" text-anchor="middle">جذب نرم توپ</text>
+            <text x="110" y="335" fill="#cbd5e1" font-size="12" text-anchor="middle">عقب کشیدن آرنج و حفظ انگشتان</text>
+
+            <rect x="660" y="45" width="180" height="70" rx="12" fill="#1e293b" stroke="#f59e0b" stroke-width="2.5"/>
+            <text x="750" y="72" fill="#f59e0b" font-size="14" font-weight="bold" text-anchor="middle">گام رو به جلو</text>
+            <text x="750" y="95" fill="#cbd5e1" font-size="12" text-anchor="middle">انتقال وزن برای شتاب پاس</text>
+
+            <rect x="660" y="165" width="180" height="70" rx="12" fill="#1e293b" stroke="#ec4899" stroke-width="2.5"/>
+            <text x="750" y="192" fill="#ec4899" font-size="14" font-weight="bold" text-anchor="middle">قوانین داوری پاس</text>
+            <text x="750" y="215" fill="#cbd5e1" font-size="12" text-anchor="middle">قانون ۵ ثانیه اوت و خطای پا</text>
+
+            <rect x="660" y="285" width="180" height="70" rx="12" fill="#1e293b" stroke="#a855f7" stroke-width="2.5"/>
+            <text x="750" y="312" fill="#a855f7" font-size="14" font-weight="bold" text-anchor="middle">فواید پاس‌کاری</text>
+            <text x="750" y="335" fill="#cbd5e1" font-size="12" text-anchor="middle">گردش سریع توپ و کار گروهی</text>
+          </svg>
+        </div>
+
+        <div style="text-align:center;">
+          <button id="claimSummaryBtn" class="btn btn-success" onclick="completeSectionXP('summary', 10, 'مطالعه خلاصه و نقشه ذهنی جلسه چهارم')">
+            ✅ نقشه ذهنی و خلاصه جلسه چهارم را مرور کردم (دریافت ۱۰ XP)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۵. بخش فعالیت‌های عملی، تشخیصی و بازی مسابقه پاس هدفمند (۳۰ XP)
+         ========================================================================= -->
+    <section id="activitiesView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">🎮 فعالیت‌های عملی، تشخیصی و مسابقه پاس هدفمند (۳۰ XP)</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <p style="font-size:0.92rem; color:var(--text-muted); margin-bottom:20px;">برای دریافت ۳۰ امتیاز کامل این بخش، هر ۳ فعالیت عملی و تعاملی زیر را با موفقیت تکمیل نمایید:</p>
+
+        <!-- فعالیت ۱: تشخیص اصول صحیح پاس و دریافت -->
+        <div class="glass-card" style="margin-bottom:20px;">
+          <h4 style="color:var(--primary); margin-bottom:8px;">فعالیت ۱: تشخیص ۴ تکنیک صحیح در ارسال پاس و دریافت توپ <span id="act1Status" style="color:var(--text-muted); font-size:0.85rem;">(تکمیل نشده)</span></h4>
+          <p style="font-size:0.88rem; margin-bottom:12px;">از میان گزینه‌های زیر، <strong>۴ گزاره کاملاً صحیح</strong> را انتخاب کنید:</p>
+          <div class="grid-3" id="equipGameGrid">
+            <button class="sub-tab-btn" onclick="toggleEquipSelect(this, true)">🤝 در پاس سینه، شست‌ها فرم حرف W را پشت توپ می‌سازند</button>
+            <button class="sub-tab-btn" onclick="toggleEquipSelect(this, false)">❌ هنگام دریافت پاس، دستان خود را کاملاً سفت و خشک نگه دارید</button>
+            <button class="sub-tab-btn" onclick="toggleEquipSelect(this, true)">📐 پاس زمین باید در دو سوم مسیر به زمین برخورد کند</button>
+            <button class="sub-tab-btn" onclick="toggleEquipSelect(this, true)">🔄 نیروی نهایی پرتاب پاس از چرخش تند مچ دست (Snap) تأمین می‌شود</button>
+            <button class="sub-tab-btn" onclick="toggleEquipSelect(this, false)">❌ بازیکن پرتاب‌کننده از اوت می‌تواند دوباره خودش به توپ دست بزند</button>
+            <button class="sub-tab-btn" onclick="toggleEquipSelect(this, true)">🤲 عقب کشیدن ملایم آرنج‌ها هنگام دریافت، ضربه توپ را خنثی می‌کند</button>
+          </div>
+        </div>
+
+        <!-- فعالیت ۲: مرتب‌سازی مراحل اجرای پاس سینه -->
+        <div class="glass-card" style="margin-bottom:20px;">
+          <h4 style="color:var(--primary); margin-bottom:8px;">فعالیت ۲: مرتب‌سازی مراحل علمی اجرای پاس سینه از گام ۱ تا ۴ <span id="act2Status" style="color:var(--text-muted); font-size:0.85rem;">(تکمیل نشده)</span></h4>
+          <p style="font-size:0.88rem; margin-bottom:12px;">مراحل زیر را به ترتیب صحیح کلیک کنید:</p>
+          <div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:12px;" id="orderStepsContainer">
+            <button class="btn btn-secondary" onclick="selectOrderStep(3, 'باز شدن آرنج‌ها و چرخش تند مچ به سمت بیرون (Snap)', this)">باز شدن آرنج‌ها و چرخش تند مچ به سمت بیرون (Snap)</button>
+            <button class="btn btn-secondary" onclick="selectOrderStep(1, 'گرفتن توپ مقابل سینه با فرم حرف W با دو شست', this)">گرفتن توپ مقابل سینه با فرم حرف W با دو شست</button>
+            <button class="btn btn-secondary" onclick="selectOrderStep(4, 'پیگیری حرکت (Follow Through) و کشیده شدن دست‌ها به جلو', this)">پیگیری حرکت (Follow Through) و کشیده شدن دست‌ها به جلو</button>
+            <button class="btn btn-secondary" onclick="selectOrderStep(2, 'برداشتن یک گام رو به جلو و انتقال وزن بدن', this)">برداشتن یک گام رو به جلو و انتقال وزن بدن</button>
+          </div>
+          <div id="orderFeedback" style="font-size:0.88rem; color:var(--secondary);">ترتیب انتخاب‌شده: هنوز موردی انتخاب نشده است.</div>
+          <button class="sub-tab-btn" style="margin-top:8px;" onclick="resetOrderActivity()">🔄 شروع مجدد مرتب‌سازی</button>
+        </div>
+
+        <!-- فعالیت ۳: بازی تعاملی مسابقه پاس هدفمند (Target Passing Challenge) -->
+        <div class="glass-card">
+          <h4 style="color:var(--primary); margin-bottom:8px;">فعالیت ۳: شبیه‌ساز «مسابقه پاس‌کاری هدفمند» (انتخاب نوع پاس مناسب شرایط) <span id="act3Status" style="color:var(--text-muted); font-size:0.85rem;">(تکمیل نشده)</span></h4>
+          <p style="font-size:0.88rem; margin-bottom:10px;">به موقعیت هم‌تیمی و مدافع در بوم زیر نگاه کنید؛ بر اساس وضعیت، <strong>نوع پاس صحیح</strong> را انتخاب کنید (کسب ۳ امتیاز موفق):</p>
+
+          <div style="background:rgba(9,13,22,0.9); padding:10px 16px; border-radius:10px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <strong id="targetMissionText" style="color:var(--warning);">🎯 سناریو ۱: مدافع قدبلند فاصله کمی با شما دارد و دستش را بالا برده است؛ چه پاسی می‌دهید؟</strong>
+            <span style="color:var(--accent); font-weight:800;">امتیاز پاس هدفمند: <span id="targetGameScore">۰</span> از ۳</span>
+          </div>
+
+          <canvas id="targetPassSimCanvas" width="600" height="240" style="width:100%; max-width:600px; background:radial-gradient(circle at 50% 40%, #1e293b, #090d16); border:2px solid var(--glass-border); border-radius:14px; display:block; margin:0 auto 14px;"></canvas>
+
+          <div style="display:flex; justify-content:center; gap:14px; flex-wrap:wrap;">
+            <button class="btn btn-secondary" onclick="submitTargetAction('bounce')">🏀 پاس زمین (Bounce Pass) برای عبور از زیر دست مدافع</button>
+            <button class="btn btn-secondary" onclick="submitTargetAction('chest')">🤝 پاس سینه مستقیم (Chest Pass) در فضای باز</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۶. بخش فایل‌ها و لینک کلاس
+         ========================================================================= -->
+    <section id="filesView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">📁 فایل‌های آموزشی و لینک جلسه چهارم (۱۰ XP)</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <div id="filesListContainer" class="grid-2" style="margin-bottom:20px;"></div>
+
+        <div class="glass-card" style="margin-bottom:20px;">
+          <h4 style="color:var(--secondary);">🔗 لینک ارتباطی جلسه مجازی</h4>
+          <p id="sessionLinkDisplay" style="font-size:0.9rem; margin:8px 0; color:#cbd5e1;"></p>
+        </div>
+
+        <div style="text-align:center;">
+          <button id="claimFilesBtn" class="btn btn-success" onclick="completeSectionXP('files', 10, 'مشاهده فایل‌ها و منابع جلسه چهارم')">
+            ✅ فایل‌ها و منابع جلسه چهارم را بررسی کردم (دریافت ۱۰ XP)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۷. بخش اطلاعیه‌های جلسه (۵ XP)
+         ========================================================================= -->
+    <section id="noticesView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">📢 اطلاعیه‌های رسمی درس تربیت بدنی (۵ XP)</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <div id="noticesListContainer" style="display:flex; flex-direction:column; gap:14px; margin-bottom:22px;"></div>
+
+        <div style="text-align:center;">
+          <button id="claimNoticesBtn" class="btn btn-success" onclick="completeSectionXP('notices', 5, 'مطالعه اطلاعیه‌های آموزشی جلسه چهارم')">
+            ✅ اطلاعیه‌های جلسه چهارم را مطالعه کردم (دریافت ۵ XP)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۸. بخش تکالیف جلسه چهارم (۱۰ XP)
+         ========================================================================= -->
+    <section id="homeworkView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">📝 تکلیف عملی جلسه چهارم بسکتبال (۱۰ XP)</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <p style="font-size:0.92rem; color:var(--text-muted); margin-bottom:16px;">برای تسلط عملی بر مهارت‌های جلسه چهارم، تمرینات زیر را با یک هم‌تیمی در منزل انجام داده و تیک تأیید هر کدام را فعال نمایید:</p>
+
+        <div id="homeworkChecklist" style="display:flex; flex-direction:column; gap:12px; margin-bottom:18px;"></div>
+
+        <div class="form-group">
+          <label class="form-label" for="homeworkNoteInput">گزارش کوتاه دانش‌آموز از انجام پاس سینه و پاس زمین با دیوار یا هم‌تیمی (الزامی):</label>
+          <input type="text" id="homeworkNoteInput" class="form-control" placeholder="مثال: ۴۰ پاس سینه و ۳۰ پاس زمین با دیوار انجام دادم و دریافت نرم را تمرین کردم.">
+        </div>
+
+        <div style="text-align:center; margin-top:18px;">
+          <button id="claimHomeworkBtn" class="btn btn-success" onclick="submitHomeworkTask()">
+            ✅ ثبت تکلیف جلسه چهارم (دریافت ۱۰ XP)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۹. بخش گزارش پیشرفت، زمان حضور و نشان‌های افتخار (Badges)
+         ========================================================================= -->
+    <section id="progressView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">📊 گزارش پیشرفت و دستاوردهای انفرادی (جلسه چهارم)</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <div class="grid-3" style="margin-bottom:22px;">
+          <div class="glass-card" style="text-align:center;">
+            <div style="font-size:0.88rem; color:var(--text-muted);">مجموع امتیاز کسب‌شده</div>
+            <div id="progXPValue" style="font-size:2rem; font-weight:900; color:var(--primary); margin:6px 0;">۰ / ۱۱۰ XP</div>
+          </div>
+          <div class="glass-card" style="text-align:center;">
+            <div style="font-size:0.88rem; color:var(--text-muted);">درصد پیشرفت کل جلسه چهارم</div>
+            <div id="progPercentValue" style="font-size:2rem; font-weight:900; color:var(--accent); margin:6px 0;">۰٪</div>
+          </div>
+          <div class="glass-card" style="text-align:center;">
+            <div style="font-size:0.88rem; color:var(--text-muted);">مدت زمان حضور و مطالعه</div>
+            <div id="progTimeValue" style="font-size:1.6rem; font-weight:900; color:var(--secondary); margin:8px 0;">۰ دقیقه و ۰ ثانیه</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="glass-card">
+            <h4 style="color:var(--primary); margin-bottom:10px;">🏅 نشان‌های افتخار جلسه چهارم (Badges & Achievements)</h4>
+            <div id="badgesContainer" style="display:flex; flex-direction:column; gap:10px;"></div>
+          </div>
+          <div class="glass-card">
+            <h4 style="color:var(--secondary); margin-bottom:10px;">✔️ فهرست فعالیت‌های تکمیل‌شده</h4>
+            <ul id="completedLogsList" style="font-size:0.9rem; padding-right:18px; color:#cbd5e1;"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۱۰. بخش ثبت و ارسال گزارش نهایی به Supabase + پایان جلسه چهارم
+         ========================================================================= -->
+    <section id="reportView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">📤 ثبت و ارسال گزارش نهایی جلسه چهارم به دبیر</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <div class="glass-card" style="margin-bottom:22px;">
+          <table class="custom-table">
+            <tbody>
+              <tr><th>نام و نام خانوادگی دانش‌آموز</th><td id="repStudentName">-</td></tr>
+              <tr><th>نام مدرسه</th><td id="repSchoolName">-</td></tr>
+              <tr><th>پایه تحصیلی</th><td id="repGrade">-</td></tr>
+              <tr><th>نام دبیر</th><td id="repTeacherName">برزگری</td></tr>
+              <tr><th>عنوان جلسه</th><td>جلسه چهارم: آموزش جامع پاس سینه، پاس زمین و دریافت توپ</td></tr>
+              <tr><th>امتیاز کل (XP)</th><td id="repTotalXP" style="font-weight:bold; color:var(--primary);">۰ XP</td></tr>
+              <tr><th>درصد پیشرفت جلسه</th><td id="repProgressPercent" style="font-weight:bold; color:var(--accent);">۰٪</td></tr>
+              <tr><th>مدت حضور در جلسه</th><td id="repDuration">-</td></tr>
+              <tr><th>فعالیت‌های انجام‌شده</th><td id="repCompletedItems">-</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="text-align:center;">
+          <button id="finalSubmitReportBtn" class="btn" style="font-size:1.15rem; padding:16px 38px; animation: pulseGlow 2s infinite;" onclick="handleFinalReportSubmission()">
+            🚀 ثبت و ارسال گزارش نهایی جلسه چهارم (+۲۰ XP)
+          </button>
+          <p id="supabaseStatusMsg" style="margin-top:14px; font-size:0.95rem;"></p>
+        </div>
+
+        <!-- کارت تبریک پایان جلسه چهارم -->
+        <div id="sessionCompletionBox" class="glass-card" style="display:none; margin-top:26px; text-align:center; border-color:var(--accent);">
+          <canvas id="celebrationCanvas" width="320" height="140" style="margin:0 auto; display:block;"></canvas>
+          <h3 style="color:var(--accent); font-size:1.4rem; margin-top:8px;">🎉 تبریک! جلسه چهارم آموزش بسکتبال با موفقیت به پایان رسید</h3>
+          <p style="font-size:0.95rem; color:#cbd5e1; margin:8px 0 18px;">گزارش عملکرد جلسه چهارم شما با موفقیت در پایگاه داده ثبت گردید.</p>
+          <button class="btn btn-secondary" onclick="showToast('جلسه پنجم (پاس‌های پیشرفته بالای سر، بیسبالی و گردش توپ تیمی) در جلسه آینده فعال خواهد شد.')">
+            ⏭️ آمادگی برای ورود به جلسه پنجم بسکتبال
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    /* ============================================================================
+       تنظیمات پروژه (PROJECT_CONFIG) - تمام تنظیمات جلسه چهارم از این قسمت قابل تغییر است
+       ============================================================================ */
+    const PROJECT_CONFIG = {
+      systemTitle: "سامانه آموزش مجازی تربیت بدنی متوسطه اول",
+      sessionTitle: "جلسه چهارم: آموزش جامع پاس سینه، پاس زمین و تکنیک دریافت صحیح توپ",
+      subjectName: "تربیت بدنی",
+      teacherName: "برزگری",
+      supabaseUrl: "https://tpwdrzwfzdbmwqlblntu.supabase.co",
+      supabaseKey: "sb_publishable_ASPIzP1XV1iSweCV43Oy9Q_PCkz5htN",
+      sessionLink: "برگزاری کلاس به صورت آفلاین در سامانه و ارسال تمرینات عملی در شبکه شاد",
+      activeModules: {
+        education: true,
+        summary: true,
+        activities: true,
+        files: true,
+        notices: true,
+        homework: true,
+        progress: true,
+        report: true
+      },
+      sessionFiles: [
+        {
+          title: "جزوه آموزشی اصول پاس سینه، پاس زمین و مکانیسم جذب نرم توپ",
+          desc: "شامل فرم حرف W با دو شست، چرخش مچ Snap، گام رو به جلو و جلوگیری از آسیب انگشتان."
+        },
+        {
+          title: "راهنمای تمرینات پاس‌کاری دونفره در منزل یا حیاط مدرسه",
+          desc: "برنامه تمرینی پاس مستقیم، پاس به دیوار و تکنیک آماده‌باش (Ready Position)."
+        }
+      ],
+      homeworks: [
+        "۱- تمرین پاس سینه به دیوار از فاصله ۳ متری به تعداد ۴۰ مرتبه با دقت به چرخش مچ دست (Snap).",
+        "۲- تمرین پاس زمین به دیوار از فاصله ۳ متری به تعداد ۳۰ مرتبه (برخورد توپ در دو سوم مسیر).",
+        "۳- تمرین دریافت نرم توپ (Soft Hands) با عقب کشیدن ملایم آرنج‌ها به سمت سینه هنگام دریافت."
+      ],
+      notices: [
+        "دانش‌آموزان گرامی، هنگام تمرین پاس‌کاری حتماً به هم‌تیمی خود توجه کنید تا پاس‌های غافلگیرکننده به صورت ناخواسته به سر یا صورت دوستانتان برخورد نکند.",
+        "در دریافت پاس، دستان خود را سفت نکنید؛ همیشه از مکانیزم «جذب نرم توپ» (عقب کشیدن آرنج) استفاده نمایید.",
+        "پس از تکمیل تمامی بخش‌های جلسه چهارم و رسیدن به امتیاز ۹۰، دکمه «ثبت و ارسال گزارش نهایی» را در حالت اتصال به اینترنت بفشارید."
+      ]
+    };
+
+    /* ============================================================================
+       اتصال مستقیم به جدول Students در Supabase
+       ============================================================================ */
+    const SUPABASE_URL = PROJECT_CONFIG.supabaseUrl;
+    const SUPABASE_KEY = PROJECT_CONFIG.supabaseKey;
+    let ACTIVE_SCHOOL = "";
+    let ACTIVE_SUBJECT = PROJECT_CONFIG.subjectName;
+
+    async function sendToSupabase(studentName, score, totalScore, detailsText) {
+      const payload = {
+        Student_name: studentName,
+        School_name: ACTIVE_SCHOOL,
+        Subject: ACTIVE_SUBJECT,
+        Score: parseFloat(score),
+        Total_score: parseFloat(totalScore),
+        Details: detailsText
+      };
+
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/Students`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${SUPABASE_KEY}`,
+          "Prefer": "return=minimal"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error(`خطای سرور: ${response.status}`);
+      }
+      return true;
+    }
+
+    /* ============================================================================
+       مدیریت وضعیت دانش‌آموز و سیستم ضدتقلب در LocalStorage (ویژه جلسه چهارم)
+       ============================================================================ */
+    const STORAGE_KEY = "PE_BASKETBALL_SESSION4_STATE_V1";
+    const MAX_TOTAL_XP = 110;
+
+    let appState = {
+      studentName: "",
+      schoolName: "",
+      grade: "",
+      loginCount: 0,
+      firstLoginTime: "",
+      totalSeconds: 0,
+      xp: 0,
+      awardedFlags: {
+        login: false,      // 5 XP
+        education: false,  // 20 XP
+        summary: false,    // 10 XP
+        activities: false, // 30 XP
+        files: false,      // 10 XP
+        notices: false,    // 5 XP
+        homework: false,   // 10 XP
+        report: false      // 20 XP
+      },
+      activitySubFlags: {
+        equipDone: false,
+        orderDone: false,
+        targetDone: false
+      },
+      homeworkNote: "",
+      reportSent: false,
+      reportTime: ""
+    };
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          appState = {
+            ...appState,
+            ...parsed,
+            awardedFlags: { ...appState.awardedFlags, ...(parsed.awardedFlags || {}) },
+            activitySubFlags: { ...appState.activitySubFlags, ...(parsed.activitySubFlags || {}) }
+          };
+        }
+      } catch (e) {}
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      } catch (e) {}
+      updateStatusBarUI();
+    }
+
+    /* ============================================================================
+       مقداردهی اولیه کل سامانه و موتورهای گرافیکی جلسه چهارم
+       ============================================================================ */
+    window.addEventListener("DOMContentLoaded", () => {
+      loadState();
+      applyProjectConfig();
+      initBackgroundParticles();
+      initConfettiEngine();
+      initWelcomePassingCanvas();
+      initSkillSimulatorCanvas();
+      initTargetPassSimGame();
+      init3DTiltCards();
+
+      if (appState.studentName && appState.schoolName && appState.grade) {
+        document.getElementById("studentNameInput").value = appState.studentName;
+        document.getElementById("schoolSelect").value = appState.schoolName;
+        document.getElementById("gradeSelect").value = appState.grade;
+        validateLoginForm();
+      }
+
+      setInterval(() => {
+        if (appState.studentName && !document.getElementById("loginView").classList.contains("active")) {
+          appState.totalSeconds++;
+          if (appState.totalSeconds % 5 === 0) saveState();
+          const progTimeEl = document.getElementById("progTimeValue");
+          if (progTimeEl) progTimeEl.textContent = formatDuration(appState.totalSeconds);
+        }
+      }, 1000);
+    });
+
+    function applyProjectConfig() {
+      document.getElementById("uiAppTitle").textContent = PROJECT_CONFIG.systemTitle;
+      document.getElementById("uiSessionTitle").textContent = PROJECT_CONFIG.sessionTitle;
+      document.getElementById("uiSubjectText").textContent = PROJECT_CONFIG.subjectName;
+      document.getElementById("uiTeacherText").textContent = PROJECT_CONFIG.teacherName;
+      document.getElementById("fixedTeacherInput").value = PROJECT_CONFIG.teacherName;
+      document.getElementById("fixedSubjectInput").value = PROJECT_CONFIG.subjectName;
+
+      const filesBox = document.getElementById("filesListContainer");
+      filesBox.innerHTML = PROJECT_CONFIG.sessionFiles.map(f => `
+        <div class="glass-card tilt-card">
+          <div class="card-glare"></div>
+          <h4 style="color:var(--primary); margin-bottom:6px;">📄 ${f.title}</h4>
+          <p style="font-size:0.88rem; color:#cbd5e1;">${f.desc}</p>
+        </div>
+      `).join("");
+      document.getElementById("sessionLinkDisplay").textContent = PROJECT_CONFIG.sessionLink;
+
+      const noticesBox = document.getElementById("noticesListContainer");
+      noticesBox.innerHTML = PROJECT_CONFIG.notices.map((n, idx) => `
+        <div class="glass-card" style="border-right:4px solid var(--secondary);">
+          <strong>اطلاعیه شماره ${(idx + 1).toLocaleString('fa-IR')}:</strong>
+          <p style="font-size:0.9rem; margin-top:4px; color:#e2e8f0;">${n}</p>
+        </div>
+      `).join("");
+
+      const hwBox = document.getElementById("homeworkChecklist");
+      hwBox.innerHTML = PROJECT_CONFIG.homeworks.map(h => `
+        <label class="glass-card" style="display:flex; align-items:center; gap:12px; cursor:pointer;">
+          <input type="checkbox" class="hw-check" style="width:20px; height:20px; accent-color:var(--primary);">
+          <span style="font-size:0.92rem;">${h}</span>
+        </label>
+      `).join("");
+    }
+
+    /* ============================================================================
+       ۱. موتور پس‌زمینه ذرات و خطوط تاکتیکی تعاملی (60FPS Particle Network)
+       ============================================================================ */
+    function initBackgroundParticles() {
+      const canvas = document.getElementById("bgParticlesCanvas");
+      const ctx = canvas.getContext("2d");
+      let w = canvas.width = window.innerWidth;
+      let h = canvas.height = window.innerHeight;
+
+      window.addEventListener("resize", () => {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+      });
+
+      const mouse = { x: -500, y: -500 };
+      window.addEventListener("mousemove", e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+
+      const count = Math.min(48, Math.floor(w / 28));
+      const nodes = Array.from({ length: count }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.65,
+        vy: (Math.random() - 0.5) * 0.65,
+        r: Math.random() * 2.2 + 1.2,
+        isOrange: Math.random() > 0.5
+      }));
+
+      function renderBg() {
+        ctx.clearRect(0, 0, w, h);
+        for (let i = 0; i < nodes.length; i++) {
+          const p = nodes[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.x < 0 || p.x > w) p.vx *= -1;
+          if (p.y < 0 || p.y > h) p.vy *= -1;
+
+          const dxM = p.x - mouse.x;
+          const dyM = p.y - mouse.y;
+          const distM = Math.hypot(dxM, dyM);
+          if (distM < 110 && distM > 0) {
+            p.x += (dxM / distM) * 1.1;
+            p.y += (dyM / distM) * 1.1;
+          }
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = p.isOrange ? "rgba(249, 115, 22, 0.55)" : "rgba(56, 189, 248, 0.45)";
+          ctx.fill();
+
+          for (let j = i + 1; j < nodes.length; j++) {
+            const q = nodes[j];
+            const dist = Math.hypot(p.x - q.x, p.y - q.y);
+            if (dist < 135) {
+              ctx.beginPath();
+              ctx.moveTo(p.x, p.y);
+              ctx.lineTo(q.x, q.y);
+              ctx.strokeStyle = `rgba(148, 163, 184, ${(1 - dist / 135) * 0.14})`;
+              ctx.lineWidth = 1;
+              ctx.stroke();
+            }
+          }
+        }
+        requestAnimationFrame(renderBg);
+      }
+      renderBg();
+    }
+
+    /* ============================================================================
+       ۲. موتور انفجار ذرات نوری و کنفتی
+       ============================================================================ */
+    let confettiParticles = [];
+
+    function initConfettiEngine() {
+      const canvas = document.getElementById("fxConfettiCanvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      window.addEventListener("resize", () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      });
+
+      function loopConfetti() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let i = confettiParticles.length - 1; i >= 0; i--) {
+          const c = confettiParticles[i];
+          c.x += c.vx;
+          c.y += c.vy;
+          c.vy += 0.25;
+          c.rot += c.vRot;
+          c.life -= 0.014;
+
+          if (c.life <= 0) {
+            confettiParticles.splice(i, 1);
+            continue;
+          }
+
+          ctx.save();
+          ctx.translate(c.x, c.y);
+          ctx.rotate(c.rot);
+          ctx.globalAlpha = Math.max(0, c.life);
+          ctx.fillStyle = c.color;
+          ctx.fillRect(-c.size / 2, -c.size / 2, c.size, c.size * 0.65);
+          ctx.restore();
+        }
+        requestAnimationFrame(loopConfetti);
+      }
+      loopConfetti();
+    }
+
+    function triggerParticleBurst(originX = window.innerWidth / 2, originY = window.innerHeight / 2) {
+      const colors = ["#f97316", "#38bdf8", "#10b981", "#facc15", "#ec4899"];
+      for (let i = 0; i < 45; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * 8 + 3;
+        confettiParticles.push({
+          x: originX,
+          y: originY,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed - 4,
+          size: Math.random() * 8 + 5,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rot: Math.random() * Math.PI,
+          vRot: (Math.random() - 0.5) * 0.2,
+          life: 1.0
+        });
+      }
+    }
+
+    /* ============================================================================
+       ۳. افکت سه بعدی کارت‌ها (3D Perspective Tilt)
+       ============================================================================ */
+    function init3DTiltCards() {
+      document.addEventListener("mousemove", (e) => {
+        const card = e.target.closest(".tilt-card");
+        if (!card) return;
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const rotateX = ((y - rect.height / 2) / (rect.height / 2)) * -7;
+        const rotateY = ((x - rect.width / 2) / (rect.width / 2)) * 7;
+
+        card.style.transform = `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px)`;
+        const glare = card.querySelector(".card-glare");
+        if (glare) {
+          glare.style.background = `radial-gradient(circle at ${(x / rect.width) * 100}% ${(y / rect.height) * 100}%, rgba(255,255,255,0.16), transparent 60%)`;
+        }
+      });
+
+      document.addEventListener("mouseout", (e) => {
+        const card = e.target.closest(".tilt-card");
+        if (card && !card.contains(e.relatedTarget)) {
+          card.style.transform = "perspective(900px) rotateX(0deg) rotateY(0deg) translateY(0)";
+        }
+      });
+    }
+
+    /* ============================================================================
+       اعتبارسنجی فرم ورود و شروع جلسه چهارم
+       ============================================================================ */
+    function validateLoginForm() {
+      const nameVal = document.getElementById("studentNameInput").value.trim();
+      const schoolVal = document.getElementById("schoolSelect").value;
+      const gradeVal = document.getElementById("gradeSelect").value;
+      document.getElementById("startBtn").disabled = !(nameVal.length >= 3 && schoolVal !== "" && gradeVal !== "");
+    }
+
+    function handleLoginSubmit(e) {
+      e.preventDefault();
+      const nameVal = document.getElementById("studentNameInput").value.trim();
+      const schoolVal = document.getElementById("schoolSelect").value;
+      const gradeVal = document.getElementById("gradeSelect").value;
+
+      appState.studentName = nameVal;
+      appState.schoolName = schoolVal;
+      appState.grade = gradeVal;
+      appState.loginCount += 1;
+
+      ACTIVE_SCHOOL = schoolVal;
+      ACTIVE_SUBJECT = `${PROJECT_CONFIG.subjectName} (${gradeVal})`;
+
+      if (!appState.firstLoginTime) {
+        appState.firstLoginTime = new Date().toLocaleTimeString("fa-IR");
+      }
+
+      if (!appState.awardedFlags.login) {
+        appState.awardedFlags.login = true;
+        appState.xp += 5;
+        triggerParticleBurst();
+        showToast("خوش آمدید! ۵ امتیاز (XP) بابت ورود به جلسه چهارم دریافت کردید.");
+      }
+
+      saveState();
+      document.getElementById("topStatusBar").style.display = "flex";
+      renderDashboardCards();
+      navigateTo("dashboardView");
+    }
+
+    /* ============================================================================
+       رندر داشبورد جلسه چهارم
+       ============================================================================ */
+    function renderDashboardCards() {
+      const modules = [
+        { key: "education", title: "آموزش جامع پاس و دریافت توپ", xp: "۲۰ XP", icon: "🤝", view: "educationView", desc: "پاس سینه، پاس زمین، مکانیسم جذب نرم توپ و آزمایشگاه بیومکانیک پاس" },
+        { key: "summary", title: "خلاصه و نقشه ذهنی جلسه چهارم", xp: "۱۰ XP", icon: "🧠", view: "summaryView", desc: "مرور تصویری و نمودار درختی پویا از اصول پاس‌کاری و قوانین داوری" },
+        { key: "activities", title: "فعالیت عملی و مسابقه پاس هدفمند", xp: "۳۰ XP", icon: "🎮", view: "activitiesView", desc: "تشخیص تکنیک صحیح، مرتب‌سازی مراحل پاس و شبیه‌ساز پاس‌کاری در برابر مدافع" },
+        { key: "files", title: "فایل‌ها و لینک کلاس", xp: "۱۰ XP", icon: "📁", view: "filesView", desc: "جزوه تخصصی پاس سینه و راهنمای تمرینات دونفره" },
+        { key: "notices", title: "اطلاعیه‌های آموزشی", xp: "۵ XP", icon: "📢", view: "noticesView", desc: "نکات ایمنی دستان باز و آماده‌باش در دریافت پاس" },
+        { key: "homework", title: "تکلیت عملی جلسه چهارم", xp: "۱۰ XP", icon: "📝", view: "homeworkView", desc: "تمرین پاس سینه و پاس زمین با دیوار یا هم‌تیمی در منزل" },
+        { key: "progress", title: "گزارش پیشرفت و نشان‌ها", xp: "مشاهده", icon: "📊", view: "progressView", desc: "بررسی درصد پیشرفت، زمان حضور و نشان‌های افتخار جلسه چهارم" },
+        { key: "report", title: "ثبت و ارسال گزارش نهایی", xp: "۲۰ XP", icon: "📤", view: "reportView", desc: "ثبت نهایی عملکرد جلسه چهارم و ارسال مستقیم برای دبیر" }
+      ];
+
+      const grid = document.getElementById("dashboardModulesGrid");
+      grid.innerHTML = modules
+        .filter(m => PROJECT_CONFIG.activeModules[m.key])
+        .map(m => {
+          const isDone = appState.awardedFlags[m.key] === true;
+          return `
+            <div class="glass-card tilt-card" style="cursor:pointer; display:flex; flex-direction:column; justify-content:space-between;" onclick="navigateTo('${m.view}')">
+              <div class="card-glare"></div>
+              <div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                  <span style="font-size:2.1rem;">${m.icon}</span>
+                  <span class="badge-xp" style="background:${isDone ? 'var(--accent)' : ''};">
+                    ${isDone ? '✓ تکمیل شده' : m.xp}
+                  </span>
+                </div>
+                <h3 style="font-size:1.12rem; color:var(--text-main); margin-bottom:6px;">${m.title}</h3>
+                <p style="font-size:0.85rem; color:var(--text-muted);">${m.desc}</p>
+              </div>
+              <div style="margin-top:16px; font-size:0.85rem; color:var(--secondary); font-weight:800;">ورود به بخش ←</div>
+            </div>
+          `;
+        }).join("");
+    }
+
+    function navigateTo(viewId) {
+      document.querySelectorAll(".view-section").forEach(sec => sec.classList.remove("active"));
+      document.getElementById(viewId).classList.add("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
+      if (viewId === "dashboardView") renderDashboardCards();
+      if (viewId === "progressView") renderProgressView();
+      if (viewId === "reportView") renderReportView();
+      updateStatusBarUI();
+    }
+
+    function switchEduTab(tabId, btnEl) {
+      document.querySelectorAll(".edu-sub-view").forEach(el => el.style.display = "none");
+      document.getElementById(tabId).style.display = "block";
+      btnEl.parentElement.querySelectorAll(".sub-tab-btn").forEach(b => b.classList.remove("active"));
+      btnEl.classList.add("active");
+    }
+
+    function calculateProgressPercent() {
+      const keys = ["login", "education", "summary", "activities", "files", "notices", "homework", "report"];
+      const doneCount = keys.filter(k => appState.awardedFlags[k]).length;
+      return Math.round((doneCount / keys.length) * 100);
+    }
+
+    function updateStatusBarUI() {
+      document.getElementById("headerStudentName").textContent = appState.studentName || "دانش‌آموز";
+      document.getElementById("headerSchoolInfo").textContent = `${appState.schoolName} | ${appState.grade}`;
+      document.getElementById("headerXP").textContent = appState.xp.toLocaleString("fa-IR");
+
+      const pct = calculateProgressPercent();
+      document.getElementById("headerProgressText").textContent = `${pct.toLocaleString("fa-IR")}٪`;
+      document.getElementById("headerProgressFill").style.width = `${pct}%`;
+
+      const btnMap = [
+        { key: "education", id: "claimEducationBtn" },
+        { key: "summary", id: "claimSummaryBtn" },
+        { key: "files", id: "claimFilesBtn" },
+        { key: "notices", id: "claimNoticesBtn" },
+        { key: "homework", id: "claimHomeworkBtn" }
+      ];
+      btnMap.forEach(item => {
+        const btn = document.getElementById(item.id);
+        if (btn && appState.awardedFlags[item.key]) {
+          btn.disabled = true;
+          btn.textContent = "✓ امتیاز این بخش قبلاً در حساب شما ثبت شده است";
+        }
+      });
+    }
+
+    function completeSectionXP(key, xpAmount, title) {
+      if (appState.awardedFlags[key]) {
+        showToast("امتیاز این بخش قبلاً ثبت شده است.");
+        return;
+      }
+      appState.awardedFlags[key] = true;
+      appState.xp += xpAmount;
+      saveState();
+      playBeepSound(880, 0.22);
+      triggerParticleBurst();
+      showToast(`آفرین! ${xpAmount.toLocaleString("fa-IR")} امتیاز (XP) بابت «${title}» دریافت کردید.`);
+    }
+
+    /* ============================================================================
+       ۴. نقشه تعاملی جذب و دریافت توپ (Soft Hands) + پخش صوتی
+       ============================================================================ */
+    const CATCH_ANATOMY_DATA = {
+      fingersOpen: {
+        title: "✋ سرانگشتان باز و منعطف (فرمت قیف دریافت)",
+        desc: "هنگام دریافت پاس، انگشتان دست باید مانند شاخه‌های درخت باز و نرم باشند تا مساحت سطح تماس با توپ به حداکثر برسد."
+      },
+      funnelShape: {
+        title: "📐 شکل قیف دو دست (Catching Funnel)",
+        desc: "دستان گیرنده به شکل یک قیف یا کاسه بزرگ رو به توپ قرار می‌گیرند تا توپ دقیقاً به مرکز دستان هدایت شود."
+      },
+      absorbingElbow: {
+        title: "⚙️ آرنج فنری و جاذب ضربه (Absorbing with Elbows)",
+        desc: "راز اصلی جلوگیری از آسیب انگشتان! به محض اصابت توپ، آرنج‌ها خم شده و دست‌ها به آرامی به سمت سینه عقب کشیده می‌شوند تا شتاب توپ خنثی شود."
+      },
+      chestPocket: {
+        title: "🎒 جیب سینه (Chest Pocket - نقطه امن نگهداری)",
+        desc: "نقطه نهایی دریافت که توپ در کنار پهلو یا جلوی سینه در امنیت کامل قرار می‌گیرد تا بلافاصله آماده شوت، پاس یا دریبل بعدی باشد."
+      }
+    };
+
+    let currentCatchPartKey = null;
+
+    function playBeepSound(freq = 520, duration = 0.12) {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.14, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    function selectCatchPart(partKey) {
+      currentCatchPartKey = partKey;
+      const info = CATCH_ANATOMY_DATA[partKey];
+      if (!info) return;
+      document.getElementById("catchPartTitle").textContent = info.title;
+      document.getElementById("catchPartDesc").textContent = info.desc;
+      playBeepSound(720, 0.15);
+      speakCurrentCatchInfo();
+    }
+
+    function speakCurrentCatchInfo() {
+      if (!currentCatchPartKey) {
+        showToast("لطفاً ابتدا روی یکی از بخش‌های تصویر جذب توپ کلیک کنید.");
+        return;
+      }
+      const info = CATCH_ANATOMY_DATA[currentCatchPartKey];
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(`${info.title}. ${info.desc}`);
+        utter.lang = "fa-IR";
+        utter.rate = 1.0;
+        window.speechSynthesis.speak(utter);
+      }
+    }
+
+    /* ============================================================================
+       ۵. چرخش سه‌بعدی هولوگرام مسیر پاس
+       ============================================================================ */
+    let autoSpinInterval = null;
+
+    function rotateEquipments(deg) {
+      document.getElementById("equipRotateLabel").textContent = `${Number(deg).toLocaleString("fa-IR")} درجه`;
+      document.querySelectorAll(".equip-3d-object").forEach(el => {
+        el.style.transform = `rotateY(${deg}deg) rotateX(${Math.sin(deg * 0.04) * 14}deg)`;
+      });
+    }
+
+    function toggleAutoSpinEquip() {
+      const btn = document.getElementById("autoSpinBtn");
+      const slider = document.getElementById("equipRotateRange");
+      if (autoSpinInterval) {
+        clearInterval(autoSpinInterval);
+        autoSpinInterval = null;
+        btn.textContent = "▶️ چرخش خودکار ۳۶۰ درجه";
+        return;
+      }
+      btn.textContent = "⏸️ توقف چرخش خودکار";
+      let angle = Number(slider.value);
+      autoSpinInterval = setInterval(() => {
+        angle += 2;
+        if (angle > 180) angle = -180;
+        slider.value = angle;
+        rotateEquipments(angle);
+      }, 30);
+    }
+
+    /* ============================================================================
+       ۶. آزمایشگاه انیمیشنی جلسه چهارم (پاس سینه، پاس زمین و جذب توپ)
+       ============================================================================ */
+    let skillSimMode = "chestPass";
+    let skillSimSpeed = 1.0;
+
+    function setSkillSimMode(mode, btnEl) {
+      skillSimMode = mode;
+      btnEl.parentElement.querySelectorAll(".sub-tab-btn").forEach(b => b.classList.remove("active"));
+      btnEl.classList.add("active");
+    }
+
+    function setSkillSimSpeed(spd) {
+      skillSimSpeed = spd;
+      showToast(spd < 1 ? "حالت صحنه آهسته (Slow Motion) برای مشاهده دقیق مچ و جذب توپ فعال شد." : "سرعت عادی انیمیشن فعال شد.");
+    }
+
+    function initSkillSimulatorCanvas() {
+      const canvas = document.getElementById("skillSimCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      let t = 0;
+
+      function animateSkills() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        t += 0.08 * skillSimSpeed;
+
+        // خط زمین
+        ctx.strokeStyle = "rgba(255,255,255,0.25)";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(20, 192);
+        ctx.lineTo(660, 192);
+        ctx.stroke();
+
+        if (skillSimMode === "chestPass") {
+          // پاس سینه مستقیم بین دو بازیکن
+          const cycle = (t * 0.45) % 1; // 0 تا 1
+          const startX = 130, endX = 550;
+          const ballX = startX + (endX - startX) * cycle;
+          const ballY = 132;
+
+          // بازیکن فرستنده (چپ)
+          ctx.strokeStyle = "#38bdf8";
+          ctx.lineWidth = 4;
+          ctx.beginPath();
+          ctx.arc(130, 125, 12, 0, Math.PI * 2);
+          ctx.fillStyle = "#0ea5e9";
+          ctx.fill();
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(130, 137);
+          ctx.lineTo(124, 192);
+          ctx.moveTo(130, 148);
+          ctx.lineTo(130 + cycle * 22, 142); // دست در حال جلو رفتن
+          ctx.stroke();
+
+          // بازیکن گیرنده (راست)
+          ctx.beginPath();
+          ctx.arc(550, 125, 12, 0, Math.PI * 2);
+          ctx.fillStyle = "#10b981";
+          ctx.fill();
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(550, 137);
+          ctx.lineTo(556, 192);
+          ctx.moveTo(550, 148);
+          ctx.lineTo(528, 142);
+          ctx.stroke();
+
+          // توپ در حال حرکت مستقیم
+          ctx.beginPath();
+          ctx.arc(ballX, ballY, 13, 0, Math.PI * 2);
+          ctx.fillStyle = "#f97316";
+          ctx.fill();
+          ctx.strokeStyle = "#fff";
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+
+          ctx.fillStyle = "#e2e8f0";
+          ctx.font = "bold 13px Tahoma";
+          ctx.fillText("پاس سینه (Chest Pass): حرکت مستقیم و سریع از سینه فرستنده به سینه گیرنده همراه با گام رو به جلو", 420, 38);
+        } else if (skillSimMode === "bouncePass") {
+          // پاس زمین با برخورد در دو سوم مسیر
+          const cycle = (t * 0.45) % 1;
+          const startX = 130, bounceX = 410, endX = 550;
+          let ballX, ballY;
+
+          if (cycle < 0.65) {
+            const p = cycle / 0.65;
+            ballX = startX + (bounceX - startX) * p;
+            ballY = 132 + Math.sin(p * Math.PI) * 45; // صعود و نزول تا زمین
+          } else {
+            const p = (cycle - 0.65) / 0.35;
+            ballX = bounceX + (endX - bounceX) * p;
+            ballY = 190 - Math.sin(p * Math.PI) * 32;
+          }
+
+          // فرستنده و گیرنده
+          ctx.strokeStyle = "#38bdf8";
+          ctx.lineWidth = 4;
+          ctx.beginPath();
+          ctx.arc(130, 125, 12, 0, Math.PI * 2);
+          ctx.fillStyle = "#0ea5e9"; ctx.fill(); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(130, 137); ctx.lineTo(124, 192); ctx.stroke();
+
+          ctx.beginPath();
+          ctx.arc(550, 125, 12, 0, Math.PI * 2);
+          ctx.fillStyle = "#10b981"; ctx.fill(); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(550, 137); ctx.lineTo(556, 192); ctx.stroke();
+
+          // نقطه برخورد با زمین
+          ctx.fillStyle = "#facc15";
+          ctx.beginPath();
+          ctx.ellipse(bounceX, 192, 12, 4, 0, 0, Math.PI * 2);
+          ctx.fill();
+
+          // توپ
+          ctx.beginPath();
+          ctx.arc(ballX, ballY, 13, 0, Math.PI * 2);
+          ctx.fillStyle = "#f97316";
+          ctx.fill();
+          ctx.strokeStyle = "#fff";
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+
+          ctx.fillStyle = "#e2e8f0";
+          ctx.font = "bold 13px Tahoma";
+          ctx.fillText("پاس زمین (Bounce Pass): برخورد توپ در دو سوم مسیر به زمین برای عبور از زیر دست مدافع", 450, 38);
+        } else if (skillSimMode === "softCatch") {
+          // مکانیزم جذب نرم توپ (Soft Hands)
+          const cycle = (t * 0.45) % 1;
+          const catchX = 340 + Math.sin(cycle * Math.PI * 2) * 22; // عقب کشیدن دست
+
+          ctx.strokeStyle = "#10b981";
+          ctx.lineWidth = 4.5;
+          ctx.beginPath();
+          ctx.arc(340, 125, 12, 0, Math.PI * 2);
+          ctx.fillStyle = "#10b981";
+          ctx.fill();
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.moveTo(340, 137);
+          ctx.lineTo(334, 192);
+          ctx.moveTo(340, 142);
+          ctx.lineTo(catchX, 142); // دست در حال عقب کشیدن
+          ctx.stroke();
+
+          // توپ متصل به دست در حال جذب ضربه
+          ctx.beginPath();
+          ctx.arc(catchX - 16, 142, 13, 0, Math.PI * 2);
+          ctx.fillStyle = "#f97316";
+          ctx.fill();
+          ctx.strokeStyle = "#fff";
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+
+          ctx.fillStyle = "#e2e8f0";
+          ctx.font = "bold 13px Tahoma";
+          ctx.fillText("جذب نرم توپ (Soft Hands): عقب کشیدن ملایم آرنج‌ها و دست‌ها به سمت سینه برای خنثی کردن ضربه", 400, 38);
+        }
+
+        requestAnimationFrame(animateSkills);
+      }
+      animateSkills();
+    }
+
+    /* ============================================================================
+       ۷. فعالیت‌های عملی و بازی تعاملی مسابقه پاس هدفمند (Target Passing Game)
+       ============================================================================ */
+    let selectedCorrectEquips = 0;
+    let selectedWrongEquips = 0;
+
+    function toggleEquipSelect(btn, isCorrect) {
+      if (appState.activitySubFlags.equipDone) return;
+      const active = btn.classList.toggle("active");
+      if (isCorrect) {
+        selectedCorrectEquips += active ? 1 : -1;
+      } else {
+        selectedWrongEquips += active ? 1 : -1;
+        if (active) showToast("توجه: این گزاره از نظر اصول پاس‌کاری نادرست است!");
+      }
+
+      if (selectedCorrectEquips === 4 && selectedWrongEquips === 0) {
+        appState.activitySubFlags.equipDone = true;
+        document.getElementById("act1Status").textContent = "(✓ تکمیل شد)";
+        document.getElementById("act1Status").style.color = "var(--accent)";
+        playBeepSound(880, 0.2);
+        triggerParticleBurst();
+        showToast("فعالیت ۱ با موفقیت تکمیل شد!");
+        checkAllActivitiesCompletion();
+      }
+    }
+
+    let userOrderList = [];
+    let userOrderTitles = [];
+
+    function selectOrderStep(stepNum, stepTitle, btnEl) {
+      if (appState.activitySubFlags.orderDone) return;
+      btnEl.disabled = true;
+      userOrderList.push(stepNum);
+      userOrderTitles.push(stepTitle);
+      document.getElementById("orderFeedback").textContent = "ترتیب انتخابی شما: " + userOrderTitles.join(" ← ");
+
+      if (userOrderList.length === 4) {
+        const isRight = userOrderList.every((val, idx) => val === idx + 1);
+        if (isRight) {
+          appState.activitySubFlags.orderDone = true;
+          document.getElementById("act2Status").textContent = "(✓ تکمیل شد)";
+          document.getElementById("act2Status").style.color = "var(--accent)";
+          playBeepSound(880, 0.2);
+          triggerParticleBurst();
+          showToast("فعالیت ۲ (مرتب‌سازی مراحل پاس سینه) به درستی انجام شد!");
+          checkAllActivitiesCompletion();
+        } else {
+          showToast("ترتیب مراحل نادرست بود. دکمه شروع مجدد را بزنید.");
+        }
+      }
+    }
+
+    function resetOrderActivity() {
+      if (appState.activitySubFlags.orderDone) return;
+      userOrderList = [];
+      userOrderTitles = [];
+      document.getElementById("orderFeedback").textContent = "ترتیب انتخاب‌شده: هنوز موردی انتخاب نشده است.";
+      document.querySelectorAll("#orderStepsContainer button").forEach(b => b.disabled = false);
+    }
+
+    // فعالیت ۳: شبیه‌ساز مسابقه پاس هدفمند
+    const TARGET_SCENARIOS = [
+      {
+        prompt: "🎯 سناریو ۱: مدافع قدبلند فاصله کمی با شما دارد و دستش را بالا برده تا مسیر سینه را ببندد؛ چه پاسی می‌دهید؟",
+        defType: "tall", // مدافع قدبلند دست بالا
+        correctAction: "bounce"
+      },
+      {
+        prompt: "🎯 سناریو ۲: هم‌تیمی شما در فاصله ۵ متری در فضای کاملاً باز و بدون مدافع ایستاده است؛ چه پاسی می‌دهید؟",
+        defType: "open", // فضای باز
+        correctAction: "chest"
+      },
+      {
+        prompt: "🎯 سناریو ۳: مدافعی روبروی شما قرار دارد که دست‌هایش را پایین آورده تا جلوی پاس زمین را بگیرد؛ چه پاسی می‌دهید؟",
+        defType: "low", // مدافع دست پایین
+        correctAction: "chest"
+      }
+    ];
+    let currentTargetIdx = 0;
+    let targetScore = 0;
+
+    function initTargetPassSimGame() {
+      const canvas = document.getElementById("targetPassSimCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      let t = 0;
+
+      function renderTargetLoop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        t += 0.08;
+
+        const scen = TARGET_SCENARIOS[Math.min(currentTargetIdx, TARGET_SCENARIOS.length - 1)];
+
+        // بازیکن فرستنده (چپ) و گیرنده (راست)
+        ctx.fillStyle = "#0ea5e9";
+        ctx.beginPath(); ctx.arc(110, 140, 16, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#fff"; ctx.font = "bold 11px Tahoma"; ctx.textAlign = "center";
+        ctx.fillText("شما", 110, 144);
+
+        ctx.fillStyle = "#10b981";
+        ctx.beginPath(); ctx.arc(490, 140, 16, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#fff";
+        ctx.fillText("یار", 490, 144);
+
+        // مدافع در وسط مسیر (قرمز رنگ)
+        const defY = scen.defType === "tall" ? 85 : (scen.defType === "low" ? 175 : 135);
+        ctx.fillStyle = "#ef4444";
+        ctx.beginPath(); ctx.arc(300, defY, 18, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#fff"; ctx.fillText("مدافع", 300, defY + 4);
+
+        // راهنمای خط چین مسیر پاس
+        ctx.strokeStyle = "rgba(56, 189, 248, 0.45)";
+        ctx.lineWidth = 3;
+        ctx.setLineDash([5, 4]);
+        ctx.beginPath();
+        ctx.moveTo(130, 140);
+        ctx.lineTo(470, 140);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        requestAnimationFrame(renderTargetLoop);
+      }
+      renderTargetLoop();
+    }
+
+    function submitTargetAction(actionKey) {
+      if (appState.activitySubFlags.targetDone) {
+        showToast("این فعالیت قبلاً با موفقیت تکمیل شده است.");
+        return;
+      }
+
+      const scen = TARGET_SCENARIOS[currentTargetIdx];
+      if (scen && scen.correctAction === actionKey) {
+        targetScore++;
+        currentTargetIdx++;
+        playBeepSound(920, 0.16);
+        document.getElementById("targetGameScore").textContent = targetScore.toLocaleString("fa-IR");
+
+        if (targetScore >= 3) {
+          appState.activitySubFlags.targetDone = true;
+          document.getElementById("targetMissionText").textContent = "🎉 عالی! مسابقه پاس هدفمند با موفقیت به پایان رسید!";
+          document.getElementById("act3Status").textContent = "(✓ تکمیل شد)";
+          document.getElementById("act3Status").style.color = "var(--accent)";
+          triggerParticleBurst();
+          checkAllActivitiesCompletion();
+        } else {
+          document.getElementById("targetMissionText").textContent = TARGET_SCENARIOS[currentTargetIdx].prompt;
+          showToast("انتخاب پاس دقیق و صحیح! حالا سناریوی بعدی را بررسی کنید.");
+        }
+      } else {
+        playBeepSound(240, 0.2);
+        showToast("نوع پاس انتخابی برای این شرایط مناسب نیست؛ به موقعیت مدافع دقت کنید!");
+      }
+    }
+
+    function checkAllActivitiesCompletion() {
+      const sub = appState.activitySubFlags;
+      if (sub.equipDone && sub.orderDone && sub.targetDone && !appState.awardedFlags.activities) {
+        completeSectionXP("activities", 30, "انجام کامل فعالیت‌های عملی جلسه چهارم");
+      }
+      saveState();
+    }
+
+    /* ============================================================================
+       ثبت تکلیف، گزارش پیشرفت و ارسال به Supabase
+       ============================================================================ */
+    function submitHomeworkTask() {
+      const checks = document.querySelectorAll(".hw-check:checked");
+      const note = document.getElementById("homeworkNoteInput").value.trim();
+      if (checks.length < 3 || note.length < 5) {
+        showToast("لطفاً هر ۳ مورد چک‌لیست را تیک بزنید و گزارش کوتاه تمرین خود را بنویسید.");
+        return;
+      }
+      appState.homeworkNote = note;
+      completeSectionXP("homework", 10, "ثبت تکلیف عملی جلسه چهارم");
+    }
+
+    function getEarnedBadges() {
+      const badges = [];
+      if (appState.awardedFlags.login) badges.push({ title: "نشان حضور در جلسه چهارم", desc: "ورود رسمی به جلسه آموزش پاس سینه، پاس زمین و دریافت توپ" });
+      if (appState.awardedFlags.education && appState.awardedFlags.summary) badges.push({ title: "نشان استاد پاس و مکانیسم جذب", desc: "مطالعه کامل فرم W، چرخش مچ Snap و جذب نرم توپ" });
+      if (appState.awardedFlags.activities) badges.push({ title: "نشان طراح پاس‌های طلایی (Playmaker)", desc: "تکمیل هر ۳ چالش عملی و مسابقه پاس هدفمند" });
+      if (appState.xp >= 90) badges.push({ title: "ستاره پاس‌کاری جلسه چهارم (Achievement ویژه)", desc: "کسب بیش از ۹۰ امتیاز تجربه در جلسه چهارم" });
+      return badges;
+    }
+
+    function renderProgressView() {
+      const pct = calculateProgressPercent();
+      document.getElementById("progXPValue").textContent = `${appState.xp.toLocaleString("fa-IR")} / ۱۱۰ XP`;
+      document.getElementById("progPercentValue").textContent = `${pct.toLocaleString("fa-IR")}٪`;
+      document.getElementById("progTimeValue").textContent = formatDuration(appState.totalSeconds);
+
+      const badges = getEarnedBadges();
+      const bBox = document.getElementById("badgesContainer");
+      if (badges.length === 0) {
+        bBox.innerHTML = `<p style="color:var(--text-muted); font-size:0.88rem;">هنوز نشانی دریافت نشده است.</p>`;
+      } else {
+        bBox.innerHTML = badges.map(b => `
+          <div style="background:rgba(249,115,22,0.14); border:1px solid rgba(249,115,22,0.45); padding:10px 14px; border-radius:10px;">
+            <strong style="color:var(--primary);">🏅 ${b.title}</strong>
+            <div style="font-size:0.82rem; color:#cbd5e1;">${b.desc}</div>
+          </div>
+        `).join("");
+      }
+
+      const labels = {
+        login: "ورود به سامانه جلسه چهارم (۵ XP)",
+        education: "مشاهده آموزش کامل پاس و دریافت توپ (۲۰ XP)",
+        summary: "مطالعه خلاصه و نقشه ذهنی جلسه چهارم (۱۰ XP)",
+        activities: "انجام فعالیت‌های عملی و مسابقه پاس هدفمند (۳۰ XP)",
+        files: "بررسی فایل‌ها و منابع جلسه چهارم (۱۰ XP)",
+        notices: "مطالعه اطلاعیه‌های آموزشی (۵ XP)",
+        homework: "ثبت تکلیف عملی جلسه چهارم در منزل (۱۰ XP)",
+        report: "ثبت و ارسال گزارش نهایی جلسه چهارم (۲۰ XP)"
+      };
+      const doneList = Object.keys(labels).filter(k => appState.awardedFlags[k]).map(k => `<li>${labels[k]}</li>`);
+      document.getElementById("completedLogsList").innerHTML = doneList.length ? doneList.join("") : "<li>هنوز فعالیتی تکمیل نشده است.</li>";
+    }
+
+    function getCompletedNamesSummary() {
+      const names = [];
+      if (appState.awardedFlags.login) names.push("ورود");
+      if (appState.awardedFlags.education) names.push("آموزش کامل جلسه ۴");
+      if (appState.awardedFlags.summary) names.push("خلاصه جلسه ۴");
+      if (appState.awardedFlags.activities) names.push("فعالیت عملی پاس");
+      if (appState.awardedFlags.files) names.push("مشاهده فایل");
+      if (appState.awardedFlags.notices) names.push("مطالعه اطلاعیه");
+      if (appState.awardedFlags.homework) names.push("ثبت تکلیف جلسه ۴");
+      if (appState.awardedFlags.report) names.push("ثبت گزارش نهایی");
+      return names.join("، ") || "هیچ‌کدام";
+    }
+
+    function renderReportView() {
+      document.getElementById("repStudentName").textContent = appState.studentName;
+      document.getElementById("repSchoolName").textContent = appState.schoolName;
+      document.getElementById("repGrade").textContent = appState.grade;
+      document.getElementById("repTeacherName").textContent = PROJECT_CONFIG.teacherName;
+      document.getElementById("repTotalXP").textContent = `${appState.xp.toLocaleString("fa-IR")} از ۱۱۰ XP`;
+      document.getElementById("repProgressPercent").textContent = `${calculateProgressPercent().toLocaleString("fa-IR")}٪`;
+      document.getElementById("repDuration").textContent = formatDuration(appState.totalSeconds);
+      document.getElementById("repCompletedItems").textContent = getCompletedNamesSummary();
+
+      const btn = document.getElementById("finalSubmitReportBtn");
+      if (appState.reportSent) {
+        btn.disabled = true;
+        btn.textContent = "✓ گزارش نهایی جلسه چهارم شما قبلاً ثبت و ارسال شده است";
+        document.getElementById("sessionCompletionBox").style.display = "block";
+        initCelebrationCanvas();
+      }
+    }
+
+    async function handleFinalReportSubmission() {
+      if (appState.reportSent) {
+        showToast("گزارش شما قبلاً یک مرتبه ارسال شده است.");
+        return;
+      }
+
+      const btn = document.getElementById("finalSubmitReportBtn");
+      const statusMsg = document.getElementById("supabaseStatusMsg");
+      btn.disabled = true;
+      btn.textContent = "در حال ثبت و ارسال گزارش جلسه چهارم به سرور...";
+      statusMsg.style.color = "var(--secondary)";
+      statusMsg.textContent = "لطفاً چند لحظه صبر کنید...";
+
+      if (!appState.awardedFlags.report) {
+        appState.awardedFlags.report = true;
+        appState.xp += 20;
+      }
+
+      const nowStr = new Date().toLocaleString("fa-IR");
+      const pct = calculateProgressPercent();
+      const badgesCount = getEarnedBadges().length;
+      const achievementsCount = appState.xp >= 90 ? 1 : 0;
+
+      ACTIVE_SCHOOL = appState.schoolName;
+      ACTIVE_SUBJECT = `${PROJECT_CONFIG.subjectName} - ${appState.grade} (${PROJECT_CONFIG.sessionTitle})`;
+
+      const detailsText = [
+        `جلسه چهارم بسکتبال`,
+        `پایه: ${appState.grade}`,
+        `دبیر: ${PROJECT_CONFIG.teacherName}`,
+        `زمان ورود: ${appState.firstLoginTime}`,
+        `زمان خروج و ثبت گزارش: ${nowStr}`,
+        `مدت حضور: ${formatDuration(appState.totalSeconds)}`,
+        `تعداد دفعات ورود: ${appState.loginCount}`,
+        `آموزش‌های مشاهده‌شده: ${appState.awardedFlags.education ? 'کامل' : 'خیر'}`,
+        `خلاصه‌های مطالعه‌شده: ${appState.awardedFlags.summary ? 'کامل' : 'خیر'}`,
+        `فعالیت‌های انجام‌شده: ${getCompletedNamesSummary()}`,
+        `توضیح تکلیف: ${appState.homeworkNote || 'ثبت نشده'}`,
+        `امتیاز XP: ${appState.xp} از ${MAX_TOTAL_XP}`,
+        `درصد پیشرفت: ${pct}%`,
+        `تعداد Badge: ${badgesCount}`,
+        `تعداد Achievement: ${achievementsCount}`
+      ].join(" | ");
+
+      try {
+        await sendToSupabase(appState.studentName, appState.xp, MAX_TOTAL_XP, detailsText);
+        appState.reportSent = true;
+        appState.reportTime = nowStr;
+        saveState();
+        renderReportView();
+        triggerParticleBurst();
+        statusMsg.style.color = "var(--accent)";
+        statusMsg.textContent = "✅ گزارش عملکرد جلسه چهارم شما با موفقیت در سامانه دبیر ثبت گردید.";
+        showToast("گزارش نهایی جلسه چهارم با موفقیت ارسال شد (+۲۰ XP).");
+      } catch (err) {
+        saveState();
+        renderReportView();
+        btn.disabled = false;
+        btn.textContent = "🔄 تلاش مجدد برای ارسال گزارش به سرور";
+        statusMsg.style.color = "var(--warning)";
+        statusMsg.textContent = `امتیاز ثبت گزارش (+۲۰ XP) در دستگاه شما ذخیره شد، اما ارسال اینترنتی با خطا مواجه گردید (${err.message}). در صورت اتصال به اینترنت مجدداً دکمه را بزنید.`;
+      }
+    }
+
+    /* ============================================================================
+       ۸. انیمیشن تعاملی پاس‌کاری دوطرفه در صفحه آغازین جلسه چهارم
+       ============================================================================ */
+    function initWelcomePassingCanvas() {
+      const canvas = document.getElementById("welcomeBallCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+
+      let phase = 0;
+      let speedMult = 1;
+      let trail = [];
+
+      canvas.addEventListener("click", () => {
+        speedMult = 2.2;
+        playBeepSound(780, 0.12);
+        setTimeout(() => { speedMult = 1; }, 900);
+      });
+
+      function animateWelcome() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        phase += 0.05 * speedMult;
+
+        // دو بازیکن در دو طرف بوم
+        ctx.fillStyle = "#0ea5e9";
+        ctx.beginPath(); ctx.arc(110, 115, 14, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#10b981";
+        ctx.beginPath(); ctx.arc(410, 115, 14, 0, Math.PI * 2); ctx.fill();
+
+        ctx.fillStyle = "#cbd5e1";
+        ctx.font = "bold 11px Tahoma";
+        ctx.textAlign = "center";
+        ctx.fillText("بازیکن الف", 110, 142);
+        ctx.fillText("بازیکن ب", 410, 142);
+
+        // محاسبه مکان توپ در حال رفت و برگشت
+        const s = (Math.sin(phase) + 1) / 2; // 0 تا 1
+        const ballX = 125 + s * 270;
+        const ballY = 115 - Math.sin(s * Math.PI) * 35; // کمان پاس
+
+        trail.push({ x: ballX, y: ballY });
+        if (trail.length > 14) trail.shift();
+
+        for (let i = 0; i < trail.length; i++) {
+          ctx.beginPath();
+          ctx.arc(trail[i].x, trail[i].y, (i / trail.length) * 16, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(56, 189, 248, ${(i / trail.length) * 0.35})`;
+          ctx.fill();
+        }
+
+        // توپ
+        ctx.beginPath();
+        ctx.arc(ballX, ballY, 13, 0, Math.PI * 2);
+        ctx.fillStyle = "#f97316";
+        ctx.fill();
+        ctx.strokeStyle = "#fff";
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        requestAnimationFrame(animateWelcome);
+      }
+      animateWelcome();
+    }
+
+    function initCelebrationCanvas() {
+      const canvas = document.getElementById("celebrationCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      let angle = 0;
+
+      function loop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        angle += 0.06;
+        const bounceY = 70 + Math.sin(angle * 2) * 24;
+
+        ctx.save();
+        ctx.translate(160, bounceY);
+        ctx.rotate(angle);
+        ctx.beginPath();
+        ctx.arc(0, 0, 28, 0, Math.PI * 2);
+        ctx.fillStyle = "#f97316";
+        ctx.fill();
+        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = "#fff";
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(-28, 0); ctx.lineTo(28, 0);
+        ctx.moveTo(0, -28); ctx.lineTo(0, 28);
+        ctx.stroke();
+        ctx.restore();
+
+        requestAnimationFrame(loop);
+      }
+      loop();
+    }
+
+    function formatDuration(sec) {
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      return `${m.toLocaleString("fa-IR")} دقیقه و ${s.toLocaleString("fa-IR")} ثانیه`;
+    }
+
+    function showToast(msg) {
+      const box = document.getElementById("toastBox");
+      const item = document.createElement("div");
+      item.className = "toast-item";
+      item.textContent = msg;
+      box.appendChild(item);
+      setTimeout(() => item.remove(), 3800);
+    }
+  </script>
+</body>
+</html>
