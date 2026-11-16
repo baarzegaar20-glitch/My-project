@@ -1,0 +1,2551 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>سامانه آزمون آنلاین فیزیک یازدهم | برزگری</title>
+  <style>
+    /* ==========================================================================
+       1. CSS Variables & Theme Tokens (Glassmorphism + Dark/Light Mode)
+       ========================================================================== */
+    :root {
+      --primary: #1e3a8a;
+      --primary-light: #2563eb;
+      --primary-glow: rgba(37, 99, 235, 0.22);
+      --secondary: #0284c7;
+      --success: #059669;
+      --success-bg: rgba(5, 150, 105, 0.12);
+      --warning: #d97706;
+      --warning-bg: rgba(217, 119, 6, 0.12);
+      --danger: #dc2626;
+      --danger-bg: rgba(220, 38, 38, 0.12);
+      --bg-gradient: linear-gradient(135deg, #eff6ff 0%, #e0e7ff 50%, #f8fafc 100%);
+      --surface: rgba(255, 255, 255, 0.86);
+      --surface-solid: #ffffff;
+      --surface-hover: rgba(241, 245, 249, 0.95);
+      --math-bg: #f8fafc;
+      --border: rgba(203, 213, 225, 0.85);
+      --text-main: #0f172a;
+      --text-muted: #334155;
+      --text-light: #64748b;
+      --shadow-sm: 0 4px 12px rgba(15, 23, 42, 0.05);
+      --shadow-md: 0 10px 30px rgba(15, 23, 42, 0.08);
+      --shadow-lg: 0 20px 40px rgba(15, 23, 42, 0.14);
+      --radius-sm: 10px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      --font-fa: system-ui, -apple-system, 'Segoe UI', Tahoma, Arial, sans-serif;
+      --font-math: 'Cambria Math', 'Times New Roman', Georgia, serif;
+    }
+
+    [data-theme="dark"] {
+      --primary: #60a5fa;
+      --primary-light: #3b82f6;
+      --primary-glow: rgba(96, 165, 250, 0.25);
+      --secondary: #38bdf8;
+      --bg-gradient: linear-gradient(135deg, #090d16 0%, #1e1b4b 50%, #0f172a 100%);
+      --surface: rgba(30, 41, 59, 0.85);
+      --surface-solid: #1e293b;
+      --surface-hover: rgba(51, 65, 85, 0.9);
+      --math-bg: #0f172a;
+      --border: rgba(71, 85, 105, 0.65);
+      --text-main: #f8fafc;
+      --text-muted: #cbd5e1;
+      --text-light: #94a3b8;
+      --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.55);
+    }
+
+    /* ==========================================================================
+       2. Base Reset & Scientific Physics Typography
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      font-family: var(--font-fa);
+      color: var(--text-main);
+      background: var(--bg-gradient);
+      background-attachment: fixed;
+      min-height: 100vh;
+    }
+
+    body {
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.75;
+      padding-bottom: 100px;
+    }
+
+    /* فرمول‌ها و نمادهای علمی فیزیک (چپ‌به‌راست استاندارد با فونت ریاضی) */
+    .phys-math {
+      direction: ltr;
+      display: inline-block;
+      unicode-bidi: embed;
+      font-family: var(--font-math);
+      font-weight: 700;
+      font-size: 1.08em;
+      background: var(--math-bg);
+      padding: 2px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      margin: 0 3px;
+      color: var(--primary);
+      letter-spacing: 0.3px;
+      vertical-align: middle;
+    }
+
+    .phys-frac {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      vertical-align: middle;
+      margin: 0 4px;
+      font-size: 0.92em;
+      line-height: 1.15;
+    }
+
+    .phys-frac > .num {
+      border-bottom: 1.5px solid currentColor;
+      padding: 0 4px 2px;
+    }
+
+    .phys-frac > .den {
+      padding: 2px 4px 0;
+    }
+
+    .vec {
+      position: relative;
+      display: inline-block;
+    }
+    .vec::after {
+      content: "→";
+      position: absolute;
+      top: -0.65em;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.72em;
+      font-weight: bold;
+    }
+
+    /* ==========================================================================
+       3. Fixed Header, Progress Strip & Timer
+       ========================================================================== */
+    .top-fixed-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: var(--surface);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .scroll-bar-track {
+      height: 4px;
+      width: 100%;
+      background: rgba(148, 163, 184, 0.2);
+    }
+
+    .scroll-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary-light), var(--secondary));
+      transition: width 0.1s linear;
+    }
+
+    .header-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-math);
+      font-weight: bold;
+      font-size: 18px;
+      box-shadow: 0 4px 12px var(--primary-glow);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .brand-titles h1 {
+      font-size: 15.5px;
+      font-weight: 800;
+    }
+
+    .brand-titles p {
+      font-size: 12px;
+      color: var(--text-muted);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .timer-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 999px;
+      background: var(--surface-solid);
+      border: 1.5px solid var(--border);
+      font-weight: 800;
+      font-size: 14.5px;
+      color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .timer-pill.warning {
+      color: var(--warning);
+      border-color: var(--warning);
+      background: var(--warning-bg);
+      animation: pulse 1.4s infinite;
+    }
+
+    .timer-pill.danger {
+      color: var(--danger);
+      border-color: var(--danger);
+      background: var(--danger-bg);
+      animation: pulse 0.8s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.04); }
+    }
+
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-solid);
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .icon-btn:hover {
+      border-color: var(--primary-light);
+      color: var(--primary-light);
+      transform: translateY(-1px);
+    }
+
+    .exam-progress-strip {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 6px 16px 10px;
+      display: none;
+      align-items: center;
+      gap: 14px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .exam-progress-strip.active {
+      display: flex;
+    }
+
+    .progress-bar-wrap {
+      flex: 1;
+      height: 8px;
+      background: rgba(148, 163, 184, 0.25);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .progress-bar-inner {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--success), var(--secondary));
+      border-radius: 99px;
+      transition: width 0.35s ease;
+    }
+
+    /* ==========================================================================
+       4. Main Layout & Cards
+       ========================================================================== */
+    .main-wrapper {
+      max-width: 960px;
+      margin: 100px auto 30px;
+      padding: 0 16px;
+    }
+
+    .glass-card {
+      background: var(--surface);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-md);
+      margin-bottom: 22px;
+      transition: var(--transition);
+    }
+
+    .section-divider-banner {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: #fff;
+      padding: 16px 22px;
+      border-radius: var(--radius-md);
+      margin: 28px 0 18px;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .section-divider-banner h2 {
+      font-size: 17px;
+      font-weight: 800;
+    }
+
+    .section-divider-banner span {
+      font-size: 13px;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 4px 12px;
+      border-radius: 99px;
+      font-weight: 700;
+    }
+
+    /* ==========================================================================
+       5. Login Screen
+       ========================================================================== */
+    .login-card {
+      max-width: 620px;
+      margin: 20px auto;
+    }
+
+    .school-header-banner {
+      text-align: center;
+      padding-bottom: 18px;
+      margin-bottom: 20px;
+      border-bottom: 1px dashed var(--border);
+    }
+
+    .school-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--primary-glow);
+      color: var(--primary);
+      font-weight: 800;
+      font-size: 13.5px;
+      padding: 6px 16px;
+      border-radius: 99px;
+      margin-bottom: 10px;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .meta-item {
+      background: var(--surface-solid);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      text-align: center;
+    }
+
+    .meta-item .label {
+      font-size: 11.5px;
+      color: var(--text-light);
+      display: block;
+      margin-bottom: 3px;
+    }
+
+    .meta-item .val {
+      font-size: 13.5px;
+      font-weight: 800;
+      color: var(--text-main);
+    }
+
+    .schedule-lock-box {
+      padding: 15px;
+      border-radius: var(--radius-md);
+      margin-bottom: 20px;
+      text-align: center;
+      border: 1.5px solid var(--border);
+    }
+
+    .schedule-lock-box.locked-before { background: var(--warning-bg); border-color: var(--warning); }
+    .schedule-lock-box.locked-after { background: var(--danger-bg); border-color: var(--danger); }
+    .schedule-lock-box.unlocked { background: var(--success-bg); border-color: var(--success); }
+
+    .countdown-digits {
+      font-size: 19px;
+      font-weight: 900;
+      margin-top: 6px;
+      direction: ltr;
+      font-family: monospace;
+      color: var(--primary);
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 700;
+      font-size: 13.5px;
+      margin-bottom: 7px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border);
+      background: var(--surface-solid);
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 14.5px;
+      transition: var(--transition);
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 3px var(--primary-glow);
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 14px 20px;
+      border-radius: var(--radius-md);
+      border: none;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: #ffffff;
+      font-family: inherit;
+      font-size: 15.5px;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 8px 20px var(--primary-glow);
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 25px var(--primary-glow);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      background: #64748b;
+      box-shadow: none;
+    }
+
+    /* ==========================================================================
+       6. Question Cards (Part 1 & Part 2 Step-by-Step)
+       ========================================================================== */
+    .question-card {
+      position: relative;
+      border-right: 5px solid var(--primary-light);
+    }
+
+    .question-card.answered {
+      border-right-color: var(--success);
+    }
+
+    .question-card.flagged {
+      border-right-color: var(--warning);
+    }
+
+    .q-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+
+    .q-badge-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .q-number {
+      background: var(--primary);
+      color: #fff;
+      font-weight: 800;
+      font-size: 13px;
+      padding: 4px 12px;
+      border-radius: 8px;
+    }
+
+    .q-type-tag {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 6px;
+      background: var(--primary-glow);
+      color: var(--primary);
+    }
+
+    .q-points {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--primary);
+      background: var(--surface-solid);
+      padding: 4px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .flag-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 4px 10px;
+      cursor: pointer;
+      color: var(--text-light);
+      font-family: inherit;
+      font-size: 12px;
+      transition: var(--transition);
+    }
+
+    .flag-btn.active {
+      background: var(--warning-bg);
+      border-color: var(--warning);
+      color: var(--warning);
+      font-weight: 700;
+    }
+
+    .q-stem {
+      font-size: 15.5px;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 16px;
+      line-height: 1.85;
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 10px;
+    }
+
+    .option-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--border);
+      background: var(--surface-solid);
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 14.5px;
+    }
+
+    .option-label:hover {
+      border-color: var(--primary-light);
+      background: var(--surface-hover);
+    }
+
+    .option-label.selected {
+      border-color: var(--primary-light);
+      background: var(--primary-glow);
+      font-weight: 700;
+    }
+
+    .option-label input[type="radio"] {
+      accent-color: var(--primary-light);
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+
+    /* Step-by-Step Descriptive Problem Box */
+    .steps-wrapper {
+      display: grid;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .step-item {
+      background: var(--surface-solid);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      display: grid;
+      grid-template-columns: 1.2fr 1.5fr;
+      gap: 12px;
+      align-items: center;
+      transition: var(--transition);
+    }
+
+    .step-item:hover {
+      border-color: var(--primary-light);
+    }
+
+    .step-title-col {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .step-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--primary);
+    }
+
+    .step-sub-label {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .step-pts {
+      font-size: 11px;
+      color: var(--text-light);
+      font-weight: 700;
+    }
+
+    .step-input-col {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .phys-select, .phys-num-input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1.5px solid var(--border);
+      background: var(--math-bg);
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+
+    .phys-num-input {
+      direction: ltr;
+      text-align: center;
+      font-family: var(--font-math);
+      font-size: 16px;
+    }
+
+    .phys-select:focus, .phys-num-input:focus {
+      outline: none;
+      border-color: var(--primary-light);
+      box-shadow: 0 0 0 3px var(--primary-glow);
+    }
+
+    /* Feedback Box */
+    .q-feedback {
+      margin-top: 16px;
+      padding: 14px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 13.5px;
+      display: none;
+      line-height: 1.75;
+    }
+
+    .q-feedback.show { display: block; }
+    .q-feedback.correct { background: var(--success-bg); border: 1.5px solid var(--success); }
+    .q-feedback.partial { background: var(--warning-bg); border: 1.5px solid var(--warning); }
+    .q-feedback.wrong { background: var(--danger-bg); border: 1.5px solid var(--danger); }
+
+    /* ==========================================================================
+       7. Floating Quick Navigation & Modals
+       ========================================================================== */
+    .floating-nav-toggle {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      z-index: 990;
+      padding: 12px 18px;
+      border-radius: 99px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      font-family: inherit;
+      font-weight: 800;
+      font-size: 13.5px;
+      box-shadow: var(--shadow-lg);
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .floating-nav-drawer {
+      position: fixed;
+      bottom: 75px;
+      left: 20px;
+      z-index: 995;
+      width: 295px;
+      background: var(--surface);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      box-shadow: var(--shadow-lg);
+      display: none;
+    }
+
+    .floating-nav-drawer.open { display: block; }
+
+    .nav-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .nav-dot {
+      height: 36px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface-solid);
+      color: var(--text-main);
+      font-weight: 800;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-dot.answered { background: var(--success); color: #fff; border-color: var(--success); }
+    .nav-dot.flagged { border: 2px solid var(--warning); }
+
+    .result-banner { display: none; border: 2px solid var(--primary-light); }
+    .result-banner.show { display: block; }
+
+    .score-circle {
+      width: 135px;
+      height: 135px;
+      border-radius: 50%;
+      margin: 0 auto 16px;
+      background: conic-gradient(var(--success) var(--pct, 0%), rgba(148, 163, 184, 0.2) 0%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .score-circle-inner {
+      width: 112px;
+      height: 112px;
+      border-radius: 50%;
+      background: var(--surface-solid);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .score-big {
+      font-size: 26px;
+      font-weight: 900;
+      color: var(--primary);
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(6px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-backdrop.open { display: flex; }
+
+    .modal-box {
+      background: var(--surface-solid);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      max-width: 520px;
+      width: 100%;
+      padding: 24px;
+      box-shadow: var(--shadow-lg);
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .chip-btn {
+      padding: 8px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface-solid);
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .ripple-effect {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.45);
+      transform: scale(0);
+      animation: rippleAnim 0.6s linear;
+      pointer-events: none;
+    }
+
+    @keyframes rippleAnim {
+      to { transform: scale(4); opacity: 0; }
+    }
+
+    @media (max-width: 680px) {
+      .step-item { grid-template-columns: 1fr; }
+      .glass-card { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ==================== TOP FIXED BAR ==================== -->
+  <header class="top-fixed-bar">
+    <div class="scroll-bar-track">
+      <div class="scroll-bar-fill" id="scroll-progress-bar"></div>
+    </div>
+    <div class="header-inner">
+      <div class="brand-group">
+        <div class="brand-logo" id="secret-logo-trigger" title="سامانه آزمون فیزیک">Φ</div>
+        <div class="brand-titles">
+          <h1 id="header-lesson-title">فیزیک - رستمانی طبل</h1>
+          <p id="secret-teacher-trigger">طراح و دبیر: <span id="header-teacher-name">برزگری</span></p>
+        </div>
+      </div>
+
+      <div class="header-controls">
+        <div class="timer-pill" id="exam-timer-pill" style="display:none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span id="timer-display">50:00</span>
+        </div>
+
+        <button class="icon-btn" id="theme-toggle-btn" aria-label="تغییر حالت شب و روز" title="تغییر حالت نمایش">
+          <svg id="theme-icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none;"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+          <svg id="theme-icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="exam-progress-strip" id="exam-progress-strip">
+      <span id="progress-text">پیشرفت پاسخگویی: ۰ از ۱۳ سؤال (۰٪)</span>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-inner" id="answer-progress-bar"></div>
+      </div>
+      <span id="scroll-pct-text">اسکرول: ۰٪</span>
+    </div>
+  </header>
+
+  <!-- ==================== MAIN WRAPPER ==================== -->
+  <main class="main-wrapper">
+
+    <!-- 1. LOGIN VIEW -->
+    <section class="glass-card login-card" id="login-view">
+      <div class="school-header-banner">
+        <span class="school-badge" id="login-school-badge">دبیرستان رستمانی طبل</span>
+        <h2 id="login-subject-title">آزمون استاندارد فیزیک</h2>
+        <p style="font-size:14px; color:var(--text-muted); font-weight:700; margin-top:4px;" id="login-topic-subtitle"></p>
+      </div>
+
+      <div class="meta-grid">
+        <div class="meta-item">
+          <span class="label">نام دبیر</span>
+          <span class="val" id="meta-teacher">برزگری</span>
+        </div>
+        <div class="meta-item">
+          <span class="label">نام مدرسه</span>
+          <span class="val" id="meta-school">رستمانی طبل</span>
+        </div>
+        <div class="meta-item">
+          <span class="label">تاریخ برگزاری</span>
+          <span class="val" id="meta-date">۱ آذر</span>
+        </div>
+        <div class="meta-item">
+          <span class="label">ساعت و مدت</span>
+          <span class="val" id="meta-time">۱۰:۴۵ تا ۱۱:۳۵ (۵۰ دقیقه)</span>
+        </div>
+      </div>
+
+      <!-- Schedule Status & Countdown -->
+      <div class="schedule-lock-box" id="schedule-status-box">
+        <div id="schedule-status-text" style="font-weight:700; font-size:14px;">در حال بررسی زمان‌بندی آزمون...</div>
+        <div class="countdown-digits" id="schedule-countdown"></div>
+      </div>
+
+      <!-- Mandatory Login Form -->
+      <form id="login-form" onsubmit="event.preventDefault(); AppController.startExam();">
+        <div class="form-group">
+          <label for="student-fullname">نام و نام خانوادگی دانش‌آموز (الزامی):</label>
+          <input type="text" id="student-fullname" class="form-control" placeholder="مثال: محمدامین رحیمی" required autocomplete="name">
+        </div>
+
+        <div class="form-group">
+          <label for="student-grade">پایه و رشته تحصیلی (الزامی):</label>
+          <select id="student-grade" class="form-control" required>
+            <option value="">-- انتخاب پایه تحصیلی --</option>
+            <option value="دهم تجربی">دهم تجربی</option>
+            <option value="دهم ریاضی">دهم ریاضی</option>
+            <option value="یازدهم تجربی" selected>یازدهم تجربی</option>
+            <option value="دوازدهم تجربی">دوازدهم تجربی</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn-primary ripple-btn" id="start-exam-btn">
+          <span>ورود رسمی و شروع آزمون</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 5 12 12 19"/></svg>
+        </button>
+      </form>
+    </section>
+
+    <!-- 2. EXAM VIEW -->
+    <section id="exam-view" style="display:none;">
+
+      <!-- Result Scorecard -->
+      <div class="glass-card result-banner" id="result-scorecard">
+        <div style="text-align:center; margin-bottom:18px;">
+          <h2 style="font-size:21px; margin-bottom:4px;">کارنامه نهایی آزمون فیزیک</h2>
+          <p id="result-student-info" style="font-size:14px; color:var(--text-muted); font-weight:700;"></p>
+        </div>
+
+        <div class="score-circle" id="result-circle">
+          <div class="score-circle-inner">
+            <span class="score-big" id="result-score-num">0</span>
+            <span style="font-size:11.5px; color:var(--text-light);">از ۲۰ نمره</span>
+          </div>
+        </div>
+
+        <div class="meta-grid" style="margin-top:16px;">
+          <div class="meta-item">
+            <span class="label">درصد کل</span>
+            <span class="val" id="res-percent">0%</span>
+          </div>
+          <div class="meta-item">
+            <span class="label">نمره بخش اول (مفهومی)</span>
+            <span class="val" style="color:var(--primary);" id="res-part1">0 از ۱۰</span>
+          </div>
+          <div class="meta-item">
+            <span class="label">نمره بخش دوم (مسائل)</span>
+            <span class="val" style="color:var(--secondary);" id="res-part2">0 از ۱۰</span>
+          </div>
+          <div class="meta-item">
+            <span class="label">زمان صرف‌شده</span>
+            <span class="val" id="res-time-spent">0 دقیقه</span>
+          </div>
+        </div>
+
+        <!-- Supabase Sync Box -->
+        <div style="text-align:center; padding:12px; border-radius:10px; background:var(--surface-solid); border:1px solid var(--border);">
+          <div id="supabase-status-msg" style="font-weight:700; font-size:14px;"></div>
+          <button id="retry-supabase-btn" class="chip-btn" style="display:none; margin-top:8px; background:var(--primary); color:#fff;" onclick="AppController.retrySupabaseSync()">تلاش مجدد برای ارسال نمره به سرور</button>
+        </div>
+      </div>
+
+      <!-- Questions List Container -->
+      <div id="questions-container"></div>
+
+      <!-- Final Submit Section -->
+      <div class="glass-card" id="submit-section-card" style="text-align:center;">
+        <p style="font-size:14px; color:var(--text-muted); margin-bottom:14px;">
+          دانش‌آموز گرامی، پیش از ثبت نهایی از تکمیل تمام مراحل مسائل تشریحی و سؤالات مفهومی اطمینان حاصل فرمایید. پس از ثبت نهایی، آزمون قفل شده و امکان ویرایش وجود ندارد.
+        </p>
+        <button type="button" class="btn-primary ripple-btn" onclick="AppController.openConfirmModal()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <span>ثبت نهایی آزمون و ارسال نمره</span>
+        </button>
+      </div>
+
+    </section>
+  </main>
+
+  <!-- ==================== FLOATING SIDE NAVIGATION ==================== -->
+  <button class="floating-nav-toggle" id="floating-nav-btn" onclick="AppController.toggleNavDrawer()">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+    <span id="current-q-indicator">پنل ناوبری سؤالات</span>
+  </button>
+
+  <div class="floating-nav-drawer" id="floating-nav-drawer">
+    <div style="display:flex; justify-content:space-between; align-items:center; font-size:13px; font-weight:800;">
+      <span>پرش سریع به سؤالات (۱ تا ۱۳)</span>
+      <button onclick="AppController.toggleNavDrawer(false)" style="background:none; border:none; color:var(--text-muted); cursor:pointer;">✕</button>
+    </div>
+    <div class="nav-grid" id="nav-grid-dots"></div>
+    <div style="margin-top:12px; display:flex; gap:10px; font-size:11px; color:var(--text-muted); justify-content:center;">
+      <span>🟢 تکمیل‌شده</span>
+      <span>🟠 علامت‌دار</span>
+      <span>⚪ بی‌پاسخ</span>
+    </div>
+  </div>
+
+  <!-- ==================== CONFIRM SUBMIT MODAL ==================== -->
+  <div class="modal-backdrop" id="confirm-submit-modal">
+    <div class="modal-box">
+      <h3 style="font-size:18px; margin-bottom:10px;">هشدار ثبت نهایی آزمون</h3>
+      <p id="confirm-modal-summary" style="font-size:14px; color:var(--text-muted); margin-bottom:18px;"></p>
+      <div style="display:flex; gap:10px;">
+        <button class="btn-primary" style="flex:1;" onclick="AppController.finalizeSubmission()">تأیید و ثبت قطعی</button>
+        <button class="chip-btn" style="flex:1;" onclick="AppController.closeConfirmModal()">بازگشت و بررسی مجدد</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== SECRET TEACHER PANEL MODAL (PIN: 9162) ==================== -->
+  <div class="modal-backdrop" id="teacher-panel-modal">
+    <div class="modal-box">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+        <h3 style="font-size:16.5px;">پنل مدیریت محرمانه دبیر (برزگری)</h3>
+        <button onclick="TeacherPanel.close()" style="background:none; border:none; font-size:18px; cursor:pointer; color:var(--text-main);">✕</button>
+      </div>
+
+      <div id="teacher-auth-gate">
+        <div class="form-group">
+          <label>رمز عبور ثابت دبیر را وارد نمایید:</label>
+          <input type="password" id="teacher-pass-input" class="form-control" style="direction:ltr; text-align:center;" placeholder="****">
+        </div>
+        <button class="btn-primary" onclick="TeacherPanel.authenticate()">ورود به پنل مدیریت</button>
+      </div>
+
+      <div id="teacher-controls-body" style="display:none;">
+        <div style="display:grid; gap:10px; margin-bottom:16px;">
+          <button class="chip-btn" style="padding:11px; background:var(--success-bg); color:var(--success); border-color:var(--success);" onclick="TeacherPanel.unlockScheduleOverride()">
+            🔓 باز کردن قفل زمانی (فعال‌سازی فوری خارج از ۱ آذر)
+          </button>
+          <button class="chip-btn" style="padding:11px; background:var(--warning-bg); color:var(--warning); border-color:var(--warning);" onclick="TeacherPanel.resetTimerOnly()">
+            ⏱️ ریست تایمر آزمون به ۵۰ دقیقه کامل
+          </button>
+          <button class="chip-btn" style="padding:11px; background:var(--primary-glow); color:var(--primary); border-color:var(--primary-light);" onclick="TeacherPanel.allowRetake()">
+            🔄 باز کردن قفل ثبت نهایی (اجازه ویرایش مجدد)
+          </button>
+          <button class="chip-btn" style="padding:11px; background:var(--danger-bg); color:var(--danger); border-color:var(--danger);" onclick="TeacherPanel.fullReset()">
+            🗑️ ریست کامل کل آزمون و پاکسازی LocalStorage
+          </button>
+        </div>
+        <div class="form-group">
+          <label>وضعیت فعلی ذخیره‌شده در مرورگر:</label>
+          <pre id="teacher-storage-dump" style="direction:ltr; text-align:left; background:var(--math-bg); padding:10px; border-radius:8px; font-size:11px; max-height:140px; overflow:auto; border:1px solid var(--border);"></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== JAVASCRIPT ENGINE ==================== -->
+  <script>
+    /**
+     * ============================================================================
+     * ۱. اطلاعات پایه و تنظیمات اولیه (قابل تنظیم در ابتدای جاوااسکریپت)
+     * ============================================================================
+     */
+    const EXAM_CONFIG = {
+      // مقادیر ثابت و پیش‌فرض
+      subjectName: "فیزیک",
+      schoolName: "رستمانی طبل",
+      teacherName: "برزگری", // دقیقاً برزگری بدون هیچ پیشوند یا لقب
+      topic: "فیزیک ۲ (یازدهم تجربی) - فصل اول: الکتریسیته ساکن",
+
+      // تنظیمات بازه زمانی آزمون: ۱ آذر ساعت ۱۰:۴۵ تا ۱۱:۳۵ (مدت ۵۰ دقیقه)
+      // نکته: اگر examDateLabel، jalaliMonth یا ساعت‌ها خالی ("") گذاشته شوند، آزمون همیشه آزاد خواهد بود
+      schedule: {
+        jalaliMonth: 9,            // ۹ = آذرماه (اگر "" باشد آزمون آزاد است)
+        jalaliDay: 1,              // ۱ آذر
+        examDateLabel: "۱ آذر",
+        startTime: "10:45",        // ساعت شروع (۲۴ ساعته)
+        endTime: "11:35",          // ساعت پایان (۲۴ ساعته)
+        durationMinutes: 50        // مدت زمان آزمون (دقیقه)
+      },
+
+      totalScoreTarget: 20,
+      teacherSecretPin: "9162",
+
+      // تنظیمات اتصال به دیتابیس Supabase
+      supabase: {
+        url: "https://tpwdrzwfzdbmwqlblntu.supabase.co",
+        key: "sb_publishable_ASPIzP1XV1iSweCV43Oy9Q_PCkz5htN",
+        tableName: "Students"
+      }
+    };
+
+    // متغیرهای سراسری مورد استفاده در تابع ارسال به Supabase
+    const SUPABASE_URL = EXAM_CONFIG.supabase.url;
+    const SUPABASE_KEY = EXAM_CONFIG.supabase.key;
+    const ACTIVE_SCHOOL = EXAM_CONFIG.schoolName;
+    const ACTIVE_SUBJECT = `${EXAM_CONFIG.subjectName} (${EXAM_CONFIG.topic})`;
+
+    /**
+     * ============================================================================
+     * ۲. بانک سؤالات استاندارد امتحان نهایی و شبه‌نهایی فیزیک یازدهم تجربی - فصل ۱
+     *    مجموع بارم: ۲۰ نمره (بخش اول: ۱۰ نمره مفهومی/تستی + بخش دوم: ۱۰ نمره تشریحی ۷ مرحله‌ای)
+     * ============================================================================
+     */
+    const QUESTIONS_BANK = [
+      // -------------------- بخش اول: سؤالات مفهومی، تستی، صحیح/غلط و جای‌خالی (۱۰ نمره) --------------------
+      {
+        id: 1,
+        section: 1,
+        type: "mcq",
+        typeLabel: "چهارگزینه‌ای (کوانتیده بودن بار)",
+        points: 1,
+        stemHtml: `مطابق اصل کوانتیده بودن بار الکتریکی <span class="phys-math">q = ±ne</span> و با توجه به اینکه بار الکتریکی بنیادی <span class="phys-math">e = 1.6 × 10<sup>−19</sup> C</span> است، کدام‌یک از مقادیر زیر <strong>نمی‌تواند</strong> بار الکتریکی یک جسم باردار باشد؟ (سؤال استاندارد نهایی)`,
+        options: [
+          `<span class="phys-math">+3.2 × 10<sup>−19</sup> C</span>`,
+          `<span class="phys-math">−4.0 × 10<sup>−19</sup> C</span>`,
+          `<span class="phys-math">−6.4 × 10<sup>−19</sup> C</span>`,
+          `<span class="phys-math">+8.0 × 10<sup>−19</sup> C</span>`
+        ],
+        correctIndex: 1,
+        explanation: `بار هر جسم باید مضرب صحیحی از <span class="phys-math">1.6 × 10<sup>−19</sup> C</span> باشد. حاصل تقسیم <span class="phys-math">4.0</span> بر <span class="phys-math">1.6</span> برابر <span class="phys-math">2.5</span> است که عدد صحیح نیست.`
+      },
+      {
+        id: 2,
+        section: 1,
+        type: "dropdown",
+        typeLabel: "جای‌خالی انتخابی (قانون کولن)",
+        points: 1,
+        stemHtml: `بر اساس قانون کولن <span class="phys-math">F = k <span class="phys-frac"><span class="num">|q<sub>1</sub>q<sub>2</sub>|</span><span class="den">r<sup>2</sup></span></span></span>، اگر فاصله بین دو بار نقطه‌ای را بدون تغییر اندازه بارها <strong>نصف</strong> کنیم (<span class="phys-math">r' = ½ r</span>)، اندازه نیروی الکتریکی بین آن‌ها چگونه تغییر می‌کند؟`,
+        dropdownOptions: [
+          "نصف می‌شود (½ برابر)",
+          "یک‌چهارم می‌شود (¼ برابر)",
+          "دو برابر می‌شود (2 برابر)",
+          "چهار برابر می‌شود (4 برابر)"
+        ],
+        correctValue: "چهار برابر می‌شود (4 برابر)",
+        explanation: `اندازه نیروی الکتریکی با مجذور فاصله رابطه عکس دارد (<span class="phys-math">F ∝ 1 / r<sup>2</sup></span>). بنابراین با نصف شدن فاصله، نیرو <span class="phys-math">4</span> برابر می‌شود.`
+      },
+      {
+        id: 3,
+        section: 1,
+        type: "true_false",
+        typeLabel: "صحیح / غلط (ویژگی خطوط میدان الکتریکی)",
+        points: 0.75,
+        stemHtml: `عبارت زیر را بررسی کنید:<br>«در هر نقطه از فضا، بردار میدان الکتریکی خالص <span class="phys-math"><span class="vec">E</span></span> همواره بر خط میدان الکتریکی گذرنده از آن نقطه مماس است و دو خط میدان الکتریکی هرگز یکدیگر را قطع نمی‌کنند.»`,
+        options: [
+          "صحیح (درست)",
+          "غلط (نادرست)"
+        ],
+        correctIndex: 0,
+        explanation: `این عبارت کاملاً صحیح و از ویژگی‌های اصلی خطوط میدان الکتریکی در کتاب درسی است (اگر دو خط یکدیگر را قطع می‌کردند، در نقطه تقاطع دو جهت برای میدان وجود داشت که غیرممکن است).`
+      },
+      {
+        id: 4,
+        section: 1,
+        type: "mcq",
+        typeLabel: "چهارگزینه‌ای (توزیع بار در رساناها و چگالی سطحی)",
+        points: 1,
+        stemHtml: `یک جسم رسانای مخروطی‌شکل و دوک‌مانند را باردار می‌کنیم. پس از رسیدن به تعادل الکتروستاتیکی، چگالی سطحی بار الکتریکی <span class="phys-math">σ = <span class="phys-frac"><span class="num">q</span><span class="den">A</span></span></span> و تراکم خطوط میدان در کدام بخش جسم بیشتر است؟`,
+        options: [
+          `در قسمت‌های مسطح و پهن‌تر رسانا`,
+          `در داخل حجم رسانا به صورت یکنواخت`,
+          `در نقاط نوک‌تیز که شعاع انحنای کمتری دارند`,
+          `در تمام نقاط سطح رسانا چگالی سطحی بار دقیقاً یکسان است`
+        ],
+        correctIndex: 2,
+        explanation: `در اجسام رسانا، بار الکتریکی در سطح خارجی توزیع می‌شود و در نقاط نوک‌تیز (دارای انحنای بیشتر / شعاع انحنای کمتر)، چگالی سطحی بار <span class="phys-math">σ</span> بیشترین مقدار را دارد.`
+      },
+      {
+        id: 5,
+        section: 1,
+        type: "dropdown",
+        typeLabel: "مفهومی انتخابی (کار نیروی الکتریکی و انرژی پتانسیل)",
+        points: 1.25,
+        stemHtml: `هرگاه یک ذره با بار <strong>منفی</strong> (مانند الکترون با بار <span class="phys-math">q &lt; 0</span>) را به آرامی و با تندی ثابت، <strong>در جهت خطوط میدان الکتریکی یکنواخت</strong> <span class="phys-math"><span class="vec">E</span></span> جابه‌جا کنیم، انرژی پتانسیل الکتریکی سامانه (<span class="phys-math">ΔU</span>) و پتانسیل الکتریکی نقطه (<span class="phys-math">ΔV</span>) به ترتیب چه تغییری می‌کنند؟`,
+        dropdownOptions: [
+          "انرژی پتانسیل افزایش می‌یابد (ΔU > 0) و پتانسیل الکتریکی کاهش می‌یابد (ΔV < 0)",
+          "انرژی پتانسیل کاهش می‌یابد (ΔU < 0) و پتانسیل الکتریکی کاهش می‌یابد (ΔV < 0)",
+          "انرژی پتانسیل افزایش می‌یابد (ΔU > 0) و پتانسیل الکتریکی افزایش می‌یابد (ΔV > 0)",
+          "انرژی پتانسیل و پتانسیل الکتریکی هر دو ثابت می‌مانند"
+        ],
+        correctValue: "انرژی پتانسیل افزایش می‌یابد (ΔU > 0) و پتانسیل الکتریکی کاهش می‌یابد (ΔV < 0)",
+        explanation: `در جهت خطوط میدان الکتریکی همواره پتانسیل الکتریکی کاهش می‌یابد (<span class="phys-math">ΔV &lt; 0</span>). از طرفی چون بار منفی برخلاف نیروی الکتریکی وارد بر خود جابه‌جا شده است (یا طبق <span class="phys-math">ΔU = qΔV</span>)، حاصل‌ضرب دو عدد منفی مثبت شده و انرژی پتانسیل الکتریکی افزایش می‌یابد (<span class="phys-math">ΔU &gt; 0</span>).`
+      },
+      {
+        id: 6,
+        section: 1,
+        type: "true_false",
+        typeLabel: "صحیح / غلط (میدان داخل رسانا و قفس فارادی)",
+        points: 0.75,
+        stemHtml: `عبارت زیر را بررسی کنید:<br>«در شرایط تعادل الکتروستاتیکی، میدان الکتریکی در داخل یک جسم رسانای توپر یا کاواک (توخالی) برابر صفر (<span class="phys-math">E = 0</span>) است، اما پتانسیل الکتریکی نقاط داخل رسانا صفر نیست و مقداری ثابت و برابر با پتانسیل سطح رسانا دارد.»`,
+        options: [
+          "صحیح (درست)",
+          "غلط (نادرست)"
+        ],
+        correctIndex: 0,
+        explanation: `کاملاً صحیح است. در داخل رسانا <span class="phys-math">E = 0</span> است؛ بنابراین اختلاف پتانسیل بین نقاط داخلی صفر است (<span class="phys-math">ΔV = 0</span>) و پتانسیل در تمام نقاط داخل رسانا یکسان و برابر با پتانسیل سطح آن است.`
+      },
+      {
+        id: 7,
+        section: 1,
+        type: "mcq",
+        typeLabel: "چهارگزینه‌ای (عوامل مؤثر بر ظرفیت خازن تخت)",
+        points: 1,
+        stemHtml: `طبق رابطه ظرفیت خازن تخت <span class="phys-math">C = κ ε<sub>0</sub> <span class="phys-frac"><span class="num">A</span><span class="den">d</span></span></span>، کدام‌یک از تغییرات زیر باعث <strong>افزایش ظرفیت خازن</strong> (<span class="phys-math">C</span>) می‌شود؟`,
+        options: [
+          `افزایش اختلاف پتانسیل دو سر خازن (<span class="phys-math">V</span>) به اندازه دو برابر`,
+          `افزایش فاصله بین دو صفحه خازن (<span class="phys-math">d</span>)`,
+          `قرار دادن یک دی‌الکتریک (عایق با <span class="phys-math">κ &gt; 1</span>) به جای هوا و کاهش فاصله صفحات (<span class="phys-math">d</span>)`,
+          `افزایش بار الکتریکی ذخیره‌شده روی صفحات (<span class="phys-math">q</span>)`
+        ],
+        correctIndex: 2,
+        explanation: `ظرفیت خازن <span class="phys-math">C</span> به بار <span class="phys-math">q</span> و ولتاژ <span class="phys-math">V</span> بستگی ندارد و فقط به مشخصات ساختمانی (<span class="phys-math">κ, A, d</span>) وابسته است. افزایش <span class="phys-math">κ</span> و کاهش فاصله <span class="phys-math">d</span> ظرفیت را افزایش می‌دهد.`
+      },
+      {
+        id: 8,
+        section: 1,
+        type: "dropdown",
+        typeLabel: "تحلیل مدار خازن (متصل به باتری)",
+        points: 1.25,
+        stemHtml: `یک خازن تخت با عایق هوا به دو سر یک باتری با اختلاف پتانسیل ثابت <span class="phys-math">V</span> متصل است. اگر بدون جدا کردن باتری، فاصله بین دو صفحه را <strong>نصف</strong> کنیم، بار الکتریکی ذخیره‌شده در خازن (<span class="phys-math">q = CV</span>) چه تغییری می‌کند؟`,
+        dropdownOptions: [
+          "ثابت می‌ماند",
+          "دو برابر می‌شود",
+          "نصف می‌شود",
+          "چهار برابر می‌شود"
+        ],
+        correctValue: "دو برابر می‌شود",
+        explanation: `چون خازن به باتری متصل است، <span class="phys-math">V</span> ثابت است. با نصف شدن فاصله <span class="phys-math">d</span>، ظرفیت <span class="phys-math">C</span> دو برابر می‌شود؛ پس طبق رابطه <span class="phys-math">q = CV</span>، بار خازن نیز دو برابر می‌شود.`
+      },
+      {
+        id: 9,
+        section: 1,
+        type: "mcq",
+        typeLabel: "چهارگزینه‌ای (یکاهای فیزیکی در SI)",
+        points: 1,
+        stemHtml: `در دستگاه بین‌المللی یکاها (<span class="phys-math">SI</span>)، یکای «ولت بر متر» (<span class="phys-math">V/m</span>) معادل کدام‌یک از یکاهای زیر و مربوط به چه کمیتی است؟`,
+        options: [
+          `ژول بر کولن (<span class="phys-math">J/C</span>) — پتانسیل الکتریکی`,
+          `نیوتون بر کولن (<span class="phys-math">N/C</span>) — بزرگی میدان الکتریکی`,
+          `کولن بر ولت (<span class="phys-math">C/V</span>) — ظرفیت خازن`,
+          `کولن بر متر مربع (<span class="phys-math">C/m<sup>2</sup></span>) — چگالی سطحی بار`
+        ],
+        correctIndex: 1,
+        explanation: `از دو رابطه <span class="phys-math">E = F/q</span> و <span class="phys-math">E = ΔV/d</span> نتیجه می‌شود که دو یکای <span class="phys-math">N/C</span> (نیوتون بر کولن) و <span class="phys-math">V/m</span> (ولت بر متر) هر دو یکای میدان الکتریکی و معادل هم هستند.`
+      },
+      {
+        id: 10,
+        section: 1,
+        type: "dropdown",
+        typeLabel: "مفهومی انتخابی (تعادل بارها و مالش)",
+        points: 1,
+        stemHtml: `وقتی یک میله پلاستیکی را با پارچه پشمی مالش می‌دهیم، بر اساس جدول تریبوالکتریک و پایستگی بار الکتریکی چه اتفاقی می‌افتد؟`,
+        dropdownOptions: [
+          "الکترون‌ها از پارچه پشمی به میله پلاستیکی منتقل شده و میله دارای بار منفی می‌شود",
+          "پروتون‌ها از میله پلاستیکی به پارچه پشمی منتقل می‌شوند",
+          "الکترون‌ها از میله پلاستیکی به پارچه پشمی منتقل شده و میله دارای بار مثبت می‌شود",
+          "بارهای الکتریکی جدید خلق شده و هر دو جسم دارای بار همنام می‌شوند"
+        ],
+        correctValue: "الکترون‌ها از پارچه پشمی به میله پلاستیکی منتقل شده و میله دارای بار منفی می‌شود",
+        explanation: `در مالش میله پلاستیکی با پارچه پشمی، الکترون‌های سست‌تر از پارچه پشمی کنده شده و به میله پلاستیکی منتقل می‌شوند؛ لذا میله پلاستیکی دارای بار منفی و پارچه پشمی به همان اندازه دارای بار مثبت می‌شود.`
+      },
+
+      // -------------------- بخش دوم: سؤالات تشریحی و حل مسئله ۷ مرحله‌ای ساختاریافته (۱۰ نمره) --------------------
+      {
+        id: 11,
+        section: 2,
+        type: "step_problem",
+        typeLabel: "مسئله تشریحی ۷ مرحله‌ای (قانون کولن)",
+        points: 3.5,
+        stemHtml: `دو گلوله کوچک فلزی مشابه را که دارای بارهای نقطه‌ای <span class="phys-math">q<sub>1</sub> = +4 μC</span> و <span class="phys-math">q<sub>2</sub> = −6 μC</span> هستند، در فاصله <span class="phys-math">r = 30 cm</span> از یکدیگر در هوا قرار می‌دهیم. اگر ثابت کولن <span class="phys-math">k = 9 × 10<sup>9</sup> <span class="phys-frac"><span class="num">N⋅m<sup>2</sup></span><span class="den">C<sup>2</sup></span></span></span> باشد، اندازه نیروی الکتریکی بین دو بار را با تکمیل مراحل ۷گانه زیر محاسبه کنید:`,
+        steps: [
+          {
+            stepNum: 1,
+            title: "۱. استخراج داده‌ها",
+            desc: "اندازه بارها و فاصله اولیه در صورت مسئله کدام‌اند؟",
+            pts: 0.5,
+            inputType: "select",
+            options: [
+              "|q₁| = 4 μC , |q₂| = 6 μC , r = 30 cm",
+              "|q₁| = 4 C , |q₂| = 6 C , r = 30 m",
+              "|q₁| = 30 μC , |q₂| = 6 μC , r = 4 cm"
+            ],
+            correct: "|q₁| = 4 μC , |q₂| = 6 μC , r = 30 cm"
+          },
+          {
+            stepNum: 2,
+            title: "۲. تعیین مجهول و نوع نیرو",
+            desc: "مجهول مسئله و نوع نیروی بین دو بار ناهمنام چیست؟",
+            pts: 0.5,
+            inputType: "select",
+            options: [
+              "بزرگی نیروی الکتریکی F (از نوع جاذبه)",
+              "بزرگی نیروی الکتریکی F (از نوع دافعه)",
+              "اختلاف پتانسیل الکتریکی ΔV"
+            ],
+            correct: "بزرگی نیروی الکتریکی F (از نوع جاذبه)"
+          },
+          {
+            stepNum: 3,
+            title: "۳. انتخاب فرمول اصلی",
+            desc: "کدام رابطه فیزیکی برای محاسبه نیرو به کار می‌رود؟",
+            pts: 0.5,
+            inputType: "select",
+            options: [
+              "F = k (|q₁ q₂| / r²)",
+              "F = k (|q₁ + q₂| / r)",
+              "E = k (|q| / r²)"
+            ],
+            correct: "F = k (|q₁ q₂| / r²)"
+          },
+          {
+            stepNum: 4,
+            title: "۴. انتخاب تبدیل واحد به SI",
+            desc: "مقادیر تبدیل‌شده بارها به کولن (C) و فاصله به متر (m) کدام است؟",
+            pts: 0.5,
+            inputType: "select",
+            options: [
+              "|q₁| = 4×10⁻⁶ C , |q₂| = 6×10⁻⁶ C , r = 0.3 m (یا 3×10⁻¹ m)",
+              "|q₁| = 4×10⁻³ C , |q₂| = 6×10⁻³ C , r = 3 m",
+              "|q₁| = 4×10⁻⁶ C , |q₂| = 6×10⁻⁶ C , r = 30 m"
+            ],
+            correct: "|q₁| = 4×10⁻⁶ C , |q₂| = 6×10⁻⁶ C , r = 0.3 m (یا 3×10⁻¹ m)"
+          },
+          {
+            stepNum: 5,
+            title: "۵. جایگذاری اعداد در صورت کسر",
+            desc: "در عبارت F = (9×10⁹ × 4×10⁻⁶ × 6×10⁻⁶) / (0.3)²، حاصل‌ضرب اعداد در صورت کسر (9 × 4 × 6) برابر چند است؟",
+            pts: 0.5,
+            inputType: "number",
+            placeholder: "عدد را وارد کنید (مثلاً 216)",
+            correct: 216,
+            tolerance: 0.1
+          },
+          {
+            stepNum: 6,
+            title: "۶. محاسبات مخرج و توان‌ها",
+            desc: "با توجه به اینکه صورت برابر 216×10⁻³ و مخرج برابر (0.3)² = 0.09 = 9×10⁻² است، حاصل تقسیم 216 بر 9 چند می‌شود؟",
+            pts: 0.5,
+            inputType: "number",
+            placeholder: "عدد را وارد کنید (مثلاً 24)",
+            correct: 24,
+            tolerance: 0.1
+          },
+          {
+            stepNum: 7,
+            title: "۷. جواب نهایی و یکا",
+            desc: "مقدار نهایی نیروی F (حاصل 24 × 10⁻¹) و یکای استاندارد آن چیست؟",
+            pts: 0.5,
+            inputType: "number_unit",
+            placeholder: "مقدار نهایی F (مثلاً 2.4)",
+            correctNumber: 2.4,
+            tolerance: 0.05,
+            unitOptions: ["N (نیوتون)", "N/C (نیوتون بر کولن)", "J (ژول)", "C (کولن)"],
+            correctUnit: "N (نیوتون)"
+          }
+        ],
+        explanation: `حل کامل: <span class="phys-math">F = (9×10<sup>9</sup> × 4×10<sup>−6</sup> × 6×10<sup>−6</sup>) / (3×10<sup>−1</sup>)<sup>2</sup> = (216 × 10<sup>−3</sup>) / (9 × 10<sup>−2</sup>) = 24 × 10<sup>−1</sup> = 2.4 N</span>.`
+      },
+
+      {
+        id: 12,
+        section: 2,
+        type: "step_problem",
+        typeLabel: "مسئله تشریحی ۷ مرحله‌ای (میدان الکتریکی و نیرو)",
+        points: 3.25,
+        stemHtml: `در نقطه‌ای از فضا، یک ذره آزمون با بار <span class="phys-math">q<sub>0</sub> = +2 μC</span> قرار می‌دهیم و از طرف میدان الکتریکی موجود، نیرویی به بزرگی <span class="phys-math">F = 0.08 N</span> به آن وارد می‌شود. بزرگی میدان الکتریکی <span class="phys-math">E</span> در آن نقطه را با تکمیل مراحل ۷گانه زیر به دست آورید:`,
+        steps: [
+          {
+            stepNum: 1,
+            title: "۱. استخراج داده‌ها",
+            desc: "داده‌های معلوم در صورت مسئله کدام‌اند؟",
+            pts: 0.5,
+            inputType: "select",
+            options: [
+              "q₀ = +2 μC , F = 0.08 N",
+              "q₀ = +2 C , E = 0.08 N/C",
+              "q₀ = 0.08 μC , F = 2 N"
+            ],
+            correct: "q₀ = +2 μC , F = 0.08 N"
+          },
+          {
+            stepNum: 2,
+            title: "۲. تعیین مجهول مسئله",
+            desc: "کمیت مجهول مورد نظر و جهت آن نسبت به نیرو چیست؟",
+            pts: 0.5,
+            inputType: "select",
+            options: [
+              "بزرگی میدان الکتریکی E (هم‌جهت با F چون q₀ > 0 است)",
+              "بزرگی میدان الکتریکی E (خلاف جهت F)",
+              "پتانسیل الکتریکی V"
+            ],
+            correct: "بزرگی میدان الکتریکی E (هم‌جهت با F چون q₀ > 0 است)"
+          },
+          {
+            stepNum: 3,
+            title: "۳. انتخاب فرمول تعریف میدان",
+            desc: "کدام فرمول رابطه بین میدان الکتریکی و نیروی وارد بر بار آزمون را نشان می‌دهد؟",
+            pts: 0.5,
+            inputType: "select",
+            options: [
+              "E = F / |q₀|",
+              "E = F × |q₀|",
+              "E = q₀ / F"
+            ],
+            correct: "E = F / |q₀|"
+          },
+          {
+            stepNum: 4,
+            title: "۴. انتخاب تبدیل واحد",
+            desc: "نمایش نماد علمی نیرو و بار برحسب یکاهای SI کدام است؟",
+            pts: 0.5,
+            inputType: "select",
+            options: [
+              "F = 8 × 10⁻² N  و  q₀ = 2 × 10⁻⁶ C",
+              "F = 8 × 10⁻³ N  و  q₀ = 2 × 10⁻³ C",
+              "F = 8 N  و  q₀ = 2 C"
+            ],
+            correct: "F = 8 × 10⁻² N  و  q₀ = 2 × 10⁻⁶ C"
+          },
+          {
+            stepNum: 5,
+            title: "۵. جایگذاری و تقسیم ضرایب عددی",
+            desc: "در رابطه E = (8 × 10⁻²) / (2 × 10⁻⁶)، حاصل تقسیم ضریب 8 بر 2 چند است؟",
+            pts: 0.25,
+            inputType: "number",
+            placeholder: "عدد را وارد کنید (4)",
+            correct: 4,
+            tolerance: 0.01
+          },
+          {
+            stepNum: 6,
+            title: "۶. محاسبه توانِ ۱۰",
+            desc: "در عبارت 4 × 10ⁿ، توانِ n (حاصل 2− منهای 6−) برابر چه عددی است؟",
+            pts: 0.5,
+            inputType: "number",
+            placeholder: "توان ۱۰ را وارد کنید (4)",
+            correct: 4,
+            tolerance: 0.01
+          },
+          {
+            stepNum: 7,
+            title: "۷. جواب نهایی (برحسب عدد کامل) و یکا",
+            desc: "مقدار نهایی میدان الکتریکی E (معادل 4 × 10⁴ یعنی 40000) و یکای آن چیست؟",
+            pts: 0.5,
+            inputType: "number_unit",
+            placeholder: "عدد نهایی (40000)",
+            correctNumber: 40000,
+            tolerance: 1,
+            unitOptions: ["N/C (نیوتون بر کولن)", "N (نیوتون)", "C/N (کولن بر نیوتون)", "F (فاراد)"],
+            correctUnit: "N/C (نیوتون بر کولن)"
+          }
+        ],
+        explanation: `حل کامل: <span class="phys-math">E = F / q<sub>0</sub> = (8 × 10<sup>−2</sup> N) / (2 × 10<sup>−6</sup> C) = 4 × 10<sup>+4</sup> N/C = 40000 N/C</span>.`
+      },
+
+      {
+        id: 13,
+        section: 2,
+        type: "step_problem",
+        typeLabel: "مسئله تشریحی ۷ مرحله‌ای (بار و انرژی ذخیره‌شده در خازن)",
+        points: 3.25,
+        stemHtml: `یک خازن به ظرفیت <span class="phys-math">C = 5 μF</span> را به دو سر یک منبع تغذیه با اختلاف پتانسیل <span class="phys-math">V = 20 V</span> متصل می‌کنیم تا به طور کامل پر شود. بار الکتریکی <span class="phys-math">q</span> و انرژی پتانسیل الکتریکی ذخیره‌شده در خازن <span class="phys-math">U</span> را با تکمیل مراحل ۷گانه زیر بیابید:`,
+        steps: [
+          {
+            stepNum: 1,
+            title: "۱. استخراج داده‌ها",
+            desc: "ظرفیت خازن و اختلاف پتانسیل دو سر آن کدام‌اند؟",
+            pts: 0.25,
+            inputType: "select",
+            options: [
+              "C = 5 μF , V = 20 V",
+              "C = 20 μF , V = 5 V",
+              "q = 5 μC , V = 20 V"
+            ],
+            correct: "C = 5 μF , V = 20 V"
+          },
+          {
+            stepNum: 2,
+            title: "۲. تعیین مجهول‌ها",
+            desc: "کمیت‌های مجهول خواسته شده در مسئله کدام‌اند؟",
+            pts: 0.25,
+            inputType: "select",
+            options: [
+              "بار ذخیره‌شده (q) و انرژی الکتریکی خازن (U)",
+              "فاصله صفحات (d) و مساحت صفحات (A)",
+              "میدان الکتریکی (E) و نیروی کولن (F)"
+            ],
+            correct: "بار ذخیره‌شده (q) و انرژی الکتریکی خازن (U)"
+          },
+          {
+            stepNum: 3,
+            title: "۳. انتخاب فرمول‌های بار و انرژی خازن",
+            desc: "کدام جفت فرمول برای محاسبه بار و انرژی خازن صحیح است؟",
+            pts: 0.5,
+            inputType: "select",
+            options: [
+              "q = C V   و   U = ½ C V² (یا U = ½ q V)",
+              "q = C / V   و   U = C V",
+              "q = V / C   و   U = ½ C² V"
+            ],
+            correct: "q = C V   و   U = ½ C V² (یا U = ½ q V)"
+          },
+          {
+            stepNum: 4,
+            title: "۴. انتخاب تبدیل واحد ظرفیت به فاراد (F)",
+            desc: "ظرفیت C = 5 μF برحسب فاراد (F) برابر کدام گزینه است؟",
+            pts: 0.5,
+            inputType: "select",
+            options: [
+              "C = 5 × 10⁻⁶ F",
+              "C = 5 × 10⁻³ F",
+              "C = 5 × 10⁻⁹ F"
+            ],
+            correct: "C = 5 × 10⁻⁶ F"
+          },
+          {
+            stepNum: 5,
+            title: "۵. جایگذاری و محاسبه بار برحسب میکروکولن (μC)",
+            desc: "از رابطه q = C × V، بار ذخیره‌شده برحسب میکروکولن (5 μF × 20 V) برابر چند میکروکولن است؟",
+            pts: 0.5,
+            inputType: "number",
+            placeholder: "بار برحسب μC (مثلاً 100)",
+            correct: 100,
+            tolerance: 0.1
+          },
+          {
+            stepNum: 6,
+            title: "۶. محاسبه انرژی خازن برحسب میکروژول (μJ)",
+            desc: "در رابطه U = ½ C V² = ½ × 5 μF × (20)²، مقدار انرژی برحسب میکروژول (μJ) چند می‌شود؟",
+            pts: 0.5,
+            inputType: "number",
+            placeholder: "انرژی برحسب μJ (مثلاً 1000)",
+            correct: 1000,
+            tolerance: 0.5
+          },
+          {
+            stepNum: 7,
+            title: "۷. جواب نهایی انرژی در SI (برحسب ژول) و یکا",
+            desc: "با تبدیل 1000 μJ به یکای اصلی SI (تقسیم بر 10⁶)، مقدار انرژی U و یکای آن کدام است؟",
+            pts: 0.75,
+            inputType: "number_unit",
+            placeholder: "مقدار U برحسب ژول (0.001)",
+            correctNumber: 0.001,
+            tolerance: 0.0001,
+            unitOptions: ["J (ژول)", "F (فاراد)", "V (ولت)", "W (وات)"],
+            correctUnit: "J (ژول)"
+          }
+        ],
+        explanation: `حل کامل: <span class="phys-math">q = CV = 5 μF × 20 V = 100 μC = 10<sup>−4</sup> C</span> و <span class="phys-math">U = ½ CV<sup>2</sup> = ½ × 5×10<sup>−6</sup> × 400 = 1000 × 10<sup>−6</sup> J = 0.001 J</span>.`
+      }
+    ];
+
+    /**
+     * ============================================================================
+     * ۳. مبدل تاریخ میلادی به جلالی (شمسی) و کنترل بازه زمانی آزمون
+     * ============================================================================
+     */
+    const JalaliScheduleService = {
+      toJalali(gy, gm, gd) {
+        const g_d_m = [0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334];
+        let gy2 = (gm > 2) ? (gy + 1) : gy;
+        let days = 355666 + (365 * gy) + Math.floor((gy2 + 3) / 4) - Math.floor((gy2 + 99) / 100) + Math.floor((gy2 + 399) / 400) + gd + g_d_m[gm - 1];
+        let jy = -1595 + (33 * Math.floor(days / 12053));
+        days %= 12053;
+        jy += 4 * Math.floor(days / 1461);
+        days %= 1461;
+        if (days > 365) {
+          jy += Math.floor((days - 1) / 365);
+          days = (days - 1) % 365;
+        }
+        let jm = (days < 186) ? 1 + Math.floor(days / 31) : 7 + Math.floor((days - 186) / 30);
+        let jd = 1 + ((days < 186) ? (days % 31) : ((days - 186) % 30));
+        return { jy, jm, jd };
+      },
+
+      jalaliToGregorian(jy, jm, jd) {
+        jy += 1595;
+        let days = -355668 + (365 * jy) + (Math.floor(jy / 33) * 8) + Math.floor(((jy % 33) + 3) / 4) + jd + ((jm < 7) ? (jm - 1) * 31 : ((jm - 7) * 30) + 186);
+        let gy = 400 * Math.floor(days / 146097);
+        days %= 146097;
+        if (days > 36524) {
+          gy += 100 * Math.floor(--days / 36524);
+          days %= 36524;
+          if (days >= 365) days++;
+        }
+        gy += 4 * Math.floor(days / 1461);
+        days %= 1461;
+        if (days > 365) {
+          gy += Math.floor((days - 1) / 365);
+          days = (days - 1) % 365;
+        }
+        let gd = days + 1;
+        const sal_a = [0, 31, ((gy % 4 === 0 && gy % 100 !== 0) || (gy % 400 === 0)) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+        let gm;
+        for (gm = 0; gm < 13 && gd > sal_a[gm]; gm++) gd -= sal_a[gm];
+        return new Date(gy, gm - 1, gd);
+      },
+
+      checkWindow(overrideUnlocked = false) {
+        if (overrideUnlocked) {
+          return { status: "OPEN", message: "آزمون توسط دبیر فعال شده و آماده ورود است." };
+        }
+        const s = EXAM_CONFIG.schedule;
+        if (!s.jalaliMonth || !s.jalaliDay || !s.startTime || !s.endTime) {
+          return { status: "OPEN", message: "آزمون بدون محدودیت زمانی فعال است." };
+        }
+
+        const now = new Date();
+        const curJ = this.toJalali(now.getFullYear(), now.getMonth() + 1, now.getDate());
+        const targetG = this.jalaliToGregorian(curJ.jy, Number(s.jalaliMonth), Number(s.jalaliDay));
+
+        const [sh, sm] = s.startTime.split(":").map(Number);
+        const [eh, em] = s.endTime.split(":").map(Number);
+
+        const startDT = new Date(targetG.getFullYear(), targetG.getMonth(), targetG.getDate(), sh, sm, 0);
+        const endDT = new Date(targetG.getFullYear(), targetG.getMonth(), targetG.getDate(), eh, em, 0);
+
+        if (now < startDT) {
+          return {
+            status: "BEFORE",
+            diffMs: startDT - now,
+            message: `آزمون در تاریخ ${s.examDateLabel} ساعت ${s.startTime} آغاز می‌شود. پیش از زمان شروع، ورود قفل است.`
+          };
+        } else if (now > endDT) {
+          return {
+            status: "AFTER",
+            diffMs: 0,
+            message: `بازه زمانی آزمون (${s.examDateLabel} ساعت ${s.startTime} تا ${s.endTime}) به پایان رسیده و آزمون قفل شده است.`
+          };
+        } else {
+          return {
+            status: "OPEN",
+            diffMs: endDT - now,
+            message: `آزمون هم‌اکنون فعال است (مهلت تا ساعت ${s.endTime}).`
+          };
+        }
+      }
+    };
+
+    /**
+     * ============================================================================
+     * ۴. مدیریت ذخیره و بازیابی خودکار (StorageService)
+     * ============================================================================
+     */
+    const STORAGE_KEY = "BARZEGARI_PHYSICS11_CH1_ROSTAMANI_V1";
+
+    const StorageService = {
+      defaultState() {
+        return {
+          studentName: "",
+          studentGrade: "یازدهم تجربی",
+          started: false,
+          submitted: false,
+          remainingSeconds: EXAM_CONFIG.schedule.durationMinutes * 60,
+          lastTickEpoch: null,
+          answers: {},
+          flags: {},
+          theme: "light",
+          scheduleOverride: false,
+          finalResult: null,
+          supabaseSynced: false
+        };
+      },
+
+      load() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return this.defaultState();
+          return { ...this.defaultState(), ...JSON.parse(raw) };
+        } catch (e) {
+          return this.defaultState();
+        }
+      },
+
+      save(state) {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (e) {
+          console.error("خطا در ذخیره LocalStorage:", e);
+        }
+      },
+
+      clear() {
+        localStorage.removeItem(STORAGE_KEY);
+      }
+    };
+
+    /**
+     * ============================================================================
+     * ۵. تابع ارسال مستقیم نمره به جدول Students در Supabase
+     * ============================================================================
+     */
+    async function sendToSupabase(studentName, score, totalScore, detailsText) {
+      const payload = {
+        Student_name: studentName,
+        School_name: ACTIVE_SCHOOL,
+        Subject: ACTIVE_SUBJECT,
+        Score: parseFloat(score),
+        Total_score: parseFloat(totalScore),
+        Details: detailsText
+      };
+
+      const endpoint = `${SUPABASE_URL}/rest/v1/${EXAM_CONFIG.supabase.tableName}`;
+
+      let response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${SUPABASE_KEY}`,
+          "Prefer": "return=minimal"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      // Fallback در صورت حساسیت گیت‌وی به کلیدهای نسل جدید در هدر Bearer
+      if (response.status === 401) {
+        response = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": SUPABASE_KEY,
+            "Prefer": "return=minimal"
+          },
+          body: JSON.stringify(payload)
+        });
+      }
+
+      if (!response.ok) {
+        throw new Error(`خطای سرور: ${response.status}`);
+      }
+      return true;
+    }
+
+    /**
+     * ============================================================================
+     * ۶. کنترلر اصلی سامانه آزمون (AppController)
+     * ============================================================================
+     */
+    const AppController = {
+      state: StorageService.load(),
+      timerInterval: null,
+      scheduleInterval: null,
+
+      init() {
+        this.applyTheme(this.state.theme);
+        this.populateHeaderAndLoginInfo();
+        this.bindGlobalEvents();
+        this.startScheduleMonitor();
+
+        if (this.state.studentName) {
+          document.getElementById("student-fullname").value = this.state.studentName;
+        }
+        if (this.state.studentGrade) {
+          document.getElementById("student-grade").value = this.state.studentGrade;
+        }
+
+        if (this.state.started) {
+          this.enterExamView();
+        }
+      },
+
+      populateHeaderAndLoginInfo() {
+        document.getElementById("header-lesson-title").textContent = `${EXAM_CONFIG.subjectName} — دبیرستان ${EXAM_CONFIG.schoolName}`;
+        document.getElementById("header-teacher-name").textContent = EXAM_CONFIG.teacherName;
+        document.getElementById("login-school-badge").textContent = `دبیرستان ${EXAM_CONFIG.schoolName}`;
+        document.getElementById("login-subject-title").textContent = `آزمون استاندارد ${EXAM_CONFIG.subjectName}`;
+        document.getElementById("login-topic-subtitle").textContent = EXAM_CONFIG.topic;
+        document.getElementById("meta-teacher").textContent = EXAM_CONFIG.teacherName;
+        document.getElementById("meta-school").textContent = EXAM_CONFIG.schoolName;
+
+        const s = EXAM_CONFIG.schedule;
+        document.getElementById("meta-date").textContent = s.examDateLabel || "آزاد";
+        document.getElementById("meta-time").textContent = (s.startTime && s.endTime)
+          ? `${s.startTime} تا ${s.endTime} (${s.durationMinutes} دقیقه)`
+          : `${s.durationMinutes} دقیقه`;
+      },
+
+      startScheduleMonitor() {
+        const tick = () => {
+          const check = JalaliScheduleService.checkWindow(this.state.scheduleOverride);
+          const box = document.getElementById("schedule-status-box");
+          const txt = document.getElementById("schedule-status-text");
+          const cd = document.getElementById("schedule-countdown");
+          const btn = document.getElementById("start-exam-btn");
+
+          box.className = "schedule-lock-box";
+          txt.textContent = check.message;
+
+          if (check.status === "BEFORE") {
+            box.classList.add("locked-before");
+            btn.disabled = true;
+            cd.textContent = this.formatMs(check.diffMs);
+          } else if (check.status === "AFTER") {
+            box.classList.add("locked-after");
+            btn.disabled = true;
+            cd.textContent = "LOCKED (پایان زمان آزمون)";
+            if (this.state.started && !this.state.submitted) {
+              this.finalizeSubmission(true);
+            }
+          } else {
+            box.classList.add("unlocked");
+            btn.disabled = false;
+            cd.textContent = check.diffMs ? `زمان باقی‌مانده از بازه آزمون: ${this.formatMs(check.diffMs)}` : "";
+          }
+        };
+
+        tick();
+        this.scheduleInterval = setInterval(tick, 1000);
+      },
+
+      formatMs(ms) {
+        const sec = Math.max(0, Math.floor(ms / 1000));
+        const d = Math.floor(sec / 86400);
+        const h = Math.floor((sec % 86400) / 3600);
+        const m = Math.floor((sec % 3600) / 60);
+        const s = sec % 60;
+        const pad = n => String(n).padStart(2, "0");
+        return d > 0 ? `${d}d : ${pad(h)}h : ${pad(m)}m : ${pad(s)}s` : `${pad(h)}:${pad(m)}:${pad(s)}`;
+      },
+
+      startExam() {
+        const check = JalaliScheduleService.checkWindow(this.state.scheduleOverride);
+        if (check.status !== "OPEN") {
+          alert(check.message);
+          return;
+        }
+
+        const name = document.getElementById("student-fullname").value.trim();
+        const grade = document.getElementById("student-grade").value.trim();
+
+        if (!name || !grade) {
+          alert("لطفاً نام و نام خانوادگی و پایه تحصیلی خود را به صورت کامل وارد نمایید.");
+          return;
+        }
+
+        this.state.studentName = name;
+        this.state.studentGrade = grade;
+        this.state.started = true;
+        if (!this.state.lastTickEpoch) {
+          this.state.lastTickEpoch = Date.now();
+        }
+        StorageService.save(this.state);
+        this.enterExamView();
+      },
+
+      enterExamView() {
+        document.getElementById("login-view").style.display = "none";
+        document.getElementById("exam-view").style.display = "block";
+        document.getElementById("exam-timer-pill").style.display = "flex";
+        document.getElementById("exam-progress-strip").classList.add("active");
+        document.getElementById("floating-nav-btn").style.display = "inline-flex";
+
+        this.renderAllQuestions();
+        this.updateProgressUI();
+
+        if (this.state.submitted) {
+          this.renderSubmittedState();
+        } else {
+          this.startCountdownTimer();
+        }
+      },
+
+      startCountdownTimer() {
+        if (this.timerInterval) clearInterval(this.timerInterval);
+
+        if (this.state.lastTickEpoch && !this.state.submitted) {
+          const awaySec = Math.floor((Date.now() - this.state.lastTickEpoch) / 1000);
+          if (awaySec > 1) {
+            this.state.remainingSeconds = Math.max(0, this.state.remainingSeconds - awaySec);
+          }
+        }
+
+        const tickTimer = () => {
+          if (this.state.submitted) {
+            clearInterval(this.timerInterval);
+            return;
+          }
+
+          this.state.remainingSeconds = Math.max(0, this.state.remainingSeconds - 1);
+          this.state.lastTickEpoch = Date.now();
+          StorageService.save(this.state);
+
+          const m = Math.floor(this.state.remainingSeconds / 60);
+          const s = this.state.remainingSeconds % 60;
+          document.getElementById("timer-display").textContent = `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+
+          const pill = document.getElementById("exam-timer-pill");
+          pill.classList.remove("warning", "danger");
+          if (this.state.remainingSeconds <= 120) pill.classList.add("danger");
+          else if (this.state.remainingSeconds <= 300) pill.classList.add("warning");
+
+          if (this.state.remainingSeconds <= 0) {
+            clearInterval(this.timerInterval);
+            this.finalizeSubmission(true);
+          }
+        };
+
+        tickTimer();
+        this.timerInterval = setInterval(tickTimer, 1000);
+      },
+
+      renderAllQuestions() {
+        const container = document.getElementById("questions-container");
+        const navGrid = document.getElementById("nav-grid-dots");
+        container.innerHTML = "";
+        navGrid.innerHTML = "";
+
+        let currentSection = 0;
+
+        QUESTIONS_BANK.forEach((q, idx) => {
+          const qNum = idx + 1;
+
+          // افزودن بنر تفکیک بخش اول و بخش دوم
+          if (q.section !== currentSection) {
+            currentSection = q.section;
+            const banner = document.createElement("div");
+            banner.className = "section-divider-banner";
+            if (currentSection === 1) {
+              banner.innerHTML = `
+                <h2>بخش اول: سؤالات مفهومی، چهارگزینه‌ای، صحیح/غلط و جای‌خالی</h2>
+                <span>بارم بخش اول: ۱۰ نمره</span>
+              `;
+            } else {
+              banner.innerHTML = `
+                <h2>بخش دوم: مسائل تشریحی مرحله‌به‌مرحله (ساختاریافته ۷ مرحله‌ای)</h2>
+                <span>بارم بخش دوم: ۱۰ نمره</span>
+              `;
+            }
+            container.appendChild(banner);
+          }
+
+          const isAns = this.isQuestionComplete(q);
+          const isFlg = !!this.state.flags[q.id];
+
+          // دکمه ناوبری کناری
+          const dot = document.createElement("button");
+          dot.className = `nav-dot ${isAns ? "answered" : ""} ${isFlg ? "flagged" : ""}`;
+          dot.id = `nav-dot-${q.id}`;
+          dot.textContent = qNum;
+          dot.onclick = () => {
+            document.getElementById(`q-card-${q.id}`).scrollIntoView({ behavior: "smooth", block: "center" });
+            this.toggleNavDrawer(false);
+          };
+          navGrid.appendChild(dot);
+
+          // کارت سؤال
+          const card = document.createElement("article");
+          card.className = `glass-card question-card ${isAns ? "answered" : ""} ${isFlg ? "flagged" : ""}`;
+          card.id = `q-card-${q.id}`;
+
+          let inputHtml = "";
+          const savedVal = this.state.answers[q.id];
+
+          if (q.type === "mcq" || q.type === "true_false") {
+            inputHtml += `<div class="options-grid">`;
+            q.options.forEach((optHtml, optIdx) => {
+              const isSelected = savedVal === optIdx;
+              inputHtml += `
+                <label class="option-label ${isSelected ? "selected" : ""}" id="opt-lbl-${q.id}-${optIdx}">
+                  <input type="radio" name="q_${q.id}" value="${optIdx}" ${isSelected ? "checked" : ""}
+                    onchange="AppController.savePart1Answer(${q.id}, ${optIdx})">
+                  <span>${optHtml}</span>
+                </label>
+              `;
+            });
+            inputHtml += `</div>`;
+          } else if (q.type === "dropdown") {
+            inputHtml += `
+              <select class="phys-select" onchange="AppController.savePart1Answer(${q.id}, this.value)">
+                <option value="">-- گزینه صحیح را انتخاب کنید --</option>
+                ${q.dropdownOptions.map(opt => `<option value="${opt}" ${savedVal === opt ? "selected" : ""}>${opt}</option>`).join("")}
+              </select>
+            `;
+          } else if (q.type === "step_problem") {
+            const stepAnswers = savedVal || {};
+            inputHtml += `<div class="steps-wrapper">`;
+            q.steps.forEach(st => {
+              const curStepVal = stepAnswers[st.stepNum];
+              let controlHtml = "";
+
+              if (st.inputType === "select") {
+                controlHtml = `
+                  <select class="phys-select" style="direction:ltr; text-align:left;" onchange="AppController.saveStepAnswer(${q.id}, ${st.stepNum}, this.value)">
+                    <option value="">-- انتخاب کنید --</option>
+                    ${st.options.map(o => `<option value="${o}" ${curStepVal === o ? "selected" : ""}>${o}</option>`).join("")}
+                  </select>
+                `;
+              } else if (st.inputType === "number") {
+                const v = (curStepVal !== undefined && curStepVal !== null) ? curStepVal : "";
+                controlHtml = `
+                  <input type="number" step="any" class="phys-num-input" placeholder="${st.placeholder}"
+                    value="${v}" oninput="AppController.saveStepAnswer(${q.id}, ${st.stepNum}, this.value)">
+                `;
+              } else if (st.inputType === "number_unit") {
+                const objVal = (curStepVal && typeof curStepVal === "object") ? curStepVal : { num: "", unit: "" };
+                controlHtml = `
+                  <input type="number" step="any" class="phys-num-input" style="flex:1;" placeholder="${st.placeholder}"
+                    value="${objVal.num || ""}" oninput="AppController.saveStepNumUnit(${q.id}, ${st.stepNum}, 'num', this.value)">
+                  <select class="phys-select" style="flex:1.1; direction:ltr;" onchange="AppController.saveStepNumUnit(${q.id}, ${st.stepNum}, 'unit', this.value)">
+                    <option value="">-- انتخاب یکا --</option>
+                    ${st.unitOptions.map(u => `<option value="${u}" ${objVal.unit === u ? "selected" : ""}>${u}</option>`).join("")}
+                  </select>
+                `;
+              }
+
+              inputHtml += `
+                <div class="step-item">
+                  <div class="step-title-col">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                      <span class="step-badge">${st.title}</span>
+                      <span class="step-pts">(${st.pts} نمره)</span>
+                    </div>
+                    <span class="step-sub-label">${st.desc}</span>
+                  </div>
+                  <div class="step-input-col">${controlHtml}</div>
+                </div>
+              `;
+            });
+            inputHtml += `</div>`;
+          }
+
+          card.innerHTML = `
+            <div class="q-header">
+              <div class="q-badge-group">
+                <span class="q-number">سؤال ${qNum}</span>
+                <span class="q-type-tag">${q.typeLabel}</span>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="q-points">${q.points} نمره</span>
+                <button type="button" class="flag-btn ${isFlg ? "active" : ""}" id="flag-btn-${q.id}" onclick="AppController.toggleFlag(${q.id})">
+                  🚩 علامت
+                </button>
+              </div>
+            </div>
+            <div class="q-stem">${q.stemHtml}</div>
+            <div class="q-body">${inputHtml}</div>
+            <div class="q-feedback" id="feedback-q-${q.id}"></div>
+          `;
+
+          container.appendChild(card);
+        });
+      },
+
+      isQuestionComplete(q) {
+        const ans = this.state.answers[q.id];
+        if (ans === undefined || ans === null || ans === "") return false;
+        if (q.type === "step_problem") {
+          if (typeof ans !== "object") return false;
+          return q.steps.every(st => {
+            const val = ans[st.stepNum];
+            if (st.inputType === "number_unit") {
+              return val && String(val.num).trim() !== "" && String(val.unit).trim() !== "";
+            }
+            return val !== undefined && val !== null && String(val).trim() !== "";
+          });
+        }
+        return true;
+      },
+
+      savePart1Answer(qId, val) {
+        if (this.state.submitted) return;
+        this.state.answers[qId] = val;
+        StorageService.save(this.state);
+
+        const q = QUESTIONS_BANK.find(item => item.id === qId);
+        if (q && q.options) {
+          q.options.forEach((_, idx) => {
+            const lbl = document.getElementById(`opt-lbl-${qId}-${idx}`);
+            if (lbl) lbl.classList.toggle("selected", idx === val);
+          });
+        }
+
+        this.refreshCardStatus(qId);
+        this.updateProgressUI();
+      },
+
+      saveStepAnswer(qId, stepNum, val) {
+        if (this.state.submitted) return;
+        if (!this.state.answers[qId] || typeof this.state.answers[qId] !== "object") {
+          this.state.answers[qId] = {};
+        }
+        this.state.answers[qId][stepNum] = val;
+        StorageService.save(this.state);
+        this.refreshCardStatus(qId);
+        this.updateProgressUI();
+      },
+
+      saveStepNumUnit(qId, stepNum, field, val) {
+        if (this.state.submitted) return;
+        if (!this.state.answers[qId] || typeof this.state.answers[qId] !== "object") {
+          this.state.answers[qId] = {};
+        }
+        if (!this.state.answers[qId][stepNum] || typeof this.state.answers[qId][stepNum] !== "object") {
+          this.state.answers[qId][stepNum] = { num: "", unit: "" };
+        }
+        this.state.answers[qId][stepNum][field] = val;
+        StorageService.save(this.state);
+        this.refreshCardStatus(qId);
+        this.updateProgressUI();
+      },
+
+      toggleFlag(qId) {
+        this.state.flags[qId] = !this.state.flags[qId];
+        StorageService.save(this.state);
+        this.refreshCardStatus(qId);
+      },
+
+      refreshCardStatus(qId) {
+        const q = QUESTIONS_BANK.find(item => item.id === qId);
+        const card = document.getElementById(`q-card-${qId}`);
+        const dot = document.getElementById(`nav-dot-${qId}`);
+        const flagBtn = document.getElementById(`flag-btn-${qId}`);
+
+        const comp = this.isQuestionComplete(q);
+        const flg = !!this.state.flags[qId];
+
+        if (card) {
+          card.classList.toggle("answered", comp);
+          card.classList.toggle("flagged", flg);
+        }
+        if (dot) {
+          dot.classList.toggle("answered", comp);
+          dot.classList.toggle("flagged", flg);
+        }
+        if (flagBtn) flagBtn.classList.toggle("active", flg);
+      },
+
+      updateProgressUI() {
+        const total = QUESTIONS_BANK.length;
+        let done = 0;
+        QUESTIONS_BANK.forEach(q => {
+          if (this.isQuestionComplete(q)) done++;
+        });
+        const pct = Math.round((done / total) * 100);
+        document.getElementById("progress-text").textContent = `پیشرفت پاسخگویی: ${done} از ${total} سؤال (${pct}٪)`;
+        document.getElementById("answer-progress-bar").style.width = `${pct}%`;
+      },
+
+      toggleNavDrawer(force) {
+        const dr = document.getElementById("floating-nav-drawer");
+        if (typeof force === "boolean") dr.classList.toggle("open", force);
+        else dr.classList.toggle("open");
+      },
+
+      openConfirmModal() {
+        if (this.state.submitted) return;
+        let incomplete = 0;
+        QUESTIONS_BANK.forEach(q => {
+          if (!this.isQuestionComplete(q)) incomplete++;
+        });
+
+        const msg = incomplete > 0
+          ? `شما هنوز ${incomplete} سؤال (یا برخی مراحل مسائل تشریحی) را به طور کامل تکمیل نکرده‌اید. آیا از ثبت نهایی و قفل شدن آزمون اطمینان دارید؟`
+          : `تمامی ۱۳ سؤال آزمون تکمیل شده‌اند. آیا مایل به ثبت نهایی و دریافت کارنامه هستید؟`;
+
+        document.getElementById("confirm-modal-summary").textContent = msg;
+        document.getElementById("confirm-submit-modal").classList.add("open");
+      },
+
+      closeConfirmModal() {
+        document.getElementById("confirm-submit-modal").classList.remove("open");
+      },
+
+      /**
+       * سیستم تصحیح هوشمند مرحله‌به‌مرحله مشابه دبیر فیزیک
+       */
+      evaluateQuestion(q) {
+        const ans = this.state.answers[q.id];
+
+        // بخش اول
+        if (q.type === "mcq" || q.type === "true_false") {
+          const isOk = ans !== undefined && Number(ans) === q.correctIndex;
+          return {
+            earned: isOk ? q.points : 0,
+            max: q.points,
+            status: isOk ? "correct" : "wrong",
+            summary: isOk ? "پاسخ صحیح" : "پاسخ نادرست"
+          };
+        }
+
+        if (q.type === "dropdown") {
+          const isOk = ans === q.correctValue;
+          return {
+            earned: isOk ? q.points : 0,
+            max: q.points,
+            status: isOk ? "correct" : "wrong",
+            summary: isOk ? "پاسخ صحیح" : `پاسخ صحیح: «${q.correctValue}»`
+          };
+        }
+
+        // بخش دوم: تصحیح مستقل هر یک از ۷ مرحله مسئله تشریحی
+        if (q.type === "step_problem") {
+          const stepAns = ans || {};
+          let earned = 0;
+          const stepBreakdown = [];
+
+          q.steps.forEach(st => {
+            const uVal = stepAns[st.stepNum];
+            let stScore = 0;
+
+            if (st.inputType === "select") {
+              if (uVal === st.correct) stScore = st.pts;
+            } else if (st.inputType === "number") {
+              if (uVal !== undefined && uVal !== "" && !isNaN(parseFloat(uVal))) {
+                const diff = Math.abs(parseFloat(uVal) - st.correct);
+                if (diff <= (st.tolerance || 0.05)) stScore = st.pts;
+              }
+            } else if (st.inputType === "number_unit") {
+              if (uVal && typeof uVal === "object") {
+                const numPartPts = st.pts * 0.6;
+                const unitPartPts = st.pts * 0.4;
+                if (uVal.num !== "" && !isNaN(parseFloat(uVal.num))) {
+                  if (Math.abs(parseFloat(uVal.num) - st.correctNumber) <= (st.tolerance || 0.05)) {
+                    stScore += numPartPts;
+                  }
+                }
+                if (uVal.unit === st.correctUnit) {
+                  stScore += unitPartPts;
+                }
+                stScore = Math.round(stScore * 100) / 100;
+              }
+            }
+
+            earned += stScore;
+            stepBreakdown.push(`مرحله ${st.stepNum}: ${stScore} از ${st.pts}`);
+          });
+
+          earned = Math.round(earned * 100) / 100;
+          const status = earned === q.points ? "correct" : (earned > 0 ? "partial" : "wrong");
+          return {
+            earned,
+            max: q.points,
+            status,
+            summary: stepBreakdown.join(" | ")
+          };
+        }
+      },
+
+      async finalizeSubmission(autoByTimer = false) {
+        this.closeConfirmModal();
+        if (this.state.submitted) return;
+        if (this.timerInterval) clearInterval(this.timerInterval);
+
+        let part1Score = 0;
+        let part2Score = 0;
+        const detailsPerQuestion = {};
+
+        QUESTIONS_BANK.forEach(q => {
+          const res = this.evaluateQuestion(q);
+          if (q.section === 1) part1Score += res.earned;
+          else part2Score += res.earned;
+
+          detailsPerQuestion[`Q${q.id}`] = {
+            earned: res.earned,
+            max: res.max,
+            status: res.status,
+            summary: res.summary
+          };
+        });
+
+        part1Score = Math.round(part1Score * 100) / 100;
+        part2Score = Math.round(part2Score * 100) / 100;
+        const totalEarned = Math.round((part1Score + part2Score) * 100) / 100;
+        const percentage = Math.round((totalEarned / EXAM_CONFIG.totalScoreTarget) * 100);
+        const spentMinutes = Math.max(1, Math.ceil(((EXAM_CONFIG.schedule.durationMinutes * 60) - this.state.remainingSeconds) / 60));
+
+        this.state.submitted = true;
+        this.state.finalResult = {
+          totalEarned,
+          part1Score,
+          part2Score,
+          percentage,
+          spentMinutes,
+          detailsPerQuestion,
+          autoByTimer
+        };
+
+        StorageService.save(this.state);
+        this.renderSubmittedState();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+
+        await this.syncToSupabase();
+      },
+
+      renderSubmittedState() {
+        const res = this.state.finalResult;
+        if (!res) return;
+
+        // قفل کردن تمام ورودی‌ها
+        document.querySelectorAll("#questions-container input, #questions-container select").forEach(el => {
+          el.disabled = true;
+        });
+        document.getElementById("submit-section-card").style.display = "none";
+
+        // نمایش بازخورد تشریحی زیر هر سؤال
+        QUESTIONS_BANK.forEach(q => {
+          const fb = document.getElementById(`feedback-q-${q.id}`);
+          const d = res.detailsPerQuestion[`Q${q.id}`];
+          if (fb && d) {
+            fb.className = `q-feedback show ${d.status}`;
+            fb.innerHTML = `
+              <div style="font-weight:800; margin-bottom:4px;">
+                نمره کسب‌شده از این سؤال: ${d.earned} از ${d.max} نمره (${d.summary})
+              </div>
+              <div style="font-size:13px; color:var(--text-muted);">
+                📘 پاسخنامه تشریحی: ${q.explanation}
+              </div>
+            `;
+          }
+        });
+
+        // نمایش کارنامه بالای صفحه
+        const card = document.getElementById("result-scorecard");
+        card.classList.add("show");
+        document.getElementById("result-student-info").textContent =
+          `دانش‌آموز: ${this.state.studentName} | پایه: ${this.state.studentGrade} | دبیرستان: ${EXAM_CONFIG.schoolName}`;
+        document.getElementById("result-score-num").textContent = res.totalEarned;
+        document.getElementById("result-circle").style.setProperty("--pct", `${res.percentage}%`);
+        document.getElementById("res-percent").textContent = `${res.percentage}%`;
+        document.getElementById("res-part1").textContent = `${res.part1Score} از ۱۰`;
+        document.getElementById("res-part2").textContent = `${res.part2Score} از ۱۰`;
+        document.getElementById("res-time-spent").textContent = `${res.spentMinutes} دقیقه`;
+
+        if (this.state.supabaseSynced) {
+          const msg = document.getElementById("supabase-status-msg");
+          msg.style.color = "var(--success)";
+          msg.textContent = "✅ نمره و ریز پاسخ‌های شما با موفقیت در سامانه دبیر (Supabase) ثبت شد.";
+        }
+      },
+
+      async syncToSupabase() {
+        const res = this.state.finalResult;
+        if (!res) return;
+
+        const msg = document.getElementById("supabase-status-msg");
+        const retryBtn = document.getElementById("retry-supabase-btn");
+
+        msg.style.color = "var(--primary-light)";
+        msg.textContent = "⏳ در حال ثبت نمره در سرور...";
+        retryBtn.style.display = "none";
+
+        const detailsText = JSON.stringify({
+          grade: this.state.studentGrade,
+          teacher: EXAM_CONFIG.teacherName,
+          part1Score: res.part1Score,
+          part2Score: res.part2Score,
+          percentage: res.percentage,
+          spentMinutes: res.spentMinutes,
+          breakdown: res.detailsPerQuestion
+        });
+
+        try {
+          await sendToSupabase(
+            `${this.state.studentName} (${this.state.studentGrade})`,
+            res.totalEarned,
+            EXAM_CONFIG.totalScoreTarget,
+            detailsText
+          );
+          this.state.supabaseSynced = true;
+          StorageService.save(this.state);
+          msg.style.color = "var(--success)";
+          msg.textContent = "✅ نمره شما با موفقیت در سامانه ثبت شد.";
+        } catch (err) {
+          msg.style.color = "var(--danger)";
+          msg.textContent = `❌ خطا در ارسال به سرور (${err.message}). نمره در حافظه دستگاه محفوظ است؛ اینترنت را بررسی و مجدداً تلاش کنید.`;
+          retryBtn.style.display = "inline-block";
+        }
+      },
+
+      retrySupabaseSync() {
+        this.syncToSupabase();
+      },
+
+      applyTheme(theme) {
+        this.state.theme = theme;
+        document.documentElement.setAttribute("data-theme", theme);
+        document.getElementById("theme-icon-sun").style.display = theme === "dark" ? "block" : "none";
+        document.getElementById("theme-icon-moon").style.display = theme === "dark" ? "none" : "block";
+        StorageService.save(this.state);
+      },
+
+      bindGlobalEvents() {
+        document.getElementById("theme-toggle-btn").addEventListener("click", () => {
+          this.applyTheme(this.state.theme === "dark" ? "light" : "dark");
+        });
+
+        window.addEventListener("scroll", () => {
+          const doc = document.documentElement;
+          const top = doc.scrollTop || document.body.scrollTop;
+          const height = doc.scrollHeight - doc.clientHeight;
+          const pct = height > 0 ? Math.min(100, Math.round((top / height) * 100)) : 0;
+
+          document.getElementById("scroll-progress-bar").style.width = `${pct}%`;
+          document.getElementById("scroll-pct-text").textContent = `اسکرول: ${pct}٪`;
+        }, { passive: true });
+
+        document.addEventListener("click", (e) => {
+          const btn = e.target.closest(".ripple-btn, .icon-btn");
+          if (!btn) return;
+          const circle = document.createElement("span");
+          const d = Math.max(btn.clientWidth, btn.clientHeight);
+          const rect = btn.getBoundingClientRect();
+          circle.style.width = circle.style.height = `${d}px`;
+          circle.style.left = `${e.clientX - rect.left - d / 2}px`;
+          circle.style.top = `${e.clientY - rect.top - d / 2}px`;
+          circle.classList.add("ripple-effect");
+          btn.appendChild(circle);
+          setTimeout(() => circle.remove(), 600);
+        });
+      }
+    };
+
+    /**
+     * ============================================================================
+     * ۷. پنل مدیریت مخفی دبیر (TeacherPanel) با رمز ثابت 9162
+     *    راه‌های ورود: میانبر Ctrl + Shift + L یا ۵ بار کلیک متوالی روی نام دبیر/لوگو
+     * ============================================================================
+     */
+    const TeacherPanel = {
+      taps: 0,
+      tapTimer: null,
+
+      init() {
+        window.addEventListener("keydown", (e) => {
+          if (e.ctrlKey && e.shiftKey && (e.key === "L" || e.key === "l" || e.code === "KeyL")) {
+            e.preventDefault();
+            this.open();
+          }
+        });
+
+        const secretTap = () => {
+          this.taps++;
+          clearTimeout(this.tapTimer);
+          if (this.taps >= 5) {
+            this.taps = 0;
+            this.open();
+          } else {
+            this.tapTimer = setTimeout(() => { this.taps = 0; }, 1200);
+          }
+        };
+
+        document.getElementById("secret-teacher-trigger").addEventListener("click", secretTap);
+        document.getElementById("secret-logo-trigger").addEventListener("click", secretTap);
+      },
+
+      open() {
+        document.getElementById("teacher-pass-input").value = "";
+        document.getElementById("teacher-auth-gate").style.display = "block";
+        document.getElementById("teacher-controls-body").style.display = "none";
+        document.getElementById("teacher-panel-modal").classList.add("open");
+      },
+
+      close() {
+        document.getElementById("teacher-panel-modal").classList.remove("open");
+      },
+
+      authenticate() {
+        const pin = document.getElementById("teacher-pass-input").value.trim();
+        if (pin === EXAM_CONFIG.teacherSecretPin) {
+          document.getElementById("teacher-auth-gate").style.display = "none";
+          document.getElementById("teacher-controls-body").style.display = "block";
+          document.getElementById("teacher-storage-dump").textContent = JSON.stringify(AppController.state, null, 2);
+        } else {
+          alert("رمز عبور دبیر نادرست است!");
+        }
+      },
+
+      unlockScheduleOverride() {
+        AppController.state.scheduleOverride = true;
+        StorageService.save(AppController.state);
+        AppController.startScheduleMonitor();
+        alert("قفل زمانی باز شد. آزمون هم‌اکنون فعال است.");
+        this.close();
+      },
+
+      resetTimerOnly() {
+        AppController.state.remainingSeconds = EXAM_CONFIG.schedule.durationMinutes * 60;
+        AppController.state.lastTickEpoch = Date.now();
+        StorageService.save(AppController.state);
+        if (AppController.state.started && !AppController.state.submitted) {
+          AppController.startCountdownTimer();
+        }
+        alert("تایمر آزمون به ۵۰ دقیقه کامل ریست شد.");
+        this.close();
+      },
+
+      allowRetake() {
+        AppController.state.submitted = false;
+        AppController.state.finalResult = null;
+        AppController.state.supabaseSynced = false;
+        AppController.state.remainingSeconds = EXAM_CONFIG.schedule.durationMinutes * 60;
+        AppController.state.lastTickEpoch = Date.now();
+        StorageService.save(AppController.state);
+        location.reload();
+      },
+
+      fullReset() {
+        if (confirm("آیا از پاکسازی کامل حافظه و ریست کل آزمون و تایمر اطمینان دارید؟")) {
+          StorageService.clear();
+          location.reload();
+        }
+      }
+    };
+
+    window.addEventListener("DOMContentLoaded", () => {
+      AppController.init();
+      TeacherPanel.init();
+    });
+  </script>
+</body>
+</html>
