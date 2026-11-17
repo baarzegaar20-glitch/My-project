@@ -1,0 +1,2425 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>سامانه پیشرفته آموزش مجازی تربیت بدنی - جلسه هفتم بسکتبال</title>
+  <style>
+    /* ==================== متغیرها و تنظیمات ظاهری (Ultra Dark Glassmorphism) ==================== */
+    :root {
+      --bg-dark: #060911;
+      --glass-bg: rgba(15, 23, 42, 0.68);
+      --glass-border: rgba(255, 255, 255, 0.14);
+      --primary: #f97316;
+      --primary-glow: rgba(249, 115, 22, 0.55);
+      --secondary: #38bdf8;
+      --secondary-glow: rgba(56, 189, 248, 0.45);
+      --accent: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --shadow-glass: 0 16px 40px 0 rgba(0, 0, 0, 0.6);
+      --transition: all 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, 'Segoe UI', Tahoma, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.75;
+      position: relative;
+    }
+
+    #bgParticlesCanvas, #fxConfettiCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    #fxConfettiCanvas { z-index: 9998; }
+
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 16px var(--primary-glow), inset 0 0 8px rgba(249, 115, 22, 0.25); }
+      50% { box-shadow: 0 0 32px rgba(249, 115, 22, 0.85), inset 0 0 14px rgba(249, 115, 22, 0.45); }
+    }
+
+    @keyframes borderBeam {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes slideUpFade {
+      from { opacity: 0; transform: translateY(22px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes dashFlow {
+      to { stroke-dashoffset: -40; }
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px 16px 90px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .glass-panel {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-glass);
+      padding: 26px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glass-panel::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--primary), var(--secondary), transparent);
+      background-size: 200% 200%;
+      animation: borderBeam 5s ease infinite;
+    }
+
+    .glass-card {
+      background: rgba(15, 23, 42, 0.65);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      transition: transform 0.2s ease-out, border-color 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      transform-style: preserve-3d;
+    }
+
+    .glass-card:hover {
+      border-color: rgba(249, 115, 22, 0.55);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(249, 115, 22, 0.18);
+    }
+
+    .card-glare {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.12), transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .glass-card:hover .card-glare { opacity: 1; }
+
+    .section-title {
+      font-size: 1.38rem;
+      font-weight: 900;
+      color: var(--primary);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--glass-border);
+      padding-bottom: 12px;
+      text-shadow: 0 0 18px rgba(249, 115, 22, 0.35);
+    }
+
+    .badge-xp {
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      color: #fff;
+      padding: 5px 14px;
+      border-radius: 999px;
+      font-size: 0.86rem;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 15px rgba(249, 115, 22, 0.45);
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+      color: #fff;
+      border: none;
+      padding: 13px 26px;
+      border-radius: var(--radius-md);
+      font-size: 0.98rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 10px 25px var(--primary-glow);
+    }
+
+    .btn:active:not(:disabled) { transform: translateY(0) scale(0.98); }
+
+    .btn:disabled {
+      background: #1e293b;
+      color: #64748b;
+      border: 1px solid rgba(255,255,255,0.05);
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-secondary {
+      background: rgba(56, 189, 248, 0.14);
+      border: 1px solid rgba(56, 189, 248, 0.45);
+      color: var(--secondary);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: rgba(56, 189, 248, 0.28);
+      box-shadow: 0 8px 20px var(--secondary-glow);
+    }
+
+    .btn-success { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+    .btn-success:hover:not(:disabled) { box-shadow: 0 10px 25px rgba(16, 185, 129, 0.45); }
+
+    .top-bar {
+      position: sticky;
+      top: 12px;
+      z-index: 100;
+      margin-bottom: 24px;
+      display: none;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      padding: 14px 22px;
+    }
+
+    .progress-track {
+      width: 150px;
+      height: 11px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 99px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #f97316, #38bdf8, #10b981);
+      background-size: 200% 100%;
+      animation: borderBeam 3s linear infinite;
+      width: 0%;
+      transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px; }
+
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; margin-bottom: 6px; font-weight: 700; font-size: 0.92rem; color: #e2e8f0; }
+    .form-control {
+      width: 100%;
+      padding: 13px 16px;
+      background: rgba(9, 13, 22, 0.85);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      color: var(--text-main);
+      font-size: 0.98rem;
+      outline: none;
+      transition: var(--transition);
+    }
+    .form-control:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.22);
+    }
+    .form-control[readonly] {
+      background: rgba(30, 41, 59, 0.55);
+      color: var(--secondary);
+      font-weight: 800;
+    }
+
+    .custom-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 0.92rem;
+    }
+    .custom-table th, .custom-table td {
+      padding: 12px 14px;
+      text-align: right;
+      border-bottom: 1px solid var(--glass-border);
+    }
+    .custom-table th {
+      background: rgba(249, 115, 22, 0.16);
+      color: var(--primary);
+      font-weight: 800;
+    }
+
+    .timeline {
+      position: relative;
+      padding-right: 30px;
+      border-right: 3px solid var(--primary);
+      margin: 20px 0;
+    }
+    .timeline-item { position: relative; margin-bottom: 22px; }
+    .timeline-dot {
+      position: absolute;
+      right: -39px;
+      top: 6px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--primary);
+      border: 3px solid var(--bg-dark);
+      box-shadow: 0 0 14px var(--primary);
+    }
+
+    .layup-zone {
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .layup-zone:hover {
+      filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.95));
+      transform: scale(1.05);
+      transform-origin: center;
+    }
+
+    .tactic-line {
+      stroke-dasharray: 8 6;
+      animation: dashFlow 1.2s linear infinite;
+      pointer-events: none;
+    }
+
+    .flip-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+    }
+    .flip-card {
+      background-color: transparent;
+      height: 205px;
+      perspective: 1200px;
+      cursor: pointer;
+    }
+    .flip-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+      transform-style: preserve-3d;
+    }
+    .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+    .flip-front, .flip-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    }
+    .flip-front {
+      background: linear-gradient(145deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
+      color: var(--text-main);
+    }
+    .flip-back {
+      background: linear-gradient(135deg, #f97316, #c2410c);
+      color: #fff;
+      transform: rotateY(180deg);
+    }
+
+    .sub-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 22px;
+      border-bottom: 1px solid var(--glass-border);
+      padding-bottom: 14px;
+    }
+    .sub-tab-btn {
+      background: rgba(15, 23, 42, 0.75);
+      color: var(--text-muted);
+      border: 1px solid var(--glass-border);
+      padding: 9px 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.9rem;
+      transition: var(--transition);
+    }
+    .sub-tab-btn:hover { border-color: var(--primary); color: #fff; }
+    .sub-tab-btn.active {
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      color: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 6px 16px rgba(249, 115, 22, 0.35);
+    }
+
+    .equip-viewer {
+      perspective: 1000px;
+      height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 50% 60%, rgba(56, 189, 248, 0.2) 0%, rgba(15, 23, 42, 0.9) 75%);
+      border-radius: var(--radius-md);
+      margin-bottom: 14px;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+    .equip-viewer::after {
+      content: "";
+      position: absolute;
+      bottom: 18px;
+      width: 110px;
+      height: 18px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.6), transparent 70%);
+      filter: blur(4px);
+    }
+    .equip-3d-object {
+      transition: transform 0.15s ease-out;
+      transform-style: preserve-3d;
+      animation: floatSlow 3.2s ease-in-out infinite;
+    }
+
+    .view-section {
+      display: none;
+      animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .view-section.active { display: block; }
+
+    #toastBox {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .toast-item {
+      background: rgba(15, 23, 42, 0.95);
+      border-right: 4px solid var(--accent);
+      color: #fff;
+      padding: 13px 20px;
+      border-radius: 12px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.65);
+      font-size: 0.92rem;
+      font-weight: 600;
+      animation: slideUpFade 0.3s ease;
+    }
+
+    @media (max-width: 640px) {
+      .top-bar { position: static; }
+      .section-title { font-size: 1.15rem; }
+      .glass-panel { padding: 18px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- بوم ذرات معلق پس‌زمینه و بوم انفجار ذرات (Confetti) -->
+  <canvas id="bgParticlesCanvas"></canvas>
+  <canvas id="fxConfettiCanvas"></canvas>
+
+  <!-- باکس پیام‌های شناور -->
+  <div id="toastBox"></div>
+
+  <!-- ==================== نوار وضعیت بالای صفحه (پس از ورود) ==================== -->
+  <div class="container" style="padding-bottom: 0;">
+    <header id="topStatusBar" class="glass-panel top-bar">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div style="width:46px; height:46px; border-radius:50%; background:linear-gradient(135deg,#f97316,#ea580c); display:flex; align-items:center; justify-content:center; font-size:1.35rem; box-shadow:0 0 15px var(--primary-glow);">👟</div>
+        <div>
+          <div id="headerStudentName" style="font-weight:800; font-size:1.02rem;">نام دانش‌آموز</div>
+          <div id="headerSchoolInfo" style="font-size:0.82rem; color:var(--secondary);">مدرسه | پایه</div>
+        </div>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:18px; flex-wrap:wrap;">
+        <div>
+          <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:4px;">پیشرفت جلسه هفتم: <span id="headerProgressText" style="color:#fff; font-weight:bold;">۰٪</span></div>
+          <div class="progress-track">
+            <div id="headerProgressFill" class="progress-fill"></div>
+          </div>
+        </div>
+        <div class="badge-xp">
+          <span>✨ امتیاز:</span>
+          <span id="headerXP">۰</span>
+          <span>XP</span>
+        </div>
+        <button class="btn btn-secondary" style="padding:8px 15px; font-size:0.86rem;" onclick="navigateTo('dashboardView')">🏠 داشبورد</button>
+      </div>
+    </header>
+  </div>
+
+  <!-- ==================== کانتینر اصلی سامانه ==================== -->
+  <main class="container">
+
+    <!-- =========================================================================
+         ۱. صفحه ورود و آغازین جلسه هفتم (همراه با شبیه‌ساز دوگام لی‌آپ)
+         ========================================================================= -->
+    <section id="loginView" class="view-section active">
+      <div class="glass-panel" style="text-align:center; margin-bottom:24px;">
+        <div style="font-size:0.8rem; color:var(--secondary); margin-bottom:4px;">💡 روی بوم زیر کلیک کنید تا ریتم گام ۱ و ۲ و پرش لی‌آپ با سرعت بالا اجرا شود!</div>
+        <canvas id="welcomeBallCanvas" width="520" height="185" style="width:100%; max-width:520px; margin:0 auto; display:block; cursor:pointer; border-radius:14px; background:radial-gradient(circle, rgba(249,115,22,0.12) 0%, rgba(15,23,42,0.6) 80%); border:1px solid var(--glass-border);"></canvas>
+        <h1 id="uiAppTitle" style="font-size:1.8rem; font-weight:900; color:var(--primary); margin-top:12px;">آموزش بسکتبال پایه هفتم</h1>
+        <h2 id="uiSessionTitle" style="font-size:1.22rem; color:var(--secondary); margin:6px 0;">جلسه هفتم: آموزش جامع شوت لی‌آپ (Layup - دوگام زیر سبد) با دست راست و چپ</h2>
+        <p style="color:var(--text-muted); font-size:0.96rem;">درس: <strong id="uiSubjectText" style="color:#fff;">تربیت بدنی</strong> | نام دبیر: <strong id="uiTeacherText" style="color:var(--accent);">برزگری</strong></p>
+      </div>
+
+      <div class="grid-2">
+        <!-- راهنمای رسمی و جدول امتیازدهی -->
+        <div class="glass-panel">
+          <div class="section-title">📋 راهنمای استفاده از سامانه (جلسه هفتم)</div>
+          <ul style="list-style:none; font-size:0.92rem; color:#cbd5e1; display:flex; flex-direction:column; gap:10px; margin-bottom:20px;">
+            <li>🔹 <strong>نحوه ورود:</strong> مشخصات فردی، نام مدرسه و پایه تحصیلی خود را در فرم روبرو به صورت دقیق تکمیل نمایید تا دکمه ورود فعال گردد.</li>
+            <li>🔹 <strong>نحوه مطالعه آموزش:</strong> در بخش «آموزش جامع جلسه هفتم»، ریتم گام اول و دوم، تکنیک نخ نامرئی دست و زانو، هدف‌گیری مربع تخته و لی‌آپ دست چپ را بررسی کنید.</li>
+            <li>🔹 <strong>نحوه انجام فعالیت‌ها:</strong> در بخش «فعالیت‌های عملی و تعاملی»، چالش‌های تشخیص قوانین دوگام، مرتب‌سازی مراحل لی‌آپ و شبیه‌ساز انتخاب گام صحیح را انجام دهید.</li>
+            <li>🔹 <strong>نحوه کسب امتیاز (XP):</strong> هر بخش آموزشی یا فعالیت عملی دارای امتیاز مشخصی است که تنها یک مرتبه در سامانه ثبت و ذخیره می‌گردد.</li>
+            <li>🔹 <strong>نحوه مشاهده پیشرفت:</strong> در بخش «گزارش پیشرفت»، درصد تکمیل جلسه هفتم، زمان حضور و نشان‌های افتخار قابل مشاهده است.</li>
+            <li>🔹 <strong>نحوه ثبت و ارسال گزارش نهایی:</strong> پس از تکمیل بخش‌ها، به قسمت «ثبت گزارش» مراجعه کرده و عملکرد نهایی خود را برای دبیر ارسال نمایید.</li>
+          </ul>
+
+          <div class="section-title" style="margin-top:16px;">🏆 جدول امتیازدهی فعالیت‌ها (XP)</div>
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>عنوان فعالیت در سامانه</th>
+                <th>میزان امتیاز</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>ورود به سامانه</td><td>۵ XP</td></tr>
+              <tr><td>مشاهده آموزش کامل جلسه هفتم</td><td>۲۰ XP</td></tr>
+              <tr><td>مطالعه خلاصه و نقشه ذهنی جلسه هفتم</td><td>۱۰ XP</td></tr>
+              <tr><td>انجام فعالیت‌های عملی و شبیه‌ساز لی‌آپ</td><td>۳۰ XP</td></tr>
+              <tr><td>مشاهده فایل‌های آموزشی جلسه</td><td>۱۰ XP</td></tr>
+              <tr><td>مطالعه اطلاعیه‌های آموزشی</td><td>۵ XP</td></tr>
+              <tr><td>ثبت تکلیف عملی جلسه هفتم</td><td>۱۰ XP</td></tr>
+              <tr><td>ثبت و ارسال گزارش نهایی</td><td>۲۰ XP</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- فرم ورود اجباری دانش‌آموز -->
+        <div class="glass-panel">
+          <div class="section-title">🔐 فرم ورود دانش‌آموز به جلسه هفتم</div>
+          <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:18px;">تمامی فیلدها اجباری هستند. تا زمان تکمیل دقیق اطلاعات، دکمه شروع آموزش فعال نخواهد شد.</p>
+
+          <form id="loginForm" onsubmit="handleLoginSubmit(event)">
+            <div class="form-group">
+              <label class="form-label" for="studentNameInput">نام و نام خانوادگی دانش‌آموز (اجباری):</label>
+              <input type="text" id="studentNameInput" class="form-control" placeholder="مثال: محمد رضایی" required oninput="validateLoginForm()">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="schoolSelect">نام مدرسه (اجباری):</label>
+              <select id="schoolSelect" class="form-control" required onchange="validateLoginForm()">
+                <option value="">-- انتخاب مدرسه --</option>
+                <option value="مدرسه نور دوستکو">مدرسه نور دوستکو</option>
+                <option value="مدرسه اتحاد دوربنی">مدرسه اتحاد دوربنی</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="gradeSelect">پایه تحصیلی (اجباری):</label>
+              <select id="gradeSelect" class="form-control" required onchange="validateLoginForm()">
+                <option value="">-- انتخاب پایه تحصیلی --</option>
+                <option value="پایه هفتم">پایه هفتم</option>
+                <option value="پایه هشتم">پایه هشتم</option>
+                <option value="پایه نهم">پایه نهم</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">نام دبیر:</label>
+              <input type="text" id="fixedTeacherInput" class="form-control" value="برزگری" readonly>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">نام درس:</label>
+              <input type="text" id="fixedSubjectInput" class="form-control" value="تربیت بدنی" readonly>
+            </div>
+
+            <button type="submit" id="startBtn" class="btn" style="width:100%; margin-top:14px;" disabled>
+              🚀 ورود به سامانه و شروع جلسه هفتم
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۲. داشبورد اصلی (کارت‌های سه‌بعدی حساس به حرکت موس)
+         ========================================================================= -->
+    <section id="dashboardView" class="view-section">
+      <div class="glass-panel" style="margin-bottom:22px;">
+        <div class="section-title">🎛️ داشبورد هوشمند جلسه هفتم: مهارت شوت لی‌آپ (دوگام زیر سبد)</div>
+        <p style="font-size:0.92rem; color:var(--text-muted);">کارت‌های زیر دارای افکت سه‌بعدی تعاملی هستند. با تکمیل هر بخش، امتیاز XP آن همراه با افکت نوری به حساب شما افزوده می‌شود.</p>
+      </div>
+
+      <div id="dashboardModulesGrid" class="grid-3"></div>
+    </section>
+
+    <!-- =========================================================================
+         ۳. بخش جامع آموزش جلسه هفتم بسکتبال
+         ========================================================================= -->
+    <section id="educationView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">📚 آموزش جامع جلسه هفتم: تکنیک شوت لی‌آپ (Layup) با دست راست و چپ</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <!-- تب‌های داخلی آموزش -->
+        <div class="sub-tabs">
+          <button class="sub-tab-btn active" onclick="switchEduTab('eduGoals', this)">۱. اهداف و مراحل دوگام لی‌آپ</button>
+          <button class="sub-tab-btn" onclick="switchEduTab('eduBenefits', this)">۲. تکنیک نخ نامرئی و فرود ایمن</button>
+          <button class="sub-tab-btn" onclick="switchEduTab('eduLayupMap', this)">۳. نقشه تعاملی گام‌ها و مربع تخته</button>
+          <button class="sub-tab-btn" onclick="switchEduTab('eduEquip', this)">۴. هولوگرام سه‌بعدی لی‌آپ</button>
+          <button class="sub-tab-btn" onclick="switchEduTab('eduRules', this)">۵. قوانین دوگام، گام صفر و داوری</button>
+          <button class="sub-tab-btn" onclick="switchEduTab('eduSkills', this)">۶. آزمایشگاه انیمیشنی جلسه هفتم</button>
+        </div>
+
+        <!-- زیربخش ۱: اهداف جلسه، مراحل دوگام لی‌آپ و جدول مقایسه راست و چپ -->
+        <div id="eduGoals" class="edu-sub-view">
+          <h3 style="color:var(--secondary); margin-bottom:14px;">🎯 اهداف یادگیری جلسه هفتم</h3>
+          <div class="grid-3" style="margin-bottom:28px;">
+            <div class="glass-card tilt-card"><div class="card-glare"></div><strong>۱. شناخت شوت لی‌آپ (Layup)</strong><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">مطمئن‌ترین و پرکاربردترین شوت بسکتبال که در حین حرکت و از فاصله نزدیک سبد اجرا می‌شود.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><strong>۲. ریتم گام‌برداری (بلند و کوتاه)</strong><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">اجرای گام اول بلند برای کسب مسافت و گام دوم کوتاه و انفجاری برای پرش عمودی به سمت بالا.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><strong>۳. هماهنگی دست و زانوی موافق</strong><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">بالا کشیدن زانوی سمت دست شوت‌زن در لحظه پرش (مانند عروسک خیمه‌شب‌بازی).</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><strong>۴. تسلط بر لی‌آپ راست و چپ</strong><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">تشخیص الگوی «راست-چپ با دست راست» در سمت راست و «چپ-راست با دست چپ» در سمت چپ.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><strong>۵. هدف‌گیری گوشه مربع تخته</strong><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">قرار دادن نرم توپ به گوشه بالایی مربع کوچک تخته در زاویه ۴۵ درجه.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><strong>۶. قانون جمع کردن توپ و دو گام</strong><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">آگاهی از لحظه قطع دریبل و برداشتن حداکثر ۲ گام قانونی بدون ارتکاب خطای تراولینگ.</p></div>
+          </div>
+
+          <h3 style="color:var(--secondary); margin-bottom:14px;">⚡ مراحل چهارگانه اجرای صحیح شوت لی‌آپ از سمت راست</h3>
+          <div class="timeline">
+            <div class="timeline-item glass-card">
+              <div class="timeline-dot"></div>
+              <h4 style="color:var(--primary);">گام اول: نفوذ با زاویه ۴۵ درجه و قطع دریبل (Pick Up)</h4>
+              <p style="font-size:0.9rem; margin-top:6px;">بازیکن با زاویه حدود ۴۵ درجه به سمت سبد دریبل می‌زند (با دست بیرونی یعنی دست راست تا توپ از مدافع دور باشد). هم‌زمان با گذاشتن <strong>پای راست (گام ۱)</strong> روی زمین، توپ را با دو دست جمع کرده و در کنار شکم محافظت می‌کند.</p>
+            </div>
+            <div class="timeline-item glass-card">
+              <div class="timeline-dot"></div>
+              <h4 style="color:var(--primary);">گام دوم: اجرای گام دوم با پای چپ و تبدیل سرعت افقی به پرش عمودی</h4>
+              <p style="font-size:0.9rem; margin-top:6px;">گام اول (راست) بلند است تا بازیکن به سبد نزدیک شود، اما <strong>گام دوم (پای چپ)</strong> کوتاه و محکم روی زمین کوبیده می‌شود تا مانند فنر، سرعت دویدن بازیکن را به <strong>پرش عمودی رو به بالا</strong> (نه پرش طولی به بیرون زمین!) تبدیل کند.</p>
+            </div>
+            <div class="timeline-item glass-card">
+              <div class="timeline-dot"></div>
+              <h4 style="color:var(--primary);">گام سوم: بالا کشیدن زانوی راست هم‌زمان با دست راست</h4>
+              <p style="font-size:0.9rem; margin-top:6px;">در لحظه کنده شدن از روی پای چپ، زانوی پای راست با قدرت به سمت سینه بالا کشیده می‌شود و هم‌زمان دست راست توپ را به بالاترین نقطه نزدیک تخته می‌برد.</p>
+            </div>
+            <div class="timeline-item glass-card">
+              <div class="timeline-dot"></div>
+              <h4 style="color:var(--primary);">گام چهارم: رهاسازی نرم توپ در اوج پرش به گوشه مربع تخته</h4>
+              <p style="font-size:0.9rem; margin-top:6px;">در بالاترین نقطه پرش، توپ با سرانگشتان به نرمی (مثل گذاشتن یک لیوان روی قفسه بالا) به <strong>گوشه بالایی مربع کوچک تخته</strong> زده می‌شود تا به آرامی درون حلقه بیفتد.</p>
+            </div>
+          </div>
+
+          <h3 style="color:var(--secondary); margin:20px 0 12px;">📊 جدول طلایی مقایسه لی‌آپ سمت راست و لی‌آپ سمت چپ</h3>
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>ویژگی فنی</th>
+                <th>لی‌آپ از سمت راست سبد (Right Layup)</th>
+                <th>لی‌آپ از سمت چپ سبد (Left Layup)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>دست دریبل‌زن هنگام نفوذ</td><td>دست راست (دست بیرونی و دور از مدافع).</td><td>دست چپ (دست بیرونی و دور از مدافع).</td></tr>
+              <tr><td>گام اول (گام بلند سرعتی)</td><td><strong>پای راست</strong> (هم‌زمان با جمع کردن توپ).</td><td><strong>پای چپ</strong> (هم‌زمان با جمع کردن توپ).</td></tr>
+              <tr><td>گام دوم (پای تیک‌آف و پرش)</td><td><strong>پای چپ</strong> (پرش عمودی از روی پای چپ).</td><td><strong>پای راست</strong> (پرش عمودی از روی پای راست).</td></tr>
+              <tr><td>زانوی بالارونده و دست شوت‌زن</td><td>بالا رفتن <strong>زانوی راست + شوت با دست راست</strong>.</td><td>بالا رفتن <strong>زانوی چپ + شوت با دست چپ</strong>.</td></tr>
+              <tr><td>نقطه هدف روی تخته</td><td>گوشه بالای سمت راستِ مربع کوچک تخته.</td><td>گوشه بالای سمت چپِ مربع کوچک تخته.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- زیربخش ۲: تکنیک نخ نامرئی، انواع رهاسازی مچ و فرود ایمن -->
+        <div id="eduBenefits" class="edu-sub-view" style="display:none;">
+          <h3 style="color:var(--secondary); margin-bottom:14px;">🧵 راز «نخ نامرئی عروسک خیمه‌شب‌بازی» و انواع رهاسازی در لی‌آپ</h3>
+          <div class="grid-3" style="margin-bottom:26px;">
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:2rem; margin-bottom:8px;">🧵🦵</div><h4 style="color:var(--primary);">تکنیک نخ نامرئی</h4><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">تصور کنید یک نخ نامرئی از مچ دست راست به زانوی راست شما بسته شده است؛ هر وقت دست شوت‌زن بالا می‌رود، همان زانو هم باید بالا کشیده شود!</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:2rem; margin-bottom:8px;">🤲⬆️</div><h4 style="color:var(--primary);">لی‌آپ از زیر دست (Underhand)</h4><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">کف دست رو به آسمان و زیر توپ قرار می‌گیرد و با حرکت نرم انگشتان، توپ مثل یک پر روی تخته گذاشته می‌شود (Finger Roll).</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:2rem; margin-bottom:8px;">✋🎯</div><h4 style="color:var(--primary);">لی‌آپ از روی دست (Overhand)</h4><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">دست پشت توپ قرار می‌گیرد (مشابه فرم شوت BEEF) و با شکستن مچ به گوشه مربع تخته زده می‌شود.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:2rem; margin-bottom:8px;">🚀⬆️</div><h4 style="color:var(--primary);">پرش عمودی نه طولی!</h4><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">هدف در گام دوم، رسیدن به بالاترین ارتفاع ممکن در نزدیک حلقه است، نه پریدن به بیرون از خط پایانی زمین.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:2rem; margin-bottom:8px;">🛡️🏀</div><h4 style="color:var(--primary);">محافظت دو دستی در گام اول</h4><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">در گام اول توپ را با دو دست محکم نزدیک بدن نگه دارید تا مدافعان نتوانند توپ را از دست شما خارج کنند.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:2rem; margin-bottom:8px;">📐۴۵°</div><h4 style="color:var(--primary);">اهمیت زاویه ۴۵ درجه</h4><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">نفوذ از زاویه ۴۵ درجه بهترین دید را به مربع کوچک تخته می‌دهد و گل شدن شوت را بسیار ساده می‌کند.</p></div>
+          </div>
+
+          <h3 style="color:var(--secondary); margin-bottom:14px;">🩺 اصول ایمنی فرود پس از پرش لی‌آپ (Landing Safety)</h3>
+          <div class="grid-2">
+            <div class="glass-card">
+              <h4 style="color:var(--accent);">۱. فرود نرم روی سینه‌پا و خم کردن زانوها</h4>
+              <p style="font-size:0.88rem; margin-top:6px;">• <strong>خطر فرود روی یک پا با زانوی قفل‌شده:</strong> در لی‌آپ بازیکن با یک پا به هوا می‌پرد، اما هنگام بازگشت به زمین باید سعی کند با <strong>زانوهای خم و روی سینه‌پا</strong> فرود بیاید تا ضربه ناشی از پرش جذب عضلات شود.<br>• <strong>نگاه به جلو هنگام فرود:</strong> قبل از فرود، زیر پای خود را ببینید تا روی پای مدافع یا هم‌تیمی فرود نیایید (شایع‌ترین علت پیچ‌خوردگی مچ پا).</p>
+            </div>
+            <div class="glass-card">
+              <h4 style="color:var(--accent);">۲. کنترل سرعت پس از فرود (جلوگیری از برخورد با پایه سبد)</h4>
+              <p style="font-size:0.88rem; margin-top:6px;">• <strong>تبدیل سرعت افقی به عمودی:</strong> اگر در گام دوم سرعت افقی خود را به پرش رو به بالا تبدیل کنید، پس از فرود به دیوار یا تشک پایه سبد برخورد نخواهید کرد.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- زیربخش ۳: نقشه تعاملی گام‌های لی‌آپ و هدف‌گیری مربع تخته (به همراه صدا) -->
+        <div id="eduLayupMap" class="edu-sub-view" style="display:none;">
+          <h3 style="color:var(--secondary); margin-bottom:8px;">🗺️ نقشه تعاملی گام‌های لی‌آپ سمت راست و هدف‌گیری مربع تخته</h3>
+          <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:16px;">روی هر یک از ۴ بخش تصویر زیر (گام اول راست، گام دوم چپ، نخ نامرئی دست و زانو، و گوشه مربع تخته) کلیک کنید تا توضیح صوتی و متنی آن پخش شود:</p>
+
+          <div style="display:flex; flex-direction:column; align-items:center; gap:18px;">
+            <svg viewBox="0 0 620 350" style="width:100%; max-width:600px; background:radial-gradient(circle, #1e293b 0%, #090d16 90%); border-radius:18px; border:2px solid var(--glass-border); box-shadow:0 12px 35px rgba(0,0,0,0.6);">
+              <!-- تخته و حلقه بسکتبال در بالا سمت چپ -->
+              <rect x="45" y="25" width="160" height="105" rx="6" fill="rgba(56,189,248,0.15)" stroke="#fff" stroke-width="3"/>
+              <rect x="93" y="62" width="64" height="48" fill="none" stroke="#fff" stroke-width="2.5"/>
+              <ellipse cx="125" cy="116" rx="26" ry="8" fill="none" stroke="#f97316" stroke-width="4"/>
+
+              <!-- نقطه طلایی هدف در گوشه بالای راستِ مربع تخته -->
+              <g class="layup-zone" onclick="selectLayupPart('sweetSpot')">
+                <circle cx="152" cy="68" r="16" fill="rgba(250,204,21,0.45)" stroke="#facc15" stroke-width="3"/>
+                <circle cx="152" cy="68" r="6" fill="#ef4444"/>
+                <text x="235" y="65" fill="#facc15" font-size="13" font-weight="bold">۴. گوشه بالای مربع تخته (نقطه هدف)</text>
+              </g>
+
+              <!-- مسیر حرکت از سمت راست با زاویه ۴۵ درجه -->
+              <path class="tactic-line" d="M 520,315 L 390,240 L 285,175 L 155,72" fill="none" stroke="rgba(249,115,22,0.5)" stroke-width="3"/>
+
+              <!-- گام ۱: پای راست (بلند و جمع کردن توپ) -->
+              <g class="layup-zone" onclick="selectLayupPart('stepOneRight')">
+                <rect x="370" y="215" width="85" height="44" rx="18" transform="rotate(-30 412 237)" fill="rgba(249,115,22,0.35)" stroke="#f97316" stroke-width="3"/>
+                <text x="412" y="242" fill="#fff" font-size="12" font-weight="bold" text-anchor="middle" transform="rotate(-30 412 237)">گام ۱: پای راست</text>
+                <text x="475" y="285" fill="#f97316" font-size="13" font-weight="bold">۱. گام اول (راست - بلند)</text>
+              </g>
+
+              <!-- گام ۲: پای چپ (کوتاه و پرش عمودی) -->
+              <g class="layup-zone" onclick="selectLayupPart('stepTwoLeft')">
+                <rect x="245" y="152" width="85" height="44" rx="18" transform="rotate(-30 287 174)" fill="rgba(56,189,248,0.35)" stroke="#38bdf8" stroke-width="3"/>
+                <text x="287" y="179" fill="#fff" font-size="12" font-weight="bold" text-anchor="middle" transform="rotate(-30 287 174)">گام ۲: پای چپ</text>
+                <text x="345" y="140" fill="#38bdf8" font-size="13" font-weight="bold">۲. گام دوم (چپ - پرش)</text>
+              </g>
+
+              <!-- تکنیک نخ نامرئی (دست راست و زانوی راست بالا) -->
+              <g class="layup-zone" onclick="selectLayupPart('puppetString')">
+                <circle cx="195" cy="145" r="14" fill="#10b981"/>
+                <line x1="195" y1="159" x2="195" y2="215" stroke="#10b981" stroke-width="6"/>
+                <!-- دست راست بالا -->
+                <line x1="195" y1="168" x2="175" y2="112" stroke="#10b981" stroke-width="5" stroke-linecap="round"/>
+                <circle cx="172" cy="102" r="11" fill="#f97316"/>
+                <!-- زانوی راست بالا -->
+                <polyline points="195,212 168,195 168,225" fill="none" stroke="#10b981" stroke-width="5" stroke-linecap="round"/>
+                <!-- نخ نامرئی بین مچ راست و زانوی راست -->
+                <line x1="172" y1="115" x2="168" y2="195" stroke="#fef08a" stroke-width="2.5" stroke-dasharray="4,4"/>
+                <text x="115" y="255" fill="#10b981" font-size="13" font-weight="bold">۳. نخ نامرئی (دست و زانوی موافق)</text>
+              </g>
+            </svg>
+
+            <div id="layupInfoPanel" class="glass-card" style="width:100%; max-width:680px; border-right:4px solid var(--primary);">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <h4 id="layupPartTitle" style="color:var(--primary); font-size:1.1rem;">یکی از ۴ بخش نقشه لی‌آپ را لمس کنید</h4>
+                <button class="btn btn-secondary" style="padding:6px 12px; font-size:0.8rem;" onclick="speakCurrentLayupInfo()">🔊 پخش توضیح صوتی</button>
+              </div>
+              <p id="layupPartDesc" style="font-size:0.92rem; color:#e2e8f0;">با کلیک روی «گام ۱»، «گام ۲»، «نخ نامرئی» یا «گوشه مربع تخته»، جزئیات فنی و صوتی آن پخش می‌شود.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- زیربخش ۴: هولوگرام سه‌بعدی لی‌آپ -->
+        <div id="eduEquip" class="edu-sub-view" style="display:none;">
+          <h3 style="color:var(--secondary); margin-bottom:10px;">🕶️ ویترین هولوگرافیک سه‌بعدی تکنیک شوت لی‌آپ</h3>
+          <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:16px;">با اسلایدر زیر یا دکمه چرخش خودکار، زاویه دید سه‌بعدی را تغییر دهید و ۳ اصل مهم لی‌آپ را بررسی کنید:</p>
+
+          <div style="margin-bottom:20px; background:rgba(15,23,42,0.8); padding:14px; border-radius:14px; display:flex; align-items:center; gap:14px; flex-wrap:wrap; border:1px solid var(--glass-border);">
+            <label style="font-weight:700; color:var(--primary);">🔄 زاویه چرخش سه‌بعدی:</label>
+            <input type="range" id="equipRotateRange" min="-180" max="180" value="0" style="flex:1; accent-color:var(--primary);" oninput="rotateEquipments(this.value)">
+            <span id="equipRotateLabel" style="min-width:65px; font-weight:700; color:var(--secondary);">۰ درجه</span>
+            <button id="autoSpinBtn" class="btn btn-secondary" style="padding:7px 14px; font-size:0.84rem;" onclick="toggleAutoSpinEquip()">▶️ چرخش خودکار ۳۶۰ درجه</button>
+          </div>
+
+          <div class="grid-3">
+            <div class="glass-card">
+              <div class="equip-viewer">
+                <div class="equip-3d-object">
+                  <svg width="120" height="115" viewBox="0 0 120 100">
+                    <rect x="20" y="15" width="80" height="55" rx="4" fill="rgba(56,189,248,0.2)" stroke="#fff" stroke-width="2.5"/>
+                    <rect x="44" y="34" width="32" height="24" fill="none" stroke="#fff" stroke-width="2"/>
+                    <circle cx="72" cy="38" r="7" fill="#facc15"/>
+                    <ellipse cx="60" cy="64" rx="16" ry="5" fill="none" stroke="#f97316" stroke-width="3.5"/>
+                  </svg>
+                </div>
+              </div>
+              <h4 style="color:var(--primary);">۱. نقطه طلایی مربع تخته</h4>
+              <p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">در لی‌آپ از سمت راست، هدف‌گیری گوشه بالایی سمت راستِ مربع کوچک تخته باعث می‌شود توپ با زاویه بازتاب دقیق وارد سبد شود.</p>
+            </div>
+
+            <div class="glass-card">
+              <div class="equip-viewer">
+                <div class="equip-3d-object">
+                  <svg width="120" height="115" viewBox="0 0 120 100">
+                    <rect x="18" y="62" width="42" height="18" rx="8" fill="#f97316"/>
+                    <text x="39" y="75" fill="#fff" font-size="11" font-weight="bold" text-anchor="middle">گام ۱ بلند</text>
+                    <rect x="72" y="42" width="32" height="18" rx="8" fill="#38bdf8"/>
+                    <text x="88" y="55" fill="#fff" font-size="10" font-weight="bold" text-anchor="middle">گام ۲</text>
+                    <path d="M88,38 L88,12" stroke="#10b981" stroke-width="4" stroke-linecap="round"/>
+                  </svg>
+                </div>
+              </div>
+              <h4 style="color:var(--primary);">۲. ریتم «بلند - کوتاه - بالا»</h4>
+              <p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">گام اول بلند برای نزدیک شدن به سبد و گام دوم کوتاه برای ترمز افقی و جهش عمودی به سمت بالا.</p>
+            </div>
+
+            <div class="glass-card">
+              <div class="equip-viewer">
+                <div class="equip-3d-object">
+                  <svg width="120" height="115" viewBox="0 0 120 100">
+                    <path d="M 35,68 Q 60,78 85,55" fill="none" stroke="#38bdf8" stroke-width="5" stroke-linecap="round"/>
+                    <circle cx="65" cy="42" r="16" fill="#f97316" stroke="#fff" stroke-width="2"/>
+                    <path d="M 65,22 A 22,22 0 0,1 88,42" fill="none" stroke="#10b981" stroke-width="3" stroke-dasharray="4,3"/>
+                  </svg>
+                </div>
+              </div>
+              <h4 style="color:var(--primary);">۳. رول سرانگشتان (Finger Roll)</h4>
+              <p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">در لی‌آپ زیر دست، توپ از کف دست به سمت سرانگشتان می‌غلتد تا با چرخش بسیار نرم به تخته برخورد کند.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- زیربخش ۵: قوانین دوگام، گام صفر و علائم داوری -->
+        <div id="eduRules" class="edu-sub-view" style="display:none;">
+          <h3 style="color:var(--secondary); margin-bottom:14px;">⚖️ قوانین رسمی فدراسیون جهانی (FIBA) درباره لی‌آپ، گام صفر و خطاهای زیر سبد</h3>
+          <div class="grid-3" style="margin-bottom:24px;">
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:1.6rem;">2️⃣👟</div><h4 style="color:var(--primary);">۱. قانون حداکثر ۲ گام</h4><p style="font-size:0.86rem; color:var(--text-muted);">پس از قطع دریبل و گرفتن توپ در حین حرکت، بازیکن فقط اجازه برداشتن ۲ گام (گام ۱ و ۲) را دارد و باید قبل از فرود آمدن پا به زمین، توپ را رها کند.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:1.6rem;">0️⃣⚡</div><h4 style="color:var(--primary);">۲. قانون گام صفر (Gather Step)</h4><p style="font-size:0.86rem; color:var(--text-muted);">اگر در لحظه گرفتن توپ در هوا، یک پای بازیکن روی زمین باشد، آن پا «گام صفر» محسوب شده و پس از آن بازیکن می‌تواند ۲ گام کامل لی‌آپ را بردارد.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:1.6rem;">🚫3️⃣</div><h4 style="color:var(--primary);">۳. خطای برداشتن گام سوم</h4><p style="font-size:0.86rem; color:var(--text-muted);">برداشتن ۳ گام با توپ در دست یا فرود آمدن روی زمین پیش از رها شدن شوت لی‌آپ، تخلف «تراولینگ» است و گل قبول نمی‌شود.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:1.6rem;">➕1️⃣</div><h4 style="color:var(--primary);">۴. قانون گل و خطا (And-One)</h4><p style="font-size:0.86rem; color:var(--text-muted);">اگر در حین اجرای دوگام لی‌آپ، مدافع روی شوت‌زن خطا کند و توپ هم وارد سبد شود، ۲ امتیاز گل حساب شده و ۱ پرتاب آزاد جایزه نیز داده می‌شود.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:1.6rem;">🛡️⭕</div><h4 style="color:var(--primary);">۵. نیم‌دایره عدم شارژ زیر سبد</h4><p style="font-size:0.86rem; color:var(--text-muted);">نیم‌دایره کوچک زیر حلقه (No-Charge Semi-Circle) جایی است که اگر مهاجم در حین پرواز لی‌آپ به مدافع داخل آن برخورد کند، خطای مهاجم گرفته نمی‌شود.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:1.6rem;">✋🥅</div><h4 style="color:var(--primary);">۶. خطای گولتندینگ در لی‌آپ</h4><p style="font-size:0.86rem; color:var(--text-muted);">در شوت لی‌آپ، به محض اینکه توپ به تخته بسکتبال برخورد کرد، هیچ مدافعی حق ندارد توپ را در هوا بزند (Goaltending = گل خودکار ۲ امتیازی).</p></div>
+          </div>
+
+          <div class="grid-2">
+            <div class="glass-card">
+              <h4 style="color:var(--warning); margin-bottom:8px;">⚠️ ۴ خطای رایج مبتدیان در شوت لی‌آپ و روش اصلاح آن</h4>
+              <ul style="font-size:0.88rem; padding-right:18px; color:#e2e8f0;">
+                <li><strong>پرش با پای اشتباه (پرش با پای راست در سمت راست):</strong> تعادل بدن را به هم می‌زند ← <em>اصلاح: تکرار ریتم صوتی «راست - چپ - بالا» بدون توپ.</em></li>
+                <li><strong>پرش به سمت جلو (پرش طولی) به جای پرش به بالا:</strong> باعث رد شدن از زیر سبد می‌شود ← <em>اصلاح: کوبیدن گام دوم و بالا کشیدن زانوی موافق به سمت سقف.</em></li>
+                <li><strong>کوبیدن محکم توپ به تخته در سرعت بالا:</strong> چون خود بازیکن سرعت دارد، پرتاب محکم باعث برگشت شدید توپ می‌شود ← <em>اصلاح: رهاسازی کاملاً نرم در اوج پرش.</em></li>
+                <li><strong>استفاده از دست راست در سمت چپ سبد:</strong> مدافع به راحتی توپ را بلاک می‌کند ← <em>اصلاح: در سمت چپ حتماً با گام «چپ-راست» و دست چپ شوت بزنید.</em></li>
+              </ul>
+            </div>
+
+            <div class="glass-card">
+              <h4 style="color:var(--secondary); margin-bottom:8px;">✋ علائم داوری مرتبط با شوت لی‌آپ</h4>
+              <ul style="font-size:0.88rem; padding-right:18px; color:#e2e8f0;">
+                <li><strong>اعلام گل شدن شوت در حین خطا (Count the Basket):</strong> داور ابتدا سوت خطا را می‌زند، سپس دو انگشت دست را بالا برده و به سمت پایین می‌شکند (گل قبول + ۱ پنالتی).</li>
+                <li><strong>اعلام لغو گل به دلیل خطای قبل از شوت یا تراولینگ:</strong> باز کردن و بستن افقی هر دو دست در جلوی سینه به صورت قیچی (No Basket).</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- زیربخش ۶: آزمایشگاه انیمیشنی جلسه هفتم + کارت‌های چرخشی دانستنی‌ها -->
+        <div id="eduSkills" class="edu-sub-view" style="display:none;">
+          <h3 style="color:var(--secondary); margin-bottom:10px;">🔬 آزمایشگاه انیمیشنی جلسه هفتم (شبیه‌ساز زنده لی‌آپ راست، چپ و فینگر رول)</h3>
+          <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:14px;">روی هر یک از ۳ مهارت زیر کلیک کنید تا اجرای گام‌به‌گام آن را ببینید. می‌توانید سرعت را روی حالت صحنه آهسته (Slow Motion) قرار دهید:</p>
+
+          <div class="glass-card" style="margin-bottom:24px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="sub-tab-btn active" onclick="setSkillSimMode('rightLayup', this)">➡️ ۱. لی‌آپ سمت راست (راست - چپ - دست راست)</button>
+                <button class="sub-tab-btn" onclick="setSkillSimMode('leftLayup', this)">⬅️ ۲. لی‌آپ سمت چپ (چپ - راست - دست چپ)</button>
+                <button class="sub-tab-btn" onclick="setSkillSimMode('fingerRoll', this)">🤲 ۳. مقایسه لی‌آپ زیر دست (Finger Roll) و روی دست</button>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:0.85rem; color:var(--secondary);">سرعت انیمیشن:</span>
+                <button class="sub-tab-btn" style="padding:5px 10px;" onclick="setSkillSimSpeed(0.35)">🐢 صحنه آهسته</button>
+                <button class="sub-tab-btn" style="padding:5px 10px;" onclick="setSkillSimSpeed(1)">⚡ عادی</button>
+              </div>
+            </div>
+
+            <canvas id="skillSimCanvas" width="680" height="225" style="width:100%; max-width:680px; height:auto; display:block; margin:0 auto; background:rgba(9,13,22,0.85); border-radius:14px; border:1px solid var(--glass-border);"></canvas>
+          </div>
+
+          <h3 style="color:var(--secondary); margin-bottom:12px;">🌟 دانستنی‌های جذاب درباره شوت لی‌آپ (کارت‌های Flip سه‌بعدی)</h3>
+          <div class="flip-grid">
+            <div class="flip-card" onclick="this.classList.toggle('flipped')">
+              <div class="flip-card-inner">
+                <div class="flip-front">
+                  <div style="font-size:2.2rem; margin-bottom:8px;">🧊🤲</div>
+                  <h4>مخترع حرکت Finger Roll</h4>
+                  <span style="font-size:0.78rem; color:var(--primary); margin-top:8px;">کلیک کنید تا بچرخد ↺</span>
+                </div>
+                <div class="flip-back">
+                  <p style="font-size:0.86rem;">«جورج گروین» ملقب به مرد یخی (The Iceman)، استاد مسلم لی‌آپ‌های زیر دست (Finger Roll) بود که توپ را از فاصله ۳ متری با چرخش سرانگشتان روی تخته می‌گذاشت.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="flip-card" onclick="this.classList.toggle('flipped')">
+              <div class="flip-card-inner">
+                <div class="flip-front">
+                  <div style="font-size:2.2rem; margin-bottom:8px;">📈🏀</div>
+                  <h4>بالاترین درصد موفقیت در بازی</h4>
+                  <span style="font-size:0.78rem; color:var(--primary); margin-top:8px;">کلیک کنید تا بچرخد ↺</span>
+                </div>
+                <div class="flip-back">
+                  <p style="font-size:0.86rem;">در آمار جهانی بسکتبال، شوت لی‌آپ با بیش از ۶۵٪ موفقیت در بازی تحت فشار (و ۹۹٪ در تمرین)، مطمئن‌ترین راه کسب امتیاز محسوب می‌شود.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="flip-card" onclick="this.classList.toggle('flipped')">
+              <div class="flip-card-inner">
+                <div class="flip-front">
+                  <div style="font-size:2.2rem; margin-bottom:8px;">🔄👟</div>
+                  <h4>گام اروپایی (Euro Step) چیست؟</h4>
+                  <span style="font-size:0.78rem; color:var(--primary); margin-top:8px;">کلیک کنید تا بچرخد ↺</span>
+                </div>
+                <div class="flip-back">
+                  <p style="font-size:0.86rem;">نوعی لی‌آپ پیشرفته که بازیکن گام اول را به سمت راست برمی‌دارد و بلافاصله گام دوم را با زاویه تند به سمت چپ می‌گذارد تا مدافع روبرو را فریب دهد.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="flip-card" onclick="this.classList.toggle('flipped')">
+              <div class="flip-card-inner">
+                <div class="flip-front">
+                  <div style="font-size:2.2rem; margin-bottom:8px;">🧘‍♂️✈️</div>
+                  <h4>رکورد معلق ماندن در هوا</h4>
+                  <span style="font-size:0.78rem; color:var(--primary); margin-top:8px;">کلیک کنید تا بچرخد ↺</span>
+                </div>
+                <div class="flip-back">
+                  <p style="font-size:0.86rem;">مایکل جردن در اجرای لی‌آپ‌های مشهور خود تا ۰/۹۲ ثانیه در هوا معلق می‌ماند (Hang Time) و در آسمان دست شوت‌زن خود را از راست به چپ تغییر می‌داد!</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- دکمه ثبت مطالعه آموزش کامل (۲۰ XP) -->
+        <div style="margin-top:28px; padding-top:18px; border-top:1px solid var(--glass-border); text-align:center;">
+          <button id="claimEducationBtn" class="btn btn-success" onclick="completeSectionXP('education', 20, 'آموزش کامل جلسه هفتم (تکنیک شوت لی‌آپ راست و چپ)')">
+            ✅ مطالعه کامل تمام بخش‌های آموزش جلسه هفتم را به پایان رساندم (دریافت ۲۰ XP)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۴. بخش خلاصه جلسه هفتم و نقشه ذهنی (Mind Map SVG)
+         ========================================================================= -->
+    <section id="summaryView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">🧠 جمع‌بندی و نقشه ذهنی زنده جلسه هفتم</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <p style="font-size:0.92rem; color:var(--text-muted); margin-bottom:18px;">نقشه ذهنی زیر با جریان‌های نوری متحرک، چکیده تمامی مفاهیم کلیدی جلسه هفتم (شوت لی‌آپ راست و چپ، تکنیک نخ نامرئی و قوانین دوگام) را نمایش می‌دهد:</p>
+
+        <div style="overflow-x:auto; background:rgba(9,13,22,0.85); border-radius:var(--radius-md); padding:18px; border:1px solid var(--glass-border); margin-bottom:20px;">
+          <svg viewBox="0 0 860 400" style="width:100%; min-width:650px; height:auto;">
+            <!-- خطوط اتصال پایه -->
+            <path d="M430,200 C320,200 280,80 190,80" stroke="rgba(249,115,22,0.3)" stroke-width="4" fill="none"/>
+            <path d="M430,200 C320,200 280,200 190,200" stroke="rgba(56,189,248,0.3)" stroke-width="4" fill="none"/>
+            <path d="M430,200 C320,200 280,320 190,320" stroke="rgba(16,185,129,0.3)" stroke-width="4" fill="none"/>
+            <path d="M430,200 C540,200 580,80 670,80" stroke="rgba(245,158,11,0.3)" stroke-width="4" fill="none"/>
+            <path d="M430,200 C540,200 580,200 670,200" stroke="rgba(236,72,153,0.3)" stroke-width="4" fill="none"/>
+            <path d="M430,200 C540,200 580,320 670,320" stroke="rgba(168,85,247,0.3)" stroke-width="4" fill="none"/>
+
+            <!-- خطوط پالس انرژی متحرک -->
+            <path class="tactic-line" d="M430,200 C320,200 280,80 190,80" stroke="#f97316" stroke-width="3" fill="none"/>
+            <path class="tactic-line" d="M430,200 C320,200 280,200 190,200" stroke="#38bdf8" stroke-width="3" fill="none"/>
+            <path class="tactic-line" d="M430,200 C320,200 280,320 190,320" stroke="#10b981" stroke-width="3" fill="none"/>
+            <path class="tactic-line" d="M430,200 C540,200 580,80 670,80" stroke="#f59e0b" stroke-width="3" fill="none"/>
+            <path class="tactic-line" d="M430,200 C540,200 580,200 670,200" stroke="#ec4899" stroke-width="3" fill="none"/>
+            <path class="tactic-line" d="M430,200 C540,200 580,320 670,320" stroke="#a855f7" stroke-width="3" fill="none"/>
+
+            <!-- هسته مرکزی -->
+            <ellipse cx="430" cy="200" rx="105" ry="48" fill="#ea580c" stroke="#fff" stroke-width="3"/>
+            <text x="430" y="196" fill="#fff" font-size="14" font-weight="bold" text-anchor="middle">شوت لی‌آپ (Layup)</text>
+            <text x="430" y="218" fill="#fef08a" font-size="13" text-anchor="middle">خلاصه جلسه هفتم</text>
+
+            <!-- شاخه‌ها -->
+            <rect x="20" y="45" width="180" height="70" rx="12" fill="#1e293b" stroke="#f97316" stroke-width="2.5"/>
+            <text x="110" y="72" fill="#f97316" font-size="14" font-weight="bold" text-anchor="middle">لی‌آپ سمت راست</text>
+            <text x="110" y="95" fill="#cbd5e1" font-size="12" text-anchor="middle">گام راست-چپ + شوت دست راست</text>
+
+            <rect x="20" y="165" width="180" height="70" rx="12" fill="#1e293b" stroke="#38bdf8" stroke-width="2.5"/>
+            <text x="110" y="192" fill="#38bdf8" font-size="14" font-weight="bold" text-anchor="middle">لی‌آپ سمت چپ</text>
+            <text x="110" y="215" fill="#cbd5e1" font-size="12" text-anchor="middle">گام چپ-راست + شوت دست چپ</text>
+
+            <rect x="20" y="285" width="180" height="70" rx="12" fill="#1e293b" stroke="#10b981" stroke-width="2.5"/>
+            <text x="110" y="312" fill="#10b981" font-size="14" font-weight="bold" text-anchor="middle">ریتم دوگام</text>
+            <text x="110" y="335" fill="#cbd5e1" font-size="12" text-anchor="middle">گام ۱ بلند، گام ۲ کوتاه و پرشی</text>
+
+            <rect x="660" y="45" width="180" height="70" rx="12" fill="#1e293b" stroke="#f59e0b" stroke-width="2.5"/>
+            <text x="750" y="72" fill="#f59e0b" font-size="14" font-weight="bold" text-anchor="middle">تکنیک نخ نامرئی</text>
+            <text x="750" y="95" fill="#cbd5e1" font-size="12" text-anchor="middle">بالا رفتن هم‌زمان دست و زانوی موافق</text>
+
+            <rect x="660" y="165" width="180" height="70" rx="12" fill="#1e293b" stroke="#ec4899" stroke-width="2.5"/>
+            <text x="750" y="192" fill="#ec4899" font-size="14" font-weight="bold" text-anchor="middle">هدف‌گیری تخته</text>
+            <text x="750" y="215" fill="#cbd5e1" font-size="12" text-anchor="middle">گوشه بالای مربع کوچک در زاویه ۴۵°</text>
+
+            <rect x="660" y="285" width="180" height="70" rx="12" fill="#1e293b" stroke="#a855f7" stroke-width="2.5"/>
+            <text x="750" y="312" fill="#a855f7" font-size="14" font-weight="bold" text-anchor="middle">قوانین داوری لی‌آپ</text>
+            <text x="750" y="335" fill="#cbd5e1" font-size="12" text-anchor="middle">حداکثر ۲ گام، گل و خطا، گولتندینگ</text>
+          </svg>
+        </div>
+
+        <div style="text-align:center;">
+          <button id="claimSummaryBtn" class="btn btn-success" onclick="completeSectionXP('summary', 10, 'مطالعه خلاصه و نقشه ذهنی جلسه هفتم')">
+            ✅ نقشه ذهنی و خلاصه جلسه هفتم را مرور کردم (دریافت ۱۰ XP)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۵. بخش فعالیت‌های عملی، تشخیصی و بازی شبیه‌ساز گام‌های لی‌آپ (۳۰ XP)
+         ========================================================================= -->
+    <section id="activitiesView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">🎮 فعالیت‌های عملی، تشخیصی و شبیه‌ساز گام‌های لی‌آپ (۳۰ XP)</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <p style="font-size:0.92rem; color:var(--text-muted); margin-bottom:20px;">برای دریافت ۳۰ امتیاز کامل این بخش، هر ۳ فعالیت عملی و تعاملی زیر را با موفقیت تکمیل نمایید:</p>
+
+        <!-- فعالیت ۱: تشخیص اصول صحیح شوت لی‌آپ -->
+        <div class="glass-card" style="margin-bottom:20px;">
+          <h4 style="color:var(--primary); margin-bottom:8px;">فعالیت ۱: تشخیص ۴ اصل علمی و قانونی در اجرای شوت لی‌آپ <span id="act1Status" style="color:var(--text-muted); font-size:0.85rem;">(تکمیل نشده)</span></h4>
+          <p style="font-size:0.88rem; margin-bottom:12px;">از میان گزینه‌های زیر، <strong>۴ گزاره کاملاً صحیح</strong> را انتخاب کنید:</p>
+          <div class="grid-3" id="equipGameGrid">
+            <button class="sub-tab-btn" onclick="toggleEquipSelect(this, true)">➡️ در لی‌آپ سمت راست، گام اول با پای راست و پرش از روی پای چپ است</button>
+            <button class="sub-tab-btn" onclick="toggleEquipSelect(this, false)">❌ در لی‌آپ می‌توان بعد از گرفتن توپ ۴ گام برداشت</button>
+            <button class="sub-tab-btn" onclick="toggleEquipSelect(this, true)">🧵 هنگام شوت با دست راست، زانوی پای راست نیز به بالا کشیده می‌شود</button>
+            <button class="sub-tab-btn" onclick="toggleEquipSelect(this, true)">🔳 بهترین نقطه هدف در لی‌آپ زاویه ۴۵ درجه، گوشه بالایی مربع تخته است</button>
+            <button class="sub-tab-btn" onclick="toggleEquipSelect(this, false)">❌ در گام دوم لی‌آپ باید به جای پرش به بالا، به بیرون زمین پرید</button>
+            <button class="sub-tab-btn" onclick="toggleEquipSelect(this, true)">⬅️ در لی‌آپ سمت چپ، گام اول با پای چپ، گام دوم راست و شوت با دست چپ است</button>
+          </div>
+        </div>
+
+        <!-- فعالیت ۲: مرتب‌سازی مراحل اجرای لی‌آپ از سمت راست -->
+        <div class="glass-card" style="margin-bottom:20px;">
+          <h4 style="color:var(--primary); margin-bottom:8px;">فعالیت ۲: مرتب‌سازی مراحل چهارگانه اجرای لی‌آپ سمت راست از گام ۱ تا ۴ <span id="act2Status" style="color:var(--text-muted); font-size:0.85rem;">(تکمیل نشده)</span></h4>
+          <p style="font-size:0.88rem; margin-bottom:12px;">مراحل زیر را به ترتیب صحیح زمانی (از شماره ۱ تا ۴) کلیک کنید:</p>
+          <div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:12px;" id="orderStepsContainer">
+            <button class="btn btn-secondary" onclick="selectOrderStep(3, 'پرش عمودی به سمت سقف همراه با بالا کشیدن زانوی راست و دست راست', this)">پرش عمودی به سمت سقف همراه با بالا کشیدن زانوی راست و دست راست</button>
+            <button class="btn btn-secondary" onclick="selectOrderStep(1, 'نفوذ با دریبل در زاویه ۴۵ درجه، برداشتن گام اول بلند با پای راست و جمع کردن توپ', this)">نفوذ با دریبل در زاویه ۴۵ درجه، برداشتن گام اول بلند با پای راست و جمع کردن توپ</button>
+            <button class="btn btn-secondary" onclick="selectOrderStep(4, 'رهاسازی نرم توپ در اوج پرش به گوشه بالای مربع تخته و فرود با زانوهای خم', this)">رهاسازی نرم توپ در اوج پرش به گوشه بالای مربع تخته و فرود با زانوهای خم</button>
+            <button class="btn btn-secondary" onclick="selectOrderStep(2, 'فرود محکم روی پای چپ (گام دوم کوتاه) برای تبدیل سرعت افقی به پرش عمودی', this)">فرود محکم روی پای چپ (گام دوم کوتاه) برای تبدیل سرعت افقی به پرش عمودی</button>
+          </div>
+          <div id="orderFeedback" style="font-size:0.88rem; color:var(--secondary);">ترتیب انتخاب‌شده: هنوز موردی انتخاب نشده است.</div>
+          <button class="sub-tab-btn" style="margin-top:8px;" onclick="resetOrderActivity()">🔄 شروع مجدد مرتب‌سازی</button>
+        </div>
+
+        <!-- فعالیت ۳: بازی تعاملی انتخاب گام و دست صحیح در نفوذهای لی‌آپ -->
+        <div class="glass-card">
+          <h4 style="color:var(--primary); margin-bottom:8px;">فعالیت ۳: شبیه‌ساز «انتخاب ریتم گام‌برداری و اجرای لی‌آپ زیر سبد» <span id="act3Status" style="color:var(--text-muted); font-size:0.85rem;">(تکمیل نشده)</span></h4>
+          <p style="font-size:0.88rem; margin-bottom:10px;">به مسیر نفوذ بازیکن در زمین بسکتبال زیر دقت کنید و بر اساس سناریو، <strong>ترکیب صحیح گام‌ها و دست شوت‌زن</strong> را انتخاب نمایید (کسب ۳ امتیاز موفق):</p>
+
+          <div style="background:rgba(9,13,22,0.9); padding:10px 16px; border-radius:10px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <strong id="layupMissionText" style="color:var(--warning);">👟 موقعیت ۱: بازیکن از جناح راست با زاویه ۴۵ درجه به سمت سبد نفوذ کرده است؛ کدام ریتم گام‌برداری صحیح است؟</strong>
+            <span style="color:var(--accent); font-weight:800;">امتیاز لی‌آپ: <span id="layupGameScore">۰</span> از ۳</span>
+          </div>
+
+          <canvas id="layupSimCanvas" width="600" height="240" style="width:100%; max-width:600px; background:radial-gradient(circle at 50% 30%, #1e293b, #090d16); border:2px solid var(--glass-border); border-radius:14px; display:block; margin:0 auto 14px;"></canvas>
+
+          <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
+            <button class="btn btn-secondary" onclick="submitLayupChoice('rightSide')">➡️ گام ۱ راست ← گام ۲ چپ ← شوت با دست راست</button>
+            <button class="btn btn-secondary" onclick="submitLayupChoice('leftSide')">⬅️ گام ۱ چپ ← گام ۲ راست ← شوت با دست چپ</button>
+            <button class="btn btn-secondary" onclick="submitLayupChoice('centerUnder')">🤲 توقف یک‌ضرب یا فینگر رول نرم از زیر دست مقابل حلقه</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۶. بخش فایل‌ها و لینک کلاس
+         ========================================================================= -->
+    <section id="filesView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">📁 فایل‌های آموزشی و لینک جلسه هفتم (۱۰ XP)</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <div id="filesListContainer" class="grid-2" style="margin-bottom:20px;"></div>
+
+        <div class="glass-card" style="margin-bottom:20px;">
+          <h4 style="color:var(--secondary);">🔗 لینک ارتباطی جلسه مجازی</h4>
+          <p id="sessionLinkDisplay" style="font-size:0.9rem; margin:8px 0; color:#cbd5e1;"></p>
+        </div>
+
+        <div style="text-align:center;">
+          <button id="claimFilesBtn" class="btn btn-success" onclick="completeSectionXP('files', 10, 'مشاهده فایل‌ها و منابع جلسه هفتم')">
+            ✅ فایل‌ها و منابع جلسه هفتم را بررسی کردم (دریافت ۱۰ XP)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۷. بخش اطلاعیه‌های جلسه (۵ XP)
+         ========================================================================= -->
+    <section id="noticesView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">📢 اطلاعیه‌های رسمی درس تربیت بدنی (۵ XP)</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <div id="noticesListContainer" style="display:flex; flex-direction:column; gap:14px; margin-bottom:22px;"></div>
+
+        <div style="text-align:center;">
+          <button id="claimNoticesBtn" class="btn btn-success" onclick="completeSectionXP('notices', 5, 'مطالعه اطلاعیه‌های آموزشی جلسه هفتم')">
+            ✅ اطلاعیه‌های جلسه هفتم را مطالعه کردم (دریافت ۵ XP)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۸. بخش تکالیف جلسه هفتم (۱۰ XP)
+         ========================================================================= -->
+    <section id="homeworkView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">📝 تکلیف عملی جلسه هفتم بسکتبال (۱۰ XP)</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <p style="font-size:0.92rem; color:var(--text-muted); margin-bottom:16px;">برای تسلط عملی بر ریتم گام‌برداری شوت لی‌آپ، سه تمرین زیر را در منزل انجام داده و تیک تأیید هر کدام را فعال نمایید:</p>
+
+        <div id="homeworkChecklist" style="display:flex; flex-direction:column; gap:12px; margin-bottom:18px;"></div>
+
+        <div class="form-group">
+          <label class="form-label" for="homeworkNoteInput">گزارش کوتاه دانش‌آموز از تمرین دوگام لی‌آپ راست و چپ در منزل (الزامی):</label>
+          <input type="text" id="homeworkNoteInput" class="form-control" placeholder="مثال: ۲۰ مرتبه گام‌برداری لی‌آپ راست (راست-چپ-بالا) و ۲۰ مرتبه لی‌آپ چپ (چپ-راست-بالا) را تمرین کردم.">
+        </div>
+
+        <div style="text-align:center; margin-top:18px;">
+          <button id="claimHomeworkBtn" class="btn btn-success" onclick="submitHomeworkTask()">
+            ✅ ثبت تکلیف جلسه هفتم (دریافت ۱۰ XP)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۹. بخش گزارش پیشرفت، زمان حضور و نشان‌های افتخار (Badges)
+         ========================================================================= -->
+    <section id="progressView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">📊 گزارش پیشرفت و دستاوردهای انفرادی (جلسه هفتم)</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <div class="grid-3" style="margin-bottom:22px;">
+          <div class="glass-card" style="text-align:center;">
+            <div style="font-size:0.88rem; color:var(--text-muted);">مجموع امتیاز کسب‌شده</div>
+            <div id="progXPValue" style="font-size:2rem; font-weight:900; color:var(--primary); margin:6px 0;">۰ / ۱۱۰ XP</div>
+          </div>
+          <div class="glass-card" style="text-align:center;">
+            <div style="font-size:0.88rem; color:var(--text-muted);">درصد پیشرفت کل جلسه هفتم</div>
+            <div id="progPercentValue" style="font-size:2rem; font-weight:900; color:var(--accent); margin:6px 0;">۰٪</div>
+          </div>
+          <div class="glass-card" style="text-align:center;">
+            <div style="font-size:0.88rem; color:var(--text-muted);">مدت زمان حضور و مطالعه</div>
+            <div id="progTimeValue" style="font-size:1.6rem; font-weight:900; color:var(--secondary); margin:8px 0;">۰ دقیقه و ۰ ثانیه</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="glass-card">
+            <h4 style="color:var(--primary); margin-bottom:10px;">🏅 نشان‌های افتخار جلسه هفتم (Badges & Achievements)</h4>
+            <div id="badgesContainer" style="display:flex; flex-direction:column; gap:10px;"></div>
+          </div>
+          <div class="glass-card">
+            <h4 style="color:var(--secondary); margin-bottom:10px;">✔️ فهرست فعالیت‌های تکمیل‌شده</h4>
+            <ul id="completedLogsList" style="font-size:0.9rem; padding-right:18px; color:#cbd5e1;"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۱۰. بخش ثبت و ارسال گزارش نهایی به Supabase + پایان جلسه هفتم
+         ========================================================================= -->
+    <section id="reportView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">📤 ثبت و ارسال گزارش نهایی جلسه هفتم به دبیر</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <div class="glass-card" style="margin-bottom:22px;">
+          <table class="custom-table">
+            <tbody>
+              <tr><th>نام و نام خانوادگی دانش‌آموز</th><td id="repStudentName">-</td></tr>
+              <tr><th>نام مدرسه</th><td id="repSchoolName">-</td></tr>
+              <tr><th>پایه تحصیلی</th><td id="repGrade">-</td></tr>
+              <tr><th>نام دبیر</th><td id="repTeacherName">برزگری</td></tr>
+              <tr><th>عنوان جلسه</th><td>جلسه هفتم: آموزش جامع شوت لی‌آپ (دوگام زیر سبد) با دست راست و چپ</td></tr>
+              <tr><th>امتیاز کل (XP)</th><td id="repTotalXP" style="font-weight:bold; color:var(--primary);">۰ XP</td></tr>
+              <tr><th>درصد پیشرفت جلسه</th><td id="repProgressPercent" style="font-weight:bold; color:var(--accent);">۰٪</td></tr>
+              <tr><th>مدت حضور در جلسه</th><td id="repDuration">-</td></tr>
+              <tr><th>فعالیت‌های انجام‌شده</th><td id="repCompletedItems">-</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="text-align:center;">
+          <button id="finalSubmitReportBtn" class="btn" style="font-size:1.15rem; padding:16px 38px; animation: pulseGlow 2s infinite;" onclick="handleFinalReportSubmission()">
+            🚀 ثبت و ارسال گزارش نهایی جلسه هفتم (+۲۰ XP)
+          </button>
+          <p id="supabaseStatusMsg" style="margin-top:14px; font-size:0.95rem;"></p>
+        </div>
+
+        <!-- کارت تبریک پایان جلسه هفتم -->
+        <div id="sessionCompletionBox" class="glass-card" style="display:none; margin-top:26px; text-align:center; border-color:var(--accent);">
+          <canvas id="celebrationCanvas" width="320" height="140" style="margin:0 auto; display:block;"></canvas>
+          <h3 style="color:var(--accent); font-size:1.4rem; margin-top:8px;">🎉 تبریک! جلسه هفتم آموزش بسکتبال با موفقیت به پایان رسید</h3>
+          <p style="font-size:0.95rem; color:#cbd5e1; margin:8px 0 18px;">گزارش عملکرد جلسه هفتم شما با موفقیت در پایگاه داده ثبت گردید.</p>
+          <button class="btn btn-secondary" onclick="showToast('جلسه هشتم (اصول دفاع فردی، گام‌های لغزشی Slide و مهارت ریباند) در جلسه آینده فعال خواهد شد.')">
+            ⏭️ آمادگی برای ورود به جلسه هشتم بسکتبال
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    /* ============================================================================
+       تنظیمات پروژه (PROJECT_CONFIG) - تمام تنظیمات جلسه هفتم از این قسمت قابل تغییر است
+       ============================================================================ */
+    const PROJECT_CONFIG = {
+      systemTitle: "سامانه آموزش مجازی تربیت بدنی متوسطه اول",
+      sessionTitle: "جلسه هفتم: آموزش جامع شوت لی‌آپ (Layup - دوگام زیر سبد) با دست راست و چپ",
+      subjectName: "تربیت بدنی",
+      teacherName: "برزگری",
+      supabaseUrl: "https://tpwdrzwfzdbmwqlblntu.supabase.co",
+      supabaseKey: "sb_publishable_ASPIzP1XV1iSweCV43Oy9Q_PCkz5htN",
+      sessionLink: "برگزاری کلاس به صورت آفلاین در سامانه و ارسال تمرینات عملی در شبکه شاد",
+      activeModules: {
+        education: true,
+        summary: true,
+        activities: true,
+        files: true,
+        notices: true,
+        homework: true,
+        progress: true,
+        report: true
+      },
+      sessionFiles: [
+        {
+          title: "جزوه تصویری گام‌برداری شوت لی‌آپ از سمت راست و چپ سبد",
+          desc: "شامل ریتم گام ۱ (بلند) و گام ۲ (کوتاه و پرشی)، تکنیک نخ نامرئی دست و زانو، و زاویه ۴۵ درجه هدف‌گیری مربع تخته."
+        },
+        {
+          title: "راهنمای قوانین دوگام، گام صفر (Gather Step) و ایمنی فرود پس از پرش",
+          desc: "بررسی خطای تراولینگ در برداشتن گام سوم، قانون گل و خطا (And-One) و نحوه فرود نرم روی سینه‌پا."
+        }
+      ],
+      homeworks: [
+        "۱- تمرین «گام‌برداری لی‌آپ بدون توپ در منزل»: ۲۰ مرتبه اجرای ریتم (گام راست - گام چپ - پرش با بالا کشیدن زانو و دست راست).",
+        "۲- تمرین «گام‌برداری لی‌آپ سمت چپ بدون توپ»: ۲۰ مرتبه اجرای ریتم (گام چپ - گام راست - پرش با بالا کشیدن زانو و دست چپ).",
+        "۳- تمرین پرتاب نرم از زیر دست (Finger Roll) به یک علامت مربعی روی دیوار از فاصله ۱ متری با تمرکز بر چرخش نرم سرانگشتان."
+      ],
+      notices: [
+        "دانش‌آموزان گرامی، در اجرای گام دوم لی‌آپ حتماً به سمت بالا (سقف) بپرید و از پریدن طولی به سمت دیوار یا پایه سبد خودداری نمایید.",
+        "یادگیری لی‌آپ با دست چپ در سمت چپ سبد به اندازه دست راست اهمیت دارد؛ در تمرینات منزل هر دو سمت را به یک میزان تمرین کنید.",
+        "پس از تکمیل تمامی بخش‌های جلسه هفتم و رسیدن به امتیاز ۹۰، دکمه «ثبت و ارسال گزارش نهایی» را در حالت اتصال به اینترنت بفشارید."
+      ]
+    };
+
+    /* ============================================================================
+       اتصال مستقیم به جدول Students در Supabase
+       ============================================================================ */
+    const SUPABASE_URL = PROJECT_CONFIG.supabaseUrl;
+    const SUPABASE_KEY = PROJECT_CONFIG.supabaseKey;
+    let ACTIVE_SCHOOL = "";
+    let ACTIVE_SUBJECT = PROJECT_CONFIG.subjectName;
+
+    async function sendToSupabase(studentName, score, totalScore, detailsText) {
+      const payload = {
+        Student_name: studentName,
+        School_name: ACTIVE_SCHOOL,
+        Subject: ACTIVE_SUBJECT,
+        Score: parseFloat(score),
+        Total_score: parseFloat(totalScore),
+        Details: detailsText
+      };
+
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/Students`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${SUPABASE_KEY}`,
+          "Prefer": "return=minimal"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error(`خطای سرور: ${response.status}`);
+      }
+      return true;
+    }
+
+    /* ============================================================================
+       مدیریت وضعیت دانش‌آموز و سیستم ضدتقلب در LocalStorage (ویژه جلسه هفتم)
+       ============================================================================ */
+    const STORAGE_KEY = "PE_BASKETBALL_SESSION7_STATE_V1";
+    const MAX_TOTAL_XP = 110;
+
+    let appState = {
+      studentName: "",
+      schoolName: "",
+      grade: "",
+      loginCount: 0,
+      firstLoginTime: "",
+      totalSeconds: 0,
+      xp: 0,
+      awardedFlags: {
+        login: false,      // 5 XP
+        education: false,  // 20 XP
+        summary: false,    // 10 XP
+        activities: false, // 30 XP
+        files: false,      // 10 XP
+        notices: false,    // 5 XP
+        homework: false,   // 10 XP
+        report: false      // 20 XP
+      },
+      activitySubFlags: {
+        equipDone: false,
+        orderDone: false,
+        layupSimDone: false
+      },
+      homeworkNote: "",
+      reportSent: false,
+      reportTime: ""
+    };
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          appState = {
+            ...appState,
+            ...parsed,
+            awardedFlags: { ...appState.awardedFlags, ...(parsed.awardedFlags || {}) },
+            activitySubFlags: { ...appState.activitySubFlags, ...(parsed.activitySubFlags || {}) }
+          };
+        }
+      } catch (e) {}
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      } catch (e) {}
+      updateStatusBarUI();
+    }
+
+    /* ============================================================================
+       مقداردهی اولیه کل سامانه و موتورهای گرافیکی جلسه هفتم
+       ============================================================================ */
+    window.addEventListener("DOMContentLoaded", () => {
+      loadState();
+      applyProjectConfig();
+      initBackgroundParticles();
+      initConfettiEngine();
+      initWelcomeLayupCanvas();
+      initSkillSimulatorCanvas();
+      initLayupSimGame();
+      init3DTiltCards();
+
+      if (appState.studentName && appState.schoolName && appState.grade) {
+        document.getElementById("studentNameInput").value = appState.studentName;
+        document.getElementById("schoolSelect").value = appState.schoolName;
+        document.getElementById("gradeSelect").value = appState.grade;
+        validateLoginForm();
+      }
+
+      setInterval(() => {
+        if (appState.studentName && !document.getElementById("loginView").classList.contains("active")) {
+          appState.totalSeconds++;
+          if (appState.totalSeconds % 5 === 0) saveState();
+          const progTimeEl = document.getElementById("progTimeValue");
+          if (progTimeEl) progTimeEl.textContent = formatDuration(appState.totalSeconds);
+        }
+      }, 1000);
+    });
+
+    function applyProjectConfig() {
+      document.getElementById("uiAppTitle").textContent = PROJECT_CONFIG.systemTitle;
+      document.getElementById("uiSessionTitle").textContent = PROJECT_CONFIG.sessionTitle;
+      document.getElementById("uiSubjectText").textContent = PROJECT_CONFIG.subjectName;
+      document.getElementById("uiTeacherText").textContent = PROJECT_CONFIG.teacherName;
+      document.getElementById("fixedTeacherInput").value = PROJECT_CONFIG.teacherName;
+      document.getElementById("fixedSubjectInput").value = PROJECT_CONFIG.subjectName;
+
+      const filesBox = document.getElementById("filesListContainer");
+      filesBox.innerHTML = PROJECT_CONFIG.sessionFiles.map(f => `
+        <div class="glass-card tilt-card">
+          <div class="card-glare"></div>
+          <h4 style="color:var(--primary); margin-bottom:6px;">📄 ${f.title}</h4>
+          <p style="font-size:0.88rem; color:#cbd5e1;">${f.desc}</p>
+        </div>
+      `).join("");
+      document.getElementById("sessionLinkDisplay").textContent = PROJECT_CONFIG.sessionLink;
+
+      const noticesBox = document.getElementById("noticesListContainer");
+      noticesBox.innerHTML = PROJECT_CONFIG.notices.map((n, idx) => `
+        <div class="glass-card" style="border-right:4px solid var(--secondary);">
+          <strong>اطلاعیه شماره ${(idx + 1).toLocaleString('fa-IR')}:</strong>
+          <p style="font-size:0.9rem; margin-top:4px; color:#e2e8f0;">${n}</p>
+        </div>
+      `).join("");
+
+      const hwBox = document.getElementById("homeworkChecklist");
+      hwBox.innerHTML = PROJECT_CONFIG.homeworks.map(h => `
+        <label class="glass-card" style="display:flex; align-items:center; gap:12px; cursor:pointer;">
+          <input type="checkbox" class="hw-check" style="width:20px; height:20px; accent-color:var(--primary);">
+          <span style="font-size:0.92rem;">${h}</span>
+        </label>
+      `).join("");
+    }
+
+    /* ============================================================================
+       ۱. موتور پس‌زمینه ذرات و خطوط تاکتیکی تعاملی (60FPS Particle Network)
+       ============================================================================ */
+    function initBackgroundParticles() {
+      const canvas = document.getElementById("bgParticlesCanvas");
+      const ctx = canvas.getContext("2d");
+      let w = canvas.width = window.innerWidth;
+      let h = canvas.height = window.innerHeight;
+
+      window.addEventListener("resize", () => {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+      });
+
+      const mouse = { x: -500, y: -500 };
+      window.addEventListener("mousemove", e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+
+      const count = Math.min(48, Math.floor(w / 28));
+      const nodes = Array.from({ length: count }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.65,
+        vy: (Math.random() - 0.5) * 0.65,
+        r: Math.random() * 2.2 + 1.2,
+        isOrange: Math.random() > 0.5
+      }));
+
+      function renderBg() {
+        ctx.clearRect(0, 0, w, h);
+        for (let i = 0; i < nodes.length; i++) {
+          const p = nodes[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.x < 0 || p.x > w) p.vx *= -1;
+          if (p.y < 0 || p.y > h) p.vy *= -1;
+
+          const dxM = p.x - mouse.x;
+          const dyM = p.y - mouse.y;
+          const distM = Math.hypot(dxM, dyM);
+          if (distM < 110 && distM > 0) {
+            p.x += (dxM / distM) * 1.1;
+            p.y += (dyM / distM) * 1.1;
+          }
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = p.isOrange ? "rgba(249, 115, 22, 0.55)" : "rgba(56, 189, 248, 0.45)";
+          ctx.fill();
+
+          for (let j = i + 1; j < nodes.length; j++) {
+            const q = nodes[j];
+            const dist = Math.hypot(p.x - q.x, p.y - q.y);
+            if (dist < 135) {
+              ctx.beginPath();
+              ctx.moveTo(p.x, p.y);
+              ctx.lineTo(q.x, q.y);
+              ctx.strokeStyle = `rgba(148, 163, 184, ${(1 - dist / 135) * 0.14})`;
+              ctx.lineWidth = 1;
+              ctx.stroke();
+            }
+          }
+        }
+        requestAnimationFrame(renderBg);
+      }
+      renderBg();
+    }
+
+    /* ============================================================================
+       ۲. موتور انفجار ذرات نوری و کنفتی
+       ============================================================================ */
+    let confettiParticles = [];
+
+    function initConfettiEngine() {
+      const canvas = document.getElementById("fxConfettiCanvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      window.addEventListener("resize", () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      });
+
+      function loopConfetti() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let i = confettiParticles.length - 1; i >= 0; i--) {
+          const c = confettiParticles[i];
+          c.x += c.vx;
+          c.y += c.vy;
+          c.vy += 0.25;
+          c.rot += c.vRot;
+          c.life -= 0.014;
+
+          if (c.life <= 0) {
+            confettiParticles.splice(i, 1);
+            continue;
+          }
+
+          ctx.save();
+          ctx.translate(c.x, c.y);
+          ctx.rotate(c.rot);
+          ctx.globalAlpha = Math.max(0, c.life);
+          ctx.fillStyle = c.color;
+          ctx.fillRect(-c.size / 2, -c.size / 2, c.size, c.size * 0.65);
+          ctx.restore();
+        }
+        requestAnimationFrame(loopConfetti);
+      }
+      loopConfetti();
+    }
+
+    function triggerParticleBurst(originX = window.innerWidth / 2, originY = window.innerHeight / 2) {
+      const colors = ["#f97316", "#38bdf8", "#10b981", "#facc15", "#ec4899"];
+      for (let i = 0; i < 45; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * 8 + 3;
+        confettiParticles.push({
+          x: originX,
+          y: originY,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed - 4,
+          size: Math.random() * 8 + 5,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rot: Math.random() * Math.PI,
+          vRot: (Math.random() - 0.5) * 0.2,
+          life: 1.0
+        });
+      }
+    }
+
+    /* ============================================================================
+       ۳. افکت سه بعدی کارت‌ها (3D Perspective Tilt)
+       ============================================================================ */
+    function init3DTiltCards() {
+      document.addEventListener("mousemove", (e) => {
+        const card = e.target.closest(".tilt-card");
+        if (!card) return;
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const rotateX = ((y - rect.height / 2) / (rect.height / 2)) * -7;
+        const rotateY = ((x - rect.width / 2) / (rect.width / 2)) * 7;
+
+        card.style.transform = `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px)`;
+        const glare = card.querySelector(".card-glare");
+        if (glare) {
+          glare.style.background = `radial-gradient(circle at ${(x / rect.width) * 100}% ${(y / rect.height) * 100}%, rgba(255,255,255,0.16), transparent 60%)`;
+        }
+      });
+
+      document.addEventListener("mouseout", (e) => {
+        const card = e.target.closest(".tilt-card");
+        if (card && !card.contains(e.relatedTarget)) {
+          card.style.transform = "perspective(900px) rotateX(0deg) rotateY(0deg) translateY(0)";
+        }
+      });
+    }
+
+    /* ============================================================================
+       اعتبارسنجی فرم ورود و شروع جلسه هفتم
+       ============================================================================ */
+    function validateLoginForm() {
+      const nameVal = document.getElementById("studentNameInput").value.trim();
+      const schoolVal = document.getElementById("schoolSelect").value;
+      const gradeVal = document.getElementById("gradeSelect").value;
+      document.getElementById("startBtn").disabled = !(nameVal.length >= 3 && schoolVal !== "" && gradeVal !== "");
+    }
+
+    function handleLoginSubmit(e) {
+      e.preventDefault();
+      const nameVal = document.getElementById("studentNameInput").value.trim();
+      const schoolVal = document.getElementById("schoolSelect").value;
+      const gradeVal = document.getElementById("gradeSelect").value;
+
+      appState.studentName = nameVal;
+      appState.schoolName = schoolVal;
+      appState.grade = gradeVal;
+      appState.loginCount += 1;
+
+      ACTIVE_SCHOOL = schoolVal;
+      ACTIVE_SUBJECT = `${PROJECT_CONFIG.subjectName} (${gradeVal})`;
+
+      if (!appState.firstLoginTime) {
+        appState.firstLoginTime = new Date().toLocaleTimeString("fa-IR");
+      }
+
+      if (!appState.awardedFlags.login) {
+        appState.awardedFlags.login = true;
+        appState.xp += 5;
+        triggerParticleBurst();
+        showToast("خوش آمدید! ۵ امتیاز (XP) بابت ورود به جلسه هفتم دریافت کردید.");
+      }
+
+      saveState();
+      document.getElementById("topStatusBar").style.display = "flex";
+      renderDashboardCards();
+      navigateTo("dashboardView");
+    }
+
+    /* ============================================================================
+       رندر داشبورد جلسه هفتم
+       ============================================================================ */
+    function renderDashboardCards() {
+      const modules = [
+        { key: "education", title: "آموزش جامع شوت لی‌آپ (Layup)", xp: "۲۰ XP", icon: "👟", view: "educationView", desc: "ریتم گام ۱ و ۲، تکنیک نخ نامرئی، هدف‌گیری مربع تخته و لی‌آپ چپ و راست" },
+        { key: "summary", title: "خلاصه و نقشه ذهنی جلسه هفتم", xp: "۱۰ XP", icon: "🧠", view: "summaryView", desc: "مرور تصویری و نمودار درختی پویا از مراحل دوگام زیر سبد" },
+        { key: "activities", title: "فعالیت عملی و شبیه‌ساز گام‌های لی‌آپ", xp: "۳۰ XP", icon: "🎮", view: "activitiesView", desc: "تشخیص قوانین دوگام، مرتب‌سازی مراحل و بازی انتخاب ریتم لی‌آپ" },
+        { key: "files", title: "فایل‌ها و لینک کلاس", xp: "۱۰ XP", icon: "📁", view: "filesView", desc: "جزوه تصویری گام‌برداری لی‌آپ و راهنمای قانون گام صفر" },
+        { key: "notices", title: "اطلاعیه‌های آموزشی", xp: "۵ XP", icon: "📢", view: "noticesView", desc: "نکات ایمنی پرش عمودی و فرود نرم روی سینه‌پا" },
+        { key: "homework", title: "تکلیف عملی جلسه هفتم", xp: "۱۰ XP", icon: "📝", view: "homeworkView", desc: "تمرین عملی ریتم گام‌برداری لی‌آپ راست و چپ در منزل" },
+        { key: "progress", title: "گزارش پیشرفت و نشان‌ها", xp: "مشاهده", icon: "📊", view: "progressView", desc: "بررسی درصد پیشرفت، زمان حضور و نشان‌های افتخار جلسه هفتم" },
+        { key: "report", title: "ثبت و ارسال گزارش نهایی", xp: "۲۰ XP", icon: "📤", view: "reportView", desc: "ثبت نهایی عملکرد جلسه هفتم و ارسال مستقیم برای دبیر" }
+      ];
+
+      const grid = document.getElementById("dashboardModulesGrid");
+      grid.innerHTML = modules
+        .filter(m => PROJECT_CONFIG.activeModules[m.key])
+        .map(m => {
+          const isDone = appState.awardedFlags[m.key] === true;
+          return `
+            <div class="glass-card tilt-card" style="cursor:pointer; display:flex; flex-direction:column; justify-content:space-between;" onclick="navigateTo('${m.view}')">
+              <div class="card-glare"></div>
+              <div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                  <span style="font-size:2.1rem;">${m.icon}</span>
+                  <span class="badge-xp" style="background:${isDone ? 'var(--accent)' : ''};">
+                    ${isDone ? '✓ تکمیل شده' : m.xp}
+                  </span>
+                </div>
+                <h3 style="font-size:1.12rem; color:var(--text-main); margin-bottom:6px;">${m.title}</h3>
+                <p style="font-size:0.85rem; color:var(--text-muted);">${m.desc}</p>
+              </div>
+              <div style="margin-top:16px; font-size:0.85rem; color:var(--secondary); font-weight:800;">ورود به بخش ←</div>
+            </div>
+          `;
+        }).join("");
+    }
+
+    function navigateTo(viewId) {
+      document.querySelectorAll(".view-section").forEach(sec => sec.classList.remove("active"));
+      document.getElementById(viewId).classList.add("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
+      if (viewId === "dashboardView") renderDashboardCards();
+      if (viewId === "progressView") renderProgressView();
+      if (viewId === "reportView") renderReportView();
+      updateStatusBarUI();
+    }
+
+    function switchEduTab(tabId, btnEl) {
+      document.querySelectorAll(".edu-sub-view").forEach(el => el.style.display = "none");
+      document.getElementById(tabId).style.display = "block";
+      btnEl.parentElement.querySelectorAll(".sub-tab-btn").forEach(b => b.classList.remove("active"));
+      btnEl.classList.add("active");
+    }
+
+    function calculateProgressPercent() {
+      const keys = ["login", "education", "summary", "activities", "files", "notices", "homework", "report"];
+      const doneCount = keys.filter(k => appState.awardedFlags[k]).length;
+      return Math.round((doneCount / keys.length) * 100);
+    }
+
+    function updateStatusBarUI() {
+      document.getElementById("headerStudentName").textContent = appState.studentName || "دانش‌آموز";
+      document.getElementById("headerSchoolInfo").textContent = `${appState.schoolName} | ${appState.grade}`;
+      document.getElementById("headerXP").textContent = appState.xp.toLocaleString("fa-IR");
+
+      const pct = calculateProgressPercent();
+      document.getElementById("headerProgressText").textContent = `${pct.toLocaleString("fa-IR")}٪`;
+      document.getElementById("headerProgressFill").style.width = `${pct}%`;
+
+      const btnMap = [
+        { key: "education", id: "claimEducationBtn" },
+        { key: "summary", id: "claimSummaryBtn" },
+        { key: "files", id: "claimFilesBtn" },
+        { key: "notices", id: "claimNoticesBtn" },
+        { key: "homework", id: "claimHomeworkBtn" }
+      ];
+      btnMap.forEach(item => {
+        const btn = document.getElementById(item.id);
+        if (btn && appState.awardedFlags[item.key]) {
+          btn.disabled = true;
+          btn.textContent = "✓ امتیاز این بخش قبلاً در حساب شما ثبت شده است";
+        }
+      });
+    }
+
+    function completeSectionXP(key, xpAmount, title) {
+      if (appState.awardedFlags[key]) {
+        showToast("امتیاز این بخش قبلاً ثبت شده است.");
+        return;
+      }
+      appState.awardedFlags[key] = true;
+      appState.xp += xpAmount;
+      saveState();
+      playBeepSound(880, 0.22);
+      triggerParticleBurst();
+      showToast(`آفرین! ${xpAmount.toLocaleString("fa-IR")} امتیاز (XP) بابت «${title}» دریافت کردید.`);
+    }
+
+    /* ============================================================================
+       ۴. نقشه تعاملی گام‌های لی‌آپ و مربع تخته + پخش صوتی
+       ============================================================================ */
+    const LAYUP_MAP_DATA = {
+      stepOneRight: {
+        title: "۱. گام اول (پای راست - گام بلند سرعتی)",
+        desc: "در لی‌آپ از سمت راست، هم‌زمان با جمع کردن توپ با دو دست، اولین گام بلند با پای راست برداشته می‌شود تا فاصله شما با سبد کم شود."
+      },
+      stepTwoLeft: {
+        title: "۲. گام دوم (پای چپ - گام کوتاه و فنر پرش عمودی)",
+        desc: "گام دوم با پای چپ کوتاه و محکم روی زمین گذاشته می‌شود تا سرعت افقی دویدن را به یک پرش بلند عمودی به سمت سقف تبدیل کند."
+      },
+      puppetString: {
+        title: "۳. تکنیک نخ نامرئی (بالا رفتن هم‌زمان دست راست و زانوی راست)",
+        desc: "در لحظه پرش از روی پای چپ، زانوی پای راست و دست راست به طور هم‌زمان (مانند اینکه با یک نخ به هم وصل هستند) به سمت بالا کشیده می‌شوند."
+      },
+      sweetSpot: {
+        title: "۴. گوشه بالای مربع کوچک تخته (نقطه طلایی هدف در زاویه ۴۵ درجه)",
+        desc: "در بالاترین نقطه پرش، توپ به نرمی به گوشه بالایی سمت راستِ مربع کوچک تخته زده می‌شود تا با زاویه بازتاب دقیق وارد حلقه گردد."
+      }
+    };
+
+    let currentLayupPartKey = null;
+
+    function playBeepSound(freq = 520, duration = 0.12) {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.14, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    function selectLayupPart(partKey) {
+      currentLayupPartKey = partKey;
+      const info = LAYUP_MAP_DATA[partKey];
+      if (!info) return;
+      document.getElementById("layupPartTitle").textContent = info.title;
+      document.getElementById("layupPartDesc").textContent = info.desc;
+      playBeepSound(740, 0.15);
+      speakCurrentLayupInfo();
+    }
+
+    function speakCurrentLayupInfo() {
+      if (!currentLayupPartKey) {
+        showToast("لطفاً ابتدا روی یکی از ۴ بخش نقشه لی‌آپ کلیک کنید.");
+        return;
+      }
+      const info = LAYUP_MAP_DATA[currentLayupPartKey];
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(`${info.title}. ${info.desc}`);
+        utter.lang = "fa-IR";
+        utter.rate = 1.0;
+        window.speechSynthesis.speak(utter);
+      }
+    }
+
+    /* ============================================================================
+       ۵. چرخش سه‌بعدی هولوگرام جلسه هفتم
+       ============================================================================ */
+    let autoSpinInterval = null;
+
+    function rotateEquipments(deg) {
+      document.getElementById("equipRotateLabel").textContent = `${Number(deg).toLocaleString("fa-IR")} درجه`;
+      document.querySelectorAll(".equip-3d-object").forEach(el => {
+        el.style.transform = `rotateY(${deg}deg) rotateX(${Math.sin(deg * 0.04) * 14}deg)`;
+      });
+    }
+
+    function toggleAutoSpinEquip() {
+      const btn = document.getElementById("autoSpinBtn");
+      const slider = document.getElementById("equipRotateRange");
+      if (autoSpinInterval) {
+        clearInterval(autoSpinInterval);
+        autoSpinInterval = null;
+        btn.textContent = "▶️ چرخش خودکار ۳۶۰ درجه";
+        return;
+      }
+      btn.textContent = "⏸️ توقف چرخش خودکار";
+      let angle = Number(slider.value);
+      autoSpinInterval = setInterval(() => {
+        angle += 2;
+        if (angle > 180) angle = -180;
+        slider.value = angle;
+        rotateEquipments(angle);
+      }, 30);
+    }
+
+    /* ============================================================================
+       ۶. آزمایشگاه انیمیشنی جلسه هفتم (لی‌آپ راست، لی‌آپ چپ و فینگر رول)
+       ============================================================================ */
+    let skillSimMode = "rightLayup";
+    let skillSimSpeed = 1.0;
+
+    function setSkillSimMode(mode, btnEl) {
+      skillSimMode = mode;
+      btnEl.parentElement.querySelectorAll(".sub-tab-btn").forEach(b => b.classList.remove("active"));
+      btnEl.classList.add("active");
+    }
+
+    function setSkillSimSpeed(spd) {
+      skillSimSpeed = spd;
+      showToast(spd < 1 ? "حالت صحنه آهسته (Slow Motion) برای مشاهده دقیق گام ۱ و ۲ فعال شد." : "سرعت عادی انیمیشن فعال شد.");
+    }
+
+    function initSkillSimulatorCanvas() {
+      const canvas = document.getElementById("skillSimCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      let t = 0;
+
+      function animateSkills() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        t += 0.055 * skillSimSpeed;
+
+        // خط زمین
+        ctx.strokeStyle = "rgba(255,255,255,0.25)";
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(20, 195); ctx.lineTo(660, 195); ctx.stroke();
+
+        if (skillSimMode === "rightLayup" || skillSimMode === "leftLayup") {
+          const isRight = skillSimMode === "rightLayup";
+          const prog = (t * 0.45) % 1; // 0 تا 1
+
+          // سبد در سمت راست بوم
+          ctx.strokeStyle = "#38bdf8";
+          ctx.lineWidth = 4;
+          ctx.beginPath(); ctx.moveTo(575, 35); ctx.lineTo(575, 105); ctx.stroke();
+          ctx.strokeStyle = "#f97316";
+          ctx.beginPath(); ctx.moveTo(540, 88); ctx.lineTo(575, 88); ctx.stroke();
+
+          // جای پاهای گام ۱ و گام ۲ روی زمین
+          ctx.fillStyle = prog > 0.15 ? "#f97316" : "rgba(249,115,22,0.25)";
+          ctx.beginPath(); ctx.roundRect(220, 185, 48, 12, 5); ctx.fill();
+          ctx.fillStyle = "#fff"; ctx.font = "bold 11px Tahoma"; ctx.textAlign = "center";
+          ctx.fillText(isRight ? "گام ۱: راست" : "گام ۱: چپ", 244, 178);
+
+          ctx.fillStyle = prog > 0.42 ? "#38bdf8" : "rgba(56,189,248,0.25)";
+          ctx.beginPath(); ctx.roundRect(350, 185, 44, 12, 5); ctx.fill();
+          ctx.fillStyle = "#fff";
+          ctx.fillText(isRight ? "گام ۲: چپ (پرش)" : "گام ۲: راست (پرش)", 372, 178);
+
+          // مکان افقی و عمودی بازیکن
+          const px = 140 + prog * 340;
+          const jumpH = prog > 0.45 ? Math.sin(((prog - 0.45) / 0.55) * Math.PI) * 58 : 0;
+          const py = 142 - jumpH;
+
+          // ترسیم بازیکن
+          ctx.strokeStyle = "#10b981";
+          ctx.lineWidth = 4.5;
+          ctx.beginPath();
+          ctx.arc(px, py - 48, 11, 0, Math.PI * 2);
+          ctx.fillStyle = "#0ea5e9"; ctx.fill(); ctx.stroke();
+
+          ctx.beginPath();
+          ctx.moveTo(px, py - 36);
+          ctx.lineTo(px, py);
+          // پای تیک‌آف کشیده و زانوی موافق بالا در حین پرش
+          if (prog > 0.45) {
+            ctx.lineTo(px - 10, py + 42);
+            ctx.moveTo(px, py);
+            ctx.lineTo(px + 20, py - 8);
+            ctx.lineTo(px + 20, py + 16);
+          } else {
+            ctx.lineTo(px - 14, 192);
+            ctx.moveTo(px, py);
+            ctx.lineTo(px + 14, 192);
+          }
+          ctx.stroke();
+
+          // دست شوت‌زن و توپ
+          const armUp = prog > 0.45 ? Math.min(1, (prog - 0.45) / 0.3) : 0;
+          const hx = px + 18 + armUp * 12;
+          const hy = py - 24 - armUp * 34;
+          ctx.strokeStyle = "#facc15";
+          ctx.beginPath(); ctx.moveTo(px, py - 30); ctx.lineTo(hx, hy); ctx.stroke();
+
+          let bx = hx + 4, by = hy - 8;
+          if (prog > 0.72) {
+            const sp = (prog - 0.72) / 0.28;
+            bx = hx + (565 - hx) * sp;
+            by = (hy - 8) + (75 - (hy - 8)) * sp - Math.sin(sp * Math.PI) * 18;
+          }
+          ctx.beginPath(); ctx.arc(bx, by, 11, 0, Math.PI * 2);
+          ctx.fillStyle = "#f97316"; ctx.fill();
+
+          ctx.fillStyle = "#e2e8f0";
+          ctx.font = "bold 13px Tahoma";
+          ctx.fillText(
+            isRight
+              ? "لی‌آپ سمت راست: گام ۱ بلند با پای راست ← گام ۲ کوتاه با پای چپ ← پرش عمودی با زانو و دست راست"
+              : "لی‌آپ سمت چپ: گام ۱ بلند با پای چپ ← گام ۲ کوتاه با پای راست ← پرش عمودی با زانو و دست چپ",
+            340, 32
+          );
+        } else {
+          // مقایسه رهاسازی از زیر دست (Finger Roll) در برابر روی دست
+          const prog = (t * 0.5) % 1;
+          ctx.fillStyle = "#e2e8f0";
+          ctx.font = "bold 13px Tahoma";
+          ctx.textAlign = "center";
+          ctx.fillText("تکنیک Finger Roll (زیر دست): کف دست رو به آسمان و غلتیدن نرم توپ از روی سرانگشتان به سمت تخته", 340, 36);
+
+          const handX = 260 + prog * 120;
+          const handY = 145 - Math.sin(prog * Math.PI) * 35;
+
+          ctx.strokeStyle = "#38bdf8";
+          ctx.lineWidth = 6;
+          ctx.lineCap = "round";
+          ctx.beginPath();
+          ctx.moveTo(200, 165);
+          ctx.quadraticCurveTo(handX - 20, handY + 18, handX + 18, handY);
+          ctx.stroke();
+
+          const ballX = handX + 22 + prog * 65;
+          const ballY = handY - 14 - Math.sin(prog * Math.PI) * 28;
+          ctx.save();
+          ctx.translate(ballX, ballY);
+          ctx.rotate(prog * 8);
+          ctx.beginPath(); ctx.arc(0, 0, 16, 0, Math.PI * 2);
+          ctx.fillStyle = "#f97316"; ctx.fill();
+          ctx.strokeStyle = "#fff"; ctx.lineWidth = 2; ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(-16, 0); ctx.lineTo(16, 0); ctx.stroke();
+          ctx.restore();
+        }
+
+        requestAnimationFrame(animateSkills);
+      }
+      animateSkills();
+    }
+
+    /* ============================================================================
+       ۷. فعالیت‌های عملی و بازی تعاملی شبیه‌ساز گام‌های لی‌آپ
+       ============================================================================ */
+    let selectedCorrectEquips = 0;
+    let selectedWrongEquips = 0;
+
+    function toggleEquipSelect(btn, isCorrect) {
+      if (appState.activitySubFlags.equipDone) return;
+      const active = btn.classList.toggle("active");
+      if (isCorrect) {
+        selectedCorrectEquips += active ? 1 : -1;
+      } else {
+        selectedWrongEquips += active ? 1 : -1;
+        if (active) showToast("توجه: این گزاره از نظر قوانین و تکنیک لی‌آپ نادرست است!");
+      }
+
+      if (selectedCorrectEquips === 4 && selectedWrongEquips === 0) {
+        appState.activitySubFlags.equipDone = true;
+        document.getElementById("act1Status").textContent = "(✓ تکمیل شد)";
+        document.getElementById("act1Status").style.color = "var(--accent)";
+        playBeepSound(880, 0.2);
+        triggerParticleBurst();
+        showToast("فعالیت ۱ با موفقیت تکمیل شد!");
+        checkAllActivitiesCompletion();
+      }
+    }
+
+    let userOrderList = [];
+    let userOrderTitles = [];
+
+    function selectOrderStep(stepNum, stepTitle, btnEl) {
+      if (appState.activitySubFlags.orderDone) return;
+      btnEl.disabled = true;
+      userOrderList.push(stepNum);
+      userOrderTitles.push(stepTitle);
+      document.getElementById("orderFeedback").textContent = "ترتیب انتخابی شما: " + userOrderTitles.join(" ← ");
+
+      if (userOrderList.length === 4) {
+        const isRight = userOrderList.every((val, idx) => val === idx + 1);
+        if (isRight) {
+          appState.activitySubFlags.orderDone = true;
+          document.getElementById("act2Status").textContent = "(✓ تکمیل شد)";
+          document.getElementById("act2Status").style.color = "var(--accent)";
+          playBeepSound(880, 0.2);
+          triggerParticleBurst();
+          showToast("فعالیت ۲ (مرتب‌سازی مراحل لی‌آپ) به درستی انجام شد!");
+          checkAllActivitiesCompletion();
+        } else {
+          showToast("ترتیب مراحل نادرست بود. دکمه شروع مجدد را بزنید.");
+        }
+      }
+    }
+
+    function resetOrderActivity() {
+      if (appState.activitySubFlags.orderDone) return;
+      userOrderList = [];
+      userOrderTitles = [];
+      document.getElementById("orderFeedback").textContent = "ترتیب انتخاب‌شده: هنوز موردی انتخاب نشده است.";
+      document.querySelectorAll("#orderStepsContainer button").forEach(b => b.disabled = false);
+    }
+
+    // فعالیت ۳: شبیه‌ساز انتخاب گام و دست در لی‌آپ
+    const LAYUP_SCENARIOS = [
+      {
+        prompt: "👟 موقعیت ۱: بازیکن از جناح راست با زاویه ۴۵ درجه به سمت سبد نفوذ کرده است؛ کدام ریتم گام‌برداری صحیح است؟",
+        side: "right",
+        correctKey: "rightSide"
+      },
+      {
+        prompt: "👟 موقعیت ۲: بازیکن از جناح چپ با زاویه ۴۵ درجه به سمت سبد نفوذ کرده است؛ کدام ریتم گام‌برداری صحیح است؟",
+        side: "left",
+        correctKey: "leftSide"
+      },
+      {
+        prompt: "👟 موقعیت ۳: بازیکن دقیقاً از مرکز و روبروی سبد از مدافع عبور کرده و می‌خواهد توپ را از بالای دست مدافع به نرمی رها کند؛ چه تکنیکی مناسب است؟",
+        side: "center",
+        correctKey: "centerUnder"
+      }
+    ];
+    let currentLayupIdx = 0;
+    let layupGameScore = 0;
+
+    function initLayupSimGame() {
+      const canvas = document.getElementById("layupSimCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      let t = 0;
+
+      function renderLayupGameLoop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        t += 0.07;
+
+        // ترسیم نیمه بالای منطقه سه ثانیه و سبد
+        ctx.strokeStyle = "rgba(255,255,255,0.25)";
+        ctx.lineWidth = 2.5;
+        ctx.strokeRect(190, 15, 220, 160);
+
+        // تخته و حلقه
+        ctx.strokeStyle = "#38bdf8";
+        ctx.lineWidth = 4;
+        ctx.beginPath(); ctx.moveTo(265, 32); ctx.lineTo(335, 32); ctx.stroke();
+        ctx.strokeStyle = "#f97316";
+        ctx.beginPath(); ctx.arc(300, 48, 14, 0, Math.PI * 2); ctx.stroke();
+
+        const scen = LAYUP_SCENARIOS[Math.min(currentLayupIdx, LAYUP_SCENARIOS.length - 1)];
+        const pulse = (Math.sin(t) + 1) / 2;
+
+        let startX = 460, startY = 205, endX = 330, endY = 65;
+        if (scen.side === "left") {
+          startX = 140; startY = 205; endX = 270; endY = 65;
+        } else if (scen.side === "center") {
+          startX = 300; startY = 215; endX = 300; endY = 70;
+        }
+
+        // خط مسیر نفوذ
+        ctx.setLineDash([6, 4]);
+        ctx.strokeStyle = "#10b981";
+        ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(startX, startY); ctx.lineTo(endX, endY); ctx.stroke();
+        ctx.setLineDash([]);
+
+        // موقعیت متحرک بازیکن روی خط نفوذ
+        const px = startX + (endX - startX) * pulse;
+        const py = startY + (endY - startY) * pulse;
+
+        ctx.fillStyle = "#0ea5e9";
+        ctx.beginPath(); ctx.arc(px, py, 16, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#fff"; ctx.font = "bold 11px Tahoma"; ctx.textAlign = "center";
+        ctx.fillText("مهاجم", px, py + 4);
+
+        ctx.fillStyle = "#f97316";
+        ctx.beginPath(); ctx.arc(px + (scen.side === "left" ? -18 : 18), py - 6, 9, 0, Math.PI * 2); ctx.fill();
+
+        requestAnimationFrame(renderLayupGameLoop);
+      }
+      renderLayupGameLoop();
+    }
+
+    function submitLayupChoice(choiceKey) {
+      if (appState.activitySubFlags.layupSimDone) {
+        showToast("این شبیه‌ساز قبلاً با موفقیت تکمیل شده است.");
+        return;
+      }
+
+      const scen = LAYUP_SCENARIOS[currentLayupIdx];
+      if (scen && scen.correctKey === choiceKey) {
+        layupGameScore++;
+        currentLayupIdx++;
+        playBeepSound(920, 0.16);
+        document.getElementById("layupGameScore").textContent = layupGameScore.toLocaleString("fa-IR");
+
+        if (layupGameScore >= 3) {
+          appState.activitySubFlags.layupSimDone = true;
+          document.getElementById("layupMissionText").textContent = "🎉 آفرین! هر ۳ موقعیت گام‌برداری و اجرای شوت لی‌آپ را با موفقیت کامل کردید!";
+          document.getElementById("act3Status").textContent = "(✓ تکمیل شد)";
+          document.getElementById("act3Status").style.color = "var(--accent)";
+          triggerParticleBurst();
+          checkAllActivitiesCompletion();
+        } else {
+          document.getElementById("layupMissionText").textContent = LAYUP_SCENARIOS[currentLayupIdx].prompt;
+          showToast("انتخاب گام و دست کاملاً صحیح بود! حالا موقعیت بعدی را بررسی کنید.");
+        }
+      } else {
+        playBeepSound(240, 0.2);
+        showToast("الگوی گام‌برداری انتخابی با جناح نفوذ بازیکن همخوانی ندارد؛ دوباره دقت کنید!");
+      }
+    }
+
+    function checkAllActivitiesCompletion() {
+      const sub = appState.activitySubFlags;
+      if (sub.equipDone && sub.orderDone && sub.layupSimDone && !appState.awardedFlags.activities) {
+        completeSectionXP("activities", 30, "انجام کامل فعالیت‌های عملی جلسه هفتم");
+      }
+      saveState();
+    }
+
+    /* ============================================================================
+       ثبت تکلیف، گزارش پیشرفت و ارسال به Supabase
+       ============================================================================ */
+    function submitHomeworkTask() {
+      const checks = document.querySelectorAll(".hw-check:checked");
+      const note = document.getElementById("homeworkNoteInput").value.trim();
+      if (checks.length < 3 || note.length < 5) {
+        showToast("لطفاً هر ۳ مورد چک‌لیست را تیک بزنید و گزارش کوتاه تمرین خود را بنویسید.");
+        return;
+      }
+      appState.homeworkNote = note;
+      completeSectionXP("homework", 10, "ثبت تکلیف عملی جلسه هفتم");
+    }
+
+    function getEarnedBadges() {
+      const badges = [];
+      if (appState.awardedFlags.login) badges.push({ title: "نشان حضور در جلسه هفتم", desc: "ورود رسمی به جلسه آموزش شوت لی‌آپ (دوگام زیر سبد)" });
+      if (appState.awardedFlags.education && appState.awardedFlags.summary) badges.push({ title: "نشان متخصص ریتم دوگام و نخ نامرئی", desc: "مطالعه کامل گام‌برداری راست و چپ و هدف‌گیری مربع تخته" });
+      if (appState.awardedFlags.activities) badges.push({ title: "نشان استاد پرواز زیر سبد (Layup Master)", desc: "تکمیل هر ۳ چالش عملی و تشخیص صحیح گام‌های لی‌آپ" });
+      if (appState.xp >= 90) badges.push({ title: "ستاره تمام‌کننده جلسه هفتم (Achievement ویژه)", desc: "کسب بیش از ۹۰ امتیاز تجربه در جلسه هفتم" });
+      return badges;
+    }
+
+    function renderProgressView() {
+      const pct = calculateProgressPercent();
+      document.getElementById("progXPValue").textContent = `${appState.xp.toLocaleString("fa-IR")} / ۱۱۰ XP`;
+      document.getElementById("progPercentValue").textContent = `${pct.toLocaleString("fa-IR")}٪`;
+      document.getElementById("progTimeValue").textContent = formatDuration(appState.totalSeconds);
+
+      const badges = getEarnedBadges();
+      const bBox = document.getElementById("badgesContainer");
+      if (badges.length === 0) {
+        bBox.innerHTML = `<p style="color:var(--text-muted); font-size:0.88rem;">هنوز نشانی دریافت نشده است.</p>`;
+      } else {
+        bBox.innerHTML = badges.map(b => `
+          <div style="background:rgba(249,115,22,0.14); border:1px solid rgba(249,115,22,0.45); padding:10px 14px; border-radius:10px;">
+            <strong style="color:var(--primary);">🏅 ${b.title}</strong>
+            <div style="font-size:0.82rem; color:#cbd5e1;">${b.desc}</div>
+          </div>
+        `).join("");
+      }
+
+      const labels = {
+        login: "ورود به سامانه جلسه هفتم (۵ XP)",
+        education: "مشاهده آموزش کامل شوت لی‌آپ راست و چپ (۲۰ XP)",
+        summary: "مطالعه خلاصه و نقشه ذهنی جلسه هفتم (۱۰ XP)",
+        activities: "انجام فعالیت‌های عملی و شبیه‌ساز لی‌آپ (۳۰ XP)",
+        files: "بررسی فایل‌ها و منابع جلسه هفتم (۱۰ XP)",
+        notices: "مطالعه اطلاعیه‌های آموزشی (۵ XP)",
+        homework: "ثبت تکلیف عملی جلسه هفتم در منزل (۱۰ XP)",
+        report: "ثبت و ارسال گزارش نهایی جلسه هفتم (۲۰ XP)"
+      };
+      const doneList = Object.keys(labels).filter(k => appState.awardedFlags[k]).map(k => `<li>${labels[k]}</li>`);
+      document.getElementById("completedLogsList").innerHTML = doneList.length ? doneList.join("") : "<li>هنوز فعالیتی تکمیل نشده است.</li>";
+    }
+
+    function getCompletedNamesSummary() {
+      const names = [];
+      if (appState.awardedFlags.login) names.push("ورود");
+      if (appState.awardedFlags.education) names.push("آموزش کامل جلسه ۷");
+      if (appState.awardedFlags.summary) names.push("خلاصه جلسه ۷");
+      if (appState.awardedFlags.activities) names.push("فعالیت عملی لی‌آپ");
+      if (appState.awardedFlags.files) names.push("مشاهده فایل");
+      if (appState.awardedFlags.notices) names.push("مطالعه اطلاعیه");
+      if (appState.awardedFlags.homework) names.push("ثبت تکلیف جلسه ۷");
+      if (appState.awardedFlags.report) names.push("ثبت گزارش نهایی");
+      return names.join("، ") || "هیچ‌کدام";
+    }
+
+    function renderReportView() {
+      document.getElementById("repStudentName").textContent = appState.studentName;
+      document.getElementById("repSchoolName").textContent = appState.schoolName;
+      document.getElementById("repGrade").textContent = appState.grade;
+      document.getElementById("repTeacherName").textContent = PROJECT_CONFIG.teacherName;
+      document.getElementById("repTotalXP").textContent = `${appState.xp.toLocaleString("fa-IR")} از ۱۱۰ XP`;
+      document.getElementById("repProgressPercent").textContent = `${calculateProgressPercent().toLocaleString("fa-IR")}٪`;
+      document.getElementById("repDuration").textContent = formatDuration(appState.totalSeconds);
+      document.getElementById("repCompletedItems").textContent = getCompletedNamesSummary();
+
+      const btn = document.getElementById("finalSubmitReportBtn");
+      if (appState.reportSent) {
+        btn.disabled = true;
+        btn.textContent = "✓ گزارش نهایی جلسه هفتم شما قبلاً ثبت و ارسال شده است";
+        document.getElementById("sessionCompletionBox").style.display = "block";
+        initCelebrationCanvas();
+      }
+    }
+
+    async function handleFinalReportSubmission() {
+      if (appState.reportSent) {
+        showToast("گزارش شما قبلاً یک مرتبه ارسال شده است.");
+        return;
+      }
+
+      const btn = document.getElementById("finalSubmitReportBtn");
+      const statusMsg = document.getElementById("supabaseStatusMsg");
+      btn.disabled = true;
+      btn.textContent = "در حال ثبت و ارسال گزارش جلسه هفتم به سرور...";
+      statusMsg.style.color = "var(--secondary)";
+      statusMsg.textContent = "لطفاً چند لحظه صبر کنید...";
+
+      if (!appState.awardedFlags.report) {
+        appState.awardedFlags.report = true;
+        appState.xp += 20;
+      }
+
+      const nowStr = new Date().toLocaleString("fa-IR");
+      const pct = calculateProgressPercent();
+      const badgesCount = getEarnedBadges().length;
+      const achievementsCount = appState.xp >= 90 ? 1 : 0;
+
+      ACTIVE_SCHOOL = appState.schoolName;
+      ACTIVE_SUBJECT = `${PROJECT_CONFIG.subjectName} - ${appState.grade} (${PROJECT_CONFIG.sessionTitle})`;
+
+      const detailsText = [
+        `جلسه هفتم بسکتبال`,
+        `پایه: ${appState.grade}`,
+        `دبیر: ${PROJECT_CONFIG.teacherName}`,
+        `زمان ورود: ${appState.firstLoginTime}`,
+        `زمان خروج و ثبت گزارش: ${nowStr}`,
+        `مدت حضور: ${formatDuration(appState.totalSeconds)}`,
+        `تعداد دفعات ورود: ${appState.loginCount}`,
+        `آموزش‌های مشاهده‌شده: ${appState.awardedFlags.education ? 'کامل' : 'خیر'}`,
+        `خلاصه‌های مطالعه‌شده: ${appState.awardedFlags.summary ? 'کامل' : 'خیر'}`,
+        `فعالیت‌های انجام‌شده: ${getCompletedNamesSummary()}`,
+        `توضیح تکلیف: ${appState.homeworkNote || 'ثبت نشده'}`,
+        `امتیاز XP: ${appState.xp} از ${MAX_TOTAL_XP}`,
+        `درصد پیشرفت: ${pct}%`,
+        `تعداد Badge: ${badgesCount}`,
+        `تعداد Achievement: ${achievementsCount}`
+      ].join(" | ");
+
+      try {
+        await sendToSupabase(appState.studentName, appState.xp, MAX_TOTAL_XP, detailsText);
+        appState.reportSent = true;
+        appState.reportTime = nowStr;
+        saveState();
+        renderReportView();
+        triggerParticleBurst();
+        statusMsg.style.color = "var(--accent)";
+        statusMsg.textContent = "✅ گزارش عملکرد جلسه هفتم شما با موفقیت در سامانه دبیر ثبت گردید.";
+        showToast("گزارش نهایی جلسه هفتم با موفقیت ارسال شد (+۲۰ XP).");
+      } catch (err) {
+        saveState();
+        renderReportView();
+        btn.disabled = false;
+        btn.textContent = "🔄 تلاش مجدد برای ارسال گزارش به سرور";
+        statusMsg.style.color = "var(--warning)";
+        statusMsg.textContent = `امتیاز ثبت گزارش (+۲۰ XP) در دستگاه شما ذخیره شد، اما ارسال اینترنتی با خطا مواجه گردید (${err.message}). در صورت اتصال به اینترنت مجدداً دکمه را بزنید.`;
+      }
+    }
+
+    /* ============================================================================
+       ۸. انیمیشن تعاملی ریتم دوگام لی‌آپ در صفحه آغازین جلسه هفتم
+       ============================================================================ */
+    function initWelcomeLayupCanvas() {
+      const canvas = document.getElementById("welcomeBallCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+
+      let prog = 0;
+      let speedMult = 1;
+      let trail = [];
+
+      canvas.addEventListener("click", () => {
+        speedMult = 2.2;
+        playBeepSound(820, 0.14);
+        setTimeout(() => { speedMult = 1; }, 1000);
+      });
+
+      function animateWelcome() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        prog = (prog + 0.012 * speedMult) % 1;
+
+        // تخته و حلقه در سمت راست بالا
+        ctx.strokeStyle = "#38bdf8";
+        ctx.lineWidth = 4;
+        ctx.beginPath(); ctx.moveTo(450, 25); ctx.lineTo(450, 95); ctx.stroke();
+        ctx.strokeStyle = "#f97316";
+        ctx.beginPath(); ctx.moveTo(412, 78); ctx.lineTo(450, 78); ctx.stroke();
+
+        // نشانگرهای گام ۱ و گام ۲ روی زمین
+        ctx.fillStyle = prog > 0.2 ? "#f97316" : "rgba(249,115,22,0.25)";
+        ctx.beginPath(); ctx.roundRect(140, 152, 65, 20, 8); ctx.fill();
+        ctx.fillStyle = "#fff"; ctx.font = "bold 11px Tahoma"; ctx.textAlign = "center";
+        ctx.fillText("۱. گام راست", 172, 166);
+
+        ctx.fillStyle = prog > 0.5 ? "#38bdf8" : "rgba(56,189,248,0.25)";
+        ctx.beginPath(); ctx.roundRect(265, 152, 65, 20, 8); ctx.fill();
+        ctx.fillStyle = "#fff";
+        ctx.fillText("۲. گام چپ (پرش)", 297, 166);
+
+        // مسیر حرکت توپ در دوگام و پرواز به سمت مربع تخته
+        let bx, by;
+        if (prog < 0.55) {
+          bx = 85 + (prog / 0.55) * 225;
+          by = 135 - Math.abs(Math.sin(prog * 12)) * 18;
+        } else {
+          const jp = (prog - 0.55) / 0.45;
+          bx = 310 + jp * 132;
+          by = 135 - Math.sin(jp * Math.PI * 0.85) * 85;
+        }
+
+        trail.push({ x: bx, y: by });
+        if (trail.length > 18) trail.shift();
+
+        for (let i = 0; i < trail.length; i++) {
+          ctx.beginPath();
+          ctx.arc(trail[i].x, trail[i].y, (i / trail.length) * 14, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(16, 185, 129, ${(i / trail.length) * 0.4})`;
+          ctx.fill();
+        }
+
+        ctx.beginPath();
+        ctx.arc(bx, by, 13, 0, Math.PI * 2);
+        ctx.fillStyle = "#f97316";
+        ctx.fill();
+        ctx.strokeStyle = "#fff";
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        requestAnimationFrame(animateWelcome);
+      }
+      animateWelcome();
+    }
+
+    function initCelebrationCanvas() {
+      const canvas = document.getElementById("celebrationCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      let angle = 0;
+
+      function loop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        angle += 0.06;
+        const bounceY = 70 + Math.sin(angle * 2) * 24;
+
+        ctx.save();
+        ctx.translate(160, bounceY);
+        ctx.rotate(angle);
+        ctx.beginPath();
+        ctx.arc(0, 0, 28, 0, Math.PI * 2);
+        ctx.fillStyle = "#f97316";
+        ctx.fill();
+        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = "#fff";
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(-28, 0); ctx.lineTo(28, 0);
+        ctx.moveTo(0, -28); ctx.lineTo(0, 28);
+        ctx.stroke();
+        ctx.restore();
+
+        requestAnimationFrame(loop);
+      }
+      loop();
+    }
+
+    function formatDuration(sec) {
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      return `${m.toLocaleString("fa-IR")} دقیقه و ${s.toLocaleString("fa-IR")} ثانیه`;
+    }
+
+    function showToast(msg) {
+      const box = document.getElementById("toastBox");
+      const item = document.createElement("div");
+      item.className = "toast-item";
+      item.textContent = msg;
+      box.appendChild(item);
+      setTimeout(() => item.remove(), 3800);
+    }
+  </script>
+</body>
+</html>

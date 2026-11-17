@@ -1,0 +1,2439 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>سامانه پیشرفته آموزش مجازی تربیت بدنی - جلسه هشتم بسکتبال</title>
+  <style>
+    /* ==================== متغیرها و تنظیمات ظاهری (Ultra Dark Glassmorphism) ==================== */
+    :root {
+      --bg-dark: #060911;
+      --glass-bg: rgba(15, 23, 42, 0.68);
+      --glass-border: rgba(255, 255, 255, 0.14);
+      --primary: #f97316;
+      --primary-glow: rgba(249, 115, 22, 0.55);
+      --secondary: #38bdf8;
+      --secondary-glow: rgba(56, 189, 248, 0.45);
+      --accent: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --shadow-glass: 0 16px 40px 0 rgba(0, 0, 0, 0.6);
+      --transition: all 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, 'Segoe UI', Tahoma, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.75;
+      position: relative;
+    }
+
+    #bgParticlesCanvas, #fxConfettiCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    #fxConfettiCanvas { z-index: 9998; }
+
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 16px var(--primary-glow), inset 0 0 8px rgba(249, 115, 22, 0.25); }
+      50% { box-shadow: 0 0 32px rgba(249, 115, 22, 0.85), inset 0 0 14px rgba(249, 115, 22, 0.45); }
+    }
+
+    @keyframes borderBeam {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes slideUpFade {
+      from { opacity: 0; transform: translateY(22px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes dashFlow {
+      to { stroke-dashoffset: -40; }
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px 16px 90px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .glass-panel {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-glass);
+      padding: 26px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glass-panel::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--primary), var(--secondary), transparent);
+      background-size: 200% 200%;
+      animation: borderBeam 5s ease infinite;
+    }
+
+    .glass-card {
+      background: rgba(15, 23, 42, 0.65);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      transition: transform 0.2s ease-out, border-color 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      transform-style: preserve-3d;
+    }
+
+    .glass-card:hover {
+      border-color: rgba(249, 115, 22, 0.55);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(249, 115, 22, 0.18);
+    }
+
+    .card-glare {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.12), transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .glass-card:hover .card-glare { opacity: 1; }
+
+    .section-title {
+      font-size: 1.38rem;
+      font-weight: 900;
+      color: var(--primary);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--glass-border);
+      padding-bottom: 12px;
+      text-shadow: 0 0 18px rgba(249, 115, 22, 0.35);
+    }
+
+    .badge-xp {
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      color: #fff;
+      padding: 5px 14px;
+      border-radius: 999px;
+      font-size: 0.86rem;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 15px rgba(249, 115, 22, 0.45);
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+      color: #fff;
+      border: none;
+      padding: 13px 26px;
+      border-radius: var(--radius-md);
+      font-size: 0.98rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 10px 25px var(--primary-glow);
+    }
+
+    .btn:active:not(:disabled) { transform: translateY(0) scale(0.98); }
+
+    .btn:disabled {
+      background: #1e293b;
+      color: #64748b;
+      border: 1px solid rgba(255,255,255,0.05);
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-secondary {
+      background: rgba(56, 189, 248, 0.14);
+      border: 1px solid rgba(56, 189, 248, 0.45);
+      color: var(--secondary);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: rgba(56, 189, 248, 0.28);
+      box-shadow: 0 8px 20px var(--secondary-glow);
+    }
+
+    .btn-success { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+    .btn-success:hover:not(:disabled) { box-shadow: 0 10px 25px rgba(16, 185, 129, 0.45); }
+
+    .top-bar {
+      position: sticky;
+      top: 12px;
+      z-index: 100;
+      margin-bottom: 24px;
+      display: none;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      padding: 14px 22px;
+    }
+
+    .progress-track {
+      width: 150px;
+      height: 11px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 99px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #f97316, #38bdf8, #10b981);
+      background-size: 200% 100%;
+      animation: borderBeam 3s linear infinite;
+      width: 0%;
+      transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px; }
+
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; margin-bottom: 6px; font-weight: 700; font-size: 0.92rem; color: #e2e8f0; }
+    .form-control {
+      width: 100%;
+      padding: 13px 16px;
+      background: rgba(9, 13, 22, 0.85);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      color: var(--text-main);
+      font-size: 0.98rem;
+      outline: none;
+      transition: var(--transition);
+    }
+    .form-control:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.22);
+    }
+    .form-control[readonly] {
+      background: rgba(30, 41, 59, 0.55);
+      color: var(--secondary);
+      font-weight: 800;
+    }
+
+    .custom-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 0.92rem;
+    }
+    .custom-table th, .custom-table td {
+      padding: 12px 14px;
+      text-align: right;
+      border-bottom: 1px solid var(--glass-border);
+    }
+    .custom-table th {
+      background: rgba(249, 115, 22, 0.16);
+      color: var(--primary);
+      font-weight: 800;
+    }
+
+    .timeline {
+      position: relative;
+      padding-right: 30px;
+      border-right: 3px solid var(--primary);
+      margin: 20px 0;
+    }
+    .timeline-item { position: relative; margin-bottom: 22px; }
+    .timeline-dot {
+      position: absolute;
+      right: -39px;
+      top: 6px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--primary);
+      border: 3px solid var(--bg-dark);
+      box-shadow: 0 0 14px var(--primary);
+    }
+
+    .def-zone {
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .def-zone:hover {
+      filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.95));
+      transform: scale(1.05);
+      transform-origin: center;
+    }
+
+    .tactic-line {
+      stroke-dasharray: 8 6;
+      animation: dashFlow 1.2s linear infinite;
+      pointer-events: none;
+    }
+
+    .flip-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+    }
+    .flip-card {
+      background-color: transparent;
+      height: 205px;
+      perspective: 1200px;
+      cursor: pointer;
+    }
+    .flip-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+      transform-style: preserve-3d;
+    }
+    .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+    .flip-front, .flip-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    }
+    .flip-front {
+      background: linear-gradient(145deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
+      color: var(--text-main);
+    }
+    .flip-back {
+      background: linear-gradient(135deg, #f97316, #c2410c);
+      color: #fff;
+      transform: rotateY(180deg);
+    }
+
+    .sub-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 22px;
+      border-bottom: 1px solid var(--glass-border);
+      padding-bottom: 14px;
+    }
+    .sub-tab-btn {
+      background: rgba(15, 23, 42, 0.75);
+      color: var(--text-muted);
+      border: 1px solid var(--glass-border);
+      padding: 9px 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.9rem;
+      transition: var(--transition);
+    }
+    .sub-tab-btn:hover { border-color: var(--primary); color: #fff; }
+    .sub-tab-btn.active {
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      color: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 6px 16px rgba(249, 115, 22, 0.35);
+    }
+
+    .equip-viewer {
+      perspective: 1000px;
+      height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 50% 60%, rgba(56, 189, 248, 0.2) 0%, rgba(15, 23, 42, 0.9) 75%);
+      border-radius: var(--radius-md);
+      margin-bottom: 14px;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+    .equip-viewer::after {
+      content: "";
+      position: absolute;
+      bottom: 18px;
+      width: 110px;
+      height: 18px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.6), transparent 70%);
+      filter: blur(4px);
+    }
+    .equip-3d-object {
+      transition: transform 0.15s ease-out;
+      transform-style: preserve-3d;
+      animation: floatSlow 3.2s ease-in-out infinite;
+    }
+
+    .view-section {
+      display: none;
+      animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .view-section.active { display: block; }
+
+    #toastBox {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .toast-item {
+      background: rgba(15, 23, 42, 0.95);
+      border-right: 4px solid var(--accent);
+      color: #fff;
+      padding: 13px 20px;
+      border-radius: 12px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.65);
+      font-size: 0.92rem;
+      font-weight: 600;
+      animation: slideUpFade 0.3s ease;
+    }
+
+    @media (max-width: 640px) {
+      .top-bar { position: static; }
+      .section-title { font-size: 1.15rem; }
+      .glass-panel { padding: 18px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- بوم ذرات معلق پس‌زمینه و بوم انفجار ذرات (Confetti) -->
+  <canvas id="bgParticlesCanvas"></canvas>
+  <canvas id="fxConfettiCanvas"></canvas>
+
+  <!-- باکس پیام‌های شناور -->
+  <div id="toastBox"></div>
+
+  <!-- ==================== نوار وضعیت بالای صفحه (پس از ورود) ==================== -->
+  <div class="container" style="padding-bottom: 0;">
+    <header id="topStatusBar" class="glass-panel top-bar">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div style="width:46px; height:46px; border-radius:50%; background:linear-gradient(135deg,#f97316,#ea580c); display:flex; align-items:center; justify-content:center; font-size:1.35rem; box-shadow:0 0 15px var(--primary-glow);">🛡️</div>
+        <div>
+          <div id="headerStudentName" style="font-weight:800; font-size:1.02rem;">نام دانش‌آموز</div>
+          <div id="headerSchoolInfo" style="font-size:0.82rem; color:var(--secondary);">مدرسه | پایه</div>
+        </div>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:18px; flex-wrap:wrap;">
+        <div>
+          <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:4px;">پیشرفت جلسه هشتم: <span id="headerProgressText" style="color:#fff; font-weight:bold;">۰٪</span></div>
+          <div class="progress-track">
+            <div id="headerProgressFill" class="progress-fill"></div>
+          </div>
+        </div>
+        <div class="badge-xp">
+          <span>✨ امتیاز:</span>
+          <span id="headerXP">۰</span>
+          <span>XP</span>
+        </div>
+        <button class="btn btn-secondary" style="padding:8px 15px; font-size:0.86rem;" onclick="navigateTo('dashboardView')">🏠 داشبورد</button>
+      </div>
+    </header>
+  </div>
+
+  <!-- ==================== کانتینر اصلی سامانه ==================== -->
+  <main class="container">
+
+    <!-- =========================================================================
+         ۱. صفحه ورود و آغازین جلسه هشتم (همراه با شبیه‌ساز گام لغزشی دفاعی)
+         ========================================================================= -->
+    <section id="loginView" class="view-section active">
+      <div class="glass-panel" style="text-align:center; margin-bottom:24px;">
+        <div style="font-size:0.8rem; color:var(--secondary); margin-bottom:4px;">💡 روی بوم زیر کلیک کنید تا سرعت گام‌های لغزشی مدافع (Slide) در برابر مهاجم افزایش یابد!</div>
+        <canvas id="welcomeBallCanvas" width="520" height="185" style="width:100%; max-width:520px; margin:0 auto; display:block; cursor:pointer; border-radius:14px; background:radial-gradient(circle, rgba(249,115,22,0.12) 0%, rgba(15,23,42,0.6) 80%); border:1px solid var(--glass-border);"></canvas>
+        <h1 id="uiAppTitle" style="font-size:1.8rem; font-weight:900; color:var(--primary); margin-top:12px;">آموزش بسکتبال پایه هفتم</h1>
+        <h2 id="uiSessionTitle" style="font-size:1.22rem; color:var(--secondary); margin:6px 0;">جلسه هشتم: آموزش اصول دفاع فردی، گام‌های لغزشی (Slide) و مهارت ریباند</h2>
+        <p style="color:var(--text-muted); font-size:0.96rem;">درس: <strong id="uiSubjectText" style="color:#fff;">تربیت بدنی</strong> | نام دبیر: <strong id="uiTeacherText" style="color:var(--accent);">برزگری</strong></p>
+      </div>
+
+      <div class="grid-2">
+        <!-- راهنمای رسمی و جدول امتیازدهی -->
+        <div class="glass-panel">
+          <div class="section-title">📋 راهنمای استفاده از سامانه (جلسه هشتم)</div>
+          <ul style="list-style:none; font-size:0.92rem; color:#cbd5e1; display:flex; flex-direction:column; gap:10px; margin-bottom:20px;">
+            <li>🔹 <strong>نحوه ورود:</strong> مشخصات فردی، نام مدرسه و پایه تحصیلی خود را در فرم روبرو به صورت دقیق تکمیل نمایید تا دکمه ورود فعال گردد.</li>
+            <li>🔹 <strong>نحوه مطالعه آموزش:</strong> در بخش «آموزش جامع جلسه هشتم»، وضعیت ایستادن دفاعی (Defensive Stance)، گام‌های لغزشی، تکنیک باکس‌اوت و مهارت ریباند را بررسی کنید.</li>
+            <li>🔹 <strong>نحوه انجام فعالیت‌ها:</strong> در بخش «فعالیت‌های عملی و تعاملی»، چالش‌های تشخیص قوانین دفاع و استوانه، مرتب‌سازی مراحل ریباند و بازی دیوار دفاعی را انجام دهید.</li>
+            <li>🔹 <strong>نحوه کسب امتیاز (XP):</strong> هر بخش آموزشی یا فعالیت عملی دارای امتیاز مشخصی است که تنها یک مرتبه در سامانه ثبت و ذخیره می‌گردد.</li>
+            <li>🔹 <strong>نحوه مشاهده پیشرفت:</strong> در بخش «گزارش پیشرفت»، درصد تکمیل جلسه هشتم، زمان حضور و نشان‌های افتخار قابل مشاهده است.</li>
+            <li>🔹 <strong>نحوه ثبت و ارسال گزارش نهایی:</strong> پس از تکمیل بخش‌ها، به قسمت «ثبت گزارش» مراجعه کرده و عملکرد نهایی خود را برای دبیر ارسال نمایید.</li>
+          </ul>
+
+          <div class="section-title" style="margin-top:16px;">🏆 جدول امتیازدهی فعالیت‌ها (XP)</div>
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>عنوان فعالیت در سامانه</th>
+                <th>میزان امتیاز</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>ورود به سامانه</td><td>۵ XP</td></tr>
+              <tr><td>مشاهده آموزش کامل جلسه هشتم</td><td>۲۰ XP</td></tr>
+              <tr><td>مطالعه خلاصه و نقشه ذهنی جلسه هشتم</td><td>۱۰ XP</td></tr>
+              <tr><td>انجام فعالیت‌های عملی و بازی دیوار دفاعی</td><td>۳۰ XP</td></tr>
+              <tr><td>مشاهده فایل‌های آموزشی جلسه</td><td>۱۰ XP</td></tr>
+              <tr><td>مطالعه اطلاعیه‌های آموزشی</td><td>۵ XP</td></tr>
+              <tr><td>ثبت تکلیف عملی جلسه هشتم</td><td>۱۰ XP</td></tr>
+              <tr><td>ثبت و ارسال گزارش نهایی</td><td>۲۰ XP</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- فرم ورود اجباری دانش‌آموز -->
+        <div class="glass-panel">
+          <div class="section-title">🔐 فرم ورود دانش‌آموز به جلسه هشتم</div>
+          <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:18px;">تمامی فیلدها اجباری هستند. تا زمان تکمیل دقیق اطلاعات، دکمه شروع آموزش فعال نخواهد شد.</p>
+
+          <form id="loginForm" onsubmit="handleLoginSubmit(event)">
+            <div class="form-group">
+              <label class="form-label" for="studentNameInput">نام و نام خانوادگی دانش‌آموز (اجباری):</label>
+              <input type="text" id="studentNameInput" class="form-control" placeholder="مثال: محمد رضایی" required oninput="validateLoginForm()">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="schoolSelect">نام مدرسه (اجباری):</label>
+              <select id="schoolSelect" class="form-control" required onchange="validateLoginForm()">
+                <option value="">-- انتخاب مدرسه --</option>
+                <option value="مدرسه نور دوستکو">مدرسه نور دوستکو</option>
+                <option value="مدرسه اتحاد دوربنی">مدرسه اتحاد دوربنی</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="gradeSelect">پایه تحصیلی (اجباری):</label>
+              <select id="gradeSelect" class="form-control" required onchange="validateLoginForm()">
+                <option value="">-- انتخاب پایه تحصیلی --</option>
+                <option value="پایه هفتم">پایه هفتم</option>
+                <option value="پایه هشتم">پایه هشتم</option>
+                <option value="پایه نهم">پایه نهم</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">نام دبیر:</label>
+              <input type="text" id="fixedTeacherInput" class="form-control" value="برزگری" readonly>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">نام درس:</label>
+              <input type="text" id="fixedSubjectInput" class="form-control" value="تربیت بدنی" readonly>
+            </div>
+
+            <button type="submit" id="startBtn" class="btn" style="width:100%; margin-top:14px;" disabled>
+              🚀 ورود به سامانه و شروع جلسه هشتم
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۲. داشبورد اصلی (کارت‌های سه‌بعدی حساس به حرکت موس)
+         ========================================================================= -->
+    <section id="dashboardView" class="view-section">
+      <div class="glass-panel" style="margin-bottom:22px;">
+        <div class="section-title">🎛️ داشبورد هوشمند جلسه هشتم: اصول دفاع فردی، گام لغزشی و ریباند</div>
+        <p style="font-size:0.92rem; color:var(--text-muted);">کارت‌های زیر دارای افکت سه‌بعدی تعاملی هستند. با تکمیل هر بخش، امتیاز XP آن همراه با افکت نوری به حساب شما افزوده می‌شود.</p>
+      </div>
+
+      <div id="dashboardModulesGrid" class="grid-3"></div>
+    </section>
+
+    <!-- =========================================================================
+         ۳. بخش جامع آموزش جلسه هشتم بسکتبال
+         ========================================================================= -->
+    <section id="educationView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">📚 آموزش جامع جلسه هشتم: اصول دفاع فردی، گام لغزشی و مهارت ریباند</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <!-- تب‌های داخلی آموزش -->
+        <div class="sub-tabs">
+          <button class="sub-tab-btn active" onclick="switchEduTab('eduGoals', this)">۱. اهداف، گارد دفاعی و ریباند</button>
+          <button class="sub-tab-btn" onclick="switchEduTab('eduBenefits', this)">۲. تکنیک باکس‌اوت و سلامت عضلات</button>
+          <button class="sub-tab-btn" onclick="switchEduTab('eduDefMap', this)">۳. نقشه تعاملی آناتومی دفاع و ریباند</button>
+          <button class="sub-tab-btn" onclick="switchEduTab('eduEquip', this)">۴. هولوگرام سه‌بعدی مکانیسم دفاع</button>
+          <button class="sub-tab-btn" onclick="switchEduTab('eduRules', this)">۵. قانون استوانه، خطاهای دفاعی و داوری</button>
+          <button class="sub-tab-btn" onclick="switchEduTab('eduSkills', this)">۶. آزمایشگاه انیمیشنی جلسه هشتم</button>
+        </div>
+
+        <!-- زیربخش ۱: اهداف جلسه، گارد دفاعی و جدول مقایسه ریباند دفاعی و حمله -->
+        <div id="eduGoals" class="edu-sub-view">
+          <h3 style="color:var(--secondary); margin-bottom:14px;">🎯 اهداف یادگیری جلسه هشتم</h3>
+          <div class="grid-3" style="margin-bottom:28px;">
+            <div class="glass-card tilt-card"><div class="card-glare"></div><strong>۱. وضعیت ایستادن دفاعی</strong><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">قرارگیری در گارد دفاعی استاندارد (پاها باز، زانوها خم، کمر صاف و دست‌ها فعال).</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><strong>۲. گام‌های لغزشی (Defensive Slide)</strong><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">حرکت سریع به چپ و راست روی سینه‌پا بدون اینکه پاها به هم بخورند یا ضربدری شوند.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><strong>۳. قانون موقعیت دفاعی (بین یار و سبد)</strong><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">حفظ همیشگی موقعیت بدن در خط مستقیم بین بازیکن مهاجم و حلقه سبد.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><strong>۴. تکنیک سد کردن (Box Out)</strong><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">چرخیدن به سمت مهاجم پس از شوت و قرار دادن پشت بدن برای دور نگه داشتن او از سبد.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><strong>۵. مهارت ریباند (Rebounding)</strong><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">پرش دو پا برای قاپیدن توپ برگشتی از تخته یا حلقه در بالاترین نقطه ممکن.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><strong>۶. قانون استوانه و پرهیز از خطا</strong><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">آگاهی از حریم استوانه قانونی مدافع و تفاوت دفاع سالم با خطاهای هولدینگ و بلاکینگ.</p></div>
+          </div>
+
+          <h3 style="color:var(--secondary); margin-bottom:14px;">⚡ مراحل چهارگانه اجرای کامل «باکس‌اوت و ریباند» پس از شوت حریف</h3>
+          <div class="timeline">
+            <div class="timeline-item glass-card">
+              <div class="timeline-dot"></div>
+              <h4 style="color:var(--primary);">گام اول: تشخیص شوت و یافتن بازیکن مهاجم (Find the Shooter/Player)</h4>
+              <p style="font-size:0.9rem; margin-top:6px;">به محض اینکه توپ از دست شوت‌زن حریف به هوا بلند می‌شود، به جای اینکه فقط به توپ خیره شوید، ابتدا موقعیت بازیکن مهاجمی که مسئول دفاع او هستید را پیدا کنید.</p>
+            </div>
+            <div class="timeline-item glass-card">
+              <div class="timeline-dot"></div>
+              <h4 style="color:var(--primary);">گام دوم: چرخش پیوت و سد کردن مسیر (Box Out)</h4>
+              <p style="font-size:0.9rem; margin-top:6px;">روی پای محور بچرخید (Reverse Pivot) تا <strong>پشت بدن شما به سینه مهاجم</strong> تکیه دهد. پاها را باز و زانوها را خم کنید تا مانند یک دیوار عریض، مسیر رسیدن مهاجم به زیر سبد را کاملاً ببندید.</p>
+            </div>
+            <div class="timeline-item glass-card">
+              <div class="timeline-dot"></div>
+              <h4 style="color:var(--primary);">گام سوم: پرش انفجاری با دو پا و گرفتن توپ با دو دست در اوج</h4>
+              <p style="font-size:0.9rem; margin-top:6px;">منتظر نمانید تا توپ به زمین بخورد! به سمت بالاترین نقطه پرواز کنید و توپ را با <strong>هر دو دست محکم</strong> در هوا شکار کنید.</p>
+            </div>
+            <div class="timeline-item glass-card">
+              <div class="timeline-dot"></div>
+              <h4 style="color:var(--primary);">گام چهارم: چانه‌گذاری توپ (Chin the Ball) و ارسال پاس اول ضدحمله</h4>
+              <p style="font-size:0.9rem; margin-top:6px;">پس از فرود با پاهای باز، توپ را محکم زیر چانه و جلوی سینه با آرنج‌های باز (Chin It) نگه دارید تا کسی آن را نزند، سپس سریعاً به گارد خودی پاس ضدحمله (Outlet Pass) بدهید.</p>
+            </div>
+          </div>
+
+          <h3 style="color:var(--secondary); margin:20px 0 12px;">📊 جدول مقایسه ریباند دفاعی (Defensive) و ریباند تهاجمی (Offensive)</h3>
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>ویژگی فنی و تاکتیکی</th>
+                <th>ریباند دفاعی (Defensive Rebound)</th>
+                <th>ریباند تهاجمی / حمله (Offensive Rebound)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>تیم انجام‌دهنده</td><td>تیم مدافع (زیر سبد خودی پس از شوت ناموفق حریف).</td><td>تیم مهاجم (زیر سبد حریف پس از شوت ناموفق هم‌تیمی).</td></tr>
+              <tr><td>مزیت موقعیت در زمین</td><td>مدافع به سبد نزدیک‌تر است و با <strong>Box Out</strong> برتری دارد.</td><td>مهاجم پشت سر مدافع است و باید با چرخش و سرعت از باکس خارج شود.</td></tr>
+              <tr><td>اقدام بعدی پس از گرفتن توپ</td><td>محافظت از توپ (چانه‌گذاری) و ارسال پاس شروع ضدحمله (Outlet).</td><td>شوت مجدد بلافاصله زیر سبد (Putback) یا پاس به بیرون برای حمله جدید.</td></tr>
+              <tr><td>تأثیر بر زمان ۲۴ ثانیه</td><td>مالکیت تغییر کرده و تیم جدید ۲۴ ثانیه کامل برای حمله دارد.</td><td>طبق قانون FIBA، زمان ساعت شوت به <strong>۱۴ ثانیه</strong> بازنشانی (Reset) می‌شود.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- زیربخش ۲: قوانین طلایی گام لغزشی، کمر مهاجم و سلامت عضلات -->
+        <div id="eduBenefits" class="edu-sub-view" style="display:none;">
+          <h3 style="color:var(--secondary); margin-bottom:14px;">🛡️ ۶ اصل طلایی مدافعان نخبه در بسکتبال</h3>
+          <div class="grid-3" style="margin-bottom:26px;">
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:2rem; margin-bottom:8px;">🚫❌</div><h4 style="color:var(--primary);">هرگز پاها ضربدری نشود!</h4><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">در گام لغزشی (Slide)، ابتدا پای سمت حرکت گام برمی‌دارد و پای دیگر روی زمین سر می‌خورد؛ ضربدری شدن پاها تعادل شما را نابود می‌کند.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:2rem; margin-bottom:8px;">👁️👕</div><h4 style="color:var(--primary);">نگاه به کمر و ناف مهاجم</h4><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">مهاجم می‌تواند با سر، چشم، شانه یا توپ شما را فریب دهد، اما کمر و مرکز ثقل او هرگز دروغ نمی‌گوید! همیشه به سینه و کمر حریف نگاه کنید.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:2rem; margin-bottom:8px;">✋🤚</div><h4 style="color:var(--primary);">دست‌های فعال (Active Hands)</h4><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">یک دست مدافع پایین و نزدیک توپ (برای ایجاد مزاحمت در دریبل) و دست دیگر بالا در مسیر پاس و شوت قرار می‌گیرد.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:2rem; margin-bottom:8px;">📏⚖️</div><h4 style="color:var(--primary);">فاصله یک طول دست</h4><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">فاصله استاندارد مدافع با بازیکن صاحب توپ حدود یک طول دست (۱ متر) است تا هم جلوی شوت گرفته شود و هم مهاجم نتواند به راحتی عبور کند.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:2rem; margin-bottom:8px;">🗣️📢</div><h4 style="color:var(--primary);">ارتباط کلامی در دفاع</h4><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">مدافعان خوب همیشه با صدای بلند با هم‌تیمی‌های خود صحبت می‌کنند («من توپ رو دارم!»، «شوت شد!»، «کمک از چپ!»).</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:2rem; margin-bottom:8px;">💪😤</div><h4 style="color:var(--primary);">چانه‌گذاری پس از ریباند</h4><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">قرار دادن توپ زیر چانه با آرنج‌های باز (Chin the Ball) مانع از آن می‌شود که بازیکنان کوتاه‌قد توپ را از دست شما بزنند.</p></div>
+          </div>
+
+          <h3 style="color:var(--secondary); margin-bottom:14px;">🩺 آمادگی عضلانی و پیشگیری از آسیب در گام‌های لغزشی و ریباند</h3>
+          <div class="grid-2">
+            <div class="glass-card">
+              <h4 style="color:var(--accent);">۱. تقویت عضلات چهارسر ران و کشاله در گارد دفاعی</h4>
+              <p style="font-size:0.88rem; margin-top:6px;">• <strong>چرا در دفاع پاها می‌سوزد؟</strong> ایستادن در وضعیت نشسته دفاعی فشار زیادی به عضلات ران وارد می‌کند. تمرین «نشستن به دیوار (Wall Sit)» به مدت ۳۰ ثانیه، استقامت دفاعی شما را دو برابر می‌کند.<br>• <strong>کشش عضلات داخل ران (Adductors):</strong> پیش از اجرای گام‌های لغزشی سریع، حتماً کشش عرضی پاها را انجام دهید تا کشاله ران دچار کشیدگی نشود.</p>
+            </div>
+            <div class="glass-card">
+              <h4 style="color:var(--accent);">۲. فرود با پایه عریض در شلوغی زیر سبد (ریباند)</h4>
+              <p style="font-size:0.88rem; margin-top:6px;">• <strong>خطر فرود با پاهای جفت زیر سبد:</strong> زیر سبد هنگام ریباند شلوغ‌ترین نقطه زمین است. همیشه با پاهای باز (به عرض شانه) و زانوهای خم فرود بیایید تا در صورت برخورد تنه بازیکنان در هوا، تعادل شما حفظ شود.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- زیربخش ۳: نقشه تعاملی آناتومی دفاع و باکس‌اوت (به همراه صدا) -->
+        <div id="eduDefMap" class="edu-sub-view" style="display:none;">
+          <h3 style="color:var(--secondary); margin-bottom:8px;">🛡️ نقشه تعاملی بیومکانیک گارد دفاعی (Stance) و سد کردن (Box Out)</h3>
+          <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:16px;">روی هر یک از ۴ بخش کلیدی تصویر زیر کلیک کنید تا توضیح صوتی و متنی آن پخش شود:</p>
+
+          <div style="display:flex; flex-direction:column; align-items:center; gap:18px;">
+            <svg viewBox="0 0 620 350" style="width:100%; max-width:600px; background:radial-gradient(circle, #1e293b 0%, #090d16 90%); border-radius:18px; border:2px solid var(--glass-border); box-shadow:0 12px 35px rgba(0,0,0,0.6);">
+              <!-- خط جداکننده دو نما -->
+              <line x1="310" y1="20" x2="310" y2="330" stroke="rgba(255,255,255,0.15)" stroke-width="2" stroke-dasharray="6,6"/>
+
+              <!-- سمت راست تصویر: گارد دفاعی فردی (Defensive Stance) -->
+              <text x="465" y="34" fill="#38bdf8" font-size="14" font-weight="bold" text-anchor="middle">الف) وضعیت ایستادن دفاعی (Stance)</text>
+
+              <!-- ۱. دست‌های باز و فعال (Active Hands) -->
+              <g class="def-zone" onclick="selectDefPart('activeHands')">
+                <path d="M 380,105 L 465,145 L 550,165" fill="none" stroke="#38bdf8" stroke-width="7" stroke-linecap="round"/>
+                <circle cx="380" cy="105" r="14" fill="rgba(56,189,248,0.4)" stroke="#38bdf8" stroke-width="2.5"/>
+                <circle cx="550" cy="165" r="14" fill="rgba(56,189,248,0.4)" stroke="#38bdf8" stroke-width="2.5"/>
+                <text x="405" y="82" fill="#38bdf8" font-size="11" font-weight="bold">۱. دست بالا (شوت) و دست پایین (توپ)</text>
+              </g>
+
+              <!-- ۲. مرکز ثقل پایین، زانوهای خم و کمر صاف -->
+              <g class="def-zone" onclick="selectDefPart('lowCenter')">
+                <circle cx="465" cy="112" r="16" fill="#0ea5e9"/>
+                <line x1="465" y1="128" x2="465" y2="205" stroke="#10b981" stroke-width="9" stroke-linecap="round"/>
+                <polyline points="465,205 415,245 410,295" fill="none" stroke="#10b981" stroke-width="8" stroke-linecap="round"/>
+                <polyline points="465,205 515,245 520,295" fill="none" stroke="#10b981" stroke-width="8" stroke-linecap="round"/>
+                <text x="465" y="232" fill="#10b981" font-size="12" font-weight="bold" text-anchor="middle">۲. زانوهای خم و نشست دفاعی</text>
+              </g>
+
+              <!-- ۳. سینه‌پاها و پایه عریض بدون ضربدری شدن -->
+              <g class="def-zone" onclick="selectDefPart('wideBaseSlide')">
+                <rect x="385" y="290" width="48" height="22" rx="8" fill="rgba(249,115,22,0.4)" stroke="#f97316" stroke-width="2.5"/>
+                <rect x="495" y="290" width="48" height="22" rx="8" fill="rgba(249,115,22,0.4)" stroke="#f97316" stroke-width="2.5"/>
+                <line x1="435" y1="301" x2="493" y2="301" stroke="#facc15" stroke-width="2" stroke-dasharray="4,4"/>
+                <text x="465" y="332" fill="#f97316" font-size="12" font-weight="bold" text-anchor="middle">۳. حرکت روی سینه‌پا (Slide)</text>
+              </g>
+
+              <!-- سمت چپ تصویر: تکنیک باکس‌اوت و چانه‌گذاری در ریباند -->
+              <text x="155" y="34" fill="#f97316" font-size="14" font-weight="bold" text-anchor="middle">ب) تکنیک باکس‌اوت و ریباند (Box Out)</text>
+
+              <!-- حلقه سبد بالا -->
+              <line x1="115" y1="68" x2="195" y2="68" stroke="#f97316" stroke-width="5"/>
+              <circle cx="155" cy="95" r="14" fill="#ea580c" stroke="#fff" stroke-width="2"/>
+
+              <!-- ۴. سد کردن مهاجم با پشت بدن (Box Out) -->
+              <g class="def-zone" onclick="selectDefPart('boxOutWall')">
+                <!-- مهاجم قرمز در پشت سد -->
+                <circle cx="155" cy="255" r="24" fill="rgba(239,68,68,0.35)" stroke="#ef4444" stroke-width="3"/>
+                <text x="155" y="260" fill="#fca5a5" font-size="11" font-weight="bold" text-anchor="middle">مهاجم حریف</text>
+
+                <!-- مدافع آبی که با پشت عریض خود مسیر مهاجم را بسته است -->
+                <path d="M 85,205 Q 155,175 225,205" fill="none" stroke="#38bdf8" stroke-width="12" stroke-linecap="round"/>
+                <circle cx="155" cy="182" r="22" fill="rgba(16,185,129,0.45)" stroke="#10b981" stroke-width="3"/>
+                <text x="155" y="186" fill="#fff" font-size="11" font-weight="bold" text-anchor="middle">شما (مدافع)</text>
+                <text x="155" y="315" fill="#fef08a" font-size="12" font-weight="bold" text-anchor="middle">۴. سد کردن حریف با پشت بدن (Box Out)</text>
+              </g>
+            </svg>
+
+            <div id="defInfoPanel" class="glass-card" style="width:100%; max-width:680px; border-right:4px solid var(--primary);">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <h4 id="defPartTitle" style="color:var(--primary); font-size:1.1rem;">یکی از ۴ بخش نقشه دفاع و ریباند را لمس کنید</h4>
+                <button class="btn btn-secondary" style="padding:6px 12px; font-size:0.8rem;" onclick="speakCurrentDefInfo()">🔊 پخش توضیح صوتی</button>
+              </div>
+              <p id="defPartDesc" style="font-size:0.92rem; color:#e2e8f0;">با کلیک روی «دست‌های فعال»، «نشست دفاعی»، «حرکت روی سینه‌پا» یا «تکنیک Box Out»، اصول علمی آن پخش می‌شود.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- زیربخش ۴: هولوگرام سه‌بعدی مکانیسم دفاع و استوانه -->
+        <div id="eduEquip" class="edu-sub-view" style="display:none;">
+          <h3 style="color:var(--secondary); margin-bottom:10px;">🕶️ ویترین هولوگرافیک سه‌بعدی اصول دفاع و ریباند</h3>
+          <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:16px;">با اسلایدر زیر یا دکمه چرخش خودکار، زاویه دید سه‌بعدی را تغییر دهید و ۳ مفهوم کلیدی دفاع را بررسی کنید:</p>
+
+          <div style="margin-bottom:20px; background:rgba(15,23,42,0.8); padding:14px; border-radius:14px; display:flex; align-items:center; gap:14px; flex-wrap:wrap; border:1px solid var(--glass-border);">
+            <label style="font-weight:700; color:var(--primary);">🔄 زاویه چرخش سه‌بعدی:</label>
+            <input type="range" id="equipRotateRange" min="-180" max="180" value="0" style="flex:1; accent-color:var(--primary);" oninput="rotateEquipments(this.value)">
+            <span id="equipRotateLabel" style="min-width:65px; font-weight:700; color:var(--secondary);">۰ درجه</span>
+            <button id="autoSpinBtn" class="btn btn-secondary" style="padding:7px 14px; font-size:0.84rem;" onclick="toggleAutoSpinEquip()">▶️ چرخش خودکار ۳۶۰ درجه</button>
+          </div>
+
+          <div class="grid-3">
+            <div class="glass-card">
+              <div class="equip-viewer">
+                <div class="equip-3d-object">
+                  <svg width="120" height="115" viewBox="0 0 120 100">
+                    <ellipse cx="60" cy="20" rx="28" ry="8" fill="rgba(56,189,248,0.25)" stroke="#38bdf8" stroke-width="2"/>
+                    <ellipse cx="60" cy="82" rx="28" ry="8" fill="rgba(56,189,248,0.25)" stroke="#38bdf8" stroke-width="2"/>
+                    <line x1="32" y1="20" x2="32" y2="82" stroke="#38bdf8" stroke-width="2" stroke-dasharray="4,3"/>
+                    <line x1="88" y1="20" x2="88" y2="82" stroke="#38bdf8" stroke-width="2" stroke-dasharray="4,3"/>
+                    <line x1="60" y1="30" x2="60" y2="75" stroke="#10b981" stroke-width="6" stroke-linecap="round"/>
+                  </svg>
+                </div>
+              </div>
+              <h4 style="color:var(--primary);">۱. قانون استوانه (Cylinder)</h4>
+              <p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">هر بازیکن یک فضای استوانه‌ای فرضی از زمین تا سقف دارد؛ تا زمانی که دست و پای مدافع از این استوانه بیرون نزند، برخورد مهاجم خطای دفاع نیست.</p>
+            </div>
+
+            <div class="glass-card">
+              <div class="equip-viewer">
+                <div class="equip-3d-object">
+                  <svg width="120" height="115" viewBox="0 0 120 100">
+                    <polygon points="60,15 20,82 100,82" fill="rgba(16,185,129,0.2)" stroke="#10b981" stroke-width="3"/>
+                    <circle cx="60" cy="15" r="8" fill="#f97316"/>
+                    <circle cx="20" cy="82" r="8" fill="#ef4444"/>
+                    <circle cx="100" cy="82" r="8" fill="#ef4444"/>
+                    <circle cx="60" cy="58" r="10" fill="#38bdf8"/>
+                  </svg>
+                </div>
+              </div>
+              <h4 style="color:var(--primary);">۲. مثلث دفاعی (توپ - من - یار)</h4>
+              <p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">مدافع بدون توپ همیشه به شکلی می‌ایستد که هم‌زمان هم بازیکن صاحب توپ و هم یار مستقیم خود را ببیند.</p>
+            </div>
+
+            <div class="glass-card">
+              <div class="equip-viewer">
+                <div class="equip-3d-object">
+                  <svg width="120" height="115" viewBox="0 0 120 100">
+                    <polyline points="20,55 42,40 60,55 78,40 100,55" fill="none" stroke="#facc15" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <circle cx="60" cy="55" r="15" fill="#ea580c" stroke="#fff" stroke-width="2"/>
+                  </svg>
+                </div>
+              </div>
+              <h4 style="color:var(--primary);">۳. چانه‌گذاری (Chin the Ball)</h4>
+              <p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">قفل کردن توپ با دو دست زیر چانه و بالا آوردن آرنج‌ها در حریم استوانه خودی پس از کسب ریباند.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- زیربخش ۵: قوانین خطاهای دفاعی و علائم داوری -->
+        <div id="eduRules" class="edu-sub-view" style="display:none;">
+          <h3 style="color:var(--secondary); margin-bottom:14px;">⚖️ قوانین رسمی فدراسیون جهانی (FIBA) درباره خطاهای دفاعی و ریباند</h3>
+          <div class="grid-3" style="margin-bottom:24px;">
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:1.6rem;">🚧🚫</div><h4 style="color:var(--primary);">۱. خطای سد غیرقانونی (Blocking)</h4><p style="font-size:0.86rem; color:var(--text-muted);">اگر مدافع دیر به مسیر حرکت مهاجم برسد و در حالی که هنوز در حال حرکت است با بدن مهاجم برخورد کند، خطای «بلاکینگ» به ضرر مدافع اعلام می‌شود.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:1.6rem;">💥🏃</div><h4 style="color:var(--primary);">۲. خطای شارژ مهاجم (Charging)</h4><p style="font-size:0.86rem; color:var(--text-muted);">اگر مدافع زودتر در مسیر حرکت مهاجم با دو پا ثابت ایستاده باشد و مهاجم به سینه مدافع بکوبد، خطای مهاجم (شارژ) گرفته شده و توپ به مدافع می‌رسد.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:1.6rem;">👋🚫</div><h4 style="color:var(--primary);">۳. خطای زدن روی دست (Illegal Use of Hands)</h4><p style="font-size:0.86rem; color:var(--text-muted);">ضربه زدن به مچ یا ساعد بازیکن مهاجم هنگام دریبل یا شوت (Reaching In / Hacking) خطای شخصی مدافع محسوب می‌شود.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:1.6rem;">👕✊</div><h4 style="color:var(--primary);">۴. خطای گرفتن (Holding)</h4><p style="font-size:0.86rem; color:var(--text-muted);">گرفتن پیراهن، کمر یا دست بازیکن حریف برای جلوگیری از فرار او یا در حین اجرای باکس‌اوت زیر سبد، خطای «هولدینگ» است.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:1.6rem;">👐⬆️</div><h4 style="color:var(--primary);">۵. خطای هل دادن در ریباند (Pushing)</h4><p style="font-size:0.86rem; color:var(--text-muted);">هنگام پرش برای ریباند، هل دادن بازیکن جلویی از پشت سر (Over the Back) برای رسیدن به توپ، خطای «پوشینگ» است.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:1.6rem;">5️⃣🟥</div><h4 style="color:var(--primary);">۶. قانون ۵ خطای شخصی بازیکن</h4><p style="font-size:0.86rem; color:var(--text-muted);">هر بازیکنی که در طول مسابقه مرتکب ۵ خطای شخصی شود، از زمین بازی اخراج (Foul Out) شده و بازیکن ذخیره جایگزین او می‌گردد.</p></div>
+          </div>
+
+          <div class="grid-2">
+            <div class="glass-card">
+              <h4 style="color:var(--warning); margin-bottom:8px;">⚠️ ۴ اشتباه رایج مبتدیان در دفاع و ریباند</h4>
+              <ul style="font-size:0.88rem; padding-right:18px; color:#e2e8f0;">
+                <li><strong>پرش به هوا با هر فریب شوت مهاجم:</strong> به محض اینکه مدافع به هوا بپرد، مهاجم از کنار او عبور می‌کند ← <em>اصلاح: روی زمین بمانید و فقط دست خود را بالا ببرید.</em></li>
+                <li><strong>ضربدری کردن پاها هنگام حرکت به طرفین:</strong> باعث گره خوردن پاها و زمین خوردن می‌شود ← <em>اصلاح: اجرای گام لغزشی (گام - سُر خوردن).</em></li>
+                <li><strong>تماشای توپ در هوا به جای باکس‌اوت کردن حریف:</strong> باعث می‌شود مهاجم از پشت سر بپرد و ریباند کند ← <em>اصلاح: اول تماس با حریف (Box Out)، بعد نگاه به توپ.</em></li>
+                <li><strong>پایین آوردن توپ تا کمر پس از ریباند:</strong> بازیکنان حریف سریعاً توپ را می‌دزدند ← <em>اصلاح: نگه داشتن توپ در ارتفاع چانه و بالا.</em></li>
+              </ul>
+            </div>
+
+            <div class="glass-card">
+              <h4 style="color:var(--secondary); margin-bottom:8px;">✋ علائم داوری خطاهای دفاعی</h4>
+              <ul style="font-size:0.88rem; padding-right:18px; color:#e2e8f0;">
+                <li><strong>علامت خطای سد غیرقانونی (Blocking):</strong> قرار دادن هر دو دست روی کمر (پهلوها).</li>
+                <li><strong>علامت خطای گرفتن (Holding):</strong> گرفتن مچ یک دست با دست دیگر و کشیدن آن به سمت پایین.</li>
+                <li><strong>علامت خطای هل دادن (Pushing):</strong> تقلید حرکت هل دادن به جلو با هر دو کف دست باز.</li>
+                <li><strong>علامت خطای زدن روی دست (Illegal Use of Hands):</strong> ضربه زدن با لبه یک دست روی مچ دست دیگر.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- زیربخش ۶: آزمایشگاه انیمیشنی جلسه هشتم + کارت‌های چرخشی دانستنی‌ها -->
+        <div id="eduSkills" class="edu-sub-view" style="display:none;">
+          <h3 style="color:var(--secondary); margin-bottom:10px;">🔬 آزمایشگاه انیمیشنی جلسه هشتم (شبیه‌ساز زنده گام لغزشی، باکس‌اوت و ریباند)</h3>
+          <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:14px;">روی هر یک از ۳ مهارت زیر کلیک کنید تا اجرای دقیق آن را ببینید. می‌توانید سرعت را روی حالت صحنه آهسته (Slow Motion) قرار دهید:</p>
+
+          <div class="glass-card" style="margin-bottom:24px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="sub-tab-btn active" onclick="setSkillSimMode('defSlide', this)">👟 ۱. شبیه‌ساز گام لغزشی دفاعی (Slide)</button>
+                <button class="sub-tab-btn" onclick="setSkillSimMode('boxOutMove', this)">🛡️ ۲. شبیه‌ساز چرخش و سد کردن (Box Out)</button>
+                <button class="sub-tab-btn" onclick="setSkillSimMode('reboundJump', this)">🏀 ۳. شبیه‌ساز پرش ریباند در اوج و چانه‌گذاری</button>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:0.85rem; color:var(--secondary);">سرعت انیمیشن:</span>
+                <button class="sub-tab-btn" style="padding:5px 10px;" onclick="setSkillSimSpeed(0.35)">🐢 صحنه آهسته</button>
+                <button class="sub-tab-btn" style="padding:5px 10px;" onclick="setSkillSimSpeed(1)">⚡ عادی</button>
+              </div>
+            </div>
+
+            <canvas id="skillSimCanvas" width="680" height="225" style="width:100%; max-width:680px; height:auto; display:block; margin:0 auto; background:rgba(9,13,22,0.85); border-radius:14px; border:1px solid var(--glass-border);"></canvas>
+          </div>
+
+          <h3 style="color:var(--secondary); margin-bottom:12px;">🌟 دانستنی‌های جذاب درباره دفاع و ریباند در بسکتبال (کارت‌های Flip سه‌بعدی)</h3>
+          <div class="flip-grid">
+            <div class="flip-card" onclick="this.classList.toggle('flipped')">
+              <div class="flip-card-inner">
+                <div class="flip-front">
+                  <div style="font-size:2.2rem; margin-bottom:8px;">🏆🛡️</div>
+                  <h4>جمله مشهور مربیان بسکتبال</h4>
+                  <span style="font-size:0.78rem; color:var(--primary); margin-top:8px;">کلیک کنید تا بچرخد ↺</span>
+                </div>
+                <div class="flip-back">
+                  <p style="font-size:0.86rem;">«حمله خوب تماشاگران را به وجد می‌آورد و بلیت می‌فروشد، اما دفاع قوی و ریباند جام‌های قهرمانی را برنده می‌شود!» (Defense Wins Championships).</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="flip-card" onclick="this.classList.toggle('flipped')">
+              <div class="flip-card-inner">
+                <div class="flip-front">
+                  <div style="font-size:2.2rem; margin-bottom:8px;">🧲🏀</div>
+                  <h4>رکورد بیشترین ریباند در یک بازی</h4>
+                  <span style="font-size:0.78rem; color:var(--primary); margin-top:8px;">کلیک کنید تا بچرخد ↺</span>
+                </div>
+                <div class="flip-back">
+                  <p style="font-size:0.86rem;">«ویلت چمبرلین» در سال ۱۹۶۰ موفق شد در یک مسابقه رسمی ۵۵ ریباند به ثبت برساند که تا امروز رکورد دست‌نیافتنی تاریخ NBA است!</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="flip-card" onclick="this.classList.toggle('flipped')">
+              <div class="flip-card-inner">
+                <div class="flip-front">
+                  <div style="font-size:2.2rem; margin-bottom:8px;">📐🔄</div>
+                  <h4>نابغه زاویه‌شناسی ریباند</h4>
+                  <span style="font-size:0.78rem; color:var(--primary); margin-top:8px;">کلیک کنید تا بچرخد ↺</span>
+                </div>
+                <div class="flip-back">
+                  <p style="font-size:0.86rem;">«دنیس رادمن» بدون اینکه بلندقامت‌ترین بازیکن زمین باشد، با مطالعه زاویه پرتاب و چرخش توپ در هوا، ۷ فصل پیاپی سلطان ریباند جهان شد.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="flip-card" onclick="this.classList.toggle('flipped')">
+              <div class="flip-card-inner">
+                <div class="flip-front">
+                  <div style="font-size:2.2rem; margin-bottom:8px;">✋🚫</div>
+                  <h4>رکورد بیشترین دفاع شوت (Block)</h4>
+                  <span style="font-size:0.78rem; color:var(--primary); margin-top:8px;">کلیک کنید تا بچرخد ↺</span>
+                </div>
+                <div class="flip-back">
+                  <p style="font-size:0.86rem;">«حکیم اولاجوان» با ثبت ۳۸۳۰ بلاک شوت رسمی، برترین مدافع حلقه در تاریخ بسکتبال حرفه‌ای شناخته می‌شود.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- دکمه ثبت مطالعه آموزش کامل (۲۰ XP) -->
+        <div style="margin-top:28px; padding-top:18px; border-top:1px solid var(--glass-border); text-align:center;">
+          <button id="claimEducationBtn" class="btn btn-success" onclick="completeSectionXP('education', 20, 'آموزش کامل جلسه هشتم (اصول دفاع فردی و ریباند)')">
+            ✅ مطالعه کامل تمام بخش‌های آموزش جلسه هشتم را به پایان رساندم (دریافت ۲۰ XP)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۴. بخش خلاصه جلسه هشتم و نقشه ذهنی (Mind Map SVG)
+         ========================================================================= -->
+    <section id="summaryView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">🧠 جمع‌بندی و نقشه ذهنی زنده جلسه هشتم</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <p style="font-size:0.92rem; color:var(--text-muted); margin-bottom:18px;">نقشه ذهنی زیر با جریان‌های نوری متحرک، چکیده تمامی مفاهیم کلیدی جلسه هشتم (گارد دفاعی، گام لغزشی، باکس‌اوت و ریباند) را نمایش می‌دهد:</p>
+
+        <div style="overflow-x:auto; background:rgba(9,13,22,0.85); border-radius:var(--radius-md); padding:18px; border:1px solid var(--glass-border); margin-bottom:20px;">
+          <svg viewBox="0 0 860 400" style="width:100%; min-width:650px; height:auto;">
+            <!-- خطوط اتصال پایه -->
+            <path d="M430,200 C320,200 280,80 190,80" stroke="rgba(249,115,22,0.3)" stroke-width="4" fill="none"/>
+            <path d="M430,200 C320,200 280,200 190,200" stroke="rgba(56,189,248,0.3)" stroke-width="4" fill="none"/>
+            <path d="M430,200 C320,200 280,320 190,320" stroke="rgba(16,185,129,0.3)" stroke-width="4" fill="none"/>
+            <path d="M430,200 C540,200 580,80 670,80" stroke="rgba(245,158,11,0.3)" stroke-width="4" fill="none"/>
+            <path d="M430,200 C540,200 580,200 670,200" stroke="rgba(236,72,153,0.3)" stroke-width="4" fill="none"/>
+            <path d="M430,200 C540,200 580,320 670,320" stroke="rgba(168,85,247,0.3)" stroke-width="4" fill="none"/>
+
+            <!-- خطوط پالس انرژی متحرک -->
+            <path class="tactic-line" d="M430,200 C320,200 280,80 190,80" stroke="#f97316" stroke-width="3" fill="none"/>
+            <path class="tactic-line" d="M430,200 C320,200 280,200 190,200" stroke="#38bdf8" stroke-width="3" fill="none"/>
+            <path class="tactic-line" d="M430,200 C320,200 280,320 190,320" stroke="#10b981" stroke-width="3" fill="none"/>
+            <path class="tactic-line" d="M430,200 C540,200 580,80 670,80" stroke="#f59e0b" stroke-width="3" fill="none"/>
+            <path class="tactic-line" d="M430,200 C540,200 580,200 670,200" stroke="#ec4899" stroke-width="3" fill="none"/>
+            <path class="tactic-line" d="M430,200 C540,200 580,320 670,320" stroke="#a855f7" stroke-width="3" fill="none"/>
+
+            <!-- هسته مرکزی -->
+            <ellipse cx="430" cy="200" rx="105" ry="48" fill="#ea580c" stroke="#fff" stroke-width="3"/>
+            <text x="430" y="196" fill="#fff" font-size="14" font-weight="bold" text-anchor="middle">دفاع فردی و ریباند</text>
+            <text x="430" y="218" fill="#fef08a" font-size="13" text-anchor="middle">خلاصه جلسه هشتم</text>
+
+            <!-- شاخه‌ها -->
+            <rect x="20" y="45" width="180" height="70" rx="12" fill="#1e293b" stroke="#f97316" stroke-width="2.5"/>
+            <text x="110" y="72" fill="#f97316" font-size="14" font-weight="bold" text-anchor="middle">گارد دفاعی (Stance)</text>
+            <text x="110" y="95" fill="#cbd5e1" font-size="12" text-anchor="middle">زانوها خم، دست‌ها باز و فعال</text>
+
+            <rect x="20" y="165" width="180" height="70" rx="12" fill="#1e293b" stroke="#38bdf8" stroke-width="2.5"/>
+            <text x="110" y="192" fill="#38bdf8" font-size="14" font-weight="bold" text-anchor="middle">گام لغزشی (Slide)</text>
+            <text x="110" y="215" fill="#cbd5e1" font-size="12" text-anchor="middle">حرکت عرضی بدون ضربدری شدن پا</text>
+
+            <rect x="20" y="285" width="180" height="70" rx="12" fill="#1e293b" stroke="#10b981" stroke-width="2.5"/>
+            <text x="110" y="312" fill="#10b981" font-size="14" font-weight="bold" text-anchor="middle">تکنیک باکس‌اوت</text>
+            <text x="110" y="335" fill="#cbd5e1" font-size="12" text-anchor="middle">چرخش و سد کردن مسیر مهاجم</text>
+
+            <rect x="660" y="45" width="180" height="70" rx="12" fill="#1e293b" stroke="#f59e0b" stroke-width="2.5"/>
+            <text x="750" y="72" fill="#f59e0b" font-size="14" font-weight="bold" text-anchor="middle">مهارت ریباند</text>
+            <text x="750" y="95" fill="#cbd5e1" font-size="12" text-anchor="middle">پرش در اوج + چانه‌گذاری توپ</text>
+
+            <rect x="660" y="165" width="180" height="70" rx="12" fill="#1e293b" stroke="#ec4899" stroke-width="2.5"/>
+            <text x="750" y="192" fill="#ec4899" font-size="14" font-weight="bold" text-anchor="middle">قانون استوانه</text>
+            <text x="750" y="215" fill="#cbd5e1" font-size="12" text-anchor="middle">حفظ حریم عمودی بدن از زمین تا سقف</text>
+
+            <rect x="660" y="285" width="180" height="70" rx="12" fill="#1e293b" stroke="#a855f7" stroke-width="2.5"/>
+            <text x="750" y="312" fill="#a855f7" font-size="14" font-weight="bold" text-anchor="middle">خطاهای دفاعی</text>
+            <text x="750" y="335" fill="#cbd5e1" font-size="12" text-anchor="middle">بلاکینگ، هولدینگ، پوشینگ (۵ خطا)</text>
+          </svg>
+        </div>
+
+        <div style="text-align:center;">
+          <button id="claimSummaryBtn" class="btn btn-success" onclick="completeSectionXP('summary', 10, 'مطالعه خلاصه و نقشه ذهنی جلسه هشتم')">
+            ✅ نقشه ذهنی و خلاصه جلسه هشتم را مرور کردم (دریافت ۱۰ XP)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۵. بخش فعالیت‌های عملی، تشخیصی و بازی دیوار دفاعی و ریباند (۳۰ XP)
+         ========================================================================= -->
+    <section id="activitiesView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">🎮 فعالیت‌های عملی، تشخیصی و بازی دیوار دفاعی و ریباند (۳۰ XP)</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <p style="font-size:0.92rem; color:var(--text-muted); margin-bottom:20px;">برای دریافت ۳۰ امتیاز کامل این بخش، هر ۳ فعالیت عملی و تعاملی زیر را با موفقیت تکمیل نمایید:</p>
+
+        <!-- فعالیت ۱: تشخیص اصول صحیح دفاع و ریباند -->
+        <div class="glass-card" style="margin-bottom:20px;">
+          <h4 style="color:var(--primary); margin-bottom:8px;">فعالیت ۱: تشخیص ۴ اصل علمی و قانونی در دفاع فردی و ریباند <span id="act1Status" style="color:var(--text-muted); font-size:0.85rem;">(تکمیل نشده)</span></h4>
+          <p style="font-size:0.88rem; margin-bottom:12px;">از میان گزینه‌های زیر، <strong>۴ گزاره کاملاً صحیح</strong> را انتخاب کنید:</p>
+          <div class="grid-3" id="equipGameGrid">
+            <button class="sub-tab-btn" onclick="toggleEquipSelect(this, true)">👟 در گام لغزشی دفاعی (Slide)، پاها هرگز نباید ضربدری شوند</button>
+            <button class="sub-tab-btn" onclick="toggleEquipSelect(this, false)">❌ مدافع باید به چشمان مهاجم نگاه کند نه به کمر او</button>
+            <button class="sub-tab-btn" onclick="toggleEquipSelect(this, true)">🛡️ در تکنیک Box Out، مدافع می‌چرخد و پشت خود را حائل مهاجم و سبد می‌کند</button>
+            <button class="sub-tab-btn" onclick="toggleEquipSelect(this, true)">😤 پس از ریباند، توپ با دو دست زیر چانه و با آرنج باز محافظت می‌شود</button>
+            <button class="sub-tab-btn" onclick="toggleEquipSelect(this, false)">❌ زدن روی ساعد و مچ دست شوت‌زن خطا محسوب نمی‌شود</button>
+            <button class="sub-tab-btn" onclick="toggleEquipSelect(this, true)">🧍‍♂️ مدافع همیشه باید بین بازیکن مهاجم و سبد خودی قرار بگیرد</button>
+          </div>
+        </div>
+
+        <!-- فعالیت ۲: مرتب‌سازی مراحل اجرای باکس‌اوت و ریباند دفاعی -->
+        <div class="glass-card" style="margin-bottom:20px;">
+          <h4 style="color:var(--primary); margin-bottom:8px;">فعالیت ۲: مرتب‌سازی مراحل چهارگانه اجرای باکس‌اوت و ریباند دفاعی <span id="act2Status" style="color:var(--text-muted); font-size:0.85rem;">(تکمیل نشده)</span></h4>
+          <p style="font-size:0.88rem; margin-bottom:12px;">مراحل زیر را به ترتیب صحیح زمانی (از گام ۱ تا ۴) کلیک کنید:</p>
+          <div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:12px;" id="orderStepsContainer">
+            <button class="btn btn-secondary" onclick="selectOrderStep(3, 'پرش انفجاری با دو پا به سمت بالاترین نقطه و قاپیدن توپ با دو دست در هوا', this)">پرش انفجاری با دو پا به سمت بالاترین نقطه و قاپیدن توپ با دو دست در هوا</button>
+            <button class="btn btn-secondary" onclick="selectOrderStep(1, 'تشخیص رها شدن شوت از دست حریف و پیدا کردن موقعیت بازیکن مهاجم', this)">تشخیص رها شدن شوت از دست حریف و پیدا کردن موقعیت بازیکن مهاجم</button>
+            <button class="btn btn-secondary" onclick="selectOrderStep(4, 'فرود متعادل، چانه‌گذاری توپ (Chin It) و ارسال پاس اول ضدحمله (Outlet)', this)">فرود متعادل، چانه‌گذاری توپ (Chin It) و ارسال پاس اول ضدحمله (Outlet)</button>
+            <button class="btn btn-secondary" onclick="selectOrderStep(2, 'چرخش روی پای محور و سد کردن مسیر مهاجم با پشت بدن و پاهای باز (Box Out)', this)">چرخش روی پای محور و سد کردن مسیر مهاجم با پشت بدن و پاهای باز (Box Out)</button>
+          </div>
+          <div id="orderFeedback" style="font-size:0.88rem; color:var(--secondary);">ترتیب انتخاب‌شده: هنوز موردی انتخاب نشده است.</div>
+          <button class="sub-tab-btn" style="margin-top:8px;" onclick="resetOrderActivity()">🔄 شروع مجدد مرتب‌سازی</button>
+        </div>
+
+        <!-- فعالیت ۳: بازی تعاملی دیوار دفاعی و شکار ریباند -->
+        <div class="glass-card">
+          <h4 style="color:var(--primary); margin-bottom:8px;">فعالیت ۳: شبیه‌ساز «دیوار دفاعی و شکار ریباند زیر سبد» <span id="act3Status" style="color:var(--text-muted); font-size:0.85rem;">(تکمیل نشده)</span></h4>
+          <p style="font-size:0.88rem; margin-bottom:10px;">به حرکت بازیکن مهاجم (قرمز رنگ) در بوم زیر دقت کنید و بر اساس سناریو، <strong>واکنش دفاعی صحیح</strong> را از دکمه‌های زیر انتخاب نمایید (کسب ۳ امتیاز موفق):</p>
+
+          <div style="background:rgba(9,13,22,0.9); padding:10px 16px; border-radius:10px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <strong id="defGameMissionText" style="color:var(--warning);">🛡️ موقعیت ۱: مهاجم با دریبل به سمت راست زمین استارت زده است؛ چگونه مسیر او به سمت سبد را می‌بندید؟</strong>
+            <span style="color:var(--accent); font-weight:800;">امتیاز دفاع و ریباند: <span id="defGameScore">۰</span> از ۳</span>
+          </div>
+
+          <canvas id="defGameCanvas" width="600" height="240" style="width:100%; max-width:600px; background:radial-gradient(circle at 50% 30%, #1e293b, #090d16); border:2px solid var(--glass-border); border-radius:14px; display:block; margin:0 auto 14px;"></canvas>
+
+          <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
+            <button class="btn btn-secondary" onclick="submitDefChoice('slideRight')">➡️ گام لغزشی سریع (Slide) به سمت راست و بستن مسیر</button>
+            <button class="btn btn-secondary" onclick="submitDefChoice('slideLeft')">⬅️ گام لغزشی سریع (Slide) به سمت چپ و بستن مسیر</button>
+            <button class="btn btn-secondary" onclick="submitDefChoice('boxOutRebound')">🧲 چرخش باکس‌اوت (سد کردن حریف) و پرش دو دست برای ریباند</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۶. بخش فایل‌ها و لینک کلاس
+         ========================================================================= -->
+    <section id="filesView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">📁 فایل‌های آموزشی و لینک جلسه هشتم (۱۰ XP)</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <div id="filesListContainer" class="grid-2" style="margin-bottom:20px;"></div>
+
+        <div class="glass-card" style="margin-bottom:20px;">
+          <h4 style="color:var(--secondary);">🔗 لینک ارتباطی جلسه مجازی</h4>
+          <p id="sessionLinkDisplay" style="font-size:0.9rem; margin:8px 0; color:#cbd5e1;"></p>
+        </div>
+
+        <div style="text-align:center;">
+          <button id="claimFilesBtn" class="btn btn-success" onclick="completeSectionXP('files', 10, 'مشاهده فایل‌ها و منابع جلسه هشتم')">
+            ✅ فایل‌ها و منابع جلسه هشتم را بررسی کردم (دریافت ۱۰ XP)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۷. بخش اطلاعیه‌های جلسه (۵ XP)
+         ========================================================================= -->
+    <section id="noticesView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">📢 اطلاعیه‌های رسمی درس تربیت بدنی (۵ XP)</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <div id="noticesListContainer" style="display:flex; flex-direction:column; gap:14px; margin-bottom:22px;"></div>
+
+        <div style="text-align:center;">
+          <button id="claimNoticesBtn" class="btn btn-success" onclick="completeSectionXP('notices', 5, 'مطالعه اطلاعیه‌های آموزشی جلسه هشتم')">
+            ✅ اطلاعیه‌های جلسه هشتم را مطالعه کردم (دریافت ۵ XP)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۸. بخش تکالیف جلسه هشتم (۱۰ XP)
+         ========================================================================= -->
+    <section id="homeworkView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">📝 تکلیف عملی جلسه هشتم بسکتبال (۱۰ XP)</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <p style="font-size:0.92rem; color:var(--text-muted); margin-bottom:16px;">برای تسلط عملی بر گارد دفاعی و مهارت ریباند، سه تمرین زیر را در منزل انجام داده و تیک تأیید هر کدام را فعال نمایید:</p>
+
+        <div id="homeworkChecklist" style="display:flex; flex-direction:column; gap:12px; margin-bottom:18px;"></div>
+
+        <div class="form-group">
+          <label class="form-label" for="homeworkNoteInput">گزارش کوتاه دانش‌آموز از تمرین گام لغزشی (Slide) و پرش ریباند در منزل (الزامی):</label>
+          <input type="text" id="homeworkNoteInput" class="form-control" placeholder="مثال: ۳ نوبت ۳۰ ثانیه‌ای گام لغزشی دفاعی بدون برخورد پاها و ۲۰ پرش ریباند با چانه‌گذاری توپ انجام دادم.">
+        </div>
+
+        <div style="text-align:center; margin-top:18px;">
+          <button id="claimHomeworkBtn" class="btn btn-success" onclick="submitHomeworkTask()">
+            ✅ ثبت تکلیف جلسه هشتم (دریافت ۱۰ XP)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۹. بخش گزارش پیشرفت، زمان حضور و نشان‌های افتخار (Badges)
+         ========================================================================= -->
+    <section id="progressView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">📊 گزارش پیشرفت و دستاوردهای انفرادی (جلسه هشتم)</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <div class="grid-3" style="margin-bottom:22px;">
+          <div class="glass-card" style="text-align:center;">
+            <div style="font-size:0.88rem; color:var(--text-muted);">مجموع امتیاز کسب‌شده</div>
+            <div id="progXPValue" style="font-size:2rem; font-weight:900; color:var(--primary); margin:6px 0;">۰ / ۱۱۰ XP</div>
+          </div>
+          <div class="glass-card" style="text-align:center;">
+            <div style="font-size:0.88rem; color:var(--text-muted);">درصد پیشرفت کل جلسه هشتم</div>
+            <div id="progPercentValue" style="font-size:2rem; font-weight:900; color:var(--accent); margin:6px 0;">۰٪</div>
+          </div>
+          <div class="glass-card" style="text-align:center;">
+            <div style="font-size:0.88rem; color:var(--text-muted);">مدت زمان حضور و مطالعه</div>
+            <div id="progTimeValue" style="font-size:1.6rem; font-weight:900; color:var(--secondary); margin:8px 0;">۰ دقیقه و ۰ ثانیه</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="glass-card">
+            <h4 style="color:var(--primary); margin-bottom:10px;">🏅 نشان‌های افتخار جلسه هشتم (Badges & Achievements)</h4>
+            <div id="badgesContainer" style="display:flex; flex-direction:column; gap:10px;"></div>
+          </div>
+          <div class="glass-card">
+            <h4 style="color:var(--secondary); margin-bottom:10px;">✔️ فهرست فعالیت‌های تکمیل‌شده</h4>
+            <ul id="completedLogsList" style="font-size:0.9rem; padding-right:18px; color:#cbd5e1;"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۱۰. بخش ثبت و ارسال گزارش نهایی به Supabase + پایان جلسه هشتم
+         ========================================================================= -->
+    <section id="reportView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">📤 ثبت و ارسال گزارش نهایی جلسه هشتم به دبیر</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <div class="glass-card" style="margin-bottom:22px;">
+          <table class="custom-table">
+            <tbody>
+              <tr><th>نام و نام خانوادگی دانش‌آموز</th><td id="repStudentName">-</td></tr>
+              <tr><th>نام مدرسه</th><td id="repSchoolName">-</td></tr>
+              <tr><th>پایه تحصیلی</th><td id="repGrade">-</td></tr>
+              <tr><th>نام دبیر</th><td id="repTeacherName">برزگری</td></tr>
+              <tr><th>عنوان جلسه</th><td>جلسه هشتم: آموزش اصول دفاع فردی، گام‌های لغزشی (Slide) و مهارت ریباند</td></tr>
+              <tr><th>امتیاز کل (XP)</th><td id="repTotalXP" style="font-weight:bold; color:var(--primary);">۰ XP</td></tr>
+              <tr><th>درصد پیشرفت جلسه</th><td id="repProgressPercent" style="font-weight:bold; color:var(--accent);">۰٪</td></tr>
+              <tr><th>مدت حضور در جلسه</th><td id="repDuration">-</td></tr>
+              <tr><th>فعالیت‌های انجام‌شده</th><td id="repCompletedItems">-</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="text-align:center;">
+          <button id="finalSubmitReportBtn" class="btn" style="font-size:1.15rem; padding:16px 38px; animation: pulseGlow 2s infinite;" onclick="handleFinalReportSubmission()">
+            🚀 ثبت و ارسال گزارش نهایی جلسه هشتم (+۲۰ XP)
+          </button>
+          <p id="supabaseStatusMsg" style="margin-top:14px; font-size:0.95rem;"></p>
+        </div>
+
+        <!-- کارت تبریک پایان جلسه هشتم -->
+        <div id="sessionCompletionBox" class="glass-card" style="display:none; margin-top:26px; text-align:center; border-color:var(--accent);">
+          <canvas id="celebrationCanvas" width="320" height="140" style="margin:0 auto; display:block;"></canvas>
+          <h3 style="color:var(--accent); font-size:1.4rem; margin-top:8px;">🎉 تبریک! جلسه هشتم آموزش بسکتبال با موفقیت به پایان رسید</h3>
+          <p style="font-size:0.95rem; color:#cbd5e1; margin:8px 0 18px;">گزارش عملکرد جلسه هشتم شما با موفقیت در پایگاه داده ثبت گردید.</p>
+          <button class="btn btn-secondary" onclick="showToast('جلسه نهم (قوانین زمان ۳، ۵، ۸ و ۲۴ ثانیه و خطاهای تیمی) در جلسه آینده فعال خواهد شد.')">
+            ⏭️ آمادگی برای ورود به جلسه نهم بسکتبال
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    /* ============================================================================
+       تنظیمات پروژه (PROJECT_CONFIG) - تمام تنظیمات جلسه هشتم از این قسمت قابل تغییر است
+       ============================================================================ */
+    const PROJECT_CONFIG = {
+      systemTitle: "سامانه آموزش مجازی تربیت بدنی متوسطه اول",
+      sessionTitle: "جلسه هشتم: آموزش اصول دفاع فردی، گام‌های لغزشی (Slide) و مهارت ریباند",
+      subjectName: "تربیت بدنی",
+      teacherName: "برزگری",
+      supabaseUrl: "https://tpwdrzwfzdbmwqlblntu.supabase.co",
+      supabaseKey: "sb_publishable_ASPIzP1XV1iSweCV43Oy9Q_PCkz5htN",
+      sessionLink: "برگزاری کلاس به صورت آفلاین در سامانه و ارسال تمرینات عملی در شبکه شاد",
+      activeModules: {
+        education: true,
+        summary: true,
+        activities: true,
+        files: true,
+        notices: true,
+        homework: true,
+        progress: true,
+        report: true
+      },
+      sessionFiles: [
+        {
+          title: "جزوه آموزشی اصول گارد دفاعی (Stance) و گام‌های لغزشی (Slide)",
+          desc: "شامل وضعیت زانوها، دست‌های فعال، نگاه به کمر مهاجم، قانون استوانه و جلوگیری از ضربدری شدن پاها."
+        },
+        {
+          title: "راهنمای کامل تکنیک سد کردن (Box Out) و مراحل ۴ گانه ریباند",
+          desc: "بررسی تفاوت ریباند دفاعی و تهاجمی، تکنیک چانه‌گذاری توپ (Chin the Ball) و علائم داوری خطاهای دفاعی."
+        }
+      ],
+      homeworks: [
+        "۱- تمرین «گام لغزشی دفاعی (Slide)» در عرض اتاق یا حیاط در ۳ نوبت ۳۰ ثانیه‌ای با زانوهای خم و بدون برخورد پاها به یکدیگر.",
+        "۲- تمرین «نشستن به دیوار (Wall Sit)» به مدت ۳۰ الی ۴۵ ثانیه برای تقویت عضلات چهارسر ران در گارد دفاعی.",
+        "۳- تمرین پرتاب توپ به بالا، پرش با دو پا، قاپیدن توپ در بالاترین نقطه و اجرای چانه‌گذاری (Chin the Ball) با آرنج‌های باز (۲۰ مرتبه)."
+      ],
+      notices: [
+        "دانش‌آموزان گرامی، در دفاع بسکتبال هدف اصلی گرفتن مسیر حرکت مهاجم با پاهاست، نه ضربه زدن به دست او.",
+        "هنگام پرش برای ریباند، همیشه ابتدا زیر پای خود را ببینید و با پاهای باز به اندازه عرض شانه فرود بیایید تا مچ پای شما آسیب نبیند.",
+        "پس از تکمیل تمامی بخش‌های جلسه هشتم و رسیدن به امتیاز ۹۰، دکمه «ثبت و ارسال گزارش نهایی» را در حالت اتصال به اینترنت بفشارید."
+      ]
+    };
+
+    /* ============================================================================
+       اتصال مستقیم به جدول Students در Supabase
+       ============================================================================ */
+    const SUPABASE_URL = PROJECT_CONFIG.supabaseUrl;
+    const SUPABASE_KEY = PROJECT_CONFIG.supabaseKey;
+    let ACTIVE_SCHOOL = "";
+    let ACTIVE_SUBJECT = PROJECT_CONFIG.subjectName;
+
+    async function sendToSupabase(studentName, score, totalScore, detailsText) {
+      const payload = {
+        Student_name: studentName,
+        School_name: ACTIVE_SCHOOL,
+        Subject: ACTIVE_SUBJECT,
+        Score: parseFloat(score),
+        Total_score: parseFloat(totalScore),
+        Details: detailsText
+      };
+
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/Students`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${SUPABASE_KEY}`,
+          "Prefer": "return=minimal"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error(`خطای سرور: ${response.status}`);
+      }
+      return true;
+    }
+
+    /* ============================================================================
+       مدیریت وضعیت دانش‌آموز و سیستم ضدتقلب در LocalStorage (ویژه جلسه هشتم)
+       ============================================================================ */
+    const STORAGE_KEY = "PE_BASKETBALL_SESSION8_STATE_V1";
+    const MAX_TOTAL_XP = 110;
+
+    let appState = {
+      studentName: "",
+      schoolName: "",
+      grade: "",
+      loginCount: 0,
+      firstLoginTime: "",
+      totalSeconds: 0,
+      xp: 0,
+      awardedFlags: {
+        login: false,      // 5 XP
+        education: false,  // 20 XP
+        summary: false,    // 10 XP
+        activities: false, // 30 XP
+        files: false,      // 10 XP
+        notices: false,    // 5 XP
+        homework: false,   // 10 XP
+        report: false      // 20 XP
+      },
+      activitySubFlags: {
+        equipDone: false,
+        orderDone: false,
+        defGameDone: false
+      },
+      homeworkNote: "",
+      reportSent: false,
+      reportTime: ""
+    };
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          appState = {
+            ...appState,
+            ...parsed,
+            awardedFlags: { ...appState.awardedFlags, ...(parsed.awardedFlags || {}) },
+            activitySubFlags: { ...appState.activitySubFlags, ...(parsed.activitySubFlags || {}) }
+          };
+        }
+      } catch (e) {}
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      } catch (e) {}
+      updateStatusBarUI();
+    }
+
+    /* ============================================================================
+       مقداردهی اولیه کل سامانه و موتورهای گرافیکی جلسه هشتم
+       ============================================================================ */
+    window.addEventListener("DOMContentLoaded", () => {
+      loadState();
+      applyProjectConfig();
+      initBackgroundParticles();
+      initConfettiEngine();
+      initWelcomeDefenseCanvas();
+      initSkillSimulatorCanvas();
+      initDefSimGame();
+      init3DTiltCards();
+
+      if (appState.studentName && appState.schoolName && appState.grade) {
+        document.getElementById("studentNameInput").value = appState.studentName;
+        document.getElementById("schoolSelect").value = appState.schoolName;
+        document.getElementById("gradeSelect").value = appState.grade;
+        validateLoginForm();
+      }
+
+      setInterval(() => {
+        if (appState.studentName && !document.getElementById("loginView").classList.contains("active")) {
+          appState.totalSeconds++;
+          if (appState.totalSeconds % 5 === 0) saveState();
+          const progTimeEl = document.getElementById("progTimeValue");
+          if (progTimeEl) progTimeEl.textContent = formatDuration(appState.totalSeconds);
+        }
+      }, 1000);
+    });
+
+    function applyProjectConfig() {
+      document.getElementById("uiAppTitle").textContent = PROJECT_CONFIG.systemTitle;
+      document.getElementById("uiSessionTitle").textContent = PROJECT_CONFIG.sessionTitle;
+      document.getElementById("uiSubjectText").textContent = PROJECT_CONFIG.subjectName;
+      document.getElementById("uiTeacherText").textContent = PROJECT_CONFIG.teacherName;
+      document.getElementById("fixedTeacherInput").value = PROJECT_CONFIG.teacherName;
+      document.getElementById("fixedSubjectInput").value = PROJECT_CONFIG.subjectName;
+
+      const filesBox = document.getElementById("filesListContainer");
+      filesBox.innerHTML = PROJECT_CONFIG.sessionFiles.map(f => `
+        <div class="glass-card tilt-card">
+          <div class="card-glare"></div>
+          <h4 style="color:var(--primary); margin-bottom:6px;">📄 ${f.title}</h4>
+          <p style="font-size:0.88rem; color:#cbd5e1;">${f.desc}</p>
+        </div>
+      `).join("");
+      document.getElementById("sessionLinkDisplay").textContent = PROJECT_CONFIG.sessionLink;
+
+      const noticesBox = document.getElementById("noticesListContainer");
+      noticesBox.innerHTML = PROJECT_CONFIG.notices.map((n, idx) => `
+        <div class="glass-card" style="border-right:4px solid var(--secondary);">
+          <strong>اطلاعیه شماره ${(idx + 1).toLocaleString('fa-IR')}:</strong>
+          <p style="font-size:0.9rem; margin-top:4px; color:#e2e8f0;">${n}</p>
+        </div>
+      `).join("");
+
+      const hwBox = document.getElementById("homeworkChecklist");
+      hwBox.innerHTML = PROJECT_CONFIG.homeworks.map(h => `
+        <label class="glass-card" style="display:flex; align-items:center; gap:12px; cursor:pointer;">
+          <input type="checkbox" class="hw-check" style="width:20px; height:20px; accent-color:var(--primary);">
+          <span style="font-size:0.92rem;">${h}</span>
+        </label>
+      `).join("");
+    }
+
+    /* ============================================================================
+       ۱. موتور پس‌زمینه ذرات و خطوط تاکتیکی تعاملی (60FPS Particle Network)
+       ============================================================================ */
+    function initBackgroundParticles() {
+      const canvas = document.getElementById("bgParticlesCanvas");
+      const ctx = canvas.getContext("2d");
+      let w = canvas.width = window.innerWidth;
+      let h = canvas.height = window.innerHeight;
+
+      window.addEventListener("resize", () => {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+      });
+
+      const mouse = { x: -500, y: -500 };
+      window.addEventListener("mousemove", e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+
+      const count = Math.min(48, Math.floor(w / 28));
+      const nodes = Array.from({ length: count }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.65,
+        vy: (Math.random() - 0.5) * 0.65,
+        r: Math.random() * 2.2 + 1.2,
+        isOrange: Math.random() > 0.5
+      }));
+
+      function renderBg() {
+        ctx.clearRect(0, 0, w, h);
+        for (let i = 0; i < nodes.length; i++) {
+          const p = nodes[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.x < 0 || p.x > w) p.vx *= -1;
+          if (p.y < 0 || p.y > h) p.vy *= -1;
+
+          const dxM = p.x - mouse.x;
+          const dyM = p.y - mouse.y;
+          const distM = Math.hypot(dxM, dyM);
+          if (distM < 110 && distM > 0) {
+            p.x += (dxM / distM) * 1.1;
+            p.y += (dyM / distM) * 1.1;
+          }
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = p.isOrange ? "rgba(249, 115, 22, 0.55)" : "rgba(56, 189, 248, 0.45)";
+          ctx.fill();
+
+          for (let j = i + 1; j < nodes.length; j++) {
+            const q = nodes[j];
+            const dist = Math.hypot(p.x - q.x, p.y - q.y);
+            if (dist < 135) {
+              ctx.beginPath();
+              ctx.moveTo(p.x, p.y);
+              ctx.lineTo(q.x, q.y);
+              ctx.strokeStyle = `rgba(148, 163, 184, ${(1 - dist / 135) * 0.14})`;
+              ctx.lineWidth = 1;
+              ctx.stroke();
+            }
+          }
+        }
+        requestAnimationFrame(renderBg);
+      }
+      renderBg();
+    }
+
+    /* ============================================================================
+       ۲. موتور انفجار ذرات نوری و کنفتی
+       ============================================================================ */
+    let confettiParticles = [];
+
+    function initConfettiEngine() {
+      const canvas = document.getElementById("fxConfettiCanvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      window.addEventListener("resize", () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      });
+
+      function loopConfetti() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let i = confettiParticles.length - 1; i >= 0; i--) {
+          const c = confettiParticles[i];
+          c.x += c.vx;
+          c.y += c.vy;
+          c.vy += 0.25;
+          c.rot += c.vRot;
+          c.life -= 0.014;
+
+          if (c.life <= 0) {
+            confettiParticles.splice(i, 1);
+            continue;
+          }
+
+          ctx.save();
+          ctx.translate(c.x, c.y);
+          ctx.rotate(c.rot);
+          ctx.globalAlpha = Math.max(0, c.life);
+          ctx.fillStyle = c.color;
+          ctx.fillRect(-c.size / 2, -c.size / 2, c.size, c.size * 0.65);
+          ctx.restore();
+        }
+        requestAnimationFrame(loopConfetti);
+      }
+      loopConfetti();
+    }
+
+    function triggerParticleBurst(originX = window.innerWidth / 2, originY = window.innerHeight / 2) {
+      const colors = ["#f97316", "#38bdf8", "#10b981", "#facc15", "#ec4899"];
+      for (let i = 0; i < 45; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * 8 + 3;
+        confettiParticles.push({
+          x: originX,
+          y: originY,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed - 4,
+          size: Math.random() * 8 + 5,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rot: Math.random() * Math.PI,
+          vRot: (Math.random() - 0.5) * 0.2,
+          life: 1.0
+        });
+      }
+    }
+
+    /* ============================================================================
+       ۳. افکت سه بعدی کارت‌ها (3D Perspective Tilt)
+       ============================================================================ */
+    function init3DTiltCards() {
+      document.addEventListener("mousemove", (e) => {
+        const card = e.target.closest(".tilt-card");
+        if (!card) return;
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const rotateX = ((y - rect.height / 2) / (rect.height / 2)) * -7;
+        const rotateY = ((x - rect.width / 2) / (rect.width / 2)) * 7;
+
+        card.style.transform = `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px)`;
+        const glare = card.querySelector(".card-glare");
+        if (glare) {
+          glare.style.background = `radial-gradient(circle at ${(x / rect.width) * 100}% ${(y / rect.height) * 100}%, rgba(255,255,255,0.16), transparent 60%)`;
+        }
+      });
+
+      document.addEventListener("mouseout", (e) => {
+        const card = e.target.closest(".tilt-card");
+        if (card && !card.contains(e.relatedTarget)) {
+          card.style.transform = "perspective(900px) rotateX(0deg) rotateY(0deg) translateY(0)";
+        }
+      });
+    }
+
+    /* ============================================================================
+       اعتبارسنجی فرم ورود و شروع جلسه هشتم
+       ============================================================================ */
+    function validateLoginForm() {
+      const nameVal = document.getElementById("studentNameInput").value.trim();
+      const schoolVal = document.getElementById("schoolSelect").value;
+      const gradeVal = document.getElementById("gradeSelect").value;
+      document.getElementById("startBtn").disabled = !(nameVal.length >= 3 && schoolVal !== "" && gradeVal !== "");
+    }
+
+    function handleLoginSubmit(e) {
+      e.preventDefault();
+      const nameVal = document.getElementById("studentNameInput").value.trim();
+      const schoolVal = document.getElementById("schoolSelect").value;
+      const gradeVal = document.getElementById("gradeSelect").value;
+
+      appState.studentName = nameVal;
+      appState.schoolName = schoolVal;
+      appState.grade = gradeVal;
+      appState.loginCount += 1;
+
+      ACTIVE_SCHOOL = schoolVal;
+      ACTIVE_SUBJECT = `${PROJECT_CONFIG.subjectName} (${gradeVal})`;
+
+      if (!appState.firstLoginTime) {
+        appState.firstLoginTime = new Date().toLocaleTimeString("fa-IR");
+      }
+
+      if (!appState.awardedFlags.login) {
+        appState.awardedFlags.login = true;
+        appState.xp += 5;
+        triggerParticleBurst();
+        showToast("خوش آمدید! ۵ امتیاز (XP) بابت ورود به جلسه هشتم دریافت کردید.");
+      }
+
+      saveState();
+      document.getElementById("topStatusBar").style.display = "flex";
+      renderDashboardCards();
+      navigateTo("dashboardView");
+    }
+
+    /* ============================================================================
+       رندر داشبورد جلسه هشتم
+       ============================================================================ */
+    function renderDashboardCards() {
+      const modules = [
+        { key: "education", title: "آموزش جامع دفاع فردی و ریباند", xp: "۲۰ XP", icon: "🛡️", view: "educationView", desc: "گارد دفاعی، گام لغزشی Slide، تکنیک باکس‌اوت، قانون استوانه و شبیه‌سازها" },
+        { key: "summary", title: "خلاصه و نقشه ذهنی جلسه هشتم", xp: "۱۰ XP", icon: "🧠", view: "summaryView", desc: "مرور تصویری و نمودار درختی پویا از اصول دفاع و ریباند" },
+        { key: "activities", title: "فعالیت عملی و بازی دیوار دفاعی", xp: "۳۰ XP", icon: "🎮", view: "activitiesView", desc: "تشخیص اصول دفاع، مرتب‌سازی مراحل ریباند و شبیه‌ساز مهار مهاجم" },
+        { key: "files", title: "فایل‌ها و لینک کلاس", xp: "۱۰ XP", icon: "📁", view: "filesView", desc: "جزوه گارد دفاعی و راهنمای تکنیک باکس‌اوت و ریباند" },
+        { key: "notices", title: "اطلاعیه‌های آموزشی", xp: "۵ XP", icon: "📢", view: "noticesView", desc: "نکات ایمنی فرود با پاهای باز در ریباند و پرهیز از خطای دست" },
+        { key: "homework", title: "تکلیف عملی جلسه هشتم", xp: "۱۰ XP", icon: "📝", view: "homeworkView", desc: "تمرین عملی گام لغزشی Slide و پرش ریباند با چانه‌گذاری در منزل" },
+        { key: "progress", title: "گزارش پیشرفت و نشان‌ها", xp: "مشاهده", icon: "📊", view: "progressView", desc: "بررسی درصد پیشرفت، زمان حضور و نشان‌های افتخار جلسه هشتم" },
+        { key: "report", title: "ثبت و ارسال گزارش نهایی", xp: "۲۰ XP", icon: "📤", view: "reportView", desc: "ثبت نهایی عملکرد جلسه هشتم و ارسال مستقیم برای دبیر" }
+      ];
+
+      const grid = document.getElementById("dashboardModulesGrid");
+      grid.innerHTML = modules
+        .filter(m => PROJECT_CONFIG.activeModules[m.key])
+        .map(m => {
+          const isDone = appState.awardedFlags[m.key] === true;
+          return `
+            <div class="glass-card tilt-card" style="cursor:pointer; display:flex; flex-direction:column; justify-content:space-between;" onclick="navigateTo('${m.view}')">
+              <div class="card-glare"></div>
+              <div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                  <span style="font-size:2.1rem;">${m.icon}</span>
+                  <span class="badge-xp" style="background:${isDone ? 'var(--accent)' : ''};">
+                    ${isDone ? '✓ تکمیل شده' : m.xp}
+                  </span>
+                </div>
+                <h3 style="font-size:1.12rem; color:var(--text-main); margin-bottom:6px;">${m.title}</h3>
+                <p style="font-size:0.85rem; color:var(--text-muted);">${m.desc}</p>
+              </div>
+              <div style="margin-top:16px; font-size:0.85rem; color:var(--secondary); font-weight:800;">ورود به بخش ←</div>
+            </div>
+          `;
+        }).join("");
+    }
+
+    function navigateTo(viewId) {
+      document.querySelectorAll(".view-section").forEach(sec => sec.classList.remove("active"));
+      document.getElementById(viewId).classList.add("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
+      if (viewId === "dashboardView") renderDashboardCards();
+      if (viewId === "progressView") renderProgressView();
+      if (viewId === "reportView") renderReportView();
+      updateStatusBarUI();
+    }
+
+    function switchEduTab(tabId, btnEl) {
+      document.querySelectorAll(".edu-sub-view").forEach(el => el.style.display = "none");
+      document.getElementById(tabId).style.display = "block";
+      btnEl.parentElement.querySelectorAll(".sub-tab-btn").forEach(b => b.classList.remove("active"));
+      btnEl.classList.add("active");
+    }
+
+    function calculateProgressPercent() {
+      const keys = ["login", "education", "summary", "activities", "files", "notices", "homework", "report"];
+      const doneCount = keys.filter(k => appState.awardedFlags[k]).length;
+      return Math.round((doneCount / keys.length) * 100);
+    }
+
+    function updateStatusBarUI() {
+      document.getElementById("headerStudentName").textContent = appState.studentName || "دانش‌آموز";
+      document.getElementById("headerSchoolInfo").textContent = `${appState.schoolName} | ${appState.grade}`;
+      document.getElementById("headerXP").textContent = appState.xp.toLocaleString("fa-IR");
+
+      const pct = calculateProgressPercent();
+      document.getElementById("headerProgressText").textContent = `${pct.toLocaleString("fa-IR")}٪`;
+      document.getElementById("headerProgressFill").style.width = `${pct}%`;
+
+      const btnMap = [
+        { key: "education", id: "claimEducationBtn" },
+        { key: "summary", id: "claimSummaryBtn" },
+        { key: "files", id: "claimFilesBtn" },
+        { key: "notices", id: "claimNoticesBtn" },
+        { key: "homework", id: "claimHomeworkBtn" }
+      ];
+      btnMap.forEach(item => {
+        const btn = document.getElementById(item.id);
+        if (btn && appState.awardedFlags[item.key]) {
+          btn.disabled = true;
+          btn.textContent = "✓ امتیاز این بخش قبلاً در حساب شما ثبت شده است";
+        }
+      });
+    }
+
+    function completeSectionXP(key, xpAmount, title) {
+      if (appState.awardedFlags[key]) {
+        showToast("امتیاز این بخش قبلاً ثبت شده است.");
+        return;
+      }
+      appState.awardedFlags[key] = true;
+      appState.xp += xpAmount;
+      saveState();
+      playBeepSound(880, 0.22);
+      triggerParticleBurst();
+      showToast(`آفرین! ${xpAmount.toLocaleString("fa-IR")} امتیاز (XP) بابت «${title}» دریافت کردید.`);
+    }
+
+    /* ============================================================================
+       ۴. نقشه تعاملی آناتومی دفاع و باکس‌اوت + پخش صوتی
+       ============================================================================ */
+    const DEF_MAP_DATA = {
+      activeHands: {
+        title: "۱. دست‌های باز و فعال (Active Hands)",
+        desc: "در گارد دفاعی، یک دست بالا در مسیر شوت و صورت مهاجم قرار می‌گیرد و دست دیگر پایین برای بستن زاویه پاس و ایجاد مزاحمت برای دریبل فعال است."
+      },
+      lowCenter: {
+        title: "۲. زانوهای خم و مرکز ثقل پایین (Defensive Sit)",
+        desc: "مدافع با خم کردن زانوها و ران (در حالی که کمر و سینه صاف است) مرکز ثقل خود را پایین می‌آورد تا بتواند در کسری از ثانیه به چپ یا راست استارت بزند."
+      },
+      wideBaseSlide: {
+        title: "۳. حرکت روی سینه‌پا و گام لغزشی (Defensive Slide)",
+        desc: "پاها بیش از عرض شانه باز هستند و وزن روی سینه‌پاهاست. هنگام حرکت عرضی، پاها هرگز به هم برخورد نمی‌کنند و ضربدری نمی‌شوند."
+      },
+      boxOutWall: {
+        title: "۴. سد کردن مسیر حریف با پشت بدن (Box Out)",
+        desc: "پس از رها شدن شوت، مدافع سریعاً می‌چرخد و پشت عریض خود را به بازیکن مهاجم تکیه می‌دهد تا او نتواند به توپ برگشتی (ریباند) نزدیک شود."
+      }
+    };
+
+    let currentDefPartKey = null;
+
+    function playBeepSound(freq = 520, duration = 0.12) {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.14, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    function selectDefPart(partKey) {
+      currentDefPartKey = partKey;
+      const info = DEF_MAP_DATA[partKey];
+      if (!info) return;
+      document.getElementById("defPartTitle").textContent = info.title;
+      document.getElementById("defPartDesc").textContent = info.desc;
+      playBeepSound(740, 0.15);
+      speakCurrentDefInfo();
+    }
+
+    function speakCurrentDefInfo() {
+      if (!currentDefPartKey) {
+        showToast("لطفاً ابتدا روی یکی از ۴ بخش نقشه دفاع و ریباند کلیک کنید.");
+        return;
+      }
+      const info = DEF_MAP_DATA[currentDefPartKey];
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(`${info.title}. ${info.desc}`);
+        utter.lang = "fa-IR";
+        utter.rate = 1.0;
+        window.speechSynthesis.speak(utter);
+      }
+    }
+
+    /* ============================================================================
+       ۵. چرخش سه‌بعدی هولوگرام جلسه هشتم
+       ============================================================================ */
+    let autoSpinInterval = null;
+
+    function rotateEquipments(deg) {
+      document.getElementById("equipRotateLabel").textContent = `${Number(deg).toLocaleString("fa-IR")} درجه`;
+      document.querySelectorAll(".equip-3d-object").forEach(el => {
+        el.style.transform = `rotateY(${deg}deg) rotateX(${Math.sin(deg * 0.04) * 14}deg)`;
+      });
+    }
+
+    function toggleAutoSpinEquip() {
+      const btn = document.getElementById("autoSpinBtn");
+      const slider = document.getElementById("equipRotateRange");
+      if (autoSpinInterval) {
+        clearInterval(autoSpinInterval);
+        autoSpinInterval = null;
+        btn.textContent = "▶️ چرخش خودکار ۳۶۰ درجه";
+        return;
+      }
+      btn.textContent = "⏸️ توقف چرخش خودکار";
+      let angle = Number(slider.value);
+      autoSpinInterval = setInterval(() => {
+        angle += 2;
+        if (angle > 180) angle = -180;
+        slider.value = angle;
+        rotateEquipments(angle);
+      }, 30);
+    }
+
+    /* ============================================================================
+       ۶. آزمایشگاه انیمیشنی جلسه هشتم (گام لغزشی، باکس‌اوت و ریباند)
+       ============================================================================ */
+    let skillSimMode = "defSlide";
+    let skillSimSpeed = 1.0;
+
+    function setSkillSimMode(mode, btnEl) {
+      skillSimMode = mode;
+      btnEl.parentElement.querySelectorAll(".sub-tab-btn").forEach(b => b.classList.remove("active"));
+      btnEl.classList.add("active");
+    }
+
+    function setSkillSimSpeed(spd) {
+      skillSimSpeed = spd;
+      showToast(spd < 1 ? "حالت صحنه آهسته (Slow Motion) فعال شد." : "سرعت عادی انیمیشن فعال شد.");
+    }
+
+    function initSkillSimulatorCanvas() {
+      const canvas = document.getElementById("skillSimCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      let t = 0;
+
+      function animateSkills() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        t += 0.065 * skillSimSpeed;
+
+        // خط زمین
+        ctx.strokeStyle = "rgba(255,255,255,0.25)";
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(20, 195); ctx.lineTo(660, 195); ctx.stroke();
+
+        if (skillSimMode === "defSlide") {
+          // نمایش گام لغزشی دفاعی بدون ضربدری شدن پاها
+          const slideX = 340 + Math.sin(t * 1.1) * 140;
+          const stepSpread = 34 + Math.abs(Math.cos(t * 3.3)) * 18;
+          const cy = 142;
+
+          ctx.strokeStyle = "#38bdf8";
+          ctx.lineWidth = 4.5;
+          ctx.lineCap = "round";
+
+          // سر و بالاتنه صاف
+          ctx.beginPath();
+          ctx.arc(slideX, cy - 52, 12, 0, Math.PI * 2);
+          ctx.fillStyle = "#0ea5e9"; ctx.fill(); ctx.stroke();
+
+          ctx.beginPath();
+          ctx.moveTo(slideX, cy - 40);
+          ctx.lineTo(slideX, cy);
+          // پاهای باز و زانوهای خم (بدون تقاطع)
+          ctx.lineTo(slideX - stepSpread, cy + 22);
+          ctx.lineTo(slideX - stepSpread - 4, 192);
+          ctx.moveTo(slideX, cy);
+          ctx.lineTo(slideX + stepSpread, cy + 22);
+          ctx.lineTo(slideX + stepSpread + 4, 192);
+          // دست‌های باز (یک دست بالا، یک دست پایین)
+          ctx.moveTo(slideX, cy - 32);
+          ctx.lineTo(slideX - 48, cy - 58);
+          ctx.moveTo(slideX, cy - 32);
+          ctx.lineTo(slideX + 48, cy - 12);
+          ctx.stroke();
+
+          // خط فاصله بین دو پا
+          ctx.setLineDash([4, 4]);
+          ctx.strokeStyle = "#10b981";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(slideX - stepSpread, 185);
+          ctx.lineTo(slideX + stepSpread, 185);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          ctx.fillStyle = "#e2e8f0";
+          ctx.font = "bold 13px Tahoma";
+          ctx.textAlign = "center";
+          ctx.fillText("گام لغزشی دفاعی (Slide): حرکت عرضی روی سینه‌پا با حفظ فاصله دو پا (خط‌چین سبز) بدون ضربدری شدن", 340, 34);
+        } else if (skillSimMode === "boxOutMove") {
+          // نمای بالا از تکنیک باکس‌اوت و سد کردن مهاجم
+          const prog = (t * 0.45) % 1;
+
+          // حلقه سبد در سمت چپ
+          ctx.strokeStyle = "#f97316";
+          ctx.lineWidth = 4;
+          ctx.beginPath(); ctx.arc(140, 120, 22, 0, Math.PI * 2); ctx.stroke();
+
+          // مهاجم قرمز که قصد ورود به زیر سبد را دارد
+          const attX = 430 - prog * 95;
+          const defX = 310;
+
+          // مدافع آبی با کمان سدکننده (Box Out)
+          ctx.strokeStyle = "#38bdf8";
+          ctx.lineWidth = 8;
+          ctx.beginPath();
+          ctx.arc(defX, 120, 36, -Math.PI * 0.4, Math.PI * 0.4);
+          ctx.stroke();
+
+          ctx.fillStyle = "#0ea5e9";
+          ctx.beginPath(); ctx.arc(defX, 120, 18, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "#fff"; ctx.font = "bold 11px Tahoma"; ctx.textAlign = "center";
+          ctx.fillText("مدافع", defX, 124);
+
+          const clampedAttX = Math.max(defX + 44, attX);
+          ctx.fillStyle = "#ef4444";
+          ctx.beginPath(); ctx.arc(clampedAttX, 120, 18, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "#fff"; ctx.fillText("مهاجم", clampedAttX, 124);
+
+          // توپ در حال فرود به سمت سبد و مدافع
+          const bx = 140 + prog * 135;
+          ctx.fillStyle = "#f97316";
+          ctx.beginPath(); ctx.arc(bx, 120, 11, 0, Math.PI * 2); ctx.fill();
+
+          ctx.fillStyle = "#e2e8f0";
+          ctx.font = "bold 13px Tahoma";
+          ctx.fillText("تکنیک Box Out: چرخش مدافع و ایجاد سد قانونی با پشت بدن تا مهاجم نتواند به توپ برسد", 340, 34);
+        } else {
+          // پرش ریباند در اوج و چانه‌گذاری توپ (Chin the Ball)
+          const prog = (t * 0.5) % 1;
+          const jumpY = Math.sin(prog * Math.PI) * 55;
+          const px = 340, py = 148 - jumpY;
+
+          ctx.strokeStyle = "#10b981";
+          ctx.lineWidth = 4.5;
+          ctx.beginPath();
+          ctx.arc(px, py - 48, 12, 0, Math.PI * 2);
+          ctx.fillStyle = "#10b981"; ctx.fill(); ctx.stroke();
+
+          ctx.beginPath();
+          ctx.moveTo(px, py - 36); ctx.lineTo(px, py);
+          ctx.lineTo(px - 22, py + 45);
+          ctx.moveTo(px, py);
+          ctx.lineTo(px + 22, py + 45);
+          ctx.stroke();
+
+          // در اوج دست‌ها بالا، در فرود آرنج‌ها باز و توپ زیر چانه
+          const isPeak = prog > 0.3 && prog < 0.7;
+          ctx.strokeStyle = "#facc15";
+          ctx.beginPath();
+          if (isPeak) {
+            ctx.moveTo(px, py - 30); ctx.lineTo(px - 18, py - 75);
+            ctx.moveTo(px, py - 30); ctx.lineTo(px + 18, py - 75);
+          } else {
+            // فرم چانه‌گذاری با آرنج باز
+            ctx.moveTo(px, py - 30); ctx.lineTo(px - 34, py - 28); ctx.lineTo(px - 12, py - 34);
+            ctx.moveTo(px, py - 30); ctx.lineTo(px + 34, py - 28); ctx.lineTo(px + 12, py - 34);
+          }
+          ctx.stroke();
+
+          const ballY = isPeak ? py - 82 : py - 34;
+          ctx.fillStyle = "#f97316";
+          ctx.beginPath(); ctx.arc(px, ballY, 13, 0, Math.PI * 2); ctx.fill();
+
+          ctx.fillStyle = "#e2e8f0";
+          ctx.font = "bold 13px Tahoma";
+          ctx.textAlign = "center";
+          ctx.fillText("پرش ریباند و چانه‌گذاری (Chin It): شکار توپ با دو دست در اوج و محافظت زیر چانه با آرنج‌های باز پس از فرود", 340, 34);
+        }
+
+        requestAnimationFrame(animateSkills);
+      }
+      animateSkills();
+    }
+
+    /* ============================================================================
+       ۷. فعالیت‌های عملی و بازی دیوار دفاعی و شکار ریباند
+       ============================================================================ */
+    let selectedCorrectEquips = 0;
+    let selectedWrongEquips = 0;
+
+    function toggleEquipSelect(btn, isCorrect) {
+      if (appState.activitySubFlags.equipDone) return;
+      const active = btn.classList.toggle("active");
+      if (isCorrect) {
+        selectedCorrectEquips += active ? 1 : -1;
+      } else {
+        selectedWrongEquips += active ? 1 : -1;
+        if (active) showToast("توجه: این گزاره از نظر اصول دفاع و قوانین داوری نادرست است!");
+      }
+
+      if (selectedCorrectEquips === 4 && selectedWrongEquips === 0) {
+        appState.activitySubFlags.equipDone = true;
+        document.getElementById("act1Status").textContent = "(✓ تکمیل شد)";
+        document.getElementById("act1Status").style.color = "var(--accent)";
+        playBeepSound(880, 0.2);
+        triggerParticleBurst();
+        showToast("فعالیت ۱ با موفقیت تکمیل شد!");
+        checkAllActivitiesCompletion();
+      }
+    }
+
+    let userOrderList = [];
+    let userOrderTitles = [];
+
+    function selectOrderStep(stepNum, stepTitle, btnEl) {
+      if (appState.activitySubFlags.orderDone) return;
+      btnEl.disabled = true;
+      userOrderList.push(stepNum);
+      userOrderTitles.push(stepTitle);
+      document.getElementById("orderFeedback").textContent = "ترتیب انتخابی شما: " + userOrderTitles.join(" ← ");
+
+      if (userOrderList.length === 4) {
+        const isRight = userOrderList.every((val, idx) => val === idx + 1);
+        if (isRight) {
+          appState.activitySubFlags.orderDone = true;
+          document.getElementById("act2Status").textContent = "(✓ تکمیل شد)";
+          document.getElementById("act2Status").style.color = "var(--accent)";
+          playBeepSound(880, 0.2);
+          triggerParticleBurst();
+          showToast("فعالیت ۲ (مرتب‌سازی مراحل باکس‌اوت و ریباند) به درستی انجام شد!");
+          checkAllActivitiesCompletion();
+        } else {
+          showToast("ترتیب مراحل نادرست بود. دکمه شروع مجدد را بزنید.");
+        }
+      }
+    }
+
+    function resetOrderActivity() {
+      if (appState.activitySubFlags.orderDone) return;
+      userOrderList = [];
+      userOrderTitles = [];
+      document.getElementById("orderFeedback").textContent = "ترتیب انتخاب‌شده: هنوز موردی انتخاب نشده است.";
+      document.querySelectorAll("#orderStepsContainer button").forEach(b => b.disabled = false);
+    }
+
+    // فعالیت ۳: شبیه‌ساز دیوار دفاعی و ریباند
+    const DEF_SCENARIOS = [
+      {
+        prompt: "🛡️ موقعیت ۱: مهاجم با دریبل به سمت راست تصویر استارت زده است؛ چگونه مسیر نفوذ او به سبد را می‌بندید؟",
+        mode: "driveRight",
+        correctKey: "slideRight"
+      },
+      {
+        prompt: "🛡️ موقعیت ۲: مهاجم تغییر جهت داده و با سرعت به سمت چپ تصویر نفوذ می‌کند؛ واکنش دفاعی شما چیست؟",
+        mode: "driveLeft",
+        correctKey: "slideLeft"
+      },
+      {
+        prompt: "🧲 موقعیت ۳: شوت حریف به حلقه برخورد کرده و در حال برگشت است و مهاجم می‌خواهد به زیر سبد بپرد؛ چه می‌کنید؟",
+        mode: "reboundTime",
+        correctKey: "boxOutRebound"
+      }
+    ];
+    let currentDefIdx = 0;
+    let defGameScore = 0;
+
+    function initDefSimGame() {
+      const canvas = document.getElementById("defGameCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      let t = 0;
+
+      function renderDefGameLoop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        t += 0.075;
+
+        // ترسیم منطقه سه ثانیه و سبد در بالا
+        ctx.strokeStyle = "rgba(255,255,255,0.22)";
+        ctx.lineWidth = 2.5;
+        ctx.strokeRect(185, 15, 230, 165);
+
+        ctx.strokeStyle = "#38bdf8";
+        ctx.lineWidth = 4;
+        ctx.beginPath(); ctx.moveTo(265, 32); ctx.lineTo(335, 32); ctx.stroke();
+        ctx.strokeStyle = "#f97316";
+        ctx.beginPath(); ctx.arc(300, 48, 14, 0, Math.PI * 2); ctx.stroke();
+
+        const scen = DEF_SCENARIOS[Math.min(currentDefIdx, DEF_SCENARIOS.length - 1)];
+        const wave = Math.sin(t) * 28;
+
+        let attX = 300, attY = 175;
+        if (scen.mode === "driveRight") attX = 375 + wave * 0.5;
+        else if (scen.mode === "driveLeft") attX = 225 - wave * 0.5;
+
+        // مدافع (شما - آبی رنگ بین مهاجم و سبد)
+        ctx.fillStyle = "#0ea5e9";
+        ctx.beginPath(); ctx.arc(300, 118, 16, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#fff"; ctx.font = "bold 11px Tahoma"; ctx.textAlign = "center";
+        ctx.fillText("شما (مدافع)", 300, 122);
+
+        // مهاجم (قرمز رنگ)
+        ctx.fillStyle = "#ef4444";
+        ctx.beginPath(); ctx.arc(attX, attY, 16, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#fff"; ctx.fillText("مهاجم", attX, attY + 4);
+
+        // نمایش توپ
+        if (scen.mode === "reboundTime") {
+          const by = 60 + Math.abs(Math.sin(t * 1.5)) * 32;
+          ctx.fillStyle = "#facc15";
+          ctx.beginPath(); ctx.arc(312, by, 11, 0, Math.PI * 2); ctx.fill();
+        } else {
+          ctx.fillStyle = "#f97316";
+          ctx.beginPath(); ctx.arc(attX + 20, attY - 6, 9, 0, Math.PI * 2); ctx.fill();
+        }
+
+        requestAnimationFrame(renderDefGameLoop);
+      }
+      renderDefGameLoop();
+    }
+
+    function submitDefChoice(choiceKey) {
+      if (appState.activitySubFlags.defGameDone) {
+        showToast("این شبیه‌ساز قبلاً با موفقیت تکمیل شده است.");
+        return;
+      }
+
+      const scen = DEF_SCENARIOS[currentDefIdx];
+      if (scen && scen.correctKey === choiceKey) {
+        defGameScore++;
+        currentDefIdx++;
+        playBeepSound(920, 0.16);
+        document.getElementById("defGameScore").textContent = defGameScore.toLocaleString("fa-IR");
+
+        if (defGameScore >= 3) {
+          appState.activitySubFlags.defGameDone = true;
+          document.getElementById("defGameMissionText").textContent = "🎉 فوق‌العاده! هر ۳ چالش دیوار دفاعی و شکار ریباند را با موفقیت کامل کردید!";
+          document.getElementById("act3Status").textContent = "(✓ تکمیل شد)";
+          document.getElementById("act3Status").style.color = "var(--accent)";
+          triggerParticleBurst();
+          checkAllActivitiesCompletion();
+        } else {
+          document.getElementById("defGameMissionText").textContent = DEF_SCENARIOS[currentDefIdx].prompt;
+          showToast("واکنش دفاعی عالی! حالا موقعیت بعدی را بررسی کنید.");
+        }
+      } else {
+        playBeepSound(240, 0.2);
+        showToast("واکنش انتخابی با جهت حرکت مهاجم یا وضعیت شوت همخوانی ندارد؛ دوباره دقت کنید!");
+      }
+    }
+
+    function checkAllActivitiesCompletion() {
+      const sub = appState.activitySubFlags;
+      if (sub.equipDone && sub.orderDone && sub.defGameDone && !appState.awardedFlags.activities) {
+        completeSectionXP("activities", 30, "انجام کامل فعالیت‌های عملی جلسه هشتم");
+      }
+      saveState();
+    }
+
+    /* ============================================================================
+       ثبت تکلیف، گزارش پیشرفت و ارسال به Supabase
+       ============================================================================ */
+    function submitHomeworkTask() {
+      const checks = document.querySelectorAll(".hw-check:checked");
+      const note = document.getElementById("homeworkNoteInput").value.trim();
+      if (checks.length < 3 || note.length < 5) {
+        showToast("لطفاً هر ۳ مورد چک‌لیست را تیک بزنید و گزارش کوتاه تمرین خود را بنویسید.");
+        return;
+      }
+      appState.homeworkNote = note;
+      completeSectionXP("homework", 10, "ثبت تکلیف عملی جلسه هشتم");
+    }
+
+    function getEarnedBadges() {
+      const badges = [];
+      if (appState.awardedFlags.login) badges.push({ title: "نشان حضور در جلسه هشتم", desc: "ورود رسمی به جلسه آموزش دفاع فردی و ریباند" });
+      if (appState.awardedFlags.education && appState.awardedFlags.summary) badges.push({ title: "نشان متخصص گام لغزشی و قانون استوانه", desc: "مطالعه کامل اصول گارد دفاعی، باکس‌اوت و قوانین خطاهای دفاعی" });
+      if (appState.awardedFlags.activities) badges.push({ title: "نشان دژ دفاعی و سلطان ریباند", desc: "تکمیل هر ۳ چالش عملی و مهار مهاجم در شبیه‌ساز دفاعی" });
+      if (appState.xp >= 90) badges.push({ title: "مدافع برتر جلسه هشتم (Achievement ویژه)", desc: "کسب بیش از ۹۰ امتیاز تجربه در جلسه هشتم" });
+      return badges;
+    }
+
+    function renderProgressView() {
+      const pct = calculateProgressPercent();
+      document.getElementById("progXPValue").textContent = `${appState.xp.toLocaleString("fa-IR")} / ۱۱۰ XP`;
+      document.getElementById("progPercentValue").textContent = `${pct.toLocaleString("fa-IR")}٪`;
+      document.getElementById("progTimeValue").textContent = formatDuration(appState.totalSeconds);
+
+      const badges = getEarnedBadges();
+      const bBox = document.getElementById("badgesContainer");
+      if (badges.length === 0) {
+        bBox.innerHTML = `<p style="color:var(--text-muted); font-size:0.88rem;">هنوز نشانی دریافت نشده است.</p>`;
+      } else {
+        bBox.innerHTML = badges.map(b => `
+          <div style="background:rgba(249,115,22,0.14); border:1px solid rgba(249,115,22,0.45); padding:10px 14px; border-radius:10px;">
+            <strong style="color:var(--primary);">🏅 ${b.title}</strong>
+            <div style="font-size:0.82rem; color:#cbd5e1;">${b.desc}</div>
+          </div>
+        `).join("");
+      }
+
+      const labels = {
+        login: "ورود به سامانه جلسه هشتم (۵ XP)",
+        education: "مشاهده آموزش کامل دفاع فردی و ریباند (۲۰ XP)",
+        summary: "مطالعه خلاصه و نقشه ذهنی جلسه هشتم (۱۰ XP)",
+        activities: "انجام فعالیت‌های عملی و بازی دیوار دفاعی (۳۰ XP)",
+        files: "بررسی فایل‌ها و منابع جلسه هشتم (۱۰ XP)",
+        notices: "مطالعه اطلاعیه‌های آموزشی (۵ XP)",
+        homework: "ثبت تکلیف عملی جلسه هشتم در منزل (۱۰ XP)",
+        report: "ثبت و ارسال گزارش نهایی جلسه هشتم (۲۰ XP)"
+      };
+      const doneList = Object.keys(labels).filter(k => appState.awardedFlags[k]).map(k => `<li>${labels[k]}</li>`);
+      document.getElementById("completedLogsList").innerHTML = doneList.length ? doneList.join("") : "<li>هنوز فعالیتی تکمیل نشده است.</li>";
+    }
+
+    function getCompletedNamesSummary() {
+      const names = [];
+      if (appState.awardedFlags.login) names.push("ورود");
+      if (appState.awardedFlags.education) names.push("آموزش کامل جلسه ۸");
+      if (appState.awardedFlags.summary) names.push("خلاصه جلسه ۸");
+      if (appState.awardedFlags.activities) names.push("فعالیت عملی دفاع و ریباند");
+      if (appState.awardedFlags.files) names.push("مشاهده فایل");
+      if (appState.awardedFlags.notices) names.push("مطالعه اطلاعیه");
+      if (appState.awardedFlags.homework) names.push("ثبت تکلیف جلسه ۸");
+      if (appState.awardedFlags.report) names.push("ثبت گزارش نهایی");
+      return names.join("، ") || "هیچ‌کدام";
+    }
+
+    function renderReportView() {
+      document.getElementById("repStudentName").textContent = appState.studentName;
+      document.getElementById("repSchoolName").textContent = appState.schoolName;
+      document.getElementById("repGrade").textContent = appState.grade;
+      document.getElementById("repTeacherName").textContent = PROJECT_CONFIG.teacherName;
+      document.getElementById("repTotalXP").textContent = `${appState.xp.toLocaleString("fa-IR")} از ۱۱۰ XP`;
+      document.getElementById("repProgressPercent").textContent = `${calculateProgressPercent().toLocaleString("fa-IR")}٪`;
+      document.getElementById("repDuration").textContent = formatDuration(appState.totalSeconds);
+      document.getElementById("repCompletedItems").textContent = getCompletedNamesSummary();
+
+      const btn = document.getElementById("finalSubmitReportBtn");
+      if (appState.reportSent) {
+        btn.disabled = true;
+        btn.textContent = "✓ گزارش نهایی جلسه هشتم شما قبلاً ثبت و ارسال شده است";
+        document.getElementById("sessionCompletionBox").style.display = "block";
+        initCelebrationCanvas();
+      }
+    }
+
+    async function handleFinalReportSubmission() {
+      if (appState.reportSent) {
+        showToast("گزارش شما قبلاً یک مرتبه ارسال شده است.");
+        return;
+      }
+
+      const btn = document.getElementById("finalSubmitReportBtn");
+      const statusMsg = document.getElementById("supabaseStatusMsg");
+      btn.disabled = true;
+      btn.textContent = "در حال ثبت و ارسال گزارش جلسه هشتم به سرور...";
+      statusMsg.style.color = "var(--secondary)";
+      statusMsg.textContent = "لطفاً چند لحظه صبر کنید...";
+
+      if (!appState.awardedFlags.report) {
+        appState.awardedFlags.report = true;
+        appState.xp += 20;
+      }
+
+      const nowStr = new Date().toLocaleString("fa-IR");
+      const pct = calculateProgressPercent();
+      const badgesCount = getEarnedBadges().length;
+      const achievementsCount = appState.xp >= 90 ? 1 : 0;
+
+      ACTIVE_SCHOOL = appState.schoolName;
+      ACTIVE_SUBJECT = `${PROJECT_CONFIG.subjectName} - ${appState.grade} (${PROJECT_CONFIG.sessionTitle})`;
+
+      const detailsText = [
+        `جلسه هشتم بسکتبال`,
+        `پایه: ${appState.grade}`,
+        `دبیر: ${PROJECT_CONFIG.teacherName}`,
+        `زمان ورود: ${appState.firstLoginTime}`,
+        `زمان خروج و ثبت گزارش: ${nowStr}`,
+        `مدت حضور: ${formatDuration(appState.totalSeconds)}`,
+        `تعداد دفعات ورود: ${appState.loginCount}`,
+        `آموزش‌های مشاهده‌شده: ${appState.awardedFlags.education ? 'کامل' : 'خیر'}`,
+        `خلاصه‌های مطالعه‌شده: ${appState.awardedFlags.summary ? 'کامل' : 'خیر'}`,
+        `فعالیت‌های انجام‌شده: ${getCompletedNamesSummary()}`,
+        `توضیح تکلیف: ${appState.homeworkNote || 'ثبت نشده'}`,
+        `امتیاز XP: ${appState.xp} از ${MAX_TOTAL_XP}`,
+        `درصد پیشرفت: ${pct}%`,
+        `تعداد Badge: ${badgesCount}`,
+        `تعداد Achievement: ${achievementsCount}`
+      ].join(" | ");
+
+      try {
+        await sendToSupabase(appState.studentName, appState.xp, MAX_TOTAL_XP, detailsText);
+        appState.reportSent = true;
+        appState.reportTime = nowStr;
+        saveState();
+        renderReportView();
+        triggerParticleBurst();
+        statusMsg.style.color = "var(--accent)";
+        statusMsg.textContent = "✅ گزارش عملکرد جلسه هشتم شما با موفقیت در سامانه دبیر ثبت گردید.";
+        showToast("گزارش نهایی جلسه هشتم با موفقیت ارسال شد (+۲۰ XP).");
+      } catch (err) {
+        saveState();
+        renderReportView();
+        btn.disabled = false;
+        btn.textContent = "🔄 تلاش مجدد برای ارسال گزارش به سرور";
+        statusMsg.style.color = "var(--warning)";
+        statusMsg.textContent = `امتیاز ثبت گزارش (+۲۰ XP) در دستگاه شما ذخیره شد، اما ارسال اینترنتی با خطا مواجه گردید (${err.message}). در صورت اتصال به اینترنت مجدداً دکمه را بزنید.`;
+      }
+    }
+
+    /* ============================================================================
+       ۸. انیمیشن تعاملی سایه دفاعی و گام لغزشی در صفحه آغازین جلسه هشتم
+       ============================================================================ */
+    function initWelcomeDefenseCanvas() {
+      const canvas = document.getElementById("welcomeBallCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+
+      let phase = 0;
+      let speedMult = 1;
+
+      canvas.addEventListener("click", () => {
+        speedMult = 2.4;
+        playBeepSound(760, 0.14);
+        setTimeout(() => { speedMult = 1; }, 950);
+      });
+
+      function animateWelcome() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        phase += 0.045 * speedMult;
+
+        const moveX = 260 + Math.sin(phase) * 135;
+
+        // خط راهنمای حریم دفاعی
+        ctx.setLineDash([6, 4]);
+        ctx.strokeStyle = "rgba(56, 189, 248, 0.35)";
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(90, 82); ctx.lineTo(430, 82); ctx.stroke();
+        ctx.setLineDash([]);
+
+        // مدافع (آبی رنگ با دست‌های باز) که مثل سایه مقابل مهاجم حرکت می‌کند
+        ctx.strokeStyle = "#38bdf8";
+        ctx.lineWidth = 5;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(moveX - 36, 75);
+        ctx.lineTo(moveX + 36, 75);
+        ctx.stroke();
+
+        ctx.fillStyle = "#0ea5e9";
+        ctx.beginPath(); ctx.arc(moveX, 75, 15, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#fff"; ctx.font = "bold 11px Tahoma"; ctx.textAlign = "center";
+        ctx.fillText("مدافع (Slide)", moveX, 50);
+
+        // مهاجم (نارنجی رنگ با توپ)
+        ctx.fillStyle = "#f97316";
+        ctx.beginPath(); ctx.arc(moveX, 138, 15, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = "#fff";
+        ctx.fillText("مهاجم", moveX, 168);
+
+        // توپ دریبل‌شونده کنار مهاجم
+        const ballBounce = Math.abs(Math.cos(phase * 3)) * 18;
+        ctx.fillStyle = "#facc15";
+        ctx.beginPath(); ctx.arc(moveX + 24, 145 - ballBounce, 9, 0, Math.PI * 2); ctx.fill();
+
+        requestAnimationFrame(animateWelcome);
+      }
+      animateWelcome();
+    }
+
+    function initCelebrationCanvas() {
+      const canvas = document.getElementById("celebrationCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      let angle = 0;
+
+      function loop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        angle += 0.06;
+        const bounceY = 70 + Math.sin(angle * 2) * 24;
+
+        ctx.save();
+        ctx.translate(160, bounceY);
+        ctx.rotate(angle);
+        ctx.beginPath();
+        ctx.arc(0, 0, 28, 0, Math.PI * 2);
+        ctx.fillStyle = "#f97316";
+        ctx.fill();
+        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = "#fff";
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(-28, 0); ctx.lineTo(28, 0);
+        ctx.moveTo(0, -28); ctx.lineTo(0, 28);
+        ctx.stroke();
+        ctx.restore();
+
+        requestAnimationFrame(loop);
+      }
+      loop();
+    }
+
+    function formatDuration(sec) {
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      return `${m.toLocaleString("fa-IR")} دقیقه و ${s.toLocaleString("fa-IR")} ثانیه`;
+    }
+
+    function showToast(msg) {
+      const box = document.getElementById("toastBox");
+      const item = document.createElement("div");
+      item.className = "toast-item";
+      item.textContent = msg;
+      box.appendChild(item);
+      setTimeout(() => item.remove(), 3800);
+    }
+  </script>
+</body>
+</html>

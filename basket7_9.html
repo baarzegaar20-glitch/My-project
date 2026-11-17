@@ -1,0 +1,2411 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>سامانه پیشرفته آموزش مجازی تربیت بدنی - جلسه نهم بسکتبال</title>
+  <style>
+    /* ==================== متغیرها و تنظیمات ظاهری (Ultra Dark Glassmorphism) ==================== */
+    :root {
+      --bg-dark: #060911;
+      --glass-bg: rgba(15, 23, 42, 0.68);
+      --glass-border: rgba(255, 255, 255, 0.14);
+      --primary: #f97316;
+      --primary-glow: rgba(249, 115, 22, 0.55);
+      --secondary: #38bdf8;
+      --secondary-glow: rgba(56, 189, 248, 0.45);
+      --accent: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --radius-lg: 22px;
+      --radius-md: 16px;
+      --shadow-glass: 0 16px 40px 0 rgba(0, 0, 0, 0.6);
+      --transition: all 0.32s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, 'Segoe UI', Tahoma, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.75;
+      position: relative;
+    }
+
+    #bgParticlesCanvas, #fxConfettiCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    #fxConfettiCanvas { z-index: 9998; }
+
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 16px var(--primary-glow), inset 0 0 8px rgba(249, 115, 22, 0.25); }
+      50% { box-shadow: 0 0 32px rgba(249, 115, 22, 0.85), inset 0 0 14px rgba(249, 115, 22, 0.45); }
+    }
+
+    @keyframes borderBeam {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes slideUpFade {
+      from { opacity: 0; transform: translateY(22px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    @keyframes dashFlow {
+      to { stroke-dashoffset: -40; }
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px 16px 90px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .glass-panel {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-glass);
+      padding: 26px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .glass-panel::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, var(--primary), var(--secondary), transparent);
+      background-size: 200% 200%;
+      animation: borderBeam 5s ease infinite;
+    }
+
+    .glass-card {
+      background: rgba(15, 23, 42, 0.65);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      transition: transform 0.2s ease-out, border-color 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      transform-style: preserve-3d;
+    }
+
+    .glass-card:hover {
+      border-color: rgba(249, 115, 22, 0.55);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(249, 115, 22, 0.18);
+    }
+
+    .card-glare {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.12), transparent 60%);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .glass-card:hover .card-glare { opacity: 1; }
+
+    .section-title {
+      font-size: 1.38rem;
+      font-weight: 900;
+      color: var(--primary);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--glass-border);
+      padding-bottom: 12px;
+      text-shadow: 0 0 18px rgba(249, 115, 22, 0.35);
+    }
+
+    .badge-xp {
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      color: #fff;
+      padding: 5px 14px;
+      border-radius: 999px;
+      font-size: 0.86rem;
+      font-weight: 800;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 15px rgba(249, 115, 22, 0.45);
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+      color: #fff;
+      border: none;
+      padding: 13px 26px;
+      border-radius: 999px;
+      border-radius: var(--radius-md);
+      font-size: 0.98rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 10px 25px var(--primary-glow);
+    }
+
+    .btn:active:not(:disabled) { transform: translateY(0) scale(0.98); }
+
+    .btn:disabled {
+      background: #1e293b;
+      color: #64748b;
+      border: 1px solid rgba(255,255,255,0.05);
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-secondary {
+      background: rgba(56, 189, 248, 0.14);
+      border: 1px solid rgba(56, 189, 248, 0.45);
+      color: var(--secondary);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: rgba(56, 189, 248, 0.28);
+      box-shadow: 0 8px 20px var(--secondary-glow);
+    }
+
+    .btn-success { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+    .btn-success:hover:not(:disabled) { box-shadow: 0 10px 25px rgba(16, 185, 129, 0.45); }
+
+    .top-bar {
+      position: sticky;
+      top: 12px;
+      z-index: 100;
+      margin-bottom: 24px;
+      display: none;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      padding: 14px 22px;
+    }
+
+    .progress-track {
+      width: 150px;
+      height: 11px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 99px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #f97316, #38bdf8, #10b981);
+      background-size: 200% 100%;
+      animation: borderBeam 3s linear infinite;
+      width: 0%;
+      transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 18px; }
+
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; margin-bottom: 6px; font-weight: 700; font-size: 0.92rem; color: #e2e8f0; }
+    .form-control {
+      width: 100%;
+      padding: 13px 16px;
+      background: rgba(9, 13, 22, 0.85);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-md);
+      color: var(--text-main);
+      font-size: 0.98rem;
+      outline: none;
+      transition: var(--transition);
+    }
+    .form-control:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.22);
+    }
+    .form-control[readonly] {
+      background: rgba(30, 41, 59, 0.55);
+      color: var(--secondary);
+      font-weight: 800;
+    }
+
+    .custom-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 0.92rem;
+    }
+    .custom-table th, .custom-table td {
+      padding: 12px 14px;
+      text-align: right;
+      border-bottom: 1px solid var(--glass-border);
+    }
+    .custom-table th {
+      background: rgba(249, 115, 22, 0.16);
+      color: var(--primary);
+      font-weight: 800;
+    }
+
+    .timeline {
+      position: relative;
+      padding-right: 30px;
+      border-right: 3px solid var(--primary);
+      margin: 20px 0;
+    }
+    .timeline-item { position: relative; margin-bottom: 22px; }
+    .timeline-dot {
+      position: absolute;
+      right: -39px;
+      top: 6px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--primary);
+      border: 3px solid var(--bg-dark);
+      box-shadow: 0 0 14px var(--primary);
+    }
+
+    .time-zone {
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+    .time-zone:hover {
+      filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.95));
+      transform: scale(1.03);
+      transform-origin: center;
+    }
+
+    .tactic-line {
+      stroke-dasharray: 8 6;
+      animation: dashFlow 1.2s linear infinite;
+      pointer-events: none;
+    }
+
+    .flip-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 18px;
+    }
+    .flip-card {
+      background-color: transparent;
+      height: 205px;
+      perspective: 1200px;
+      cursor: pointer;
+    }
+    .flip-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.7s cubic-bezier(0.4, 0.2, 0.2, 1);
+      transform-style: preserve-3d;
+    }
+    .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+    .flip-front, .flip-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border: 1px solid var(--glass-border);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    }
+    .flip-front {
+      background: linear-gradient(145deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
+      color: var(--text-main);
+    }
+    .flip-back {
+      background: linear-gradient(135deg, #f97316, #c2410c);
+      color: #fff;
+      transform: rotateY(180deg);
+    }
+
+    .sub-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 22px;
+      border-bottom: 1px solid var(--glass-border);
+      padding-bottom: 14px;
+    }
+    .sub-tab-btn {
+      background: rgba(15, 23, 42, 0.75);
+      color: var(--text-muted);
+      border: 1px solid var(--glass-border);
+      padding: 9px 16px;
+      border-radius: 12px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 0.9rem;
+      transition: var(--transition);
+    }
+    .sub-tab-btn:hover { border-color: var(--primary); color: #fff; }
+    .sub-tab-btn.active {
+      background: linear-gradient(135deg, #f97316, #ea580c);
+      color: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 6px 16px rgba(249, 115, 22, 0.35);
+    }
+
+    .equip-viewer {
+      perspective: 1000px;
+      height: 220px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 50% 60%, rgba(56, 189, 248, 0.2) 0%, rgba(15, 23, 42, 0.9) 75%);
+      border-radius: var(--radius-md);
+      margin-bottom: 14px;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+    .equip-viewer::after {
+      content: "";
+      position: absolute;
+      bottom: 18px;
+      width: 110px;
+      height: 18px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(56, 189, 248, 0.6), transparent 70%);
+      filter: blur(4px);
+    }
+    .equip-3d-object {
+      transition: transform 0.15s ease-out;
+      transform-style: preserve-3d;
+      animation: floatSlow 3.2s ease-in-out infinite;
+    }
+
+    .view-section {
+      display: none;
+      animation: slideUpFade 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .view-section.active { display: block; }
+
+    #toastBox {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .toast-item {
+      background: rgba(15, 23, 42, 0.95);
+      border-right: 4px solid var(--accent);
+      color: #fff;
+      padding: 13px 20px;
+      border-radius: 12px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.65);
+      font-size: 0.92rem;
+      font-weight: 600;
+      animation: slideUpFade 0.3s ease;
+    }
+
+    @media (max-width: 640px) {
+      .top-bar { position: static; }
+      .section-title { font-size: 1.15rem; }
+      .glass-panel { padding: 18px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- بوم ذرات معلق پس‌زمینه و بوم انفجار ذرات (Confetti) -->
+  <canvas id="bgParticlesCanvas"></canvas>
+  <canvas id="fxConfettiCanvas"></canvas>
+
+  <!-- باکس پیام‌های شناور -->
+  <div id="toastBox"></div>
+
+  <!-- ==================== نوار وضعیت بالای صفحه (پس از ورود) ==================== -->
+  <div class="container" style="padding-bottom: 0;">
+    <header id="topStatusBar" class="glass-panel top-bar">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <div style="width:46px; height:46px; border-radius:50%; background:linear-gradient(135deg,#f97316,#ea580c); display:flex; align-items:center; justify-content:center; font-size:1.35rem; box-shadow:0 0 15px var(--primary-glow);">⏱️</div>
+        <div>
+          <div id="headerStudentName" style="font-weight:800; font-size:1.02rem;">نام دانش‌آموز</div>
+          <div id="headerSchoolInfo" style="font-size:0.82rem; color:var(--secondary);">مدرسه | پایه</div>
+        </div>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:18px; flex-wrap:wrap;">
+        <div>
+          <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:4px;">پیشرفت جلسه نهم: <span id="headerProgressText" style="color:#fff; font-weight:bold;">۰٪</span></div>
+          <div class="progress-track">
+            <div id="headerProgressFill" class="progress-fill"></div>
+          </div>
+        </div>
+        <div class="badge-xp">
+          <span>✨ امتیاز:</span>
+          <span id="headerXP">۰</span>
+          <span>XP</span>
+        </div>
+        <button class="btn btn-secondary" style="padding:8px 15px; font-size:0.86rem;" onclick="navigateTo('dashboardView')">🏠 داشبورد</button>
+      </div>
+    </header>
+  </div>
+
+  <!-- ==================== کانتینر اصلی سامانه ==================== -->
+  <main class="container">
+
+    <!-- =========================================================================
+         ۱. صفحه ورود و آغازین جلسه نهم (همراه با شبیه‌ساز ساعت شوت ۲۴ و ۱۴ ثانیه)
+         ========================================================================= -->
+    <section id="loginView" class="view-section active">
+      <div class="glass-panel" style="text-align:center; margin-bottom:24px;">
+        <div style="font-size:0.8rem; color:var(--secondary); margin-bottom:4px;">💡 روی بوم زیر کلیک کنید تا شوت زده شود و ساعت شوت پس از برخورد به حلقه به ۱۴ ثانیه ریست شود!</div>
+        <canvas id="welcomeBallCanvas" width="520" height="185" style="width:100%; max-width:520px; margin:0 auto; display:block; cursor:pointer; border-radius:14px; background:radial-gradient(circle, rgba(249,115,22,0.12) 0%, rgba(15,23,42,0.6) 80%); border:1px solid var(--glass-border);"></canvas>
+        <h1 id="uiAppTitle" style="font-size:1.8rem; font-weight:900; color:var(--primary); margin-top:12px;">آموزش بسکتبال پایه هفتم</h1>
+        <h2 id="uiSessionTitle" style="font-size:1.22rem; color:var(--secondary); margin:6px 0;">جلسه نهم: قوانین زمان در بسکتبال (۳، ۵، ۸، ۱۴ و ۲۴ ثانیه) و خطاهای تیمی</h2>
+        <p style="color:var(--text-muted); font-size:0.96rem;">درس: <strong id="uiSubjectText" style="color:#fff;">تربیت بدنی</strong> | نام دبیر: <strong id="uiTeacherText" style="color:var(--accent);">برزگری</strong></p>
+      </div>
+
+      <div class="grid-2">
+        <!-- راهنمای رسمی و جدول امتیازدهی -->
+        <div class="glass-panel">
+          <div class="section-title">📋 راهنمای استفاده از سامانه (جلسه نهم)</div>
+          <ul style="list-style:none; font-size:0.92rem; color:#cbd5e1; display:flex; flex-direction:column; gap:10px; margin-bottom:20px;">
+            <li>🔹 <strong>نحوه ورود:</strong> مشخصات فردی، نام مدرسه و پایه تحصیلی خود را در فرم روبرو به صورت دقیق تکمیل نمایید تا دکمه ورود فعال گردد.</li>
+            <li>🔹 <strong>نحوه مطالعه آموزش:</strong> در بخش «آموزش جامع جلسه نهم»، قوانین طلایی زمان (۳، ۵، ۸، ۱۴ و ۲۴ ثانیه)، خطاهای تیمی و فردی و علائم داوری را بررسی کنید.</li>
+            <li>🔹 <strong>نحوه انجام فعالیت‌ها:</strong> در بخش «فعالیت‌های عملی و تعاملی»، چالش‌های تشخیص قوانین زمان، مرتب‌سازی سیر زمانی حمله و شبیه‌ساز قضاوت داور را انجام دهید.</li>
+            <li>🔹 <strong>نحوه کسب امتیاز (XP):</strong> هر بخش آموزشی یا فعالیت عملی دارای امتیاز مشخصی است که تنها یک مرتبه در سامانه ثبت و ذخیره می‌گردد.</li>
+            <li>🔹 <strong>نحوه مشاهده پیشرفت:</strong> در بخش «گزارش پیشرفت»، درصد تکمیل جلسه نهم، زمان حضور و نشان‌های افتخار قابل مشاهده است.</li>
+            <li>🔹 <strong>نحوه ثبت و ارسال گزارش نهایی:</strong> پس از تکمیل بخش‌ها، به قسمت «ثبت گزارش» مراجعه کرده و عملکرد نهایی خود را برای دبیر ارسال نمایید.</li>
+          </ul>
+
+          <div class="section-title" style="margin-top:16px;">🏆 جدول امتیازدهی فعالیت‌ها (XP)</div>
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>عنوان فعالیت در سامانه</th>
+                <th>میزان امتیاز</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>ورود به سامانه</td><td>۵ XP</td></tr>
+              <tr><td>مشاهده آموزش کامل جلسه نهم</td><td>۲۰ XP</td></tr>
+              <tr><td>مطالعه خلاصه و نقشه ذهنی جلسه نهم</td><td>۱۰ XP</td></tr>
+              <tr><td>انجام فعالیت‌های عملی و شبیه‌ساز داوری</td><td>۳۰ XP</td></tr>
+              <tr><td>مشاهده فایل‌های آموزشی جلسه</td><td>۱۰ XP</td></tr>
+              <tr><td>مطالعه اطلاعیه‌های آموزشی</td><td>۵ XP</td></tr>
+              <tr><td>ثبت تکلیف عملی جلسه نهم</td><td>۱۰ XP</td></tr>
+              <tr><td>ثبت و ارسال گزارش نهایی</td><td>۲۰ XP</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- فرم ورود اجباری دانش‌آموز -->
+        <div class="glass-panel">
+          <div class="section-title">🔐 فرم ورود دانش‌آموز به جلسه نهم</div>
+          <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:18px;">تمامی فیلدها اجباری هستند. تا زمان تکمیل دقیق اطلاعات، دکمه شروع آموزش فعال نخواهد شد.</p>
+
+          <form id="loginForm" onsubmit="handleLoginSubmit(event)">
+            <div class="form-group">
+              <label class="form-label" for="studentNameInput">نام و نام خانوادگی دانش‌آموز (اجباری):</label>
+              <input type="text" id="studentNameInput" class="form-control" placeholder="مثال: محمد رضایی" required oninput="validateLoginForm()">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="schoolSelect">نام مدرسه (اجباری):</label>
+              <select id="schoolSelect" class="form-control" required onchange="validateLoginForm()">
+                <option value="">-- انتخاب مدرسه --</option>
+                <option value="مدرسه نور دوستکو">مدرسه نور دوستکو</option>
+                <option value="مدرسه اتحاد دوربنی">مدرسه اتحاد دوربنی</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="gradeSelect">پایه تحصیلی (اجباری):</label>
+              <select id="gradeSelect" class="form-control" required onchange="validateLoginForm()">
+                <option value="">-- انتخاب پایه تحصیلی --</option>
+                <option value="پایه هفتم">پایه هفتم</option>
+                <option value="پایه هشتم">پایه هشتم</option>
+                <option value="پایه نهم">پایه نهم</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">نام دبیر:</label>
+              <input type="text" id="fixedTeacherInput" class="form-control" value="برزگری" readonly>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">نام درس:</label>
+              <input type="text" id="fixedSubjectInput" class="form-control" value="تربیت بدنی" readonly>
+            </div>
+
+            <button type="submit" id="startBtn" class="btn" style="width:100%; margin-top:14px;" disabled>
+              🚀 ورود به سامانه و شروع جلسه نهم
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۲. داشبورد اصلی (کارت‌های سه‌بعدی حساس به حرکت موس)
+         ========================================================================= -->
+    <section id="dashboardView" class="view-section">
+      <div class="glass-panel" style="margin-bottom:22px;">
+        <div class="section-title">🎛️ داشبورد هوشمند جلسه نهم: قوانین زمان (۳، ۵، ۸، ۱۴ و ۲۴ ثانیه) و خطاهای تیمی</div>
+        <p style="font-size:0.92rem; color:var(--text-muted);">کارت‌های زیر دارای افکت سه‌بعدی تعاملی هستند. با تکمیل هر بخش، امتیاز XP آن همراه با افکت نوری به حساب شما افزوده می‌شود.</p>
+      </div>
+
+      <div id="dashboardModulesGrid" class="grid-3"></div>
+    </section>
+
+    <!-- =========================================================================
+         ۳. بخش جامع آموزش جلسه نهم بسکتبال
+         ========================================================================= -->
+    <section id="educationView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">📚 آموزش جامع جلسه نهم: قوانین زمان و مدیریت خطاهای فردی و تیمی</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <!-- تب‌های داخلی آموزش -->
+        <div class="sub-tabs">
+          <button class="sub-tab-btn active" onclick="switchEduTab('eduGoals', this)">۱. اهداف و ۵ قانون طلایی زمان</button>
+          <button class="sub-tab-btn" onclick="switchEduTab('eduBenefits', this)">۲. مدیریت فشار زمانی و روحیه ورزشی</button>
+          <button class="sub-tab-btn" onclick="switchEduTab('eduTimeMap', this)">۳. نقشه تعاملی مناطق زمانی زمین</button>
+          <button class="sub-tab-btn" onclick="switchEduTab('eduEquip', this)">۴. هولوگرام سه‌بعدی تجهیزات داوری</button>
+          <button class="sub-tab-btn" onclick="switchEduTab('eduRules', this)">۵. قوانین خطای تیمی، فردی و علائم داور</button>
+          <button class="sub-tab-btn" onclick="switchEduTab('eduSkills', this)">۶. آزمایشگاه انیمیشنی جلسه نهم</button>
+        </div>
+
+        <!-- زیربخش ۱: اهداف جلسه، ۵ قانون زمان و جدول مقایسه -->
+        <div id="eduGoals" class="edu-sub-view">
+          <h3 style="color:var(--secondary); margin-bottom:14px;">🎯 اهداف یادگیری جلسه نهم</h3>
+          <div class="grid-3" style="margin-bottom:28px;">
+            <div class="glass-card tilt-card"><div class="card-glare"></div><strong>۱. قانون ۳ ثانیه (منطقه ذوزنقه)</strong><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">درک محدودیت توقف بیش از ۳ ثانیه بازیکن مهاجم در منطقه رنگی زیر سبد حریف.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><strong>۲. سه کاربرد قانون ۵ ثانیه</strong><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">آشنایی با مهلت ۵ ثانیه در پرتاب اوت، پرتاب آزاد (پنالتی) و بازیکن تحت دفاع نزدیک.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><strong>۳. قانون ۸ ثانیه انتقال توپ</strong><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">دانستن مهلت قانونی تیم مهاجم برای عبور دادن توپ از نیمه دفاعی به نیمه حمله.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><strong>۴. قانون ۲۴ و ۱۴ ثانیه شوت</strong><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">شناخت زمان کل حمله (۲۴ ثانیه) و زمان مجدد پس از ریباند حمله (۱۴ ثانیه).</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><strong>۵. قانون ۴ خطای تیمی در کوارتر</strong><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">آگاهی از جریمه ۲ پرتاب آزاد برای تیم حریف از خطای پنجم تیمی به بعد در هر کوارتر.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><strong>۶. قانون ۵ خطای شخصی بازیکن</strong><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">آشنایی با سقف مجاز خطاهای یک بازیکن در کل بازی و نحوه مدیریت خطاها.</p></div>
+          </div>
+
+          <h3 style="color:var(--secondary); margin-bottom:14px;">⏳ سیر زمانی یک حمله استاندارد در بسکتبال (از ثانیه صفر تا ۲۴)</h3>
+          <div class="timeline">
+            <div class="timeline-item glass-card">
+              <div class="timeline-dot"></div>
+              <h4 style="color:var(--primary);">۱. قانون ۵ ثانیه در شروع بازی از بیرون زمین (Throw-in)</h4>
+              <p style="font-size:0.9rem; margin-top:6px;">وقتی بازیکن توپ را در بیرون از زمین از داور تحویل می‌گیرد، حداکثر <strong>۵ ثانیه</strong> فرصت دارد تا توپ را به یکی از هم‌تیمی‌های داخل زمین پاس بدهد. همچنین در داخل زمین اگر بازیکنی توپ را گرفته باشد و مدافع در فاصله کمتر از ۱ متری او را به شدت دفاع کند، حداکثر ۵ ثانیه فرصت دارد شوت، پاس یا دریبل کند.</p>
+            </div>
+            <div class="timeline-item glass-card">
+              <div class="timeline-dot"></div>
+              <h4 style="color:var(--primary);">۲. قانون ۸ ثانیه انتقال به زمین حریف (Frontcourt Transition)</h4>
+              <p style="font-size:0.9rem; margin-top:6px;">از لحظه‌ای که تیمی در نیمه دفاعی خود صاحب توپ می‌شود، حداکثر <strong>۸ ثانیه</strong> زمان دارد تا توپ (و هر دو پای بازیکن حامل توپ) را از خط وسط زمین عبور داده و وارد نیمه حمله نماید.</p>
+            </div>
+            <div class="timeline-item glass-card">
+              <div class="timeline-dot"></div>
+              <h4 style="color:var(--primary);">۳. قانون ۳ ثانیه در منطقه رنگی زیر سبد (Three-Second Rule)</h4>
+              <p style="font-size:0.9rem; margin-top:6px;">در حالی که توپ در نیمه حمله در جریان است، هیچ‌یک از بازیکنان تیم مهاجم (چه با توپ و چه بدون توپ) حق ندارند بیش از <strong>۳ ثانیه متوالی</strong> در داخل مستطیل رنگی زیر سبد حریف توقف کنند (مگر اینکه در حال شوت زدن باشند).</p>
+            </div>
+            <div class="timeline-item glass-card">
+              <div class="timeline-dot"></div>
+              <h4 style="color:var(--primary);">۴. قانون ۲۴ ثانیه حمله و بازنشانی به ۱۴ ثانیه (Shot Clock)</h4>
+              <p style="font-size:0.9rem; margin-top:6px;">تیم مهاجم در مجموع <strong>۲۴ ثانیه</strong> فرصت دارد تا توپ را به سمت سبد شوت کند به طوری که توپ قبل از صدای بوق به حلقه برخورد نماید. اگر شوت به حلقه بخورد و دوباره همان تیم مهاجم توپ را ریباند کند (ریباند تهاجمی)، ساعت شوت به جای ۲۴ ثانیه، روی <strong>۱۴ ثانیه</strong> تنظیم می‌شود!</p>
+            </div>
+          </div>
+
+          <h3 style="color:var(--secondary); margin:20px 0 12px;">📊 جدول جامع قوانین زمان در بسکتبال رسمی (FIBA)</h3>
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th>نام قانون زمانی</th>
+                <th>مکان و شرایط اعمال قانون</th>
+                <th>جریمه در صورت نقض قانون</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>قانون ۳ ثانیه</strong></td><td>توقف بازیکن مهاجم در منطقه ذوزنقه (رنگی) زیر سبد حریف.</td><td>تخلف زمانی؛ توپ از کنار خط پایانی به تیم مدافع داده می‌شود.</td></tr>
+              <tr><td><strong>قانون ۵ ثانیه</strong></td><td>۱. پرتاب اوت | ۲. پرتاب آزاد پنالتی | ۳. بازیکن تحت دفاع نزدیک.</td><td>واگذاری مالکیت توپ به تیم حریف از نزدیک‌ترین نقطه.</td></tr>
+              <tr><td><strong>قانون ۸ ثانیه</strong></td><td>خارج کردن توپ از نیمه دفاعی و ورود به نیمه حمله.</td><td>سوت داور و تحویل توپ به تیم حریف در نیمه حمله آن‌ها.</td></tr>
+              <tr><td><strong>قانون ۲۴ ثانیه</strong></td><td>کل زمان مجاز یک تیم برای اقدام به شوت و برخورد توپ با حلقه.</td><td>بوق ساعت شوت و واگذاری مالکیت توپ به تیم مدافع.</td></tr>
+              <tr><td><strong>قانون ۱۴ ثانیه</strong></td><td>زمان مجدد حمله پس از ریباند تهاجمی یا خطای مدافع در نیمه حمله.</td><td>در صورت عدم شوت در ۱۴ ثانیه، تخلف ساعت شوت اعلام می‌شود.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- زیربخش ۲: مدیریت فشار زمانی و روحیه ورزشی -->
+        <div id="eduBenefits" class="edu-sub-view" style="display:none;">
+          <h3 style="color:var(--secondary); margin-bottom:14px;">🧠 چرا قوانین زمان باعث جذابیت و هیجان بسکتبال شده‌اند؟</h3>
+          <div class="grid-3" style="margin-bottom:26px;">
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:2rem; margin-bottom:8px;">⚡🔥</div><h4 style="color:var(--primary);">جلوگیری از وقت‌کشی</h4><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">قوانین ۸ و ۲۴ ثانیه مانع از آن می‌شوند که تیم برنده توپ را در زمین خود نگه دارد و بازی را کسل‌کننده کند.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:2rem; margin-bottom:8px;">🏃‍♂️🔄</div><h4 style="color:var(--primary);">تحرک دائمی زیر سبد</h4><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">قانون ۳ ثانیه باعث می‌شود بازیکنان بلندقامت زیر سبد چادر نزنند و دائماً به بیرون و داخل ذوزنقه حرکت کنند.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:2rem; margin-bottom:8px;">⏱️👀</div><h4 style="color:var(--primary);">تقویت ساعت درونی ذهن</h4><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">بازیکنان بسکتبال یاد می‌گیرند بدون نگاه دائمی به تابلو، گذر ثانیه‌ها را در ذهن خود احساس و مدیریت کنند.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:2rem; margin-bottom:8px;">🛡️👏</div><h4 style="color:var(--primary);">پاداش به دفاع تیمی</h4><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">اگر ۵ بازیکن به مدت ۲۴ ثانیه عالی دفاع کنند و اجازه شوت ندهند، صدای بوق ۲۴ ثانیه بهترین پاداش روحی برای تیم است.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:2rem; margin-bottom:8px;">🧘‍♂️🎯</div><h4 style="color:var(--primary);">خونسردی در ثانیه‌های پایانی</h4><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">شناخت دقیق زمان باعث می‌شود بازیکن در ۳ ثانیه پایانی به جای شوت عجولانه، یک پاس یا نفوذ مطمئن انجام دهد.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:2rem; margin-bottom:8px;">🤝⚖️</div><h4 style="color:var(--primary);">احترام به تصمیم داور</h4><p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">درک قوانین داوری و خطاها، اعتراض‌های بی‌مورد را از بین برده و اخلاق و منش پهلوانی را تقویت می‌کند.</p></div>
+          </div>
+
+          <h3 style="color:var(--secondary); margin-bottom:14px;">🩺 کنترل ضربان قلب، مدیریت خستگی و اخلاق ورزشی در شرایط پرفشار</h3>
+          <div class="grid-2">
+            <div class="glass-card">
+              <h4 style="color:var(--accent);">۱. استفاده هوشمندانه از توقف‌های بازی و تایم‌اوت‌ها برای ریکاوری</h4>
+              <p style="font-size:0.88rem; margin-top:6px;">• <strong>تنفس شکمی در توقف‌ها:</strong> در بسکتبال به دلیل قوانین زمان، سرعت دویدن بسیار بالاست. هرگاه داور سوت می‌زند یا پرتاب آزاد انجام می‌شود، با دم عمیق از بینی و بازدم از دهان، ضربان قلب خود را کاهش دهید.<br>• <strong>جلوگیری از خطاهای ناشی از خستگی:</strong> بیشتر خطاهای ضربه به دست (Reaching) زمانی رخ می‌دهد که بازیکن خسته است و به جای حرکت دادن پاها، دست خود را دراز می‌کند.</p>
+            </div>
+            <div class="glass-card">
+              <h4 style="color:var(--accent);">۲. پرهیز از خطای فنی (Technical Foul) و حفظ ادب ورزشی</h4>
+              <p style="font-size:0.88rem; margin-top:6px;">• <strong>خطای تکنیکال چیست؟</strong> هرگونه رفتار غیرورزشی، اعتراض تند به داور، کوبیدن توپ به زمین از روی عصبانیت یا بی‌احترامی به حریف، «خطای فنی» محسوب شده و به تیم مقابل پرتاب آزاد جایزه داده می‌شود.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- زیربخش ۳: نقشه تعاملی مناطق زمانی زمین بسکتبال (به همراه صدا) -->
+        <div id="eduTimeMap" class="edu-sub-view" style="display:none;">
+          <h3 style="color:var(--secondary); margin-bottom:8px;">🗺️ نقشه تعاملی مناطق زمانی در زمین بسکتبال (۳، ۵، ۸، ۱۴ و ۲۴ ثانیه)</h3>
+          <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:16px;">روی هر یک از ۴ منطقه زمانی در زمین بسکتبال زیر کلیک کنید تا توضیح صوتی و متنی قانون مربوط به آن پخش شود:</p>
+
+          <div style="display:flex; flex-direction:column; align-items:center; gap:18px;">
+            <svg viewBox="0 0 680 360" style="width:100%; max-width:650px; background:#c27838; border-radius:18px; border:4px solid #fff; box-shadow:0 12px 35px rgba(0,0,0,0.65);">
+              <!-- خطوط کلی زمین -->
+              <rect x="15" y="15" width="650" height="330" fill="none" stroke="#fff" stroke-width="3"/>
+              <line x1="340" y1="15" x2="340" y2="345" stroke="#fff" stroke-width="4"/>
+              <circle cx="340" cy="180" r="42" fill="none" stroke="#fff" stroke-width="3"/>
+
+              <!-- ۱. نیمه دفاعی (قانون ۸ ثانیه) -->
+              <g class="time-zone" onclick="selectTimePart('eightSecZone')">
+                <rect x="20" y="20" width="315" height="320" fill="rgba(56,189,248,0.28)" stroke="#38bdf8" stroke-width="3" stroke-dasharray="6,4"/>
+                <circle cx="185" cy="180" r="42" fill="rgba(15,23,42,0.85)" stroke="#38bdf8" stroke-width="3"/>
+                <text x="185" y="175" fill="#38bdf8" font-size="16" font-weight="900" text-anchor="middle">۸ ثانیه</text>
+                <text x="185" y="195" fill="#e2e8f0" font-size="11" font-weight="bold" text-anchor="middle">نیمه دفاعی</text>
+              </g>
+
+              <!-- ۲. منطقه رنگی زیر سبد حریف (قانون ۳ ثانیه) -->
+              <g class="time-zone" onclick="selectTimePart('threeSecZone')">
+                <rect x="520" y="120" width="145" height="120" fill="rgba(239,68,68,0.65)" stroke="#fff" stroke-width="3"/>
+                <text x="592" y="176" fill="#fff" font-size="16" font-weight="900" text-anchor="middle">۳ ثانیه</text>
+                <text x="592" y="196" fill="#fef08a" font-size="11" font-weight="bold" text-anchor="middle">منطقه ذوزنقه</text>
+              </g>
+
+              <!-- ۳. خط اوت و دفاع نزدیک (قانون ۵ ثانیه) -->
+              <g class="time-zone" onclick="selectTimePart('fiveSecZone')">
+                <rect x="365" y="22" width="150" height="44" rx="10" fill="rgba(16,185,129,0.85)" stroke="#fff" stroke-width="2.5"/>
+                <text x="440" y="42" fill="#fff" font-size="14" font-weight="900" text-anchor="middle">۵ ثانیه</text>
+                <text x="440" y="58" fill="#fef08a" font-size="10" font-weight="bold" text-anchor="middle">اوت / پنالتی / دفاع نزدیک</text>
+              </g>
+
+              <!-- ۴. ساعت شوت بالای سبد (قانون ۲۴ و ۱۴ ثانیه) -->
+              <g class="time-zone" onclick="selectTimePart('shotClockZone')">
+                <rect x="465" y="268" width="175" height="58" rx="12" fill="rgba(15,23,42,0.92)" stroke="#f97316" stroke-width="3"/>
+                <text x="552" y="294" fill="#f97316" font-size="15" font-weight="900" text-anchor="middle">۲۴ و ۱۴ ثانیه</text>
+                <text x="552" y="314" fill="#cbd5e1" font-size="11" font-weight="bold" text-anchor="middle">ساعت شوت (Shot Clock)</text>
+              </g>
+            </svg>
+
+            <div id="timeInfoPanel" class="glass-card" style="width:100%; max-width:680px; border-right:4px solid var(--primary);">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <h4 id="timePartTitle" style="color:var(--primary); font-size:1.1rem;">یکی از ۴ منطقه زمانی روی زمین را لمس کنید</h4>
+                <button class="btn btn-secondary" style="padding:6px 12px; font-size:0.8rem;" onclick="speakCurrentTimeInfo()">🔊 پخش توضیح صوتی</button>
+              </div>
+              <p id="timePartDesc" style="font-size:0.92rem; color:#e2e8f0;">با کلیک روی «۸ ثانیه نیمه دفاعی»، «۳ ثانیه ذوزنقه»، «۵ ثانیه» یا «ساعت شوت ۲۴/۱۴ ثانیه»، جزئیات دقیق آن قانون پخش می‌شود.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- زیربخش ۴: هولوگرام سه‌بعدی تجهیزات زمان و خطای تیمی -->
+        <div id="eduEquip" class="edu-sub-view" style="display:none;">
+          <h3 style="color:var(--secondary); margin-bottom:10px;">🕶️ ویترین هولوگرافیک سه‌بعدی تجهیزات زمان‌سنجی و میز داوری</h3>
+          <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:16px;">با اسلایدر زیر یا دکمه چرخش خودکار، زاویه دید سه‌بعدی را تغییر دهید و ۳ ابزار مهم داوری را بررسی کنید:</p>
+
+          <div style="margin-bottom:20px; background:rgba(15,23,42,0.8); padding:14px; border-radius:14px; display:flex; align-items:center; gap:14px; flex-wrap:wrap; border:1px solid var(--glass-border);">
+            <label style="font-weight:700; color:var(--primary);">🔄 زاویه چرخش سه‌بعدی:</label>
+            <input type="range" id="equipRotateRange" min="-180" max="180" value="0" style="flex:1; accent-color:var(--primary);" oninput="rotateEquipments(this.value)">
+            <span id="equipRotateLabel" style="min-width:65px; font-weight:700; color:var(--secondary);">۰ درجه</span>
+            <button id="autoSpinBtn" class="btn btn-secondary" style="padding:7px 14px; font-size:0.84rem;" onclick="toggleAutoSpinEquip()">▶️ چرخش خودکار ۳۶۰ درجه</button>
+          </div>
+
+          <div class="grid-3">
+            <div class="glass-card">
+              <div class="equip-viewer">
+                <div class="equip-3d-object">
+                  <svg width="120" height="115" viewBox="0 0 120 100">
+                    <rect x="22" y="16" width="76" height="68" rx="8" fill="#090d16" stroke="#f97316" stroke-width="3.5"/>
+                    <text x="60" y="62" fill="#ef4444" font-size="34" font-weight="900" text-anchor="middle" font-family="monospace">24</text>
+                  </svg>
+                </div>
+              </div>
+              <h4 style="color:var(--primary);">۱. نمایشگر ۲۴ ثانیه</h4>
+              <p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">در بالای هر دو تخته بسکتبال نصب می‌شود و ثانیه‌های باقیمانده برای شوت زدن را با رنگ قرمز نشان می‌دهد.</p>
+            </div>
+
+            <div class="glass-card">
+              <div class="equip-viewer">
+                <div class="equip-3d-object">
+                  <svg width="120" height="115" viewBox="0 0 120 100">
+                    <polygon points="60,15 32,82 88,82" fill="#ef4444" stroke="#fff" stroke-width="2.5"/>
+                    <rect x="25" y="80" width="70" height="10" rx="4" fill="#334155"/>
+                    <text x="60" y="68" fill="#fff" font-size="14" font-weight="bold" text-anchor="middle">BONUS</text>
+                  </svg>
+                </div>
+              </div>
+              <h4 style="color:var(--primary);">۲. نشانگر خطای تیمی (قرمز)</h4>
+              <p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">وقتی خطاهای یک تیم در یک کوارتر به عدد ۴ می‌رسد، علامت قرمز روی میز وقت‌نگهدار قرار می‌گیرد (وضعیت جریمه).</p>
+            </div>
+
+            <div class="glass-card">
+              <div class="equip-viewer">
+                <div class="equip-3d-object">
+                  <svg width="120" height="115" viewBox="0 0 120 100">
+                    <rect x="38" y="14" width="44" height="62" rx="6" fill="#facc15" stroke="#fff" stroke-width="2.5"/>
+                    <text x="60" y="56" fill="#090d16" font-size="32" font-weight="900" text-anchor="middle">4</text>
+                    <line x1="60" y1="76" x2="60" y2="95" stroke="#94a3b8" stroke-width="5"/>
+                  </svg>
+                </div>
+              </div>
+              <h4 style="color:var(--primary);">۳. پلاکارد شماره خطای فردی</h4>
+              <p style="font-size:0.86rem; color:var(--text-muted); margin-top:6px;">میز ثبت پس از هر خطا، تعداد خطاهای آن بازیکن (از ۱ تا ۵) را با پلاکاردهای شماره‌دار به مربیان و بازیکنان نشان می‌دهد.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- زیربخش ۵: قوانین خطای تیمی، فردی و علائم داوری -->
+        <div id="eduRules" class="edu-sub-view" style="display:none;">
+          <h3 style="color:var(--secondary); margin-bottom:14px;">⚖️ قوانین رسمی خطاهای فردی، خطاهای تیمی و علائم داوری زمان</h3>
+          <div class="grid-3" style="margin-bottom:24px;">
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:1.6rem;">5️⃣👤</div><h4 style="color:var(--primary);">۱. سقف ۵ خطای فردی</h4><p style="font-size:0.86rem; color:var(--text-muted);">هر بازیکن در کل ۴۰ دقیقه مسابقه (و وقت‌های اضافه) حداکثر مجاز به انجام ۴ خطاست و با خطای پنجم از بازی خارج شده و تعویض می‌شود.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:1.6rem;">4️⃣🚩</div><h4 style="color:var(--primary);">۲. قانون ۴ خطای تیمی در کوارتر</h4><p style="font-size:0.86rem; color:var(--text-muted);">مجموع خطاهای بازیکنان یک تیم در هر کوارتر ۱۰ دقیقه‌ای شمرده می‌شود؛ از <strong>خطای پنجم تیمی به بعد</strong>، هر خطای دفاعی (حتی غیر از شوت) ۲ پرتاب آزاد جریمه دارد!</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:1.6rem;">🔄🧹</div><h4 style="color:var(--primary);">۳. صفر شدن خطای تیمی در کوارتر جدید</h4><p style="font-size:0.86rem; color:var(--text-muted);">با شروع هر کوارتر جدید، خطاهای تیمی قبلی پاک (صفر) می‌شود؛ اما خطاهای تیمی کوارتر چهارم به وقت اضافه منتقل می‌گردد.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:1.6rem;">⚠️🏀</div><h4 style="color:var(--primary);">۴. خطای غیرورزشی (Unsportsmanlike)</h4><p style="font-size:0.86rem; color:var(--text-muted);">خطای شدید یا خطایی که بدون تلاش برای گرفتن توپ انجام شود، «خطای غیرورزشی» است و ۲ پرتاب آزاد + مالکیت توپ از وسط زمین جریمه دارد.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:1.6rem;">🛑🗣️</div><h4 style="color:var(--primary);">۵. قانون تایم‌اوت (Time-Out)</h4><p style="font-size:0.86rem; color:var(--text-muted);">هر تایم‌اوت در بسکتبال دقیقاً <strong>۱ دقیقه (۶۰ ثانیه)</strong> است. هر تیم در نیمه اول ۲ تایم‌اوت و در نیمه دوم ۳ تایم‌اوت در اختیار دارد.</p></div>
+            <div class="glass-card tilt-card"><div class="card-glare"></div><div style="font-size:1.6rem;">🔄👟</div><h4 style="color:var(--primary);">۶. قوانین تعویض بازیکن</h4><p style="font-size:0.86rem; color:var(--text-muted);">تعداد تعویض‌ها در بسکتبال نامحدود است، اما تعویض فقط زمانی انجام می‌شود که بازی متوقف باشد (سوت داور) و با اجازه میز و داور باشد.</p></div>
+          </div>
+
+          <div class="grid-2">
+            <div class="glass-card">
+              <h4 style="color:var(--warning); margin-bottom:8px;">⚠️ ۴ نکته طلایی برای فرار از تخلفات زمانی در مسابقه</h4>
+              <ul style="font-size:0.88rem; padding-right:18px; color:#e2e8f0;">
+                <li><strong>نحوه صفر کردن شمارش ۳ ثانیه ذوزنقه:</strong> کافی است بازیکن مهاجم هر دو پای خود را یک لحظه بیرون از منطقه رنگی بگذارد و دوباره وارد شود تا شمارش ۳ ثانیه از نو شروع شود!</li>
+                <li><strong>توجه به برخورد توپ با حلقه برای ریست ۲۴ ثانیه:</strong> برخورد شوت به «تخته» به تنهایی ساعت ۲۴ ثانیه را ریست نمی‌کند؛ توپ حتماً باید به <strong>حلقه فلزی</strong> برخورد کند.</li>
+                <li><strong>کمک به یار تحت فشار ۵ ثانیه:</strong> وقتی هم‌تیمی شما دریبلش تمام شده و تحت فشار مدافع است، سریعاً به سمت او بدوید تا پاس بدهد.</li>
+                <li><strong>عبور کامل در قانون ۸ ثانیه:</strong> در دریبل از وسط زمین، تا زمانی که هر دو پا و توپ کامل از خط وسط رد نشده‌اند، شمارش ۸ ثانیه ادامه دارد.</li>
+              </ul>
+            </div>
+
+            <div class="glass-card">
+              <h4 style="color:var(--secondary); margin-bottom:8px;">✋ علائم رسمی دست داور برای تخلفات زمانی</h4>
+              <ul style="font-size:0.88rem; padding-right:18px; color:#e2e8f0;">
+                <li><strong>علامت تخلف ۳ ثانیه:</strong> دراز کردن دست به جلو با ۳ انگشت باز به سمت منطقه ذوزنقه.</li>
+                <li><strong>علامت تخلف ۵ ثانیه:</strong> نشان دادن ۵ انگشت باز یک دست در هوا.</li>
+                <li><strong>علامت تخلف ۸ ثانیه:</strong> نشان دادن ۸ انگشت با دو دست در هوا.</li>
+                <li><strong>علامت تخلف ۲۴ ثانیه:</strong> لمس کردن بالای شانه با نوک انگشتان یک دست.</li>
+                <li><strong>علامت ریست ساعت شوت:</strong> چرخاندن انگشت اشاره در هوا به صورت دایره‌ای.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- زیربخش ۶: آزمایشگاه انیمیشنی جلسه نهم + کارت‌های چرخشی دانستنی‌ها -->
+        <div id="eduSkills" class="edu-sub-view" style="display:none;">
+          <h3 style="color:var(--secondary); margin-bottom:10px;">🔬 آزمایشگاه انیمیشنی جلسه نهم (شبیه‌ساز زنده قوانین ۳ ثانیه، ۸ ثانیه و ساعت شوت)</h3>
+          <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:14px;">روی هر یک از ۳ شبیه‌ساز زیر کلیک کنید تا عملکرد دقیق قوانین زمانی را به صورت زنده مشاهده نمایید:</p>
+
+          <div class="glass-card" style="margin-bottom:24px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
+              <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                <button class="sub-tab-btn active" onclick="setSkillSimMode('threeSecSim', this)">🟥 ۱. شبیه‌ساز قانون ۳ ثانیه منطقه ذوزنقه</button>
+                <button class="sub-tab-btn" onclick="setSkillSimMode('eightSecSim', this)">🏃 ۲. شبیه‌ساز قانون ۸ ثانیه عبور از نیمه</button>
+                <button class="sub-tab-btn" onclick="setSkillSimMode('shotResetSim', this)">⏱️ ۳. شبیه‌ساز ریست ۱۴ ثانیه پس از ریباند حمله</button>
+              </div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span style="font-size:0.85rem; color:var(--secondary);">سرعت انیمیشن:</span>
+                <button class="sub-tab-btn" style="padding:5px 10px;" onclick="setSkillSimSpeed(0.35)">🐢 صحنه آهسته</button>
+                <button class="sub-tab-btn" style="padding:5px 10px;" onclick="setSkillSimSpeed(1)">⚡ عادی</button>
+              </div>
+            </div>
+
+            <canvas id="skillSimCanvas" width="680" height="225" style="width:100%; max-width:680px; height:auto; display:block; margin:0 auto; background:rgba(9,13,22,0.85); border-radius:14px; border:1px solid var(--glass-border);"></canvas>
+          </div>
+
+          <h3 style="color:var(--secondary); margin-bottom:12px;">🌟 دانستنی‌های جذاب درباره تاریخچه قوانین زمان در بسکتبال (کارت‌های Flip سه‌بعدی)</h3>
+          <div class="flip-grid">
+            <div class="flip-card" onclick="this.classList.toggle('flipped')">
+              <div class="flip-card-inner">
+                <div class="flip-front">
+                  <div style="font-size:2.2rem; margin-bottom:8px;">🕰️۱۹۵۴</div>
+                  <h4>چرا عدد ۲۴ ثانیه انتخاب شد؟</h4>
+                  <span style="font-size:0.78rem; color:var(--primary); margin-top:8px;">کلیک کنید تا بچرخد ↺</span>
+                </div>
+                <div class="flip-back">
+                  <p style="font-size:0.86rem;">در سال ۱۹۵۴ «دنی بایاسونو» تعداد ثانیه‌های یک بازی (۲۸۸۰ ثانیه) را بر میانگین ۱۲۰ شوت تقسیم کرد و به عدد دقیق ۲۴ ثانیه رسید که بسکتبال را برای همیشه نجات داد!</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="flip-card" onclick="this.classList.toggle('flipped')">
+              <div class="flip-card-inner">
+                <div class="flip-front">
+                  <div style="font-size:2.2rem; margin-bottom:8px;">😴۱۹-۱۸</div>
+                  <h4>کم‌امتیازترین بازی تاریخ بدون ساعت شوت!</h4>
+                  <span style="font-size:0.78rem; color:var(--primary); margin-top:8px;">کلیک کنید تا بچرخد ↺</span>
+                </div>
+                <div class="flip-back">
+                  <p style="font-size:0.86rem;">قبل از اختراع قانون ۲۴ ثانیه، در سال ۱۹۵۰ تیم پیستونز برای وقت‌کشی کل بازی فقط پاس داد و مسابقه با نتیجه عجیب ۱۹ بر ۱۸ به پایان رسید!</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="flip-card" onclick="this.classList.toggle('flipped')">
+              <div class="flip-card-inner">
+                <div class="flip-front">
+                  <div style="font-size:2.2rem; margin-bottom:8px;">🔄۱۴</div>
+                  <h4>فلسفه قانون جدید ۱۴ ثانیه</h4>
+                  <span style="font-size:0.78rem; color:var(--primary); margin-top:8px;">کلیک کنید تا بچرخد ↺</span>
+                </div>
+                <div class="flip-back">
+                  <p style="font-size:0.86rem;">فدراسیون جهانی اعلام کرد چون در ریباند حمله، توپ از قبل در نیمه حریف است و نیازی به ۸ ثانیه انتقال ندارد، ۱۴ ثانیه برای حمله مجدد کاملاً کافی و هیجان‌انگیزتر است.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="flip-card" onclick="this.classList.toggle('flipped')">
+              <div class="flip-card-inner">
+                <div class="flip-front">
+                  <div style="font-size:2.2rem; margin-bottom:8px;">🚨🏀</div>
+                  <h4>شوت ثانیه پایانی (Buzzer Beater)</h4>
+                  <span style="font-size:0.78rem; color:var(--primary); margin-top:8px;">کلیک کنید تا بچرخد ↺</span>
+                </div>
+                <div class="flip-back">
+                  <p style="font-size:0.86rem;">اگر توپ حتی یک دهم ثانیه قبل از روشن شدن چراغ قرمز دور تخته و صدای بوق از دست بازیکن جدا شده باشد و در هوا گل شود، امتیاز آن کاملاً صحیح است!</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- دکمه ثبت مطالعه آموزش کامل (۲۰ XP) -->
+        <div style="margin-top:28px; padding-top:18px; border-top:1px solid var(--glass-border); text-align:center;">
+          <button id="claimEducationBtn" class="btn btn-success" onclick="completeSectionXP('education', 20, 'آموزش کامل جلسه نهم (قوانین زمان و خطاهای تیمی)')">
+            ✅ مطالعه کامل تمام بخش‌های آموزش جلسه نهم را به پایان رساندم (دریافت ۲۰ XP)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۴. بخش خلاصه جلسه نهم و نقشه ذهنی (Mind Map SVG)
+         ========================================================================= -->
+    <section id="summaryView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">🧠 جمع‌بندی و نقشه ذهنی زنده جلسه نهم</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <p style="font-size:0.92rem; color:var(--text-muted); margin-bottom:18px;">نقشه ذهنی زیر با جریان‌های نوری متحرک، چکیده تمامی مفاهیم کلیدی جلسه نهم (قوانین ۳، ۵، ۸، ۱۴ و ۲۴ ثانیه و خطاهای تیمی) را نمایش می‌دهد:</p>
+
+        <div style="overflow-x:auto; background:rgba(9,13,22,0.85); border-radius:var(--radius-md); padding:18px; border:1px solid var(--glass-border); margin-bottom:20px;">
+          <svg viewBox="0 0 860 400" style="width:100%; min-width:650px; height:auto;">
+            <!-- خطوط اتصال پایه -->
+            <path d="M430,200 C320,200 280,80 190,80" stroke="rgba(249,115,22,0.3)" stroke-width="4" fill="none"/>
+            <path d="M430,200 C320,200 280,200 190,200" stroke="rgba(56,189,248,0.3)" stroke-width="4" fill="none"/>
+            <path d="M430,200 C320,200 280,320 190,320" stroke="rgba(16,185,129,0.3)" stroke-width="4" fill="none"/>
+            <path d="M430,200 C540,200 580,80 670,80" stroke="rgba(245,158,11,0.3)" stroke-width="4" fill="none"/>
+            <path d="M430,200 C540,200 580,200 670,200" stroke="rgba(236,72,153,0.3)" stroke-width="4" fill="none"/>
+            <path d="M430,200 C540,200 580,320 670,320" stroke="rgba(168,85,247,0.3)" stroke-width="4" fill="none"/>
+
+            <!-- خطوط پالس انرژی متحرک -->
+            <path class="tactic-line" d="M430,200 C320,200 280,80 190,80" stroke="#f97316" stroke-width="3" fill="none"/>
+            <path class="tactic-line" d="M430,200 C320,200 280,200 190,200" stroke="#38bdf8" stroke-width="3" fill="none"/>
+            <path class="tactic-line" d="M430,200 C320,200 280,320 190,320" stroke="#10b981" stroke-width="3" fill="none"/>
+            <path class="tactic-line" d="M430,200 C540,200 580,80 670,80" stroke="#f59e0b" stroke-width="3" fill="none"/>
+            <path class="tactic-line" d="M430,200 C540,200 580,200 670,200" stroke="#ec4899" stroke-width="3" fill="none"/>
+            <path class="tactic-line" d="M430,200 C540,200 580,320 670,320" stroke="#a855f7" stroke-width="3" fill="none"/>
+
+            <!-- هسته مرکزی -->
+            <ellipse cx="430" cy="200" rx="108" ry="48" fill="#ea580c" stroke="#fff" stroke-width="3"/>
+            <text x="430" y="196" fill="#fff" font-size="14" font-weight="bold" text-anchor="middle">قوانین زمان و خطاها</text>
+            <text x="430" y="218" fill="#fef08a" font-size="13" text-anchor="middle">خلاصه جلسه نهم</text>
+
+            <!-- شاخه‌ها -->
+            <rect x="20" y="45" width="180" height="70" rx="12" fill="#1e293b" stroke="#f97316" stroke-width="2.5"/>
+            <text x="110" y="72" fill="#f97316" font-size="14" font-weight="bold" text-anchor="middle">قانون ۳ ثانیه</text>
+            <text x="110" y="95" fill="#cbd5e1" font-size="12" text-anchor="middle">حداکثر توقف مهاجم در ذوزنقه</text>
+
+            <rect x="20" y="165" width="180" height="70" rx="12" fill="#1e293b" stroke="#38bdf8" stroke-width="2.5"/>
+            <text x="110" y="192" fill="#38bdf8" font-size="14" font-weight="bold" text-anchor="middle">قانون ۵ ثانیه</text>
+            <text x="110" y="215" fill="#cbd5e1" font-size="12" text-anchor="middle">پرتاب اوت، پنالتی و دفاع نزدیک</text>
+
+            <rect x="20" y="285" width="180" height="70" rx="12" fill="#1e293b" stroke="#10b981" stroke-width="2.5"/>
+            <text x="110" y="312" fill="#10b981" font-size="14" font-weight="bold" text-anchor="middle">قانون ۸ ثانیه</text>
+            <text x="110" y="335" fill="#cbd5e1" font-size="12" text-anchor="middle">عبور توپ از نیمه دفاع به حمله</text>
+
+            <rect x="660" y="45" width="180" height="70" rx="12" fill="#1e293b" stroke="#f59e0b" stroke-width="2.5"/>
+            <text x="750" y="72" fill="#f59e0b" font-size="14" font-weight="bold" text-anchor="middle">قانون ۲۴ و ۱۴ ثانیه</text>
+            <text x="750" y="95" fill="#cbd5e1" font-size="12" text-anchor="middle">زمان کل حمله و ریست ریباند حمله</text>
+
+            <rect x="660" y="165" width="180" height="70" rx="12" fill="#1e293b" stroke="#ec4899" stroke-width="2.5"/>
+            <text x="750" y="192" fill="#ec4899" font-size="14" font-weight="bold" text-anchor="middle">خطای تیمی (Bonus)</text>
+            <text x="750" y="215" fill="#cbd5e1" font-size="12" text-anchor="middle">از خطای پنجم کوارتر = ۲ پنالتی</text>
+
+            <rect x="660" y="285" width="180" height="70" rx="12" fill="#1e293b" stroke="#a855f7" stroke-width="2.5"/>
+            <text x="750" y="312" fill="#a855f7" font-size="14" font-weight="bold" text-anchor="middle">خطای فردی و فنی</text>
+            <text x="750" y="335" fill="#cbd5e1" font-size="12" text-anchor="middle">اخراج با ۵ خطا و رعایت اخلاق</text>
+          </svg>
+        </div>
+
+        <div style="text-align:center;">
+          <button id="claimSummaryBtn" class="btn btn-success" onclick="completeSectionXP('summary', 10, 'مطالعه خلاصه و نقشه ذهنی جلسه نهم')">
+            ✅ نقشه ذهنی و خلاصه جلسه نهم را مرور کردم (دریافت ۱۰ XP)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۵. بخش فعالیت‌های عملی، تشخیصی و بازی شبیه‌ساز قضاوت داور (۳۰ XP)
+         ========================================================================= -->
+    <section id="activitiesView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">🎮 فعالیت‌های عملی، تشخیصی و شبیه‌ساز قضاوت داور (۳۰ XP)</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <p style="font-size:0.92rem; color:var(--text-muted); margin-bottom:20px;">برای دریافت ۳۰ امتیاز کامل این بخش، هر ۳ فعالیت عملی و تعاملی زیر را با موفقیت تکمیل نمایید:</p>
+
+        <!-- فعالیت ۱: تشخیص قوانین صحیح زمان و خطای تیمی -->
+        <div class="glass-card" style="margin-bottom:20px;">
+          <h4 style="color:var(--primary); margin-bottom:8px;">فعالیت ۱: تشخیص ۴ قانون رسمی فدراسیون جهانی درباره زمان و خطاها <span id="act1Status" style="color:var(--text-muted); font-size:0.85rem;">(تکمیل نشده)</span></h4>
+          <p style="font-size:0.88rem; margin-bottom:12px;">از میان گزینه‌های زیر، <strong>۴ گزاره کاملاً صحیح</strong> را انتخاب کنید:</p>
+          <div class="grid-3" id="equipGameGrid">
+            <button class="sub-tab-btn" onclick="toggleEquipSelect(this, true)">⏱️ تیم مهاجم حداکثر ۸ ثانیه فرصت دارد توپ را از نیمه دفاعی خارج کند</button>
+            <button class="sub-tab-btn" onclick="toggleEquipSelect(this, false)">❌ برخورد توپ به تخته (بدون حلقه) ساعت ۲۴ ثانیه را ریست می‌کند</button>
+            <button class="sub-tab-btn" onclick="toggleEquipSelect(this, true)">🔄 پس از ریباند تهاجمی، ساعت شوت روی ۱۴ ثانیه تنظیم می‌شود</button>
+            <button class="sub-tab-btn" onclick="toggleEquipSelect(this, true)">🟥 توقف بیش از ۳ ثانیه بازیکن مهاجم در ذوزنقه حریف تخلف است</button>
+            <button class="sub-tab-btn" onclick="toggleEquipSelect(this, false)">❌ هر بازیکن می‌تواند تا ۱۰ خطای شخصی در بازی انجام دهد</button>
+            <button class="sub-tab-btn" onclick="toggleEquipSelect(this, true)">🚩 از خطای پنجم تیمی در هر کوارتر، تیم حریف ۲ پرتاب آزاد جایزه می‌گیرد</button>
+          </div>
+        </div>
+
+        <!-- فعالیت ۲: مرتب‌سازی قوانین زمانی از کوتاه‌ترین به بلندترین زمان -->
+        <div class="glass-card" style="margin-bottom:20px;">
+          <h4 style="color:var(--primary); margin-bottom:8px;">فعالیت ۲: مرتب‌سازی قوانین زمانی بسکتبال از کوتاه‌ترین زمان تا بلندترین زمان <span id="act2Status" style="color:var(--text-muted); font-size:0.85rem;">(تکمیل نشده)</span></h4>
+          <p style="font-size:0.88rem; margin-bottom:12px;">۴ قانون زمانی زیر را به ترتیب از <strong>کمترین ثانیه تا بیشترین ثانیه (۳ ← ۵ ← ۸ ← ۲۴)</strong> کلیک کنید:</p>
+          <div style="display:flex; flex-wrap:wrap; gap:10px; margin-bottom:12px;" id="orderStepsContainer">
+            <button class="btn btn-secondary" onclick="selectOrderStep(3, 'قانون ۸ ثانیه: مهلت عبور دادن توپ از نیمه دفاعی به نیمه حمله', this)">قانون ۸ ثانیه: مهلت عبور دادن توپ از نیمه دفاعی به نیمه حمله</button>
+            <button class="btn btn-secondary" onclick="selectOrderStep(1, 'قانون ۳ ثانیه: حداکثر زمان توقف مهاجم در داخل منطقه رنگی زیر سبد', this)">قانون ۳ ثانیه: حداکثر زمان توقف مهاجم در داخل منطقه رنگی زیر سبد</button>
+            <button class="btn btn-secondary" onclick="selectOrderStep(4, 'قانون ۲۴ ثانیه: کل زمان مجاز تیم مهاجم برای اقدام به شوت به سمت حلقه', this)">قانون ۲۴ ثانیه: کل زمان مجاز تیم مهاجم برای اقدام به شوت به سمت حلقه</button>
+            <button class="btn btn-secondary" onclick="selectOrderStep(2, 'قانون ۵ ثانیه: مهلت پرتاب اوت، پرتاب آزاد پنالتی یا بازیکن تحت دفاع نزدیک', this)">قانون ۵ ثانیه: مهلت پرتاب اوت، پرتاب آزاد پنالتی یا بازیکن تحت دفاع نزدیک</button>
+          </div>
+          <div id="orderFeedback" style="font-size:0.88rem; color:var(--secondary);">ترتیب انتخاب‌شده: هنوز موردی انتخاب نشده است.</div>
+          <button class="sub-tab-btn" style="margin-top:8px;" onclick="resetOrderActivity()">🔄 شروع مجدد مرتب‌سازی</button>
+        </div>
+
+        <!-- فعالیت ۳: بازی تعاملی قضاوت داور در صحنه‌های زمانی و خطای تیمی -->
+        <div class="glass-card">
+          <h4 style="color:var(--primary); margin-bottom:8px;">فعالیت ۳: شبیه‌ساز «قضاوت داور در تخلفات زمانی و خطای تیمی» <span id="act3Status" style="color:var(--text-muted); font-size:0.85rem;">(تکمیل نشده)</span></h4>
+          <p style="font-size:0.88rem; margin-bottom:10px;">به صحنه مسابقه و تایمر بالای بوم دقت کنید و در نقش داور رسمی، <strong>سوت و حکم صحیح</strong> را از دکمه‌های زیر صادر نمایید (کسب ۳ قضاوت صحیح):</p>
+
+          <div style="background:rgba(9,13,22,0.9); padding:10px 16px; border-radius:10px; margin-bottom:12px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <strong id="refMissionText" style="color:var(--warning);"> whistle صحنه ۱: بازیکن مهاجم به مدت ۴ ثانیه متوالی بدون شوت زدن در منطقه رنگی زیر سبد حریف ایستاده است؛ حکم داور چیست؟</strong>
+            <span style="color:var(--accent); font-weight:800;">قضاوت صحیح: <span id="refGameScore">۰</span> از ۳</span>
+          </div>
+
+          <canvas id="refSimCanvas" width="600" height="240" style="width:100%; max-width:600px; background:#b56c2d; border:3px solid #fff; border-radius:14px; display:block; margin:0 auto 14px;"></canvas>
+
+          <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
+            <button class="btn btn-secondary" onclick="submitRefDecision('threeSecViol')">🟥 اعلام تخلف ۳ ثانیه مهاجم و تحویل توپ به مدافع</button>
+            <button class="btn btn-secondary" onclick="submitRefDecision('eightSecViol')">⏱️ اعلام تخلف ۸ ثانیه به دلیل عدم خروج از نیمه دفاعی</button>
+            <button class="btn btn-secondary" onclick="submitRefDecision('teamFoulPenalty')">🚩 اعلام ۲ پرتاب آزاد به دلیل خطای پنجم تیمی در کوارتر</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۶. بخش فایل‌ها و لینک کلاس
+         ========================================================================= -->
+    <section id="filesView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">📁 فایل‌های آموزشی و لینک جلسه نهم (۱۰ XP)</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <div id="filesListContainer" class="grid-2" style="margin-bottom:20px;"></div>
+
+        <div class="glass-card" style="margin-bottom:20px;">
+          <h4 style="color:var(--secondary);">🔗 لینک ارتباطی جلسه مجازی</h4>
+          <p id="sessionLinkDisplay" style="font-size:0.9rem; margin:8px 0; color:#cbd5e1;"></p>
+        </div>
+
+        <div style="text-align:center;">
+          <button id="claimFilesBtn" class="btn btn-success" onclick="completeSectionXP('files', 10, 'مشاهده فایل‌ها و منابع جلسه نهم')">
+            ✅ فایل‌ها و منابع جلسه نهم را بررسی کردم (دریافت ۱۰ XP)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۷. بخش اطلاعیه‌های جلسه (۵ XP)
+         ========================================================================= -->
+    <section id="noticesView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">📢 اطلاعیه‌های رسمی درس تربیت بدنی (۵ XP)</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <div id="noticesListContainer" style="display:flex; flex-direction:column; gap:14px; margin-bottom:22px;"></div>
+
+        <div style="text-align:center;">
+          <button id="claimNoticesBtn" class="btn btn-success" onclick="completeSectionXP('notices', 5, 'مطالعه اطلاعیه‌های آموزشی جلسه نهم')">
+            ✅ اطلاعیه‌های جلسه نهم را مطالعه کردم (دریافت ۵ XP)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۸. بخش تکالیف جلسه نهم (۱۰ XP)
+         ========================================================================= -->
+    <section id="homeworkView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">📝 تکلیف عملی جلسه نهم بسکتبال (۱۰ XP)</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <p style="font-size:0.92rem; color:var(--text-muted); margin-bottom:16px;">برای تسلط عملی بر قوانین زمان و علائم داوری، سه مورد زیر را انجام داده و تیک تأیید هر کدام را فعال نمایید:</p>
+
+        <div id="homeworkChecklist" style="display:flex; flex-direction:column; gap:12px; margin-bottom:18px;"></div>
+
+        <div class="form-group">
+          <label class="form-label" for="homeworkNoteInput">گزارش کوتاه دانش‌آموز از تمرین علائم داوری زمان و مرور قوانین (الزامی):</label>
+          <input type="text" id="homeworkNoteInput" class="form-control" placeholder="مثال: علائم داوری ۳، ۵، ۸ و ۲۴ ثانیه را مقابل آینه تمرین کردم و قانون ۴ خطای تیمی را مرور نمودم.">
+        </div>
+
+        <div style="text-align:center; margin-top:18px;">
+          <button id="claimHomeworkBtn" class="btn btn-success" onclick="submitHomeworkTask()">
+            ✅ ثبت تکلیف جلسه نهم (دریافت ۱۰ XP)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۹. بخش گزارش پیشرفت، زمان حضور و نشان‌های افتخار (Badges)
+         ========================================================================= -->
+    <section id="progressView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">📊 گزارش پیشرفت و دستاوردهای انفرادی (جلسه نهم)</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <div class="grid-3" style="margin-bottom:22px;">
+          <div class="glass-card" style="text-align:center;">
+            <div style="font-size:0.88rem; color:var(--text-muted);">مجموع امتیاز کسب‌شده</div>
+            <div id="progXPValue" style="font-size:2rem; font-weight:900; color:var(--primary); margin:6px 0;">۰ / ۱۱۰ XP</div>
+          </div>
+          <div class="glass-card" style="text-align:center;">
+            <div style="font-size:0.88rem; color:var(--text-muted);">درصد پیشرفت کل جلسه نهم</div>
+            <div id="progPercentValue" style="font-size:2rem; font-weight:900; color:var(--accent); margin:6px 0;">۰٪</div>
+          </div>
+          <div class="glass-card" style="text-align:center;">
+            <div style="font-size:0.88rem; color:var(--text-muted);">مدت زمان حضور و مطالعه</div>
+            <div id="progTimeValue" style="font-size:1.6rem; font-weight:900; color:var(--secondary); margin:8px 0;">۰ دقیقه و ۰ ثانیه</div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="glass-card">
+            <h4 style="color:var(--primary); margin-bottom:10px;">🏅 نشان‌های افتخار جلسه نهم (Badges & Achievements)</h4>
+            <div id="badgesContainer" style="display:flex; flex-direction:column; gap:10px;"></div>
+          </div>
+          <div class="glass-card">
+            <h4 style="color:var(--secondary); margin-bottom:10px;">✔️ فهرست فعالیت‌های تکمیل‌شده</h4>
+            <ul id="completedLogsList" style="font-size:0.9rem; padding-right:18px; color:#cbd5e1;"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         ۱۰. بخش ثبت و ارسال گزارش نهایی به Supabase + پایان جلسه نهم
+         ========================================================================= -->
+    <section id="reportView" class="view-section">
+      <div class="glass-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+          <div class="section-title" style="margin-bottom:0; border:none;">📤 ثبت و ارسال گزارش نهایی جلسه نهم به دبیر</div>
+          <button class="btn btn-secondary" onclick="navigateTo('dashboardView')">بازگشت به داشبورد</button>
+        </div>
+
+        <div class="glass-card" style="margin-bottom:22px;">
+          <table class="custom-table">
+            <tbody>
+              <tr><th>نام و نام خانوادگی دانش‌آموز</th><td id="repStudentName">-</td></tr>
+              <tr><th>نام مدرسه</th><td id="repSchoolName">-</td></tr>
+              <tr><th>پایه تحصیلی</th><td id="repGrade">-</td></tr>
+              <tr><th>نام دبیر</th><td id="repTeacherName">برزگری</td></tr>
+              <tr><th>عنوان جلسه</th><td>جلسه نهم: قوانین زمان (۳، ۵، ۸، ۱۴ و ۲۴ ثانیه) و خطاهای تیمی</td></tr>
+              <tr><th>امتیاز کل (XP)</th><td id="repTotalXP" style="font-weight:bold; color:var(--primary);">۰ XP</td></tr>
+              <tr><th>درصد پیشرفت جلسه</th><td id="repProgressPercent" style="font-weight:bold; color:var(--accent);">۰٪</td></tr>
+              <tr><th>مدت حضور در جلسه</th><td id="repDuration">-</td></tr>
+              <tr><th>فعالیت‌های انجام‌شده</th><td id="repCompletedItems">-</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="text-align:center;">
+          <button id="finalSubmitReportBtn" class="btn" style="font-size:1.15rem; padding:16px 38px; animation: pulseGlow 2s infinite;" onclick="handleFinalReportSubmission()">
+            🚀 ثبت و ارسال گزارش نهایی جلسه نهم (+۲۰ XP)
+          </button>
+          <p id="supabaseStatusMsg" style="margin-top:14px; font-size:0.95rem;"></p>
+        </div>
+
+        <!-- کارت تبریک پایان جلسه نهم -->
+        <div id="sessionCompletionBox" class="glass-card" style="display:none; margin-top:26px; text-align:center; border-color:var(--accent);">
+          <canvas id="celebrationCanvas" width="320" height="140" style="margin:0 auto; display:block;"></canvas>
+          <h3 style="color:var(--accent); font-size:1.4rem; margin-top:8px;">🎉 تبریک! جلسه نهم آموزش بسکتبال با موفقیت به پایان رسید</h3>
+          <p style="font-size:0.95rem; color:#cbd5e1; margin:8px 0 18px;">گزارش عملکرد جلسه نهم شما با موفقیت در پایگاه داده ثبت گردید.</p>
+          <button class="btn btn-secondary" onclick="showToast('جلسه دهم و پایانی (تاکتیک‌های تیمی، بازی ۳ به ۳ و ۵ به ۵ و جمع‌بندی کل دوره) در جلسه آینده فعال خواهد شد.')">
+            ⏭️ آمادگی برای ورود به جلسه دهم (پایانی) بسکتبال
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    /* ============================================================================
+       تنظیمات پروژه (PROJECT_CONFIG) - تمام تنظیمات جلسه نهم از این قسمت قابل تغییر است
+       ============================================================================ */
+    const PROJECT_CONFIG = {
+      systemTitle: "سامانه آموزش مجازی تربیت بدنی متوسطه اول",
+      sessionTitle: "جلسه نهم: قوانین زمان در بسکتبال (۳، ۵، ۸، ۱۴ و ۲۴ ثانیه) و خطاهای تیمی",
+      subjectName: "تربیت بدنی",
+      teacherName: "برزگری",
+      supabaseUrl: "https://tpwdrzwfzdbmwqlblntu.supabase.co",
+      supabaseKey: "sb_publishable_ASPIzP1XV1iSweCV43Oy9Q_PCkz5htN",
+      sessionLink: "برگزاری کلاس به صورت آفلاین در سامانه و ارسال تمرینات عملی در شبکه شاد",
+      activeModules: {
+        education: true,
+        summary: true,
+        activities: true,
+        files: true,
+        notices: true,
+        homework: true,
+        progress: true,
+        report: true
+      },
+      sessionFiles: [
+        {
+          title: "جدول کامل قوانین ۵ گانه زمان در بسکتبال (۳، ۵، ۸، ۱۴ و ۲۴ ثانیه)",
+          desc: "شامل شرایط اعمال هر قانون، جریمه‌های مربوطه، نحوه صفر کردن ۳ ثانیه و تفاوت ریست ۲۴ و ۱۴ ثانیه."
+        },
+        {
+          title: "راهنمای قوانین خطای فردی (۵ خطا)، خطای تیمی (۴ خطا در کوارتر) و علائم داوری",
+          desc: "آشنایی با نشانگر قرمز خطای تیمی (Bonus)، قوانین تایم‌اوت و تعویض و علائم رسمی دست داوران."
+        }
+      ],
+      homeworks: [
+        "۱- تمرین اجرای «۵ علامت رسمی دست داور» برای تخلفات زمانی (۳ ثانیه، ۵ ثانیه، ۸ ثانیه، ۲۴ ثانیه و ریست ساعت شوت) در مقابل آینه.",
+        "۲- تمرین دریبل سرعتی در حیاط یا فضای باز و شمردن زمان ۸ ثانیه برای درک سرعت لازم جهت عبور از نیمه زمین.",
+        "۳- مرور تفاوت «۵ خطای شخصی یک بازیکن در کل بازی» با «۴ خطای تیمی در یک کوارتر» و توضیح آن برای یکی از اعضای خانواده."
+      ],
+      notices: [
+        "دانش‌آموزان گرامی، آگاهی از قوانین زمان و خطاها به شما کمک می‌کند در مسابقات مدرسه‌ای بدون ارتکاب تخلف‌های ساده، هوشمندانه بازی کنید.",
+        "احترام کامل به سوت و تصمیم داور، مهم‌ترین اصل اخلاقی در ورزش بسکتبال است و هرگونه اعتراض باعث جریمه خطای فنی (Technical Foul) می‌شود.",
+        "پس از تکمیل تمامی بخش‌های جلسه نهم و رسیدن به امتیاز ۹۰، دکمه «ثبت و ارسال گزارش نهایی» را در حالت اتصال به اینترنت بفشارید."
+      ]
+    };
+
+    /* ============================================================================
+       اتصال مستقیم به جدول Students در Supabase
+       ============================================================================ */
+    const SUPABASE_URL = PROJECT_CONFIG.supabaseUrl;
+    const SUPABASE_KEY = PROJECT_CONFIG.supabaseKey;
+    let ACTIVE_SCHOOL = "";
+    let ACTIVE_SUBJECT = PROJECT_CONFIG.subjectName;
+
+    async function sendToSupabase(studentName, score, totalScore, detailsText) {
+      const payload = {
+        Student_name: studentName,
+        School_name: ACTIVE_SCHOOL,
+        Subject: ACTIVE_SUBJECT,
+        Score: parseFloat(score),
+        Total_score: parseFloat(totalScore),
+        Details: detailsText
+      };
+
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/Students`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${SUPABASE_KEY}`,
+          "Prefer": "return=minimal"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error(`خطای سرور: ${response.status}`);
+      }
+      return true;
+    }
+
+    /* ============================================================================
+       مدیریت وضعیت دانش‌آموز و سیستم ضدتقلب در LocalStorage (ویژه جلسه نهم)
+       ============================================================================ */
+    const STORAGE_KEY = "PE_BASKETBALL_SESSION9_STATE_V1";
+    const MAX_TOTAL_XP = 110;
+
+    let appState = {
+      studentName: "",
+      schoolName: "",
+      grade: "",
+      loginCount: 0,
+      firstLoginTime: "",
+      totalSeconds: 0,
+      xp: 0,
+      awardedFlags: {
+        login: false,      // 5 XP
+        education: false,  // 20 XP
+        summary: false,    // 10 XP
+        activities: false, // 30 XP
+        files: false,      // 10 XP
+        notices: false,    // 5 XP
+        homework: false,   // 10 XP
+        report: false      // 20 XP
+      },
+      activitySubFlags: {
+        equipDone: false,
+        orderDone: false,
+        refGameDone: false
+      },
+      homeworkNote: "",
+      reportSent: false,
+      reportTime: ""
+    };
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          appState = {
+            ...appState,
+            ...parsed,
+            awardedFlags: { ...appState.awardedFlags, ...(parsed.awardedFlags || {}) },
+            activitySubFlags: { ...appState.activitySubFlags, ...(parsed.activitySubFlags || {}) }
+          };
+        }
+      } catch (e) {}
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      } catch (e) {}
+      updateStatusBarUI();
+    }
+
+    /* ============================================================================
+       مقداردهی اولیه کل سامانه و موتورهای گرافیکی جلسه نهم
+       ============================================================================ */
+    window.addEventListener("DOMContentLoaded", () => {
+      loadState();
+      applyProjectConfig();
+      initBackgroundParticles();
+      initConfettiEngine();
+      initWelcomeShotClockCanvas();
+      initSkillSimulatorCanvas();
+      initRefSimGame();
+      init3DTiltCards();
+
+      if (appState.studentName && appState.schoolName && appState.grade) {
+        document.getElementById("studentNameInput").value = appState.studentName;
+        document.getElementById("schoolSelect").value = appState.schoolName;
+        document.getElementById("gradeSelect").value = appState.grade;
+        validateLoginForm();
+      }
+
+      setInterval(() => {
+        if (appState.studentName && !document.getElementById("loginView").classList.contains("active")) {
+          appState.totalSeconds++;
+          if (appState.totalSeconds % 5 === 0) saveState();
+          const progTimeEl = document.getElementById("progTimeValue");
+          if (progTimeEl) progTimeEl.textContent = formatDuration(appState.totalSeconds);
+        }
+      }, 1000);
+    });
+
+    function applyProjectConfig() {
+      document.getElementById("uiAppTitle").textContent = PROJECT_CONFIG.systemTitle;
+      document.getElementById("uiSessionTitle").textContent = PROJECT_CONFIG.sessionTitle;
+      document.getElementById("uiSubjectText").textContent = PROJECT_CONFIG.subjectName;
+      document.getElementById("uiTeacherText").textContent = PROJECT_CONFIG.teacherName;
+      document.getElementById("fixedTeacherInput").value = PROJECT_CONFIG.teacherName;
+      document.getElementById("fixedSubjectInput").value = PROJECT_CONFIG.subjectName;
+
+      const filesBox = document.getElementById("filesListContainer");
+      filesBox.innerHTML = PROJECT_CONFIG.sessionFiles.map(f => `
+        <div class="glass-card tilt-card">
+          <div class="card-glare"></div>
+          <h4 style="color:var(--primary); margin-bottom:6px;">📄 ${f.title}</h4>
+          <p style="font-size:0.88rem; color:#cbd5e1;">${f.desc}</p>
+        </div>
+      `).join("");
+      document.getElementById("sessionLinkDisplay").textContent = PROJECT_CONFIG.sessionLink;
+
+      const noticesBox = document.getElementById("noticesListContainer");
+      noticesBox.innerHTML = PROJECT_CONFIG.notices.map((n, idx) => `
+        <div class="glass-card" style="border-right:4px solid var(--secondary);">
+          <strong>اطلاعیه شماره ${(idx + 1).toLocaleString('fa-IR')}:</strong>
+          <p style="font-size:0.9rem; margin-top:4px; color:#e2e8f0;">${n}</p>
+        </div>
+      `).join("");
+
+      const hwBox = document.getElementById("homeworkChecklist");
+      hwBox.innerHTML = PROJECT_CONFIG.homeworks.map(h => `
+        <label class="glass-card" style="display:flex; align-items:center; gap:12px; cursor:pointer;">
+          <input type="checkbox" class="hw-check" style="width:20px; height:20px; accent-color:var(--primary);">
+          <span style="font-size:0.92rem;">${h}</span>
+        </label>
+      `).join("");
+    }
+
+    /* ============================================================================
+       ۱. موتور پس‌زمینه ذرات و خطوط تاکتیکی تعاملی (60FPS Particle Network)
+       ============================================================================ */
+    function initBackgroundParticles() {
+      const canvas = document.getElementById("bgParticlesCanvas");
+      const ctx = canvas.getContext("2d");
+      let w = canvas.width = window.innerWidth;
+      let h = canvas.height = window.innerHeight;
+
+      window.addEventListener("resize", () => {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+      });
+
+      const mouse = { x: -500, y: -500 };
+      window.addEventListener("mousemove", e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+
+      const count = Math.min(48, Math.floor(w / 28));
+      const nodes = Array.from({ length: count }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.65,
+        vy: (Math.random() - 0.5) * 0.65,
+        r: Math.random() * 2.2 + 1.2,
+        isOrange: Math.random() > 0.5
+      }));
+
+      function renderBg() {
+        ctx.clearRect(0, 0, w, h);
+        for (let i = 0; i < nodes.length; i++) {
+          const p = nodes[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.x < 0 || p.x > w) p.vx *= -1;
+          if (p.y < 0 || p.y > h) p.vy *= -1;
+
+          const dxM = p.x - mouse.x;
+          const dyM = p.y - mouse.y;
+          const distM = Math.hypot(dxM, dyM);
+          if (distM < 110 && distM > 0) {
+            p.x += (dxM / distM) * 1.1;
+            p.y += (dyM / distM) * 1.1;
+          }
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = p.isOrange ? "rgba(249, 115, 22, 0.55)" : "rgba(56, 189, 248, 0.45)";
+          ctx.fill();
+
+          for (let j = i + 1; j < nodes.length; j++) {
+            const q = nodes[j];
+            const dist = Math.hypot(p.x - q.x, p.y - q.y);
+            if (dist < 135) {
+              ctx.beginPath();
+              ctx.moveTo(p.x, p.y);
+              ctx.lineTo(q.x, q.y);
+              ctx.strokeStyle = `rgba(148, 163, 184, ${(1 - dist / 135) * 0.14})`;
+              ctx.lineWidth = 1;
+              ctx.stroke();
+            }
+          }
+        }
+        requestAnimationFrame(renderBg);
+      }
+      renderBg();
+    }
+
+    /* ============================================================================
+       ۲. موتور انفجار ذرات نوری و کنفتی
+       ============================================================================ */
+    let confettiParticles = [];
+
+    function initConfettiEngine() {
+      const canvas = document.getElementById("fxConfettiCanvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      window.addEventListener("resize", () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      });
+
+      function loopConfetti() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        for (let i = confettiParticles.length - 1; i >= 0; i--) {
+          const c = confettiParticles[i];
+          c.x += c.vx;
+          c.y += c.vy;
+          c.vy += 0.25;
+          c.rot += c.vRot;
+          c.life -= 0.014;
+
+          if (c.life <= 0) {
+            confettiParticles.splice(i, 1);
+            continue;
+          }
+
+          ctx.save();
+          ctx.translate(c.x, c.y);
+          ctx.rotate(c.rot);
+          ctx.globalAlpha = Math.max(0, c.life);
+          ctx.fillStyle = c.color;
+          ctx.fillRect(-c.size / 2, -c.size / 2, c.size, c.size * 0.65);
+          ctx.restore();
+        }
+        requestAnimationFrame(loopConfetti);
+      }
+      loopConfetti();
+    }
+
+    function triggerParticleBurst(originX = window.innerWidth / 2, originY = window.innerHeight / 2) {
+      const colors = ["#f97316", "#38bdf8", "#10b981", "#facc15", "#ec4899"];
+      for (let i = 0; i < 45; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = Math.random() * 8 + 3;
+        confettiParticles.push({
+          x: originX,
+          y: originY,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed - 4,
+          size: Math.random() * 8 + 5,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rot: Math.random() * Math.PI,
+          vRot: (Math.random() - 0.5) * 0.2,
+          life: 1.0
+        });
+      }
+    }
+
+    /* ============================================================================
+       ۳. افکت سه بعدی کارت‌ها (3D Perspective Tilt)
+       ============================================================================ */
+    function init3DTiltCards() {
+      document.addEventListener("mousemove", (e) => {
+        const card = e.target.closest(".tilt-card");
+        if (!card) return;
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const rotateX = ((y - rect.height / 2) / (rect.height / 2)) * -7;
+        const rotateY = ((x - rect.width / 2) / (rect.width / 2)) * 7;
+
+        card.style.transform = `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-4px)`;
+        const glare = card.querySelector(".card-glare");
+        if (glare) {
+          glare.style.background = `radial-gradient(circle at ${(x / rect.width) * 100}% ${(y / rect.height) * 100}%, rgba(255,255,255,0.16), transparent 60%)`;
+        }
+      });
+
+      document.addEventListener("mouseout", (e) => {
+        const card = e.target.closest(".tilt-card");
+        if (card && !card.contains(e.relatedTarget)) {
+          card.style.transform = "perspective(900px) rotateX(0deg) rotateY(0deg) translateY(0)";
+        }
+      });
+    }
+
+    /* ============================================================================
+       اعتبارسنجی فرم ورود و شروع جلسه نهم
+       ============================================================================ */
+    function validateLoginForm() {
+      const nameVal = document.getElementById("studentNameInput").value.trim();
+      const schoolVal = document.getElementById("schoolSelect").value;
+      const gradeVal = document.getElementById("gradeSelect").value;
+      document.getElementById("startBtn").disabled = !(nameVal.length >= 3 && schoolVal !== "" && gradeVal !== "");
+    }
+
+    function handleLoginSubmit(e) {
+      e.preventDefault();
+      const nameVal = document.getElementById("studentNameInput").value.trim();
+      const schoolVal = document.getElementById("schoolSelect").value;
+      const gradeVal = document.getElementById("gradeSelect").value;
+
+      appState.studentName = nameVal;
+      appState.schoolName = schoolVal;
+      appState.grade = gradeVal;
+      appState.loginCount += 1;
+
+      ACTIVE_SCHOOL = schoolVal;
+      ACTIVE_SUBJECT = `${PROJECT_CONFIG.subjectName} (${gradeVal})`;
+
+      if (!appState.firstLoginTime) {
+        appState.firstLoginTime = new Date().toLocaleTimeString("fa-IR");
+      }
+
+      if (!appState.awardedFlags.login) {
+        appState.awardedFlags.login = true;
+        appState.xp += 5;
+        triggerParticleBurst();
+        showToast("خوش آمدید! ۵ امتیاز (XP) بابت ورود به جلسه نهم دریافت کردید.");
+      }
+
+      saveState();
+      document.getElementById("topStatusBar").style.display = "flex";
+      renderDashboardCards();
+      navigateTo("dashboardView");
+    }
+
+    /* ============================================================================
+       رندر داشبورد جلسه نهم
+       ============================================================================ */
+    function renderDashboardCards() {
+      const modules = [
+        { key: "education", title: "آموزش جامع قوانین زمان و خطاها", xp: "۲۰ XP", icon: "⏱️", view: "educationView", desc: "قوانین ۳، ۵، ۸، ۱۴ و ۲۴ ثانیه، نقشه تعاملی زمان و قانون ۴ خطای تیمی" },
+        { key: "summary", title: "خلاصه و نقشه ذهنی جلسه نهم", xp: "۱۰ XP", icon: "🧠", view: "summaryView", desc: "مرور تصویری و نمودار درختی پویا از تمام قوانین زمانی و داوری" },
+        { key: "activities", title: "فعالیت عملی و شبیه‌ساز داوری", xp: "۳۰ XP", icon: "🎮", view: "activitiesView", desc: "تشخیص قوانین زمان، مرتب‌سازی ثانیه‌ها و بازی قضاوت داور در مسابقه" },
+        { key: "files", title: "فایل‌ها و لینک کلاس", xp: "۱۰ XP", icon: "📁", view: "filesView", desc: "جدول کامل قوانین ۵ گانه زمان و راهنمای علائم دست داوران" },
+        { key: "notices", title: "اطلاعیه‌های آموزشی", xp: "۵ XP", icon: "📢", view: "noticesView", desc: "نکات اخلاق ورزشی، احترام به داور و پرهیز از خطای فنی" },
+        { key: "homework", title: "تکلیف عملی جلسه نهم", xp: "۱۰ XP", icon: "📝", view: "homeworkView", desc: "تمرین عملی علائم دست داور برای تخلفات زمانی در منزل" },
+        { key: "progress", title: "گزارش پیشرفت و نشان‌ها", xp: "مشاهده", icon: "📊", view: "progressView", desc: "بررسی درصد پیشرفت، زمان حضور و نشان‌های افتخار جلسه نهم" },
+        { key: "report", title: "ثبت و ارسال گزارش نهایی", xp: "۲۰ XP", icon: "📤", view: "reportView", desc: "ثبت نهایی عملکرد جلسه نهم و ارسال مستقیم برای دبیر" }
+      ];
+
+      const grid = document.getElementById("dashboardModulesGrid");
+      grid.innerHTML = modules
+        .filter(m => PROJECT_CONFIG.activeModules[m.key])
+        .map(m => {
+          const isDone = appState.awardedFlags[m.key] === true;
+          return `
+            <div class="glass-card tilt-card" style="cursor:pointer; display:flex; flex-direction:column; justify-content:space-between;" onclick="navigateTo('${m.view}')">
+              <div class="card-glare"></div>
+              <div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                  <span style="font-size:2.1rem;">${m.icon}</span>
+                  <span class="badge-xp" style="background:${isDone ? 'var(--accent)' : ''};">
+                    ${isDone ? '✓ تکمیل شده' : m.xp}
+                  </span>
+                </div>
+                <h3 style="font-size:1.12rem; color:var(--text-main); margin-bottom:6px;">${m.title}</h3>
+                <p style="font-size:0.85rem; color:var(--text-muted);">${m.desc}</p>
+              </div>
+              <div style="margin-top:16px; font-size:0.85rem; color:var(--secondary); font-weight:800;">ورود به بخش ←</div>
+            </div>
+          `;
+        }).join("");
+    }
+
+    function navigateTo(viewId) {
+      document.querySelectorAll(".view-section").forEach(sec => sec.classList.remove("active"));
+      document.getElementById(viewId).classList.add("active");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+
+      if (viewId === "dashboardView") renderDashboardCards();
+      if (viewId === "progressView") renderProgressView();
+      if (viewId === "reportView") renderReportView();
+      updateStatusBarUI();
+    }
+
+    function switchEduTab(tabId, btnEl) {
+      document.querySelectorAll(".edu-sub-view").forEach(el => el.style.display = "none");
+      document.getElementById(tabId).style.display = "block";
+      btnEl.parentElement.querySelectorAll(".sub-tab-btn").forEach(b => b.classList.remove("active"));
+      btnEl.classList.add("active");
+    }
+
+    function calculateProgressPercent() {
+      const keys = ["login", "education", "summary", "activities", "files", "notices", "homework", "report"];
+      const doneCount = keys.filter(k => appState.awardedFlags[k]).length;
+      return Math.round((doneCount / keys.length) * 100);
+    }
+
+    function updateStatusBarUI() {
+      document.getElementById("headerStudentName").textContent = appState.studentName || "دانش‌آموز";
+      document.getElementById("headerSchoolInfo").textContent = `${appState.schoolName} | ${appState.grade}`;
+      document.getElementById("headerXP").textContent = appState.xp.toLocaleString("fa-IR");
+
+      const pct = calculateProgressPercent();
+      document.getElementById("headerProgressText").textContent = `${pct.toLocaleString("fa-IR")}٪`;
+      document.getElementById("headerProgressFill").style.width = `${pct}%`;
+
+      const btnMap = [
+        { key: "education", id: "claimEducationBtn" },
+        { key: "summary", id: "claimSummaryBtn" },
+        { key: "files", id: "claimFilesBtn" },
+        { key: "notices", id: "claimNoticesBtn" },
+        { key: "homework", id: "claimHomeworkBtn" }
+      ];
+      btnMap.forEach(item => {
+        const btn = document.getElementById(item.id);
+        if (btn && appState.awardedFlags[item.key]) {
+          btn.disabled = true;
+          btn.textContent = "✓ امتیاز این بخش قبلاً در حساب شما ثبت شده است";
+        }
+      });
+    }
+
+    function completeSectionXP(key, xpAmount, title) {
+      if (appState.awardedFlags[key]) {
+        showToast("امتیاز این بخش قبلاً ثبت شده است.");
+        return;
+      }
+      appState.awardedFlags[key] = true;
+      appState.xp += xpAmount;
+      saveState();
+      playBeepSound(880, 0.22);
+      triggerParticleBurst();
+      showToast(`آفرین! ${xpAmount.toLocaleString("fa-IR")} امتیاز (XP) بابت «${title}» دریافت کردید.`);
+    }
+
+    /* ============================================================================
+       ۴. نقشه تعاملی مناطق زمانی زمین بسکتبال + پخش صوتی
+       ============================================================================ */
+    const TIME_MAP_DATA = {
+      eightSecZone: {
+        title: "۱. منطقه نیمه دفاعی — قانون ۸ ثانیه انتقال توپ",
+        desc: "وقتی تیم شما در نیمه دفاعی صاحب توپ می‌شود، حداکثر ۸ ثانیه زمان دارد تا توپ و هر دو پای بازیکن حامل توپ را از خط وسط عبور داده و وارد نیمه حمله کند."
+      },
+      threeSecZone: {
+        title: "۲. منطقه رنگی ذوزنقه — قانون ۳ ثانیه مهاجم",
+        desc: "بازیکنان تیم مهاجم حق ندارند بیش از ۳ ثانیه متوالی در داخل مستطیل رنگی زیر سبد حریف بدون اقدام به شوت توقف کنند."
+      },
+      fiveSecZone: {
+        title: "۳. قانون ۵ ثانیه (پرتاب اوت، پرتاب آزاد و دفاع نزدیک)",
+        desc: "بازیکن در ۳ حالت فقط ۵ ثانیه فرصت دارد: ۱. پاس دادن توپ از بیرون زمین (اوت)، ۲. زدن پرتاب آزاد پنالتی، ۳. زمانی که در زمین توپ را گرفته و از فاصله نزدیک دفاع می‌شود."
+      },
+      shotClockZone: {
+        title: "۴. ساعت شوت بالای سبد — قانون ۲۴ و ۱۴ ثانیه",
+        desc: "تیم مهاجم ۲۴ ثانیه فرصت دارد شوت بزند تا توپ به حلقه بخورد. اگر پس از برخورد توپ به حلقه، خود تیم مهاجم ریباند کند، ساعت شوت روی ۱۴ ثانیه تنظیم می‌شود."
+      }
+    };
+
+    let currentTimePartKey = null;
+
+    function playBeepSound(freq = 520, duration = 0.12) {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.14, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    function selectTimePart(partKey) {
+      currentTimePartKey = partKey;
+      const info = TIME_MAP_DATA[partKey];
+      if (!info) return;
+      document.getElementById("timePartTitle").textContent = info.title;
+      document.getElementById("timePartDesc").textContent = info.desc;
+      playBeepSound(740, 0.15);
+      speakCurrentTimeInfo();
+    }
+
+    function speakCurrentTimeInfo() {
+      if (!currentTimePartKey) {
+        showToast("لطفاً ابتدا روی یکی از ۴ منطقه زمانی روی زمین کلیک کنید.");
+        return;
+      }
+      const info = TIME_MAP_DATA[currentTimePartKey];
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(`${info.title}. ${info.desc}`);
+        utter.lang = "fa-IR";
+        utter.rate = 1.0;
+        window.speechSynthesis.speak(utter);
+      }
+    }
+
+    /* ============================================================================
+       ۵. چرخش سه‌بعدی هولوگرام جلسه نهم
+       ============================================================================ */
+    let autoSpinInterval = null;
+
+    function rotateEquipments(deg) {
+      document.getElementById("equipRotateLabel").textContent = `${Number(deg).toLocaleString("fa-IR")} درجه`;
+      document.querySelectorAll(".equip-3d-object").forEach(el => {
+        el.style.transform = `rotateY(${deg}deg) rotateX(${Math.sin(deg * 0.04) * 14}deg)`;
+      });
+    }
+
+    function toggleAutoSpinEquip() {
+      const btn = document.getElementById("autoSpinBtn");
+      const slider = document.getElementById("equipRotateRange");
+      if (autoSpinInterval) {
+        clearInterval(autoSpinInterval);
+        autoSpinInterval = null;
+        btn.textContent = "▶️ چرخش خودکار ۳۶۰ درجه";
+        return;
+      }
+      btn.textContent = "⏸️ توقف چرخش خودکار";
+      let angle = Number(slider.value);
+      autoSpinInterval = setInterval(() => {
+        angle += 2;
+        if (angle > 180) angle = -180;
+        slider.value = angle;
+        rotateEquipments(angle);
+      }, 30);
+    }
+
+    /* ============================================================================
+       ۶. آزمایشگاه انیمیشنی جلسه نهم (۳ ثانیه، ۸ ثانیه و ریست ۱۴ ثانیه)
+       ============================================================================ */
+    let skillSimMode = "threeSecSim";
+    let skillSimSpeed = 1.0;
+
+    function setSkillSimMode(mode, btnEl) {
+      skillSimMode = mode;
+      btnEl.parentElement.querySelectorAll(".sub-tab-btn").forEach(b => b.classList.remove("active"));
+      btnEl.classList.add("active");
+    }
+
+    function setSkillSimSpeed(spd) {
+      skillSimSpeed = spd;
+      showToast(spd < 1 ? "حالت صحنه آهسته (Slow Motion) فعال شد." : "سرعت عادی انیمیشن فعال شد.");
+    }
+
+    function initSkillSimulatorCanvas() {
+      const canvas = document.getElementById("skillSimCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      let t = 0;
+
+      function animateSkills() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        t += 0.045 * skillSimSpeed;
+
+        if (skillSimMode === "threeSecSim") {
+          // نمایش منطقه سه ثانیه و ورود و خروج قانونی مهاجم قبل از ۳ ثانیه
+          const cycle = t % 4; // 0 تا 4
+          const inPaint = cycle < 2.7;
+
+          // مستطیل منطقه سه ثانیه
+          ctx.fillStyle = inPaint && cycle > 2.2 ? "rgba(239, 68, 68, 0.45)" : "rgba(249, 115, 22, 0.28)";
+          ctx.strokeStyle = "#fff";
+          ctx.lineWidth = 3;
+          ctx.fillRect(240, 55, 200, 130);
+          ctx.strokeRect(240, 55, 200, 130);
+
+          const px = inPaint ? 340 : 195;
+          ctx.fillStyle = "#0ea5e9";
+          ctx.beginPath(); ctx.arc(px, 120, 16, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "#fff"; ctx.font = "bold 11px Tahoma"; ctx.textAlign = "center";
+          ctx.fillText("مهاجم", px, 124);
+
+          // تایمر بالای سر بازیکن
+          const secVal = inPaint ? Math.min(3, Math.floor(cycle) + 1) : 0;
+          ctx.fillStyle = secVal === 3 ? "#ef4444" : "#facc15";
+          ctx.font = "900 18px Tahoma";
+          ctx.fillText(inPaint ? `تایمر ذوزنقه: ${secVal.toLocaleString("fa-IR")} ثانیه` : "✓ خروج از ذوزنقه (صفر شدن تایمر!)", 340, 208);
+
+          ctx.fillStyle = "#e2e8f0";
+          ctx.font = "bold 13px Tahoma";
+          ctx.fillText("قانون ۳ ثانیه: بازیکن مهاجم قبل از پر شدن ۳ ثانیه باید از مستطیل رنگی خارج شود تا تایمر صفر گردد", 340, 32);
+        } else if (skillSimMode === "eightSecSim") {
+          // نمایش عبور از خط نیمه قبل از پایان ۸ ثانیه
+          const prog = (t * 0.35) % 1;
+          const secUsed = Math.min(8, Math.floor(prog * 7) + 1);
+
+          // خط وسط زمین
+          ctx.strokeStyle = "#fff";
+          ctx.lineWidth = 4;
+          ctx.beginPath(); ctx.moveTo(340, 48); ctx.lineTo(340, 195); ctx.stroke();
+
+          ctx.fillStyle = "rgba(56, 189, 248, 0.25)";
+          ctx.fillRect(60, 50, 280, 140);
+          ctx.fillStyle = "rgba(16, 185, 129, 0.2)";
+          ctx.fillRect(340, 50, 280, 140);
+
+          const px = 100 + prog * 440;
+          ctx.fillStyle = px > 340 ? "#10b981" : "#0ea5e9";
+          ctx.beginPath(); ctx.arc(px, 120, 16, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "#f97316";
+          ctx.beginPath(); ctx.arc(px + 20, 115, 9, 0, Math.PI * 2); ctx.fill();
+
+          ctx.fillStyle = px > 340 ? "#10b981" : "#facc15";
+          ctx.font = "bold 15px Tahoma";
+          ctx.textAlign = "center";
+          ctx.fillText(
+            px > 340 ? "✓ ورود موفق به نیمه حمله در ثانیه ۵!" : `شمارش نیمه دفاعی: ${secUsed.toLocaleString("fa-IR")} از ۸ ثانیه`,
+            340, 212
+          );
+
+          ctx.fillStyle = "#e2e8f0";
+          ctx.font = "bold 13px Tahoma";
+          ctx.fillText("قانون ۸ ثانیه: تیم صاحب توپ حداکثر ۸ ثانیه فرصت دارد توپ را از خط وسط زمین عبور دهد", 340, 32);
+        } else {
+          // نمایش برخورد شوت به حلقه و ریست ساعت شوت از ۲۴ به ۱۴ ثانیه پس از ریباند حمله
+          const prog = (t * 0.4) % 1;
+          const hitRim = prog > 0.5;
+
+          // تابلو ساعت شوت
+          ctx.fillStyle = "#090d16";
+          ctx.strokeStyle = hitRim ? "#10b981" : "#f97316";
+          ctx.lineWidth = 3;
+          ctx.beginPath(); ctx.roundRect(490, 48, 95, 58, 10); ctx.fill(); ctx.stroke();
+
+          const clockNum = hitRim ? 14 : Math.max(4, Math.floor(12 - prog * 16));
+          ctx.fillStyle = hitRim ? "#10b981" : "#ef4444";
+          ctx.font = "900 26px monospace";
+          ctx.textAlign = "center";
+          ctx.fillText(clockNum, 537, 86);
+
+          // حلقه سبد
+          ctx.strokeStyle = "#f97316";
+          ctx.lineWidth = 4;
+          ctx.beginPath(); ctx.moveTo(495, 130); ctx.lineTo(540, 130); ctx.stroke();
+
+          // مسیر توپ (شوت به حلقه و برگشت به دست مهاجم برای ریباند حمله)
+          let bx, by;
+          if (!hitRim) {
+            const p = prog / 0.5;
+            bx = 180 + p * 330;
+            by = 155 - Math.sin(p * Math.PI) * 65;
+          } else {
+            const p = (prog - 0.5) / 0.5;
+            bx = 510 - p * 160;
+            by = 130 - Math.sin(p * Math.PI) * 35 + p * 25;
+          }
+
+          ctx.fillStyle = "#f97316";
+          ctx.beginPath(); ctx.arc(bx, by, 12, 0, Math.PI * 2); ctx.fill();
+
+          ctx.fillStyle = "#e2e8f0";
+          ctx.font = "bold 13px Tahoma";
+          ctx.fillText("قانون ۱۴ ثانیه: وقتی شوت به حلقه می‌خورد و خود تیم مهاجم ریباند می‌کند، ساعت شوت روی ۱۴ ثانیه تنظیم می‌شود", 340, 32);
+        }
+
+        requestAnimationFrame(animateSkills);
+      }
+      animateSkills();
+    }
+
+    /* ============================================================================
+       ۷. فعالیت‌های عملی و بازی شبیه‌ساز قضاوت داور (Referee Decision Sim)
+       ============================================================================ */
+    let selectedCorrectEquips = 0;
+    let selectedWrongEquips = 0;
+
+    function toggleEquipSelect(btn, isCorrect) {
+      if (appState.activitySubFlags.equipDone) return;
+      const active = btn.classList.toggle("active");
+      if (isCorrect) {
+        selectedCorrectEquips += active ? 1 : -1;
+      } else {
+        selectedWrongEquips += active ? 1 : -1;
+        if (active) showToast("توجه: این گزاره از نظر قوانین رسمی داوری نادرست است!");
+      }
+
+      if (selectedCorrectEquips === 4 && selectedWrongEquips === 0) {
+        appState.activitySubFlags.equipDone = true;
+        document.getElementById("act1Status").textContent = "(✓ تکمیل شد)";
+        document.getElementById("act1Status").style.color = "var(--accent)";
+        playBeepSound(880, 0.2);
+        triggerParticleBurst();
+        showToast("فعالیت ۱ با موفقیت تکمیل شد!");
+        checkAllActivitiesCompletion();
+      }
+    }
+
+    let userOrderList = [];
+    let userOrderTitles = [];
+
+    function selectOrderStep(stepNum, stepTitle, btnEl) {
+      if (appState.activitySubFlags.orderDone) return;
+      btnEl.disabled = true;
+      userOrderList.push(stepNum);
+      userOrderTitles.push(stepTitle);
+      document.getElementById("orderFeedback").textContent = "ترتیب انتخابی شما: " + userOrderTitles.join(" ← ");
+
+      if (userOrderList.length === 4) {
+        const isRight = userOrderList.every((val, idx) => val === idx + 1);
+        if (isRight) {
+          appState.activitySubFlags.orderDone = true;
+          document.getElementById("act2Status").textContent = "(✓ تکمیل شد)";
+          document.getElementById("act2Status").style.color = "var(--accent)";
+          playBeepSound(880, 0.2);
+          triggerParticleBurst();
+          showToast("فعالیت ۲ (مرتب‌سازی قوانین زمان از ۳ تا ۲۴ ثانیه) به درستی انجام شد!");
+          checkAllActivitiesCompletion();
+        } else {
+          showToast("ترتیب اعداد زمانی رعایت نشد. دکمه شروع مجدد را بزنید.");
+        }
+      }
+    }
+
+    function resetOrderActivity() {
+      if (appState.activitySubFlags.orderDone) return;
+      userOrderList = [];
+      userOrderTitles = [];
+      document.getElementById("orderFeedback").textContent = "ترتیب انتخاب‌شده: هنوز موردی انتخاب نشده است.";
+      document.querySelectorAll("#orderStepsContainer button").forEach(b => b.disabled = false);
+    }
+
+    // فعالیت ۳: شبیه‌ساز قضاوت داور
+    const REF_SCENARIOS = [
+      {
+        prompt: "📢 صحنه ۱: بازیکن مهاجم به مدت ۴ ثانیه متوالی بدون شوت زدن در منطقه رنگی زیر سبد حریف ایستاده است؛ حکم داور چیست؟",
+        mode: "paint3Sec",
+        correctKey: "threeSecViol"
+      },
+      {
+        prompt: "📢 صحنه ۲: تیم آبی ۹ ثانیه است که در نیمه دفاعی خود پاس‌کاری می‌کند و هنوز توپ را از خط وسط رد نکرده است؛ حکم داور چیست؟",
+        mode: "backcourt8Sec",
+        correctKey: "eightSecViol"
+      },
+      {
+        prompt: "📢 صحنه ۳: تیم قرمز در این کوارتر ۴ خطای تیمی داشته و اکنون خطای پنجم خود را در میانه زمین انجام داده است؛ حکم داور چیست؟",
+        mode: "teamFoul5",
+        correctKey: "teamFoulPenalty"
+      }
+    ];
+    let currentRefIdx = 0;
+    let refGameScore = 0;
+
+    function initRefSimGame() {
+      const canvas = document.getElementById("refSimCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      let t = 0;
+
+      function renderRefGameLoop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        t += 0.06;
+
+        // زمین بسکتبال
+        ctx.fillStyle = "#c27838";
+        ctx.fillRect(0, 0, 600, 240);
+        ctx.strokeStyle = "#fff";
+        ctx.lineWidth = 2.5;
+        ctx.strokeRect(10, 10, 580, 220);
+        ctx.beginPath(); ctx.moveTo(300, 10); ctx.lineTo(300, 230); ctx.stroke();
+
+        // منطقه ذوزنقه سمت راست
+        ctx.fillStyle = "#ea580c";
+        ctx.fillRect(465, 70, 125, 100);
+        ctx.strokeRect(465, 70, 125, 100);
+
+        const scen = REF_SCENARIOS[Math.min(currentRefIdx, REF_SCENARIOS.length - 1)];
+
+        if (scen.mode === "paint3Sec") {
+          ctx.fillStyle = "#0ea5e9";
+          ctx.beginPath(); ctx.arc(525, 120, 16, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "#fff"; ctx.font = "bold 11px Tahoma"; ctx.textAlign = "center";
+          ctx.fillText("مهاجم", 525, 124);
+
+          ctx.fillStyle = "#090d16";
+          ctx.beginPath(); ctx.roundRect(450, 22, 130, 36, 8); ctx.fill();
+          ctx.fillStyle = "#ef4444"; ctx.font = "bold 14px Tahoma";
+          ctx.fillText("⏱️ توقف: ۴ ثانیه!", 515, 45);
+        } else if (scen.mode === "backcourt8Sec") {
+          const bx = 140 + Math.sin(t) * 45;
+          ctx.fillStyle = "#0ea5e9";
+          ctx.beginPath(); ctx.arc(bx, 120, 16, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "#fff"; ctx.font = "bold 11px Tahoma"; ctx.textAlign = "center";
+          ctx.fillText("تیم آبی", bx, 124);
+
+          ctx.fillStyle = "#090d16";
+          ctx.beginPath(); ctx.roundRect(85, 22, 165, 36, 8); ctx.fill();
+          ctx.fillStyle = "#ef4444"; ctx.font = "bold 14px Tahoma";
+          ctx.fillText("⏱️ زمان نیمه دفاع: ۹ ثانیه!", 167, 45);
+        } else {
+          ctx.fillStyle = "#ef4444";
+          ctx.beginPath(); ctx.arc(345, 120, 16, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = "#0ea5e9";
+          ctx.beginPath(); ctx.arc(375, 120, 16, 0, Math.PI * 2); ctx.fill();
+
+          ctx.fillStyle = "#090d16";
+          ctx.beginPath(); ctx.roundRect(195, 22, 210, 38, 8); ctx.fill();
+          ctx.fillStyle = "#facc15"; ctx.font = "bold 14px Tahoma"; ctx.textAlign = "center";
+          ctx.fillText("🚩 خطاهای تیم قرمز در کوارتر: ۵ خطا", 300, 46);
+        }
+
+        requestAnimationFrame(renderRefGameLoop);
+      }
+      renderRefGameLoop();
+    }
+
+    function submitRefDecision(decisionKey) {
+      if (appState.activitySubFlags.refGameDone) {
+        showToast("این شبیه‌ساز قبلاً با موفقیت تکمیل شده است.");
+        return;
+      }
+
+      const scen = REF_SCENARIOS[currentRefIdx];
+      if (scen && scen.correctKey === decisionKey) {
+        refGameScore++;
+        currentRefIdx++;
+        playBeepSound(920, 0.16);
+        document.getElementById("refGameScore").textContent = refGameScore.toLocaleString("fa-IR");
+
+        if (refGameScore >= 3) {
+          appState.activitySubFlags.refGameDone = true;
+          document.getElementById("refMissionText").textContent = "🎉 عالی! هر ۳ صحنه داوری زمان و خطاهای تیمی را با دقت کامل قضاوت کردید!";
+          document.getElementById("act3Status").textContent = "(✓ تکمیل شد)";
+          document.getElementById("act3Status").style.color = "var(--accent)";
+          triggerParticleBurst();
+          checkAllActivitiesCompletion();
+        } else {
+          document.getElementById("refMissionText").textContent = REF_SCENARIOS[currentRefIdx].prompt;
+          showToast("سوت و قضاوت داوری کاملاً صحیح بود! حالا صحنه بعدی را بررسی کنید.");
+        }
+      } else {
+        playBeepSound(240, 0.2);
+        showToast("حکم صادرشده با صحنه و تایمر مسابقه همخوانی ندارد؛ دوباره دقت کنید!");
+      }
+    }
+
+    function checkAllActivitiesCompletion() {
+      const sub = appState.activitySubFlags;
+      if (sub.equipDone && sub.orderDone && sub.refGameDone && !appState.awardedFlags.activities) {
+        completeSectionXP("activities", 30, "انجام کامل فعالیت‌های عملی جلسه نهم");
+      }
+      saveState();
+    }
+
+    /* ============================================================================
+       ثبت تکلیف، گزارش پیشرفت و ارسال به Supabase
+       ============================================================================ */
+    function submitHomeworkTask() {
+      const checks = document.querySelectorAll(".hw-check:checked");
+      const note = document.getElementById("homeworkNoteInput").value.trim();
+      if (checks.length < 3 || note.length < 5) {
+        showToast("لطفاً هر ۳ مورد چک‌لیست را تیک بزنید و گزارش کوتاه تمرین خود را بنویسید.");
+        return;
+      }
+      appState.homeworkNote = note;
+      completeSectionXP("homework", 10, "ثبت تکلیف عملی جلسه نهم");
+    }
+
+    function getEarnedBadges() {
+      const badges = [];
+      if (appState.awardedFlags.login) badges.push({ title: "نشان حضور در جلسه نهم", desc: "ورود رسمی به جلسه آموزش قوانین زمان و خطاهای تیمی" });
+      if (appState.awardedFlags.education && appState.awardedFlags.summary) badges.push({ title: "نشان متخصص قوانین FIBA (۳، ۵، ۸، ۱۴ و ۲۴ ثانیه)", desc: "مطالعه کامل قوانین زمانی، خطای تیمی و علائم دست داوران" });
+      if (appState.awardedFlags.activities) badges.push({ title: "نشان داور طلایی و مدیر زمان (Master Referee)", desc: "تکمیل هر ۳ چالش عملی و قضاوت صحیح صحنه‌های مسابقه" });
+      if (appState.xp >= 90) badges.push({ title: "قهرمان قوانین جلسه نهم (Achievement ویژه)", desc: "کسب بیش از ۹۰ امتیاز تجربه در جلسه نهم" });
+      return badges;
+    }
+
+    function renderProgressView() {
+      const pct = calculateProgressPercent();
+      document.getElementById("progXPValue").textContent = `${appState.xp.toLocaleString("fa-IR")} / ۱۱۰ XP`;
+      document.getElementById("progPercentValue").textContent = `${pct.toLocaleString("fa-IR")}٪`;
+      document.getElementById("progTimeValue").textContent = formatDuration(appState.totalSeconds);
+
+      const badges = getEarnedBadges();
+      const bBox = document.getElementById("badgesContainer");
+      if (badges.length === 0) {
+        bBox.innerHTML = `<p style="color:var(--text-muted); font-size:0.88rem;">هنوز نشانی دریافت نشده است.</p>`;
+      } else {
+        bBox.innerHTML = badges.map(b => `
+          <div style="background:rgba(249,115,22,0.14); border:1px solid rgba(249,115,22,0.45); padding:10px 14px; border-radius:10px;">
+            <strong style="color:var(--primary);">🏅 ${b.title}</strong>
+            <div style="font-size:0.82rem; color:#cbd5e1;">${b.desc}</div>
+          </div>
+        `).join("");
+      }
+
+      const labels = {
+        login: "ورود به سامانه جلسه نهم (۵ XP)",
+        education: "مشاهده آموزش کامل قوانین زمان و خطاهای تیمی (۲۰ XP)",
+        summary: "مطالعه خلاصه و نقشه ذهنی جلسه نهم (۱۰ XP)",
+        activities: "انجام فعالیت‌های عملی و شبیه‌ساز داوری (۳۰ XP)",
+        files: "بررسی فایل‌ها و منابع جلسه نهم (۱۰ XP)",
+        notices: "مطالعه اطلاعیه‌های آموزشی (۵ XP)",
+        homework: "ثبت تکلیف عملی جلسه نهم در منزل (۱۰ XP)",
+        report: "ثبت و ارسال گزارش نهایی جلسه نهم (۲۰ XP)"
+      };
+      const doneList = Object.keys(labels).filter(k => appState.awardedFlags[k]).map(k => `<li>${labels[k]}</li>`);
+      document.getElementById("completedLogsList").innerHTML = doneList.length ? doneList.join("") : "<li>هنوز فعالیتی تکمیل نشده است.</li>";
+    }
+
+    function getCompletedNamesSummary() {
+      const names = [];
+      if (appState.awardedFlags.login) names.push("ورود");
+      if (appState.awardedFlags.education) names.push("آموزش کامل جلسه ۹");
+      if (appState.awardedFlags.summary) names.push("خلاصه جلسه ۹");
+      if (appState.awardedFlags.activities) names.push("فعالیت عملی داوری زمان");
+      if (appState.awardedFlags.files) names.push("مشاهده فایل");
+      if (appState.awardedFlags.notices) names.push("مطالعه اطلاعیه");
+      if (appState.awardedFlags.homework) names.push("ثبت تکلیف جلسه ۹");
+      if (appState.awardedFlags.report) names.push("ثبت گزارش نهایی");
+      return names.join("، ") || "هیچ‌کدام";
+    }
+
+    function renderReportView() {
+      document.getElementById("repStudentName").textContent = appState.studentName;
+      document.getElementById("repSchoolName").textContent = appState.schoolName;
+      document.getElementById("repGrade").textContent = appState.grade;
+      document.getElementById("repTeacherName").textContent = PROJECT_CONFIG.teacherName;
+      document.getElementById("repTotalXP").textContent = `${appState.xp.toLocaleString("fa-IR")} از ۱۱۰ XP`;
+      document.getElementById("repProgressPercent").textContent = `${calculateProgressPercent().toLocaleString("fa-IR")}٪`;
+      document.getElementById("repDuration").textContent = formatDuration(appState.totalSeconds);
+      document.getElementById("repCompletedItems").textContent = getCompletedNamesSummary();
+
+      const btn = document.getElementById("finalSubmitReportBtn");
+      if (appState.reportSent) {
+        btn.disabled = true;
+        btn.textContent = "✓ گزارش نهایی جلسه نهم شما قبلاً ثبت و ارسال شده است";
+        document.getElementById("sessionCompletionBox").style.display = "block";
+        initCelebrationCanvas();
+      }
+    }
+
+    async function handleFinalReportSubmission() {
+      if (appState.reportSent) {
+        showToast("گزارش شما قبلاً یک مرتبه ارسال شده است.");
+        return;
+      }
+
+      const btn = document.getElementById("finalSubmitReportBtn");
+      const statusMsg = document.getElementById("supabaseStatusMsg");
+      btn.disabled = true;
+      btn.textContent = "در حال ثبت و ارسال گزارش جلسه نهم به سرور...";
+      statusMsg.style.color = "var(--secondary)";
+      statusMsg.textContent = "لطفاً چند لحظه صبر کنید...";
+
+      if (!appState.awardedFlags.report) {
+        appState.awardedFlags.report = true;
+        appState.xp += 20;
+      }
+
+      const nowStr = new Date().toLocaleString("fa-IR");
+      const pct = calculateProgressPercent();
+      const badgesCount = getEarnedBadges().length;
+      const achievementsCount = appState.xp >= 90 ? 1 : 0;
+
+      ACTIVE_SCHOOL = appState.schoolName;
+      ACTIVE_SUBJECT = `${PROJECT_CONFIG.subjectName} - ${appState.grade} (${PROJECT_CONFIG.sessionTitle})`;
+
+      const detailsText = [
+        `جلسه نهم بسکتبال`,
+        `پایه: ${appState.grade}`,
+        `دبیر: ${PROJECT_CONFIG.teacherName}`,
+        `زمان ورود: ${appState.firstLoginTime}`,
+        `زمان خروج و ثبت گزارش: ${nowStr}`,
+        `مدت حضور: ${formatDuration(appState.totalSeconds)}`,
+        `تعداد دفعات ورود: ${appState.loginCount}`,
+        `آموزش‌های مشاهده‌شده: ${appState.awardedFlags.education ? 'کامل' : 'خیر'}`,
+        `خلاصه‌های مطالعه‌شده: ${appState.awardedFlags.summary ? 'کامل' : 'خیر'}`,
+        `فعالیت‌های انجام‌شده: ${getCompletedNamesSummary()}`,
+        `توضیح تکلیف: ${appState.homeworkNote || 'ثبت نشده'}`,
+        `امتیاز XP: ${appState.xp} از ${MAX_TOTAL_XP}`,
+        `درصد پیشرفت: ${pct}%`,
+        `تعداد Badge: ${badgesCount}`,
+        `تعداد Achievement: ${achievementsCount}`
+      ].join(" | ");
+
+      try {
+        await sendToSupabase(appState.studentName, appState.xp, MAX_TOTAL_XP, detailsText);
+        appState.reportSent = true;
+        appState.reportTime = nowStr;
+        saveState();
+        renderReportView();
+        triggerParticleBurst();
+        statusMsg.style.color = "var(--accent)";
+        statusMsg.textContent = "✅ گزارش عملکرد جلسه نهم شما با موفقیت در سامانه دبیر ثبت گردید.";
+        showToast("گزارش نهایی جلسه نهم با موفقیت ارسال شد (+۲۰ XP).");
+      } catch (err) {
+        saveState();
+        renderReportView();
+        btn.disabled = false;
+        btn.textContent = "🔄 تلاش مجدد برای ارسال گزارش به سرور";
+        statusMsg.style.color = "var(--warning)";
+        statusMsg.textContent = `امتیاز ثبت گزارش (+۲۰ XP) در دستگاه شما ذخیره شد، اما ارسال اینترنتی با خطا مواجه گردید (${err.message}). در صورت اتصال به اینترنت مجدداً دکمه را بزنید.`;
+      }
+    }
+
+    /* ============================================================================
+       ۸. انیمیشن تعاملی ساعت شوت ۲۴ و ۱۴ ثانیه در صفحه آغازین جلسه نهم
+       ============================================================================ */
+    function initWelcomeShotClockCanvas() {
+      const canvas = document.getElementById("welcomeBallCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+
+      let clockVal = 24;
+      let tickCounter = 0;
+      let resetAnim = false;
+      let ballProg = 0;
+
+      canvas.addEventListener("click", () => {
+        resetAnim = true;
+        ballProg = 0;
+        playBeepSound(880, 0.16);
+      });
+
+      function animateWelcome() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        tickCounter++;
+        if (tickCounter % 35 === 0 && !resetAnim) {
+          clockVal--;
+          if (clockVal < 1) clockVal = 24;
+        }
+
+        // ترسیم قاب ساعت شوت دیجیتال در مرکز
+        ctx.fillStyle = "#090d16";
+        ctx.strokeStyle = clockVal === 14 ? "#10b981" : "#f97316";
+        ctx.lineWidth = 4;
+        ctx.beginPath(); ctx.roundRect(195, 22, 130, 82, 14); ctx.fill(); ctx.stroke();
+
+        ctx.fillStyle = clockVal === 14 ? "#10b981" : "#ef4444";
+        ctx.font = "900 44px monospace";
+        ctx.textAlign = "center";
+        ctx.fillText(clockVal < 10 ? "0" + clockVal : clockVal, 260, 78);
+
+        ctx.fillStyle = "#cbd5e1";
+        ctx.font = "bold 12px Tahoma";
+        ctx.fillText("SHOT CLOCK (ساعت شوت)", 260, 125);
+
+        // حلقه سبد در سمت راست
+        ctx.strokeStyle = "#f97316";
+        ctx.lineWidth = 4;
+        ctx.beginPath(); ctx.moveTo(410, 95); ctx.lineTo(455, 95); ctx.stroke();
+
+        if (resetAnim) {
+          ballProg += 0.035;
+          const bx = 95 + ballProg * 325;
+          const by = 145 - Math.sin(ballProg * Math.PI) * 85;
+
+          ctx.fillStyle = "#f97316";
+          ctx.beginPath(); ctx.arc(bx, by, 13, 0, Math.PI * 2); ctx.fill();
+
+          if (ballProg >= 1) {
+            clockVal = 14;
+            resetAnim = false;
+            showToast("⏱️ برخورد شوت به حلقه و ریباند حمله: ساعت شوت روی ۱۴ ثانیه ریست شد!");
+          }
+        } else {
+          ctx.fillStyle = "#38bdf8";
+          ctx.font = "bold 12px Tahoma";
+          ctx.fillText("کلیک کنید تا شوت به حلقه برخورد کند و ساعت به ۱۴ ثانیه ریست شود!", 260, 162);
+        }
+
+        requestAnimationFrame(animateWelcome);
+      }
+      animateWelcome();
+    }
+
+    function initCelebrationCanvas() {
+      const canvas = document.getElementById("celebrationCanvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      let angle = 0;
+
+      function loop() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        angle += 0.06;
+        const bounceY = 70 + Math.sin(angle * 2) * 24;
+
+        ctx.save();
+        ctx.translate(160, bounceY);
+        ctx.rotate(angle);
+        ctx.beginPath();
+        ctx.arc(0, 0, 28, 0, Math.PI * 2);
+        ctx.fillStyle = "#f97316";
+        ctx.fill();
+        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = "#fff";
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(-28, 0); ctx.lineTo(28, 0);
+        ctx.moveTo(0, -28); ctx.lineTo(0, 28);
+        ctx.stroke();
+        ctx.restore();
+
+        requestAnimationFrame(loop);
+      }
+      loop();
+    }
+
+    function formatDuration(sec) {
+      const m = Math.floor(sec / 60);
+      const s = sec % 60;
+      return `${m.toLocaleString("fa-IR")} دقیقه و ${s.toLocaleString("fa-IR")} ثانیه`;
+    }
+
+    function showToast(msg) {
+      const box = document.getElementById("toastBox");
+      const item = document.createElement("div");
+      item.className = "toast-item";
+      item.textContent = msg;
+      box.appendChild(item);
+      setTimeout(() => item.remove(), 3800);
+    }
+  </script>
+</body>
+</html>
