@@ -1,0 +1,2260 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>سامانه جامع آموزش و ارزشیابی فیزیک دوازدهم تجربی</title>
+    <style>
+        :root {
+            --bg-dark: #070b19;
+            --bg-panel: rgba(16, 24, 48, 0.78);
+            --bg-card: rgba(25, 37, 70, 0.65);
+            --primary: #00f2fe;
+            --secondary: #4facfe;
+            --accent: #a855f7;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-glass: rgba(255, 255, 255, 0.12);
+            --shadow-neon: 0 0 20px rgba(0, 242, 254, 0.25);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            overflow-y: auto;
+            position: relative;
+            line-height: 1.7;
+        }
+
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .app-wrapper {
+            position: relative;
+            z-index: 1;
+            max-width: 1320px;
+            margin: 0 auto;
+            padding: 15px;
+            min-height: 100vh;
+        }
+
+        /* Glassmorphism Cards */
+        .glass-panel {
+            background: var(--bg-panel);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--border-glass);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+            margin-bottom: 20px;
+            transition: transform 0.25s ease, border-color 0.25s ease;
+        }
+
+        .glass-card {
+            background: var(--bg-card);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px;
+            padding: 18px;
+            transition: all 0.25s ease;
+        }
+
+        .glass-card:hover {
+            border-color: rgba(0, 242, 254, 0.4);
+            box-shadow: var(--shadow-neon);
+        }
+
+        /* Typography & Math Styling */
+        h1, h2, h3, h4 {
+            color: #ffffff;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .neon-title {
+            background: linear-gradient(90deg, var(--primary), var(--secondary), #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+        }
+
+        .math-box {
+            direction: ltr;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 242, 254, 0.09);
+            border: 1px solid rgba(0, 242, 254, 0.3);
+            padding: 6px 14px;
+            border-radius: 10px;
+            font-family: 'Cambria Math', 'Times New Roman', serif;
+            font-size: 1.2rem;
+            color: #67e8f9;
+            margin: 4px 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .math-block {
+            direction: ltr;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(9, 14, 30, 0.85);
+            border: 1px solid rgba(0, 242, 254, 0.35);
+            padding: 14px 20px;
+            border-radius: 14px;
+            font-family: 'Cambria Math', 'Times New Roman', serif;
+            font-size: 1.45rem;
+            color: #38bdf8;
+            margin: 14px 0;
+            box-shadow: inset 0 0 15px rgba(0, 242, 254, 0.1);
+            overflow-x: auto;
+        }
+
+        .frac {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            vertical-align: middle;
+            margin: 0 5px;
+            font-size: 0.92em;
+        }
+        .frac > span:first-child {
+            border-bottom: 1.5px solid currentColor;
+            padding: 0 5px 2px;
+            width: 100%;
+            text-align: center;
+        }
+        .frac > span:last-child {
+            padding: 2px 5px 0;
+            width: 100%;
+            text-align: center;
+        }
+        .vec {
+            position: relative;
+            display: inline-block;
+        }
+        .vec::after {
+            content: "→";
+            position: absolute;
+            top: -0.65em;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.75em;
+        }
+
+        /* Buttons & Inputs */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.98rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.25s ease;
+            text-decoration: none;
+            color: #061021;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            box-shadow: 0 4px 15px rgba(0, 242, 254, 0.3);
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 22px rgba(0, 242, 254, 0.5);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-outline {
+            background: rgba(255, 255, 255, 0.06);
+            color: var(--text-main);
+            border: 1px solid var(--border-glass);
+            box-shadow: none;
+        }
+
+        .btn-outline:hover:not(:disabled) {
+            background: rgba(0, 242, 254, 0.15);
+            border-color: var(--primary);
+            color: #fff;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.35);
+        }
+
+        .input-control {
+            width: 100%;
+            padding: 14px 16px;
+            border-radius: 12px;
+            background: rgba(8, 13, 28, 0.85);
+            border: 1px solid var(--border-glass);
+            color: var(--text-main);
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 12px rgba(0, 242, 254, 0.25);
+        }
+
+        .input-readonly {
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-muted);
+            cursor: default;
+        }
+
+        /* Lock Screen */
+        #lock-screen {
+            min-height: 94vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 10px;
+        }
+
+        .countdown-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin: 24px 0;
+            width: 100%;
+            max-width: 500px;
+            direction: ltr;
+        }
+
+        .time-box {
+            background: rgba(0, 242, 254, 0.08);
+            border: 1px solid rgba(0, 242, 254, 0.3);
+            border-radius: 16px;
+            padding: 16px 8px;
+            text-align: center;
+        }
+
+        .time-box span.num {
+            display: block;
+            font-size: 2.1rem;
+            font-weight: 800;
+            color: var(--primary);
+            font-family: monospace;
+        }
+
+        .time-box span.lbl {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* Dashboard Header & Layout */
+        .top-bar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            padding: 16px 22px;
+            margin-bottom: 20px;
+        }
+
+        .stats-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .stat-pill {
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid var(--border-glass);
+            padding: 7px 14px;
+            border-radius: 999px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .stat-pill strong {
+            color: var(--primary);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(265px, 1fr));
+            gap: 18px;
+            margin-top: 15px;
+        }
+
+        .module-card {
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 155px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .module-card .mod-icon {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        .module-card .xp-tag {
+            position: absolute;
+            top: 14px;
+            left: 14px;
+            background: rgba(168, 85, 247, 0.2);
+            border: 1px solid rgba(168, 85, 247, 0.5);
+            color: #e9d5ff;
+            font-size: 0.78rem;
+            padding: 3px 10px;
+            border-radius: 99px;
+            font-weight: 700;
+        }
+
+        .module-card.done-module {
+            border-color: rgba(16, 185, 129, 0.55);
+        }
+
+        .module-card.done-module::after {
+            content: "✓ تکمیل شده";
+            position: absolute;
+            bottom: 12px;
+            left: 14px;
+            font-size: 0.78rem;
+            color: var(--success);
+            font-weight: 700;
+        }
+
+        /* Views & Tabs */
+        .view-section {
+            display: none;
+            animation: fadeIn 0.35s ease;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .sub-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-glass);
+            padding-bottom: 12px;
+        }
+
+        /* Physics Symbol Toolbar for Descriptive Exam */
+        .symbol-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            background: rgba(12, 19, 38, 0.95);
+            border: 1px solid rgba(0, 242, 254, 0.3);
+            padding: 10px;
+            border-radius: 12px 12px 0 0;
+            border-bottom: none;
+        }
+
+        .sym-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #67e8f9;
+            padding: 6px 11px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.95rem;
+            font-family: 'Cambria Math', serif;
+            transition: all 0.15s;
+            direction: ltr;
+        }
+
+        .sym-btn:hover {
+            background: var(--primary);
+            color: #061021;
+            font-weight: bold;
+        }
+
+        .desc-textarea {
+            width: 100%;
+            min-height: 135px;
+            background: rgba(8, 13, 28, 0.9);
+            border: 1px solid rgba(0, 242, 254, 0.3);
+            border-radius: 0 0 12px 12px;
+            color: #fff;
+            padding: 14px;
+            font-size: 1.05rem;
+            line-height: 1.7;
+            resize: vertical;
+            outline: none;
+        }
+
+        .desc-textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.2);
+        }
+
+        /* Flashcards */
+        .flashcard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+        }
+
+        .flashcard {
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px;
+            padding: 20px;
+            min-height: 170px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .flashcard:hover {
+            border-color: var(--primary);
+            transform: translateY(-3px);
+        }
+
+        /* Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 0.95rem;
+        }
+
+        .data-table th, .data-table td {
+            border: 1px solid var(--border-glass);
+            padding: 12px 14px;
+            text-align: right;
+        }
+
+        .data-table th {
+            background: rgba(0, 242, 254, 0.12);
+            color: var(--primary);
+        }
+
+        /* Lab Canvas */
+        .lab-canvas {
+            width: 100%;
+            height: 290px;
+            background: #050914;
+            border: 1px solid rgba(0, 242, 254, 0.3);
+            border-radius: 14px;
+            display: block;
+            margin-bottom: 16px;
+        }
+
+        .slider-group {
+            margin-bottom: 12px;
+        }
+
+        .slider-group label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.92rem;
+            margin-bottom: 4px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        /* Toast Notification */
+        #toast-box {
+            position: fixed;
+            bottom: 24px;
+            left: 24px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast-item {
+            background: rgba(15, 23, 42, 0.95);
+            border-right: 4px solid var(--primary);
+            border-top: 1px solid var(--border-glass);
+            border-left: 1px solid var(--border-glass);
+            border-bottom: 1px solid var(--border-glass);
+            color: #fff;
+            padding: 12px 18px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            font-size: 0.92rem;
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Modal for invisible teacher unlock */
+        #secret-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .countdown-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .top-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .math-block {
+                font-size: 1.15rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+<div id="toast-box"></div>
+
+<!-- پنجره مخفی بازگشایی قفل ویژه دبیر (فقط با ۵ بار کلیک روی آیکون سپر در صفحه قفل باز می‌شود) -->
+<div id="secret-modal">
+    <div class="glass-panel" style="max-width: 360px; width: 100%; text-align: center;">
+        <h4 style="margin-bottom: 12px;">پنل مدیریت زمان جلسه</h4>
+        <input type="password" id="secret-pin-input" class="input-control" placeholder="کد امنیتی..." style="text-align: center; direction: ltr; margin-bottom: 14px;">
+        <div style="display: flex; gap: 10px; justify-content: center;">
+            <button class="btn" onclick="verifySecretPin()">تأیید</button>
+            <button class="btn btn-outline" onclick="document.getElementById('secret-modal').style.display='none'">بستن</button>
+        </div>
+    </div>
+</div>
+
+<div class="app-wrapper">
+
+    <!-- ==================== ۱. صفحه قفل (LOCK SCREEN) ==================== -->
+    <section id="lock-screen">
+        <div class="glass-panel" style="max-width: 820px; width: 100%; text-align: center;">
+            <!-- آیکون سپر با قابلیت ۵ کلیک مخفی برای دبیر -->
+            <div id="lock-shield-trigger" style="width: 74px; height: 74px; margin: 0 auto 14px; border-radius: 50%; background: rgba(0, 242, 254, 0.1); border: 1px solid rgba(0, 242, 254, 0.35); display: flex; align-items: center; justify-content: center; user-select: none;">
+                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#00f2fe" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+            </div>
+
+            <h1 class="neon-title" style="font-size: 1.85rem;" id="lock-subject-title">فیزیک دوازدهم تجربی</h1>
+            <p style="color: var(--text-muted); font-size: 1.05rem; margin-bottom: 6px;" id="lock-school-title">دبیرستان رستمانی طبل | پایه دوازدهم تجربی</p>
+            <p style="color: #cbd5e1; font-size: 0.95rem; margin-bottom: 18px;">دبیر: <span id="lock-teacher-name">برزگری</span></p>
+
+            <div style="background: rgba(245, 158, 11, 0.12); border: 1px solid rgba(245, 158, 11, 0.4); color: #fcd34d; padding: 12px 18px; border-radius: 12px; display: inline-block; margin-bottom: 10px; font-weight: 600;">
+                زمان فعال‌سازی سامانه: ۱ آذر ساعت ۰۹:۵۰
+            </div>
+
+            <div class="countdown-grid">
+                <div class="time-box">
+                    <span class="num" id="cd-days">00</span>
+                    <span class="lbl">روز</span>
+                </div>
+                <div class="time-box">
+                    <span class="num" id="cd-hours">00</span>
+                    <span class="lbl">ساعت</span>
+                </div>
+                <div class="time-box">
+                    <span class="num" id="cd-mins">00</span>
+                    <span class="lbl">دقیقه</span>
+                </div>
+                <div class="time-box">
+                    <span class="num" id="cd-secs">00</span>
+                    <span class="lbl">ثانیه</span>
+                </div>
+            </div>
+
+            <p style="color: var(--text-muted); font-size: 0.92rem; margin-bottom: 24px;">
+                دسترسی به محتوای آموزشی، آزمایشگاه و آزمون‌ها پیش از فرارسیدن زمان مقرر غیرفعال است. پس از رسیدن به زمان تعیین‌شده، سامانه به‌صورت خودکار و دائمی بازگشایی خواهد شد.
+            </p>
+
+            <!-- راهنمای رسمی کار با سامانه، کسب امتیاز و ارسال گزارش نهایی در صفحه قفل -->
+            <div style="text-align: right; background: rgba(9, 14, 28, 0.75); border: 1px solid var(--border-glass); border-radius: 16px; padding: 20px;">
+                <h3 style="color: var(--primary); font-size: 1.15rem; margin-bottom: 12px;">راهنمای رسمی کار با سامانه، کسب امتیاز (XP) و ثبت گزارش نهایی</h3>
+                <ul style="padding-right: 20px; color: #e2e8f0; font-size: 0.95rem; display: flex; flex-direction: column; gap: 10px;">
+                    <li><strong>احراز هویت و ورود:</strong> پس از بازگشایی قفل زمانی، وارد کردن «نام و نام خانوادگی» دقیق الزامی است. مشخصات مدرسه، پایه و درس به‌صورت پیش‌فرض در سامانه ثبت شده‌اند.</li>
+                    <li><strong>ساختار امتیازدهی (XP) و قانون تک‌مرتبه‌ای:</strong> هر فعالیت آموزشی تنها یک‌بار امتیاز دارد و بازخوانی مجدد صفحه (Refresh) امتیاز مضاعف ایجاد نمی‌کند:
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
+                            <span class="stat-pill">ورود به سامانه: <strong>۵ XP</strong></span>
+                            <span class="stat-pill">مشاهده آموزش: <strong>۲۰ XP</strong></span>
+                            <span class="stat-pill">مرور خلاصه هوشمند: <strong>۱۰ XP</strong></span>
+                            <span class="stat-pill">انجام آزمایشگاه مجازی: <strong>۳۰ XP</strong></span>
+                            <span class="stat-pill">اتمام آزمون‌ها: <strong>۵۰ XP</strong></span>
+                            <span class="stat-pill">بررسی تکالیف: <strong>۱۰ XP</strong></span>
+                        </div>
+                    </li>
+                    <li><strong>نحوه پاسخ‌گویی به سؤالات تشریحی و نیمه‌تشریحی:</strong> در بخش آزمون تشریحی، علاوه بر صفحه‌کلید کامل دستگاه (حروف فارسی، انگلیسی و اعداد)، یک نوار ابزار تخصصی از نمادها و فرمول‌های استاندارد فیزیک در بالای کادر پاسخ قرار دارد تا بتوانید روابط و راه‌حل‌های خود را با دقت علمی کامل درج نمایید.</li>
+                    <li><strong>ثبت حضور و غیاب:</strong> پس از ورود به داشبورد، از طریق بخش «حضور و غیاب» وارد لینک دیجی‌فرم مربوطه شده و حضور خود را نهایی نمایید.</li>
+                    <li><strong>ارسال گزارش نهایی به سرور:</strong> پس از مطالعه تمام بخش‌ها و تکمیل آزمون‌ها، حتماً به بخش <strong>«ثبت گزارش»</strong> مراجعه کرده و دکمه <strong>«ثبت و ارسال گزارش»</strong> را بفشارید تا کارنامه، زمان حضور و ریز نمرات شما مستقیماً در پایگاه داده ثبت گردد (ارسال گزارش فقط یک‌بار امکان‌پذیر است).</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== ۲. صفحه ورود (LOGIN SCREEN) ==================== -->
+    <section id="login-screen" style="display: none; min-height: 90vh; align-items: center; justify-content: center;">
+        <div class="glass-panel" style="max-width: 520px; width: 100%;">
+            <h2 class="neon-title" style="text-align: center; font-size: 1.6rem; margin-bottom: 8px;">ورود به سامانه آموزشی</h2>
+            <p style="text-align: center; color: var(--text-muted); font-size: 0.92rem; margin-bottom: 22px;">لطفاً نام و نام خانوادگی خود را جهت ثبت در کارنامه و سرور وارد نمایید.</p>
+
+            <div style="margin-bottom: 16px;">
+                <label style="display: block; margin-bottom: 6px; font-weight: 600;">نام و نام خانوادگی (اجباری):</label>
+                <input type="text" id="student-name-input" class="input-control" placeholder="نام و نام خانوادگی خود را به فارسی وارد کنید..." autocomplete="name">
+                <div id="login-error-msg" style="color: var(--danger); font-size: 0.85rem; margin-top: 6px; display: none;">وارد کردن نام و نام خانوادگی کامل الزامی است.</div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px;">
+                <div>
+                    <label style="display: block; margin-bottom: 6px; font-size: 0.88rem; color: var(--text-muted);">پایه تحصیلی:</label>
+                    <input type="text" id="login-grade" class="input-control input-readonly" readonly>
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 6px; font-size: 0.88rem; color: var(--text-muted);">مدرسه:</label>
+                    <input type="text" id="login-school" class="input-control input-readonly" readonly>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px;">
+                <div>
+                    <label style="display: block; margin-bottom: 6px; font-size: 0.88rem; color: var(--text-muted);">نام درس:</label>
+                    <input type="text" id="login-subject" class="input-control input-readonly" readonly>
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 6px; font-size: 0.88rem; color: var(--text-muted);">دبیر:</label>
+                    <input type="text" id="login-teacher" class="input-control input-readonly" readonly>
+                </div>
+            </div>
+
+            <button class="btn" style="width: 100%; padding: 14px;" onclick="handleStudentLogin()">ورود به داشبورد آموزشی</button>
+        </div>
+    </section>
+
+    <!-- ==================== ۳. محیط اصلی سامانه (MAIN APP) ==================== -->
+    <div id="main-app" style="display: none;">
+        <!-- نوار وضعیت بالا -->
+        <header class="glass-panel top-bar">
+            <div>
+                <h2 class="neon-title" style="font-size: 1.35rem; margin-bottom: 4px;" id="header-title">فیزیک دوازدهم تجربی - دبیرستان رستمانی طبل</h2>
+                <div style="font-size: 0.9rem; color: var(--text-muted);">
+                    دانش‌آموز: <strong style="color: #fff;" id="header-student-name">-</strong> | دبیر: <strong style="color: #fff;" id="header-teacher-name">برزگری</strong>
+                </div>
+            </div>
+            <div class="stats-bar">
+                <div class="stat-pill">امتیاز کل: <strong id="ui-xp">0</strong> XP</div>
+                <div class="stat-pill">سطح: <strong id="ui-level">1</strong></div>
+                <div class="stat-pill">پیشرفت: <strong id="ui-progress">0%</strong></div>
+                <div class="stat-pill">مدت حضور: <strong id="ui-timer">00:00</strong></div>
+                <button class="btn btn-outline" style="padding: 6px 12px; font-size: 0.85rem;" onclick="toggleSoundEffect()" id="sound-btn">🔊 صدا: روشن</button>
+                <button class="btn" style="padding: 7px 14px; font-size: 0.88rem;" onclick="openSection('dashboard')">خانه (داشبورد)</button>
+            </div>
+        </header>
+
+        <!-- نمای داشبورد اصلی (فقط عناوین بخش‌های فعال؛ جزئیات پس از ورود به هر بخش) -->
+        <section id="view-dashboard" class="view-section active">
+            <div class="glass-panel">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
+                    <h3>فهرست بخش‌های فعال جلسه</h3>
+                    <span style="font-size: 0.9rem; color: var(--text-muted);">برای مشاهده جزئیات، روی هر بخش کلیک کنید</span>
+                </div>
+                <div class="dashboard-grid" id="dashboard-cards-container"></div>
+            </div>
+        </section>
+
+        <!-- ۱. بخش آموزش جامع + نکات تشریحی، تستی و تله‌های طراح -->
+        <section id="view-teaching" class="view-section">
+            <div class="glass-panel">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h2 class="neon-title">آموزش جامع، نکات امتحانی و تله‌های طراح</h2>
+                    <button class="btn btn-outline" onclick="openSection('dashboard')">بازگشت به داشبورد</button>
+                </div>
+
+                <div class="sub-tabs">
+                    <button class="btn" id="tab-btn-t1" onclick="switchTeachTab('t1')">۱. تکانه و قانون دوم نیوتون</button>
+                    <button class="btn btn-outline" id="tab-btn-t2" onclick="switchTeachTab('t2')">۲. تکانه و انرژی جنبشی</button>
+                    <button class="btn btn-outline" id="tab-btn-t3" onclick="switchTeachTab('t3')">۳. قانون گرانش عمومی نیوتون</button>
+                    <button class="btn btn-outline" id="tab-btn-t4" onclick="switchTeachTab('t4')">۴. نکات تشریحی، تستی و تله‌های طراح</button>
+                </div>
+
+                <!-- مبحث ۱ -->
+                <div id="teach-tab-t1" class="teach-content">
+                    <div class="glass-card" style="margin-bottom: 16px;">
+                        <h3 style="color: var(--primary);">مفهوم تکانه خطی و فرمول استاندارد</h3>
+                        <p>تکانه کمیتی برداری است که میزان دشواری متوقف کردن یک جسم متحرک را نشان می‌دهد و از حاصل‌ضرب جرم جسم در بردار سرعت آن به دست می‌آید. جهت بردار تکانه همواره هم‌جهت با بردار سرعت جسم است.</p>
+                        <div class="math-block">
+                            <span class="vec">p</span> &nbsp;=&nbsp; m <span class="vec">v</span>
+                        </div>
+                        <p>یکای تکانه در دستگاه بین‌المللی یکاها (SI)، کیلوگرم متر بر ثانیه (<span class="math-box">kg · m / s</span>) یا نیوتون ثانیه (<span class="math-box">N · s</span>) است.</p>
+                    </div>
+
+                    <div class="glass-card" style="margin-bottom: 16px;">
+                        <h3 style="color: var(--primary);">بیان تکانه در قانون دوم نیوتون و ضربه</h3>
+                        <p>آهنگ متوسط تغییر تکانه یک جسم در یک بازه زمانی، برابر با نیروی خالص متوسط وارد بر آن جسم در همان بازه زمانی است:</p>
+                        <div class="math-block">
+                            <span class="vec">F</span><sub>net, av</sub> &nbsp;=&nbsp; <span class="frac"><span>Δ<span class="vec">p</span></span><span>Δt</span></span> &nbsp;=&nbsp; <span class="frac"><span><span class="vec">p</span><sub>2</sub> − <span class="vec">p</span><sub>1</sub></span><span>t<sub>2</sub> − t<sub>1</sub></span></span>
+                        </div>
+                        <p>و در حالت لحظه‌ای، شیب خط مماس بر نمودار تکانه-زمان برابر با نیروی خالص لحظه‌ای است:</p>
+                        <div class="math-block">
+                            <span class="vec">F</span><sub>net</sub> &nbsp;=&nbsp; <span class="frac"><span>d<span class="vec">p</span></span><span>dt</span></span>
+                        </div>
+                        <p><strong>تغییر تکانه و مساحت زیر نمودار نیرو-زمان:</strong> حاصل‌ضرب نیروی خالص متوسط در زمان اثر نیرو، برابر با تغییر تکانه جسم است و از نظر هندسی برابر با مساحت محصور بین نمودار <span class="math-box">F - t</span> و محور زمان است:</p>
+                        <div class="math-block">
+                            Δ<span class="vec">p</span> &nbsp;=&nbsp; <span class="vec">F</span><sub>net, av</sub> · Δt &nbsp;=&nbsp; S<sub>(F - t)</sub>
+                        </div>
+                    </div>
+
+                    <div class="glass-card" style="margin-bottom: 16px;">
+                        <h3 style="color: var(--warning);">نکات طلایی و اشتباهات رایج در برخورد و برگشت</h3>
+                        <ul style="padding-right: 20px;">
+                            <li>اگر جسمی با تندی <span class="math-box">v<sub>1</sub></span> در یک راستا حرکت کند و پس از برخورد در <strong>همان جهت</strong> با تندی <span class="math-box">v<sub>2</sub></span> ادامه دهد: <span class="math-box">|Δp| = m |v<sub>2</sub> − v<sub>1</sub>|</span></li>
+                            <li>اگر جسمی به مانع برخورد کند و در <strong>خلاف جهت اولیه</strong> برگردد، در محاسبه تغییر تکانه اندازه‌ها با هم <strong>جمع</strong> می‌شوند (اشتباه رایج دانش‌آموزان تفریق کردن آن‌هاست):
+                                <div class="math-block">|Δ<span class="vec">p</span>| &nbsp;=&nbsp; m (v<sub>1</sub> + v<sub>2</sub>)</div>
+                            </li>
+                            <li><strong>نقش کیسه هوای خودرو و تشک پرش:</strong> در یک تغییر تکانه مشخص (<span class="math-box">Δp = ثابت</span>)، با افزایش زمان توقف (<span class="math-box">Δt</span>)، نیروی متوسط وارد بر سرنشین یا ورزشکار (<span class="math-box">F<sub>av</sub></span>) به شدت کاهش می‌یابد و از آسیب جلوگیری می‌شود.</li>
+                        </ul>
+                    </div>
+
+                    <div class="glass-card">
+                        <h3 style="color: var(--success);">مثال حل‌شده استاندارد</h3>
+                        <p><strong>پرسش:</strong> توپی به جرم <span class="math-box">0.4 kg</span> با تندی <span class="math-box">20 m/s</span> به صورت افقی به دیواری برخورد کرده و با تندی <span class="math-box">15 m/s</span> در خلاف جهت اولیه برمی‌گردد. اگر زمان تماس توپ با دیوار <span class="math-box">0.02 s</span> باشد، اندازه تغییر تکانه و نیروی متوسط دیوار بر توپ چقدر است؟</p>
+                        <p style="margin-top: 8px;"><strong>پاسخ تشریحی:</strong> جهت حرکت اولیه را مثبت و جهت برگشت را منفی در نظر می‌گیریم:</p>
+                        <div class="math-block">
+                            Δp = m (v<sub>2</sub> − v<sub>1</sub>) = 0.4 × (−15 − 20) = 0.4 × (−35) = −14 kg·m/s &nbsp;⇒&nbsp; |Δ<span class="vec">p</span>| = 14 N·s
+                        </div>
+                        <div class="math-block">
+                            F<sub>av</sub> = <span class="frac"><span>|Δp|</span><span>Δt</span></span> = <span class="frac"><span>14</span><span>0.02</span></span> = 700 N
+                        </div>
+                    </div>
+                </div>
+
+                <!-- مبحث ۲ -->
+                <div id="teach-tab-t2" class="teach-content" style="display: none;">
+                    <div class="glass-card" style="margin-bottom: 16px;">
+                        <h3 style="color: var(--primary);">رابطه مستقل از سرعت بین تکانه و انرژی جنبشی</h3>
+                        <p>با ترکیب رابطه اندازه تکانه (<span class="math-box">p = m v</span>) و انرژی جنبشی (<span class="math-box">K = ½ m v²</span>) و حذف تندی <span class="math-box">v</span>، دو رابطه کلیدی زیر به دست می‌آیند:</p>
+                        <div class="math-block">
+                            K &nbsp;=&nbsp; <span class="frac"><span>p<sup>2</sup></span><span>2m</span></span> &nbsp;&nbsp;&nbsp;&nbsp; , &nbsp;&nbsp;&nbsp;&nbsp; p &nbsp;=&nbsp; √(2 m K)
+                        </div>
+                        <p>همچنین اگر تندی جسم معلوم باشد، رابطه مستقیم زیر نیز بسیار راهگشاست:</p>
+                        <div class="math-block">
+                            K &nbsp;=&nbsp; <span class="frac"><span>1</span><span>2</span></span> p v
+                        </div>
+                    </div>
+
+                    <div class="glass-card" style="margin-bottom: 16px;">
+                        <h3 style="color: var(--warning);">روابط مقایسه‌ای و درصدی (ویژه تست و نهایی)</h3>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>وضعیت مقایسه دو جسم</th>
+                                    <th>رابطه ریاضی</th>
+                                    <th>نتیجه مفهومی</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>تکانه یکسان (<span class="math-box">p<sub>1</sub> = p<sub>2</sub></span>)</td>
+                                    <td><span class="math-box">K<sub>1</sub> / K<sub>2</sub> = m<sub>2</sub> / m<sub>1</sub></span></td>
+                                    <td>جسم سبک‌تر، انرژی جنبشی بیشتری دارد.</td>
+                                </tr>
+                                <tr>
+                                    <td>انرژی جنبشی یکسان (<span class="math-box">K<sub>1</sub> = K<sub>2</sub></span>)</td>
+                                    <td><span class="math-box">p<sub>1</sub> / p<sub>2</sub> = √(m<sub>1</sub> / m<sub>2</sub>)</span></td>
+                                    <td>جسم سنگین‌تر، تکانه بزرگ‌تری دارد.</td>
+                                </tr>
+                                <tr>
+                                    <td>جرم ثابت (<span class="math-box">m = ثابت</span>)</td>
+                                    <td><span class="math-box">K<sub>2</sub> / K<sub>1</sub> = (p<sub>2</sub> / p<sub>1</sub>)<sup>2</sup></span></td>
+                                    <td>اگر تکانه ۲ برابر شود، انرژی جنبشی ۴ برابر می‌شود.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="glass-card">
+                        <h3 style="color: var(--success);">مثال حل‌شده درصدی</h3>
+                        <p><strong>پرسش:</strong> اگر اندازه تکانه جسمی با جرم ثابت ۲۰ درصد افزایش یابد، انرژی جنبشی آن چند درصد افزایش می‌یابد؟</p>
+                        <p><strong>پاسخ:</strong> با افزایش ۲۰ درصدی تکانه، داریم <span class="math-box">p<sub>2</sub> = 1.2 p<sub>1</sub></span>. از آنجا که جرم ثابت است:</p>
+                        <div class="math-block">
+                            <span class="frac"><span>K<sub>2</sub></span><span>K<sub>1</sub></span></span> = (<span class="frac"><span>p<sub>2</sub></span><span>p<sub>1</sub></span></span>)<sup>2</sup> = (1.2)<sup>2</sup> = 1.44 &nbsp;⇒&nbsp; ΔK = +44%
+                        </div>
+                    </div>
+                </div>
+
+                <!-- مبحث ۳ -->
+                <div id="teach-tab-t3" class="teach-content" style="display: none;">
+                    <div class="glass-card" style="margin-bottom: 16px;">
+                        <h3 style="color: var(--primary);">قانون گرانش عمومی نیوتون</h3>
+                        <p>هر دو ذره مادی در جهان یکدیگر را با نیرویی در راستای خط واصل بین مرکزهایشان جذب می‌کنند که اندازه آن با حاصل‌ضرب جرم دو ذره رابطه مستقیم و با مجذور فاصله مرکزهای آن‌ها رابطه وارون دارد:</p>
+                        <div class="math-block">
+                            F<sub>g</sub> &nbsp;=&nbsp; G <span class="frac"><span>m<sub>1</sub> m<sub>2</sub></span><span>r<sup>2</sup></span></span>
+                        </div>
+                        <p>که در آن <span class="math-box">G ≈ 6.67 × 10<sup>−11</sup> N·m<sup>2</sup>/kg<sup>2</sup></span> ثابت جهانی گرانش است. طبق قانون سوم نیوتون، نیرویی که زمین به ماه وارد می‌کند با نیرویی که ماه به زمین وارد می‌کند هم‌اندازه و خلاف جهت است (<span class="math-box">F<sub>12</sub> = F<sub>21</sub></span>).</p>
+                    </div>
+
+                    <div class="glass-card" style="margin-bottom: 16px;">
+                        <h3 style="color: var(--primary);">شتاب گرانش در سطح و ارتفاع از سطح سیاره</h3>
+                        <p>شتاب گرانش در سطح سیاره‌ای به جرم <span class="math-box">M</span> و شعاع <span class="math-box">R</span> و چگالی متوسط <span class="math-box">ρ</span> از روابط زیر به دست می‌آید:</p>
+                        <div class="math-block">
+                            g<sub>0</sub> &nbsp;=&nbsp; <span class="frac"><span>G M</span><span>R<sup>2</sup></span></span> &nbsp;=&nbsp; <span class="frac"><span>4</span><span>3</span></span> π G ρ R
+                        </div>
+                        <p>اگر جسم در ارتفاع <span class="math-box">h</span> از <strong>سطح سیاره</strong> قرار گیرد، فاصله آن تا مرکز سیاره برابر <span class="math-box">r = R + h</span> است؛ بنابراین شتاب گرانش در ارتفاع <span class="math-box">h</span> برابر است با:</p>
+                        <div class="math-block">
+                            <span class="frac"><span>g<sub>h</sub></span><span>g<sub>0</sub></span></span> &nbsp;=&nbsp; (<span class="frac"><span>R</span><span>R + h</span></span>)<sup>2</sup>
+                        </div>
+                    </div>
+
+                    <div class="glass-card">
+                        <h3 style="color: var(--success);">مثال حل‌شده گرانش</h3>
+                        <p><strong>پرسش:</strong> در چه ارتفاعی از سطح زمین، وزن یک ماهواره به <span class="math-box">1/9</span> وزن آن در سطح زمین می‌رسد؟ (شعاع زمین <span class="math-box">R<sub>e</sub></span> است).</p>
+                        <p><strong>پاسخ:</strong> نسبت وزن در ارتفاع <span class="math-box">h</span> به سطح زمین برابر نسبت شتاب گرانش است:</p>
+                        <div class="math-block">
+                            <span class="frac"><span>g<sub>h</sub></span><span>g<sub>0</sub></span></span> = (<span class="frac"><span>R<sub>e</sub></span><span>R<sub>e</sub> + h</span></span>)<sup>2</sup> = <span class="frac"><span>1</span><span>9</span></span> &nbsp;⇒&nbsp; <span class="frac"><span>R<sub>e</sub></span><span>R<sub>e</sub> + h</span></span> = <span class="frac"><span>1</span><span>3</span></span> &nbsp;⇒&nbsp; h = 2 R<sub>e</sub>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- مبحث ۴: نکات تشریحی، تستی و تله‌های طراح -->
+                <div id="teach-tab-t4" class="teach-content" style="display: none;">
+                    <div class="glass-card" style="margin-bottom: 16px;">
+                        <h3 style="color: var(--primary);">۳- نکات تشریحی (نحوه کسب نمره کامل در امتحان نهایی)</h3>
+                        <ul style="padding-right: 20px;">
+                            <li><strong>نوشتن فرمول خام:</strong> در امتحانات نهایی، ۰.۵ نمره از هر مسأله صرفاً به نوشتن فرمول اصلی (<span class="math-box">F<sub>av</sub> = Δp / Δt</span> یا <span class="math-box">K = p<sup>2</sup> / 2m</span>) اختصاص دارد؛ هرگز مستقیم عددگذاری نکنید.</li>
+                            <li><strong>کلمات کلیدی مورد انتظار مصحح:</strong> در سؤالات مفهومی کیسه هوا یا خم کردن زانو هنگام پرش، حتماً سه عبارت <strong>«ثابت بودن تغییر تکانه (<span class="math-box">Δp</span>)»</strong>، <strong>«افزایش زمان اثر نیرو (<span class="math-box">Δt</span>)»</strong> و <strong>«کاهش نیروی خالص متوسط (<span class="math-box">F<sub>av</sub></span>)»</strong> را در پاسخ خود بیاورید.</li>
+                            <li><strong>ذکر یکای نهایی و جهت بردار:</strong> در سؤالات تکانه و نیرو، نوشتن یکای استاندارد (<span class="math-box">N</span> یا <span class="math-box">kg·m/s</span>) در پایان عدد به دست آمده ۰.۲۵ نمره مستقل دارد.</li>
+                        </ul>
+                    </div>
+
+                    <div class="glass-card" style="margin-bottom: 16px;">
+                        <h3 style="color: var(--secondary);">۴- نکات تستی و تکنیک حل سریع</h3>
+                        <ul style="padding-right: 20px;">
+                            <li><strong>تکنیک درصدهای معروف در <span class="math-box">K = p<sup>2</sup> / 2m</span>:</strong>
+                                <ul>
+                                    <li>تکانه +۱۰٪ <span class="math-box">⇒</span> انرژی جنبشی +۲۱٪</li>
+                                    <li>تکانه +۲۰٪ <span class="math-box">⇒</span> انرژی جنبشی +۴۴٪</li>
+                                    <li>تکانه +۳۰٪ <span class="math-box">⇒</span> انرژی جنبشی +۶۹٪</li>
+                                    <li>تکانه +۴۰٪ <span class="math-box">⇒</span> انرژی جنبشی +۹۶٪</li>
+                                    <li>تکانه +۵۰٪ <span class="math-box">⇒</span> انرژی جنبشی +۱۲۵٪</li>
+                                </ul>
+                            </li>
+                            <li><strong>تکنیک ارتفاع در گرانش:</strong> اگر ارتفاع از سطح زمین <span class="math-box">h = n R<sub>e</sub></span> باشد، شتاب گرانش در آن نقطه به اندازه <span class="math-box">g<sub>0</sub> / (n + 1)<sup>2</sup></span> خواهد بود.</li>
+                        </ul>
+                    </div>
+
+                    <div class="glass-card">
+                        <h3 style="color: var(--danger);">۵- تله‌های رایج طراح سؤال (نهایی و کنکور)</h3>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>عنوان تله طراح</th>
+                                    <th>توضیح دام</th>
+                                    <th>روش جلوگیری</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>فاصله از سطح یا مرکز؟</td>
+                                    <td>طراح ارتفاع <span class="math-box">h = 3R</span> از <strong>سطح</strong> سیاره می‌دهد و گزینه انحرافی را با <span class="math-box">1/9</span> طراحی می‌کند.</td>
+                                    <td>همیشه در مخرج کسر گرانش <span class="math-box">r = R + h</span> قرار دهید؛ یعنی <span class="math-box">R + 3R = 4R</span> و شتاب <span class="math-box">1/16</span> می‌شود.</td>
+                                </tr>
+                                <tr>
+                                    <td>علامت سرعت در برگشت</td>
+                                    <td>در برخورد توپ با دیوار و برگشت آن، گزینه انحرافی با تفریق تندی‌ها ساخته می‌شود.</td>
+                                    <td>به‌محض دیدن واژه «برمی‌گردد»، اندازه تغییر تکانه را از <span class="math-box">m(v<sub>1</sub> + v<sub>2</sub>)</span> حساب کنید.</td>
+                                </tr>
+                                <tr>
+                                    <td>نیروی کل به جای نیروی خالص در سقوط</td>
+                                    <td>هنگام برخورد عمودی توپ با زمین، دانش‌آموز نیروی خالص <span class="math-box">F<sub>net</sub></span> را همان نیروی سطح <span class="math-box">F<sub>N</sub></span> می‌گیرد.</td>
+                                    <td>در برخورد قائم با زمین، <span class="math-box">F<sub>net, av</sub> = F<sub>N, av</sub> − mg</span> است؛ بنابراین نیروی سطح برابر <span class="math-box">F<sub>N, av</sub> = F<sub>net, av</sub> + mg</span> می‌باشد.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ۲. بخش خلاصه هوشمند (نقشه ذهنی و فلش‌کارت) -->
+        <section id="view-summary" class="view-section">
+            <div class="glass-panel">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h2 class="neon-title">خلاصه هوشمند، نقشه مفهومی و فلش‌کارت‌ها</h2>
+                    <button class="btn btn-outline" onclick="openSection('dashboard')">بازگشت به داشبورد</button>
+                </div>
+
+                <!-- نقشه مفهومی SVG -->
+                <div class="glass-card" style="margin-bottom: 20px; text-align: center; overflow-x: auto;">
+                    <h3 style="margin-bottom: 12px; color: var(--primary);">درخت مفهومی روابط جلسه</h3>
+                    <svg width="780" height="230" viewBox="0 0 780 230" style="max-width: 100%; height: auto; background: rgba(6,11,25,0.7); border-radius: 14px; border: 1px solid rgba(0,242,254,0.25);">
+                        <!-- خطوط اتصال -->
+                        <line x1="390" y1="50" x2="140" y2="135" stroke="#00f2fe" stroke-width="2"/>
+                        <line x1="390" y1="50" x2="390" y2="135" stroke="#00f2fe" stroke-width="2"/>
+                        <line x1="390" y1="50" x2="640" y2="135" stroke="#00f2fe" stroke-width="2"/>
+
+                        <!-- گره اصلی -->
+                        <rect x="275" y="15" width="230" height="44" rx="10" fill="#1e293b" stroke="#00f2fe" stroke-width="2"/>
+                        <text x="390" y="42" fill="#ffffff" font-size="15" font-weight="bold" text-anchor="middle">دینامیک: تکانه و گرانش</text>
+
+                        <!-- شاخه ۱ -->
+                        <rect x="25" y="135" width="230" height="75" rx="10" fill="#0f172a" stroke="#38bdf8" stroke-width="1.5"/>
+                        <text x="140" y="162" fill="#38bdf8" font-size="14" font-weight="bold" text-anchor="middle">تکانه و قانون دوم نیوتون</text>
+                        <text x="140" y="190" fill="#e2e8f0" font-size="14" text-anchor="middle">p = m v  ,  F_av = Δp / Δt</text>
+
+                        <!-- شاخه ۲ -->
+                        <rect x="275" y="135" width="230" height="75" rx="10" fill="#0f172a" stroke="#a855f7" stroke-width="1.5"/>
+                        <text x="390" y="162" fill="#c084fc" font-size="14" font-weight="bold" text-anchor="middle">تکانه و انرژی جنبشی</text>
+                        <text x="390" y="190" fill="#e2e8f0" font-size="14" text-anchor="middle">K = p² / (2m)  ,  p = √(2mK)</text>
+
+                        <!-- شاخه ۳ -->
+                        <rect x="525" y="135" width="230" height="75" rx="10" fill="#0f172a" stroke="#10b981" stroke-width="1.5"/>
+                        <text x="640" y="162" fill="#34d399" font-size="14" font-weight="bold" text-anchor="middle">گرانش عمومی نیوتون</text>
+                        <text x="640" y="190" fill="#e2e8f0" font-size="14" text-anchor="middle">F = G m₁m₂/r² , g_h = g₀(R/(R+h))²</text>
+                    </svg>
+                </div>
+
+                <h3 style="margin-bottom: 12px;">فلش‌کارت‌های مرور سریع (برای مشاهده پاسخ روی کارت کلیک کنید)</h3>
+                <div class="flashcard-grid">
+                    <div class="flashcard" onclick="toggleFlashcard(this, 'پرسش ۱: شیب خط مماس بر نمودار تکانه-زمان (p - t) در هر لحظه نشان‌دهنده چیست؟', 'پاسخ: برابر با نیروی خالص لحظه‌ای (F_net) وارد بر جسم در همان لحظه است.')">
+                        <strong style="color: var(--primary);">پرسش ۱: شیب خط مماس بر نمودار تکانه-زمان (p - t) در هر لحظه نشان‌دهنده چیست؟</strong>
+                    </div>
+                    <div class="flashcard" onclick="toggleFlashcard(this, 'پرسش ۲: مساحت سطح زیر نمودار نیرو-زمان (F_net - t) برابر با چه کمیتی است؟', 'پاسخ: برابر با تغییر تکانه جسم (Δp = p₂ − p₁) در آن بازه زمانی است.')">
+                        <strong style="color: var(--primary);">پرسش ۲: مساحت سطح زیر نمودار نیرو-زمان (F_net - t) برابر با چه کمیتی است؟</strong>
+                    </div>
+                    <div class="flashcard" onclick="toggleFlashcard(this, 'پرسش ۳: اگر دو جسم با جرم‌های متفاوت دارای تکانه یکسانی باشند، انرژی جنبشی کدام‌یک بیشتر است؟', 'پاسخ: طبق رابطه K = p² / 2m، جسمی که جرم کمتری دارد انرژی جنبشی بیشتری خواهد داشت.')">
+                        <strong style="color: var(--primary);">پرسش ۳: اگر دو جسم با جرم‌های متفاوت دارای تکانه یکسانی باشند، انرژی جنبشی کدام‌یک بیشتر است؟</strong>
+                    </div>
+                    <div class="flashcard" onclick="toggleFlashcard(this, 'پرسش ۴: در ارتفاعی برابر با شعاع زمین از سطح زمین (h = R_e)، شتاب گرانش چند برابر سطح زمین است؟', 'پاسخ: چون فاصله از مرکز 2R_e می‌شود، شتاب گرانش برابر 1/4 شتاب گرانش در سطح زمین (g₀ / 4) خواهد بود.')">
+                        <strong style="color: var(--primary);">پرسش ۴: در ارتفاعی برابر با شعاع زمین از سطح زمین (h = R_e)، شتاب گرانش چند برابر سطح زمین است؟</strong>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ۳. بخش آزمایشگاه مجازی (VIRTUAL LAB) -->
+        <section id="view-lab" class="view-section">
+            <div class="glass-panel">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h2 class="neon-title">آزمایشگاه مجازی تعاملی فیزیک</h2>
+                    <button class="btn btn-outline" onclick="openSection('dashboard')">بازگشت به داشبورد</button>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 20px;">
+                    <!-- شبیه‌ساز ۱: برخورد، تکانه و انرژی جنبشی -->
+                    <div class="glass-card">
+                        <h3 style="color: var(--primary);">آزمایش ۱: بررسی تکانه، انرژی جنبشی و برخورد با دیوار</h3>
+                        <canvas id="lab-canvas-momentum" class="lab-canvas" width="520" height="250"></canvas>
+
+                        <div class="slider-group">
+                            <label><span>جرم گوی (<span class="math-box">m</span>):</span> <strong id="lbl-lab-m">2.0 kg</strong></label>
+                            <input type="range" id="rng-lab-m" min="0.5" max="10" step="0.5" value="2" oninput="updateMomentumLab()">
+                        </div>
+                        <div class="slider-group">
+                            <label><span>تندی برخورد (<span class="math-box">v<sub>1</sub></span>):</span> <strong id="lbl-lab-v">10 m/s</strong></label>
+                            <input type="range" id="rng-lab-v" min="2" max="25" step="1" value="10" oninput="updateMomentumLab()">
+                        </div>
+                        <div class="slider-group">
+                            <label><span>زمان تماس با دیوار (<span class="math-box">Δt</span>):</span> <strong id="lbl-lab-dt">0.05 s</strong></label>
+                            <input type="range" id="rng-lab-dt" min="0.01" max="0.20" step="0.01" value="0.05" oninput="updateMomentumLab()">
+                        </div>
+
+                        <div style="background: rgba(0,0,0,0.45); padding: 12px; border-radius: 10px; font-size: 0.92rem; margin-bottom: 12px;">
+                            <div>تکانه اولیه (<span class="math-box">p<sub>1</sub> = mv</span>): <strong id="out-lab-p" style="color: var(--primary);">20 kg·m/s</strong></div>
+                            <div>انرژی جنبشی (<span class="math-box">K = p<sup>2</sup>/2m</span>): <strong id="out-lab-k" style="color: #c084fc;">100 J</strong></div>
+                            <div>تغییر تکانه در برگشت کشسان (<span class="math-box">|Δp| = 2mv</span>): <strong id="out-lab-dp" style="color: var(--warning);">40 N·s</strong></div>
+                            <div>نیروی متوسط دیوار (<span class="math-box">F<sub>av</sub> = |Δp|/Δt</span>): <strong id="out-lab-f" style="color: var(--success);">800 N</strong></div>
+                        </div>
+
+                        <button class="btn" style="width: 100%;" onclick="runCollisionSimulation()">اجرای شبیه‌سازی برخورد با دیوار</button>
+                    </div>
+
+                    <!-- شبیه‌ساز ۲: گرانش نیوتون و شتاب گرانش در ارتفاع -->
+                    <div class="glass-card">
+                        <h3 style="color: var(--primary);">آزمایش ۲: شبیه‌ساز نیروی گرانش و شتاب گرانش در ارتفاع</h3>
+                        <canvas id="lab-canvas-gravity" class="lab-canvas" width="520" height="250"></canvas>
+
+                        <div class="slider-group">
+                            <label><span>جرم ماهواره (<span class="math-box">m</span>):</span> <strong id="lbl-grav-m">600 kg</strong></label>
+                            <input type="range" id="rng-grav-m" min="100" max="2000" step="100" value="600" oninput="updateGravityLab()">
+                        </div>
+                        <div class="slider-group">
+                            <label><span>ارتفاع از سطح زمین برحسب شعاع زمین (<span class="math-box">h / R<sub>e</sub></span>):</span> <strong id="lbl-grav-h">1.0 R<sub>e</sub></strong></label>
+                            <input type="range" id="rng-grav-h" min="0" max="4" step="0.5" value="1" oninput="updateGravityLab()">
+                        </div>
+
+                        <div style="background: rgba(0,0,0,0.45); padding: 12px; border-radius: 10px; font-size: 0.92rem;">
+                            <div>فاصله تا مرکز زمین (<span class="math-box">r = R<sub>e</sub> + h</span>): <strong id="out-grav-r" style="color: var(--primary);">2.0 R<sub>e</sub></strong></div>
+                            <div>نسبت شتاب گرانش (<span class="math-box">g<sub>h</sub> / g<sub>0</sub></span>): <strong id="out-grav-ratio" style="color: #c084fc;">0.25 (1/4)</strong></div>
+                            <div>شتاب گرانش در مدار (<span class="math-box">g<sub>h</sub></span> با فرض <span class="math-box">g<sub>0</sub> = 9.8 m/s<sup>2</sup></span>): <strong id="out-grav-g" style="color: var(--warning);">2.45 m/s²</strong></div>
+                            <div>نیروی گرانش زمین بر ماهواره (<span class="math-box">F<sub>g</sub> = m g<sub>h</sub></span>): <strong id="out-grav-f" style="color: var(--success);">1470 N</strong></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ۴. بخش آزمون جامع هوشمند (تستی، نیمه‌تشریحی، تشریحی با کیبورد و نوار نمادها) -->
+        <section id="view-exam" class="view-section">
+            <div class="glass-panel">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px;">
+                    <h2 class="neon-title">مرکز آزمون هوشمند (تستی، نیمه‌تشریحی و تشریحی)</h2>
+                    <button class="btn btn-outline" onclick="openSection('dashboard')">بازگشت به داشبورد</button>
+                </div>
+
+                <div class="sub-tabs">
+                    <button class="btn" id="exam-tab-btn-mcq" onclick="switchExamTab('mcq')">۱. آزمون تستی چهارگزینه‌ای (۶ سؤال)</button>
+                    <button class="btn btn-outline" id="exam-tab-btn-semi" onclick="switchExamTab('semi')">۲. آزمون نیمه‌تشریحی (۴ سؤال)</button>
+                    <button class="btn btn-outline" id="exam-tab-btn-desc" onclick="switchExamTab('desc')">۳. آزمون تشریحی هوشمند با نوار فرمول (۴ سؤال)</button>
+                </div>
+
+                <!-- تب ۱: آزمون تستی -->
+                <div id="exam-tab-mcq">
+                    <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,242,254,0.08); padding: 12px 18px; border-radius: 12px; margin-bottom: 18px;">
+                        <span>سطح سؤالات: <strong>آسان، متوسط و سخت</strong> (نمره از ۲۰)</span>
+                        <span>زمان پیشنهادی: <strong id="mcq-timer-lbl">15:00</strong></span>
+                    </div>
+                    <div id="mcq-questions-box"></div>
+                    <button class="btn btn-success" id="btn-submit-mcq" style="width: 100%; margin-top: 14px;" onclick="gradeMCQExam()">ثبت نهایی و تصحیح آزمون تستی</button>
+                    <div id="mcq-result-panel" style="display: none; margin-top: 18px;" class="glass-card"></div>
+                </div>
+
+                <!-- تب ۲: آزمون نیمه‌تشریحی -->
+                <div id="exam-tab-semi" style="display: none;">
+                    <p style="color: var(--text-muted); margin-bottom: 16px;">پاسخ کوتاه، عدد یا عبارت مناسب را در کادرهای زیر تایپ نمایید (نمره از ۲۰):</p>
+                    <div id="semi-questions-box"></div>
+                    <button class="btn btn-success" id="btn-submit-semi" style="width: 100%; margin-top: 14px;" onclick="gradeSemiExam()">ثبت نهایی و تصحیح آزمون نیمه‌تشریحی</button>
+                    <div id="semi-result-panel" style="display: none; margin-top: 18px;" class="glass-card"></div>
+                </div>
+
+                <!-- تب ۳: آزمون تشریحی با نوار ابزار کامل فرمول و نمادهای فیزیک -->
+                <div id="exam-tab-desc" style="display: none;">
+                    <div style="background: rgba(168, 85, 247, 0.12); border: 1px solid rgba(168, 85, 247, 0.4); padding: 14px 18px; border-radius: 12px; margin-bottom: 18px;">
+                        <strong>راهنمای نوشتن پاسخ تشریحی:</strong> شما می‌توانید با صفحه‌کلید کامل گوشی یا رایانه خود (حروف فارسی، انگلیسی و اعداد) پاسخ تشریحی را بنویسید و برای درج سریع نمادها و فرمول‌های فیزیک، از <strong>نوار ابزار بالای هر کادر</strong> استفاده نمایید. موتور تصحیح هوشمند، فرمول، مراحل حل، عدد نهایی و توضیحات مفهومی شما را مرحله‌به‌مرحله نمره‌دهی می‌کند.
+                    </div>
+                    <div id="desc-questions-box"></div>
+                    <button class="btn btn-success" id="btn-submit-desc" style="width: 100%; margin-top: 14px;" onclick="gradeDescExam()">تصحیح هوشمند آزمون تشریحی و ثبت نمره</button>
+                    <div id="desc-result-panel" style="display: none; margin-top: 18px;" class="glass-card"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ۵. بخش حضور و غیاب (لینک دیجی‌فرم) -->
+        <section id="view-attendance" class="view-section">
+            <div class="glass-panel" style="text-align: center; max-width: 680px; margin: 0 auto;">
+                <h2 class="neon-title">ثبت حضور و غیاب رسمی کلاس</h2>
+                <p style="margin: 16px 0; font-size: 1.05rem;">جهت ثبت حضور فیزیک دوازدهم تجربی (دبیرستان رستمانی طبل)، وارد لینک دیجی‌فرم زیر شوید و مشخصات خود را ثبت نمایید:</p>
+                <div style="background: rgba(0, 242, 254, 0.08); border: 1px solid rgba(0, 242, 254, 0.35); padding: 18px; border-radius: 14px; margin-bottom: 20px; direction: ltr; font-family: monospace; font-size: 1.15rem; color: var(--primary);">
+                    https://a.digiform.ir/w92ab04c20
+                </div>
+                <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+                    <a href="https://a.digiform.ir/w92ab04c20" target="_blank" rel="noopener noreferrer" class="btn btn-success" onclick="markAttendanceClicked()">ورود مستقیم به سامانه دیجی‌فرم ثبت حضور</a>
+                    <button class="btn btn-outline" onclick="openSection('dashboard')">بازگشت به داشبورد</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ۶. بخش تکالیف -->
+        <section id="view-homework" class="view-section">
+            <div class="glass-panel">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h2 class="neon-title">تکالیف و تمرین‌های جلسه</h2>
+                    <button class="btn btn-outline" onclick="openSection('dashboard')">بازگشت به داشبورد</button>
+                </div>
+                <div id="homework-list-container" style="display: flex; flex-direction: column; gap: 14px;"></div>
+            </div>
+        </section>
+
+        <!-- ۷. بخش اطلاعیه‌ها و فایل‌های جلسه -->
+        <section id="view-notices" class="view-section">
+            <div class="glass-panel">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h2 class="neon-title">اطلاعیه‌ها و برگه‌های فرمول جلسه</h2>
+                    <button class="btn btn-outline" onclick="openSection('dashboard')">بازگشت به داشبورد</button>
+                </div>
+                <div id="notices-list-container" style="display: flex; flex-direction: column; gap: 14px;"></div>
+            </div>
+        </section>
+
+        <!-- ۸. بخش ثبت و ارسال گزارش نهایی به Supabase -->
+        <section id="view-report" class="view-section">
+            <div class="glass-panel">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h2 class="neon-title">ثبت گزارش عملکرد و ارسال به سرور</h2>
+                    <button class="btn btn-outline" onclick="openSection('dashboard')">بازگشت به داشبورد</button>
+                </div>
+
+                <div class="glass-card" style="margin-bottom: 20px;">
+                    <h3 style="color: var(--primary); margin-bottom: 14px;">خلاصه کارنامه و فعالیت‌های شما</h3>
+                    <table class="data-table">
+                        <tbody>
+                            <tr>
+                                <th>نام و نام خانوادگی دانش‌آموز</th>
+                                <td id="rep-name">-</td>
+                            </tr>
+                            <tr>
+                                <th>مدرسه و پایه</th>
+                                <td id="rep-school">-</td>
+                            </tr>
+                            <tr>
+                                <th>نام درس و دبیر</th>
+                                <td id="rep-subject">-</td>
+                            </tr>
+                            <tr>
+                                <th>مجموع امتیاز کسب‌شده (XP)</th>
+                                <td id="rep-xp" style="color: var(--primary); font-weight: bold;">0 XP</td>
+                            </tr>
+                            <tr>
+                                <th>درصد پیشرفت کل سامانه</th>
+                                <td id="rep-progress">0%</td>
+                            </tr>
+                            <tr>
+                                <th>زمان ورود و مدت حضور</th>
+                                <td id="rep-time">-</td>
+                            </tr>
+                            <tr>
+                                <th>بخش‌های مشاهده‌شده</th>
+                                <td id="rep-viewed">-</td>
+                            </tr>
+                            <tr>
+                                <th>وضعیت و نمرات آزمون‌ها (تستی / نیمه‌تشریحی / تشریحی)</th>
+                                <td id="rep-exams">-</td>
+                            </tr>
+                            <tr>
+                                <th>نمره کل نهایی (از ۲۰)</th>
+                                <td id="rep-final-score" style="color: var(--success); font-weight: 800; font-size: 1.15rem;">0 / 20</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <button class="btn btn-success" id="btn-send-supabase" style="width: 100%; padding: 18px; font-size: 1.15rem;" onclick="submitFinalReportToSupabase()">
+                    ثبت و ارسال گزارش
+                </button>
+                <div id="supabase-status-msg" style="margin-top: 14px; text-align: center; font-weight: 600;"></div>
+            </div>
+        </section>
+
+    </div>
+</div>
+
+<script>
+/* =========================================================================
+   تنظیمات متغیرهای پروژه (قابل ویرایش آسان توسط دبیر برای هر کلاس یا جلسه)
+   ========================================================================= */
+const PROJECT_CONFIG = {
+    schoolName: "دبیرستان رستمانی طبل",
+    grade: "دوازدهم تجربی",
+    subject: "فیزیک دوازدهم تجربی (تکانه، انرژی جنبشی و نیروی گرانشی)",
+    teacherName: "برزگری",
+    startDateJalali: "1 آذر",
+    startTimeText: "09:50",
+    // معادل میلادی ۱ آذر ۱۴۰۵ ساعت ۰۹:۵۰ به وقت ایران (+03:30)
+    unlockTimestampISO: "2026-11-22T09:50:00+03:30",
+    endDateJalali: "آزاد (فعال دائمی پس از شروع)",
+    endTimeText: "23:59",
+    teacherResetPin: "9162",
+
+    // اطلاعات اتصال به Supabase
+    supabaseUrl: "https://tpwdrzwfzdbmwqlblntu.supabase.co",
+    supabaseKey: "sb_publishable_ASPIzP1XV1iSweCV43Oy9Q_PCkz5htN",
+    supabaseTable: "Students",
+
+    // لینک حضور و غیاب دیجی‌فرم
+    attendanceLink: "https://a.digiform.ir/w92ab04c20",
+
+    // بخش‌های فعال در داشبورد
+    enabledModules: [
+        { id: "teaching", title: "آموزش جلسه و نکات امتحانی", icon: "📘", xp: 20 },
+        { id: "summary", title: "خلاصه هوشمند و فلش‌کارت", icon: "🧠", xp: 10 },
+        { id: "lab", title: "آزمایشگاه مجازی فیزیک", icon: "🔬", xp: 30 },
+        { id: "exam", title: "آزمون‌ها (تستی، نیمه‌تشریحی و تشریحی)", icon: "📝", xp: 50 },
+        { id: "attendance", title: "حضور و غیاب (دیجی‌فرم)", icon: "✅", xp: 0 },
+        { id: "homework", title: "تکالیف جلسه", icon: "📂", xp: 10 },
+        { id: "notices", title: "اطلاعیه‌ها و فرمول‌نامه", icon: "📌", xp: 0 },
+        { id: "report", title: "ثبت گزارش نهایی", icon: "📊", xp: 0 }
+    ],
+
+    // تکالیف جلسه
+    homeworks: [
+        "تمرین ۱: جسمی به جرم 2 kg با تندی 15 m/s به دیواری عمود برخورد کرده و با تندی 10 m/s برمی‌گردد. اگر زمان تماس 0.05 s باشد، اندازه تغییر تکانه و نیروی متوسط دیوار را با نوشتن کامل فرمول محاسبه کنید.",
+        "تمرین ۲: اگر انرژی جنبشی جسمی با جرم ثابت ۴۴ درصد افزایش یابد، اندازه تکانه آن چند درصد تغییر کرده است؟ راه‌حل کامل را در دفتر خود بنویسید.",
+        "تمرین ۳: شتاب گرانش در ارتفاعی برابر با ۲ برابر شعاع زمین از سطح زمین (h = 2R_e) چند برابر شتاب گرانش در سطح زمین است؟"
+    ],
+
+    // اطلاعیه‌ها و نکات جلسه
+    notices: [
+        "حضور تمامی دانش‌آموزان پایه دوازدهم تجربی دبیرستان رستمانی طبل باید حتماً از طریق لینک دیجی‌فرم قرار داده شده در بخش «حضور و غیاب» ثبت گردد.",
+        "پس از اتمام مطالعه و پاسخ به سؤالات تستی و تشریحی، حتماً وارد بخش «ثبت گزارش نهایی» شده و دکمه «ثبت و ارسال گزارش» را بزنید تا نمرات شما در سرور ثبت شود."
+    ]
+};
+
+/* =========================================================================
+   مدیریت وضعیت دانش‌آموز و سیستم ضدتقلب در LocalStorage
+   ========================================================================= */
+const STORAGE_KEY = "PHYS12_ROSTAMANI_TABL_STATE_V1";
+
+let appState = {
+    unlockedByTeacher: false,
+    studentName: "",
+    entryTimeISO: "",
+    loginCount: 0,
+    studySeconds: 0,
+    xp: 0,
+    awardedActivities: {}, // جلوگیری از امتیاز تکراری در Refresh
+    viewedSections: [],
+    attendanceClicked: false,
+    mcqSubmitted: false,
+    mcqScore20: 0,
+    semiSubmitted: false,
+    semiScore20: 0,
+    descSubmitted: false,
+    descScore20: 0,
+    reportSent: false,
+    badges: []
+};
+
+function loadState() {
+    try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+            const parsed = JSON.parse(raw);
+            appState = { ...appState, ...parsed };
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+function saveState() {
+    try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+    } catch (e) {
+        console.error(e);
+    }
+    updateTopBarUI();
+}
+
+/* =========================================================================
+   افکت صوتی با Web Audio API (کاملاً آفلاین و قابل خاموش شدن)
+   ========================================================================= */
+let soundEnabled = true;
+function playBeep(freq = 580, duration = 0.08) {
+    if (!soundEnabled) return;
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = "sine";
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.06, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start();
+        osc.stop(ctx.currentTime + duration);
+    } catch (e) {}
+}
+
+function toggleSoundEffect() {
+    soundEnabled = !soundEnabled;
+    document.getElementById("sound-btn").textContent = soundEnabled ? "🔊 صدا: روشن" : "🔇 صدا: خاموش";
+}
+
+function showToast(msg) {
+    const box = document.getElementById("toast-box");
+    const item = document.createElement("div");
+    item.className = "toast-item";
+    item.textContent = msg;
+    box.appendChild(item);
+    setTimeout(() => item.remove(), 3500);
+}
+
+/* =========================================================================
+   سیستم امتیازدهی تک‌مرتبه‌ای (XP) و ضدتقلب
+   ========================================================================= */
+function awardXPOnce(activityKey, amount, label) {
+    if (appState.awardedActivities[activityKey]) return;
+    appState.awardedActivities[activityKey] = true;
+    appState.xp += amount;
+    if (amount > 0) {
+        playBeep(720, 0.12);
+        showToast(`+${amount} XP بابت «${label}» ثبت شد.`);
+    }
+    checkBadges();
+    saveState();
+}
+
+function checkBadges() {
+    if (appState.xp >= 35 && !appState.badges.includes("کاوشگر تکانه")) {
+        appState.badges.push("کاوشگر تکانه");
+    }
+    if (appState.xp >= 80 && !appState.badges.includes("متخصص دینامیک و گرانش")) {
+        appState.badges.push("متخصص دینامیک و گرانش");
+    }
+}
+
+function calculateProgressPercent() {
+    let points = 0;
+    if (appState.awardedActivities["login"]) points += 10;
+    if (appState.awardedActivities["teaching"]) points += 20;
+    if (appState.awardedActivities["summary"]) points += 15;
+    if (appState.awardedActivities["lab"]) points += 15;
+    if (appState.mcqSubmitted) points += 15;
+    if (appState.semiSubmitted) points += 10;
+    if (appState.descSubmitted) points += 15;
+    return Math.min(100, points);
+}
+
+function updateTopBarUI() {
+    const xpEl = document.getElementById("ui-xp");
+    if (!xpEl) return;
+    xpEl.textContent = appState.xp;
+    document.getElementById("ui-level").textContent = Math.floor(appState.xp / 30) + 1;
+    document.getElementById("ui-progress").textContent = calculateProgressPercent() + "%";
+}
+
+/* =========================================================================
+   مدیریت قفل زمانی و رمز مخفی دبیر (9162) - کاملاً مخفی از دید دانش‌آموز
+   ========================================================================= */
+let lockCheckInterval = null;
+let shieldClickCount = 0;
+let shieldClickTimer = null;
+let keyBuffer = "";
+
+function initLockScreen() {
+    document.getElementById("lock-subject-title").textContent = PROJECT_CONFIG.subject;
+    document.getElementById("lock-school-title").textContent = `${PROJECT_CONFIG.schoolName} | پایه ${PROJECT_CONFIG.grade}`;
+    document.getElementById("lock-teacher-name").textContent = PROJECT_CONFIG.teacherName;
+
+    // ۵ کلیک پیاپی روی آیکون قفل برای باز کردن کادر رمز مخفی
+    const shield = document.getElementById("lock-shield-trigger");
+    shield.addEventListener("click", () => {
+        shieldClickCount++;
+        clearTimeout(shieldClickTimer);
+        shieldClickTimer = setTimeout(() => { shieldClickCount = 0; }, 1800);
+        if (shieldClickCount >= 5) {
+            shieldClickCount = 0;
+            document.getElementById("secret-modal").style.display = "flex";
+            document.getElementById("secret-pin-input").focus();
+        }
+    });
+
+    // قابلیت تایپ مستقیم 9162 روی کیبورد بدون باز کردن کادر
+    window.addEventListener("keydown", (e) => {
+        if (document.getElementById("lock-screen").style.display !== "none") {
+            keyBuffer += e.key;
+            if (keyBuffer.length > 10) keyBuffer = keyBuffer.slice(-10);
+            if (keyBuffer.includes(PROJECT_CONFIG.teacherResetPin)) {
+                unlockByTeacherPin();
+            }
+        }
+    });
+
+    checkTimeLock();
+    lockCheckInterval = setInterval(checkTimeLock, 1000);
+}
+
+function verifySecretPin() {
+    const val = document.getElementById("secret-pin-input").value.trim();
+    if (val === PROJECT_CONFIG.teacherResetPin) {
+        document.getElementById("secret-modal").style.display = "none";
+        unlockByTeacherPin();
+    } else {
+        document.getElementById("secret-pin-input").value = "";
+        showToast("کد وارد شده معتبر نیست.");
+    }
+}
+
+function unlockByTeacherPin() {
+    appState.unlockedByTeacher = true;
+    saveState();
+    clearInterval(lockCheckInterval);
+    proceedAfterUnlock();
+}
+
+function checkTimeLock() {
+    if (appState.unlockedByTeacher) {
+        clearInterval(lockCheckInterval);
+        proceedAfterUnlock();
+        return;
+    }
+
+    const now = new Date().getTime();
+    const target = new Date(PROJECT_CONFIG.unlockTimestampISO).getTime();
+    const diff = target - now;
+
+    if (diff <= 0) {
+        clearInterval(lockCheckInterval);
+        proceedAfterUnlock();
+        return;
+    }
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const mins = Math.floor((diff / 1000 / 60) % 60);
+    const secs = Math.floor((diff / 1000) % 60);
+
+    document.getElementById("cd-days").textContent = String(days).padStart(2, "0");
+    document.getElementById("cd-hours").textContent = String(hours).padStart(2, "0");
+    document.getElementById("cd-mins").textContent = String(mins).padStart(2, "0");
+    document.getElementById("cd-secs").textContent = String(secs).padStart(2, "0");
+}
+
+function proceedAfterUnlock() {
+    document.getElementById("lock-screen").style.display = "none";
+
+    // پر کردن مقادیر ثابت صفحه ورود
+    document.getElementById("login-grade").value = PROJECT_CONFIG.grade;
+    document.getElementById("login-school").value = PROJECT_CONFIG.schoolName;
+    document.getElementById("login-subject").value = "فیزیک دوازدهم تجربی";
+    document.getElementById("login-teacher").value = PROJECT_CONFIG.teacherName;
+
+    if (appState.studentName && appState.studentName.trim().length >= 3) {
+        enterDashboardEnvironment(false);
+    } else {
+        document.getElementById("login-screen").style.display = "flex";
+    }
+}
+
+/* =========================================================================
+   ورود دانش‌آموز و راه‌اندازی داشبورد
+   ========================================================================= */
+function handleStudentLogin() {
+    const nameInput = document.getElementById("student-name-input").value.trim();
+    if (nameInput.length < 3) {
+        document.getElementById("login-error-msg").style.display = "block";
+        return;
+    }
+    document.getElementById("login-error-msg").style.display = "none";
+    appState.studentName = nameInput;
+    if (!appState.entryTimeISO) {
+        appState.entryTimeISO = new Date().toLocaleString("fa-IR");
+    }
+    enterDashboardEnvironment(true);
+}
+
+let studyTimerInterval = null;
+function enterDashboardEnvironment(isNewLogin) {
+    document.getElementById("login-screen").style.display = "none";
+    document.getElementById("main-app").style.display = "block";
+
+    appState.loginCount = (appState.loginCount || 0) + 1;
+    awardXPOnce("login", 5, "ورود به سامانه");
+
+    document.getElementById("header-student-name").textContent = appState.studentName;
+    document.getElementById("header-teacher-name").textContent = PROJECT_CONFIG.teacherName;
+
+    renderDashboardCards();
+    renderHomeworkAndNotices();
+    renderAllExams();
+    updateMomentumLab();
+    updateGravityLab();
+    updateTopBarUI();
+
+    if (!studyTimerInterval) {
+        studyTimerInterval = setInterval(() => {
+            appState.studySeconds++;
+            const m = String(Math.floor(appState.studySeconds / 60)).padStart(2, "0");
+            const s = String(appState.studySeconds % 60).padStart(2, "0");
+            document.getElementById("ui-timer").textContent = `${m}:${s}`;
+            if (appState.studySeconds % 10 === 0) saveState();
+        }, 1000);
+    }
+}
+
+function renderDashboardCards() {
+    const container = document.getElementById("dashboard-cards-container");
+    container.innerHTML = "";
+    PROJECT_CONFIG.enabledModules.forEach(mod => {
+        const isDone = appState.viewedSections.includes(mod.id);
+        const card = document.createElement("div");
+        card.className = "glass-card module-card" + (isDone ? " done-module" : "");
+        card.onclick = () => openSection(mod.id);
+        card.innerHTML = `
+            ${mod.xp > 0 ? `<span class="xp-tag">+${mod.xp} XP</span>` : ""}
+            <div class="mod-icon">${mod.icon}</div>
+            <div>
+                <h3 style="font-size: 1.12rem; margin-bottom: 4px;">${mod.title}</h3>
+                <span style="font-size: 0.85rem; color: var(--text-muted);">ورود به بخش ←</span>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+function openSection(sectionId) {
+    playBeep(520, 0.06);
+    document.querySelectorAll(".view-section").forEach(sec => sec.classList.remove("active"));
+    const target = document.getElementById("view-" + sectionId);
+    if (target) target.classList.add("active");
+
+    if (sectionId !== "dashboard" && !appState.viewedSections.includes(sectionId)) {
+        appState.viewedSections.push(sectionId);
+    }
+
+    if (sectionId === "teaching") awardXPOnce("teaching", 20, "مشاهده آموزش جامع");
+    if (sectionId === "summary") awardXPOnce("summary", 10, "مشاهده خلاصه هوشمند");
+    if (sectionId === "homework") awardXPOnce("homework", 10, "مشاهده تکالیف");
+    if (sectionId === "report") populateReportPreview();
+
+    renderDashboardCards();
+    saveState();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function switchTeachTab(tabId) {
+    document.querySelectorAll(".teach-content").forEach(el => el.style.display = "none");
+    document.getElementById("teach-tab-" + tabId).style.display = "block";
+    ["t1", "t2", "t3", "t4"].forEach(id => {
+        const btn = document.getElementById("tab-btn-" + id);
+        btn.className = (id === tabId) ? "btn" : "btn btn-outline";
+    });
+}
+
+function toggleFlashcard(cardEl, qText, aText) {
+    playBeep(640, 0.06);
+    if (cardEl.dataset.flipped === "true") {
+        cardEl.dataset.flipped = "false";
+        cardEl.innerHTML = `<strong style="color: var(--primary);">${qText}</strong>`;
+    } else {
+        cardEl.dataset.flipped = "true";
+        cardEl.innerHTML = `<strong style="color: var(--success);">${aText}</strong>`;
+    }
+}
+
+function markAttendanceClicked() {
+    appState.attendanceClicked = true;
+    saveState();
+    showToast("ورود به لینک حضور و غیاب ثبت شد.");
+}
+
+function renderHomeworkAndNotices() {
+    const hwBox = document.getElementById("homework-list-container");
+    hwBox.innerHTML = PROJECT_CONFIG.homeworks.map(h => `<div class="glass-card">${h}</div>`).join("");
+
+    const noticeBox = document.getElementById("notices-list-container");
+    noticeBox.innerHTML = PROJECT_CONFIG.notices.map(n => `<div class="glass-card">${n}</div>`).join("");
+}
+
+/* =========================================================================
+   آزمایشگاه مجازی تعاملی (Canvas)
+   ========================================================================= */
+let ballAnimX = 60;
+let ballDir = 1;
+let ballAnimId = null;
+
+function updateMomentumLab() {
+    const m = parseFloat(document.getElementById("rng-lab-m").value);
+    const v = parseFloat(document.getElementById("rng-lab-v").value);
+    const dt = parseFloat(document.getElementById("rng-lab-dt").value);
+
+    document.getElementById("lbl-lab-m").textContent = m.toFixed(1) + " kg";
+    document.getElementById("lbl-lab-v").textContent = v + " m/s";
+    document.getElementById("lbl-lab-dt").textContent = dt.toFixed(2) + " s";
+
+    const p = m * v;
+    const k = 0.5 * m * v * v;
+    const dp = 2 * m * v;
+    const fav = dp / dt;
+
+    document.getElementById("out-lab-p").textContent = p.toFixed(1) + " kg·m/s";
+    document.getElementById("out-lab-k").textContent = k.toFixed(1) + " J";
+    document.getElementById("out-lab-dp").textContent = dp.toFixed(1) + " N·s";
+    document.getElementById("out-lab-f").textContent = Math.round(fav) + " N";
+
+    drawMomentumCanvas(m, v, ballAnimX, ballDir);
+}
+
+function drawMomentumCanvas(m, v, xPos, dir) {
+    const canvas = document.getElementById("lab-canvas-momentum");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // کف آزمایشگاه
+    ctx.strokeStyle = "rgba(255,255,255,0.2)";
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(20, 190);
+    ctx.lineTo(490, 190);
+    ctx.stroke();
+
+    // دیوار سمت راست
+    ctx.fillStyle = "#334155";
+    ctx.fillRect(465, 60, 22, 130);
+    ctx.strokeStyle = "#00f2fe";
+    ctx.strokeRect(465, 60, 22, 130);
+
+    // گوی متحرک
+    const radius = 16 + m * 1.4;
+    const yPos = 190 - radius;
+    ctx.beginPath();
+    ctx.arc(xPos, yPos, radius, 0, Math.PI * 2);
+    ctx.fillStyle = dir === 1 ? "#00f2fe" : "#a855f7";
+    ctx.fill();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = "#ffffff";
+    ctx.stroke();
+
+    // بردار تکانه
+    const arrowLen = Math.min(90, v * 3.2) * dir;
+    ctx.beginPath();
+    ctx.moveTo(xPos, yPos - radius - 14);
+    ctx.lineTo(xPos + arrowLen, yPos - radius - 14);
+    ctx.strokeStyle = "#10b981";
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    ctx.fillStyle = "#e2e8f0";
+    ctx.font = "13px sans-serif";
+    ctx.fillText(`p = ${(m * v).toFixed(1)} kg·m/s`, xPos - 35, yPos - radius - 22);
+}
+
+function runCollisionSimulation() {
+    awardXPOnce("lab", 30, "انجام آزمایشگاه مجازی");
+    if (ballAnimId) cancelAnimationFrame(ballAnimId);
+    ballAnimX = 65;
+    ballDir = 1;
+    const m = parseFloat(document.getElementById("rng-lab-m").value);
+    const v = parseFloat(document.getElementById("rng-lab-v").value);
+    const speed = Math.max(3, v * 0.45);
+
+    function step() {
+        ballAnimX += speed * ballDir;
+        if (ballAnimX >= 440 && ballDir === 1) {
+            ballDir = -1;
+            playBeep(320, 0.1);
+        }
+        drawMomentumCanvas(m, v, ballAnimX, ballDir);
+        if (ballDir === -1 && ballAnimX <= 65) {
+            ballDir = 1;
+            drawMomentumCanvas(m, v, 65, 1);
+            return;
+        }
+        ballAnimId = requestAnimationFrame(step);
+    }
+    step();
+}
+
+function updateGravityLab() {
+    const m = parseFloat(document.getElementById("rng-grav-m").value);
+    const hRatio = parseFloat(document.getElementById("rng-grav-h").value);
+
+    document.getElementById("lbl-grav-m").textContent = m + " kg";
+    document.getElementById("lbl-grav-h").textContent = hRatio.toFixed(1) + " Re";
+
+    const rRatio = 1 + hRatio;
+    const gRatio = 1 / (rRatio * rRatio);
+    const gh = 9.8 * gRatio;
+    const fg = m * gh;
+
+    document.getElementById("out-grav-r").textContent = rRatio.toFixed(1) + " Re";
+    document.getElementById("out-grav-ratio").textContent = gRatio.toFixed(3);
+    document.getElementById("out-grav-g").textContent = gh.toFixed(2) + " m/s²";
+    document.getElementById("out-grav-f").textContent = Math.round(fg) + " N";
+
+    drawGravityCanvas(hRatio, gh);
+    awardXPOnce("lab", 30, "انجام آزمایشگاه مجازی");
+}
+
+function drawGravityCanvas(hRatio, gh) {
+    const canvas = document.getElementById("lab-canvas-gravity");
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    const cx = 110, cy = 125, earthR = 45;
+
+    // کره زمین
+    ctx.beginPath();
+    ctx.arc(cx, cy, earthR, 0, Math.PI * 2);
+    ctx.fillStyle = "#0284c7";
+    ctx.fill();
+    ctx.strokeStyle = "#38bdf8";
+    ctx.lineWidth = 2;
+    ctx.stroke();
+    ctx.fillStyle = "#fff";
+    ctx.font = "13px sans-serif";
+    ctx.fillText("زمین (Re)", cx - 26, cy + 5);
+
+    // موقعیت ماهواره
+    const satX = cx + earthR + 25 + hRatio * 68;
+    const satY = cy;
+
+    // خط واصل مرکز به مرکز
+    ctx.setLineDash([5, 5]);
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(satX, satY);
+    ctx.strokeStyle = "rgba(255,255,255,0.4)";
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // ماهواره
+    ctx.beginPath();
+    ctx.arc(satX, satY, 12, 0, Math.PI * 2);
+    ctx.fillStyle = "#f59e0b";
+    ctx.fill();
+    ctx.strokeStyle = "#fff";
+    ctx.stroke();
+
+    // بردار نیروی گرانش به سمت مرکز زمین
+    ctx.beginPath();
+    ctx.moveTo(satX - 14, satY);
+    ctx.lineTo(satX - 14 - Math.max(18, gh * 5), satY);
+    ctx.strokeStyle = "#ef4444";
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
+    ctx.fillStyle = "#fcd34d";
+    ctx.fillText(`r = ${(1 + hRatio).toFixed(1)} Re`, (cx + satX) / 2 - 25, cy - 12);
+}
+
+/* =========================================================================
+   بانک سؤالات آزمون‌ها (تستی، نیمه‌تشریحی، تشریحی هوشمند)
+   ========================================================================= */
+const MCQ_BANK = [
+    {
+        id: 1,
+        level: "آسان",
+        q: "۱. یکای تکانه خطی در دستگاه بین‌المللی یکاها (SI) برابر با کدام گزینه است؟",
+        options: ["N · s (نیوتون ثانیه)", "N / s (نیوتون بر ثانیه)", "J · s (ژول ثانیه)", "kg · m / s²"],
+        correct: 0,
+        explain: "طبق رابطه Δp = F_av · Δt، یکای تکانه معادل نیوتون ثانیه (N·s) یا kg·m/s است."
+    },
+    {
+        id: 2,
+        level: "آسان",
+        q: "۲. توپی به جرم 0.5 kg با تندی 12 m/s به دیواری عمود برخورد کرده و با تندی 8 m/s در خلاف جهت اولیه برمی‌گردد. اندازه تغییر تکانه توپ چند کیلوگرم متر بر ثانیه است؟",
+        options: ["2", "6", "10", "4"],
+        correct: 2,
+        explain: "چون توپ در خلاف جهت برمی‌گردد، اندازه تغییر تکانه از جمع تندی‌ها به دست می‌آید: |Δp| = m(v₁ + v₂) = 0.5 × (12 + 8) = 10 kg·m/s."
+    },
+    {
+        id: 3,
+        level: "متوسط",
+        q: "۳. اگر اندازه تکانه جسمی با جرم ثابت ۳۰ درصد افزایش یابد، انرژی جنبشی آن چند درصد افزایش می‌یابد؟",
+        options: ["30%", "60%", "69%", "90%"],
+        correct: 2,
+        explain: "طبق رابطه K = p² / 2m، داریم K₂ / K₁ = (1.3)² = 1.69؛ بنابراین انرژی جنبشی ۶۹ درصد افزایش می‌یابد."
+    },
+    {
+        id: 4,
+        level: "متوسط",
+        q: "۴. تکانه دو جسم A و B با یکدیگر برابر است (p_A = p_B). اگر جرم جسم A چهار برابر جرم جسم B باشد (m_A = 4 m_B)، نسبت انرژی جنبشی K_A به K_B کدام است؟",
+        options: ["4", "1/4", "2", "1/2"],
+        correct: 1,
+        explain: "طبق رابطه K = p² / 2m، در تکانه ثابت انرژی جنبشی با جرم رابطه وارون دارد: K_A / K_B = m_B / m_A = 1/4."
+    },
+    {
+        id: 5,
+        level: "سخت",
+        q: "۵. در چه ارتفاعی از سطح زمین، شتاب گرانش برابر با 1/16 شتاب گرانش در سطح زمین است؟ (R_e شعاع زمین است)",
+        options: ["4 R_e", "3 R_e", "15 R_e", "2 R_e"],
+        correct: 1,
+        explain: "طبق رابطه g_h / g₀ = (R_e / (R_e + h))² = 1/16 ⇒ R_e / (R_e + h) = 1/4 ⇒ h = 3 R_e."
+    },
+    {
+        id: 6,
+        level: "سخت",
+        q: "۶. معادله تکانه جسمی در SI به صورت p = 3t² + 4t + 2 است. نیروی خالص متوسط وارد بر جسم در ۲ ثانیه اول حرکت چند نیوتون است؟",
+        options: ["10", "16", "20", "14"],
+        correct: 0,
+        explain: "در t=0 داریم p₀ = 2 و در t=2 داریم p₂ = 3(4) + 4(2) + 2 = 22. بنابراین F_av = (22 − 2) / 2 = 10 N."
+    }
+];
+
+const SEMI_BANK = [
+    {
+        id: 1,
+        q: "۱. شیب خط مماس بر نمودار تکانه-زمان (p - t) در هر لحظه برابر با چه کمیتی است؟",
+        accepted: ["نیرو", "نیروی خالص", "f", "f_net", "نیروی کل", "برآیند نیروها"],
+        explain: "شیب نمودار تکانه-زمان برابر با نیروی خالص وارد بر جسم (F_net) است."
+    },
+    {
+        id: 2,
+        q: "۲. اگر تکانه جسمی با جرم ثابت ۲ برابر شود، انرژی جنبشی آن چند برابر می‌شود؟ (عدد بنویسید)",
+        accepted: ["4", "۴", "چهار", "4 برابر", "۴ برابر"],
+        explain: "طبق رابطه K = p² / 2m، با ۲ برابر شدن تکانه، انرژی جنبشی ۴ برابر می‌شود."
+    },
+    {
+        id: 3,
+        q: "۳. سطح زیر نمودار نیرو-زمان (F - t) برابر با تغییر کدام کمیت فیزیکی است؟",
+        accepted: ["تکانه", "تغییر تکانه", "ضربه", "p", "dp", "Δp"],
+        explain: "مساحت زیر نمودار نیرو-زمان برابر با تغییر تکانه (Δp) است."
+    },
+    {
+        id: 4,
+        q: "۴. اگر فاصله دو جسم از یکدیگر ۳ برابر شود، نیروی گرانشی بین آن‌ها چند برابر می‌شود؟ (به صورت کسری مانند 1/x بنویسید)",
+        accepted: ["1/9", "۱/۹", "یک نهم", "0.11"],
+        explain: "طبق قانون گرانش نیوتون F = G m₁m₂ / r²، با ۳ برابر شدن فاصله، نیرو 1/9 برابر می‌شود."
+    }
+];
+
+const DESC_BANK = [
+    {
+        id: 1,
+        q: "۱. با استفاده از قانون دوم نیوتون و تعریف تکانه، توضیح دهید چرا باز شدن کیسه هوای خودرو هنگام تصادف باعث کاهش آسیب به سرنشین می‌شود؟ (فرمول و تحلیل مفهومی را بنویسید)",
+        groups: [
+            { weight: 2, label: "فرمول قانون دوم نیوتون برحسب تکانه", keys: ["f", "Δp", "dp", "Δt", "dt", "p/t", "تکانه"] },
+            { weight: 1.5, label: "افزایش زمان توقف/برخورد", keys: ["زمان", "افزایش", "بیشتر", "طولانی", "Δt", "dt"] },
+            { weight: 1.5, label: "کاهش نیروی متوسط در تغییر تکانه ثابت", keys: ["کاهش", "کمتر", "نیرو", "ثابت"] }
+        ],
+        sampleAnswer: "طبق رابطه F_av = Δp / Δt، در یک تصادف تغییر تکانه سرنشین تا توقف کامل (Δp) مقدار ثابتی است. کیسه هوا با افزایش زمان توقف (Δt)، باعث کاهش شدید نیروی خالص متوسط (F_av) وارد بر سرنشین می‌شود."
+    },
+    {
+        id: 2,
+        q: "۲. جسمی به جرم 2 kg از حال سکون تحت اثر نیروی خالص متوسط 12 N به مدت 5 s حرکت می‌کند. الف) تغییر تکانه جسم ب) تندی نهایی جسم را با نوشتن فرمول محاسبه کنید.",
+        groups: [
+            { weight: 1.5, label: "فرمول تغییر تکانه (Δp = F · Δt)", keys: ["Δp", "dp", "f", "Δt", "dt", "mv", "12*5", "12×5"] },
+            { weight: 1.75, label: "محاسبه تغییر تکانه (60 N·s)", keys: ["60", "۶۰"] },
+            { weight: 1.75, label: "محاسبه تندی نهایی (30 m/s)", keys: ["30", "۳۰"] }
+        ],
+        sampleAnswer: "الف) Δp = F_av × Δt = 12 × 5 = 60 kg·m/s (یا N·s). ب) از آنجا که جسم از سکون حرکت کرده: p₂ = m v₂ ⇒ 60 = 2 × v₂ ⇒ v₂ = 30 m/s."
+    },
+    {
+        id: 3,
+        q: "۳. با نوشتن روابط تکانه و انرژی جنبشی، ثابت کنید رابطه مستقل از سرعت آن‌ها به صورت K = p² / 2m است و سپس انرژی جنبشی جسمی به جرم 4 kg و تکانه 20 kg·m/s را به دست آورید.",
+        groups: [
+            { weight: 2, label: "نوشتن روابط پایه و اثبات K = p² / 2m", keys: ["p=mv", "p = mv", "p²", "p^2", "2m", "1/2", "½"] },
+            { weight: 1.5, label: "جایگذاری اعداد (400 تقسیم بر 8)", keys: ["400", "۴۰۰", "20", "۲۰", "8", "۸"] },
+            { weight: 1.5, label: "پاسخ نهایی انرژی جنبشی (50 J)", keys: ["50", "۵۰"] }
+        ],
+        sampleAnswer: "می‌دانیم p = m v ⇒ v = p / m. با جایگذاری در رابطه K = ½ m v² داریم: K = ½ m (p/m)² = p² / 2m. با عددگذاری: K = 20² / (2 × 4) = 400 / 8 = 50 J."
+    },
+    {
+        id: 4,
+        q: "۴. ماهواره‌ای در ارتفاع h = 2 R_e از سطح زمین قرار دارد. اگر شتاب گرانش در سطح زمین g₀ = 9.8 m/s² باشد، شتاب گرانش در محل ماهواره (g_h) را با نوشتن فرمول محاسبه کنید.",
+        groups: [
+            { weight: 2, label: "فرمول نسبت شتاب گرانش برحسب ارتفاع", keys: ["R+h", "r+h", "g_h", "g0", "g₀", "3R", "3r"] },
+            { weight: 1.5, label: "نسبت مجذور فاصله (1/9)", keys: ["1/9", "۱/۹", "9", "۹"] },
+            { weight: 1.5, label: "مقدار عددی نهایی (1.08 یا 9.8/9)", keys: ["1.08", "1.09", "۱.۰۸", "۱.۰۹", "9.8/9", "۹.۸/۹"] }
+        ],
+        sampleAnswer: "فاصله از مرکز زمین برابر r = R_e + 2R_e = 3R_e است. طبق رابطه g_h / g₀ = (R_e / (R_e + h))² = (1/3)² = 1/9 ⇒ g_h = 9.8 / 9 ≈ 1.09 m/s²."
+    }
+];
+
+/* نوار ابزار نمادها و فرمول‌های استاندارد فیزیک برای درج در کادر تشریحی */
+const PHYSICS_SYMBOLS = [
+    { label: "p = m v", insert: "p = m × v " },
+    { label: "F_av = Δp / Δt", insert: "F_av = Δp / Δt " },
+    { label: "Δp = m(v₂ − v₁)", insert: "Δp = m(v₂ − v₁) " },
+    { label: "K = p² / 2m", insert: "K = p² / (2m) " },
+    { label: "p = √(2mK)", insert: "p = √(2mK) " },
+    { label: "F_g = G m₁m₂ / r²", insert: "F_g = G(m₁m₂)/r² " },
+    { label: "g_h = g₀(R/(R+h))²", insert: "g_h = g₀ × (R / (R + h))² " },
+    { label: "Δ", insert: "Δ" },
+    { label: "²", insert: "²" },
+    { label: "√", insert: "√(" },
+    { label: "×", insert: " × " },
+    { label: "÷", insert: " / " },
+    { label: "⇒", insert: " ⇒ " },
+    { label: "kg·m/s", insert: " kg·m/s " },
+    { label: "N·s", insert: " N·s " },
+    { label: "m/s²", insert: " m/s² " }
+];
+
+function renderAllExams() {
+    // ۱. رندر آزمون تستی
+    const mcqBox = document.getElementById("mcq-questions-box");
+    mcqBox.innerHTML = MCQ_BANK.map((item, idx) => `
+        <div class="glass-card" style="margin-bottom: 14px;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <strong>${item.q}</strong>
+                <span class="stat-pill" style="font-size: 0.78rem;">سطح: ${item.level}</span>
+            </div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin-top: 10px;">
+                ${item.options.map((opt, oIdx) => `
+                    <label style="background: rgba(255,255,255,0.05); border: 1px solid var(--border-glass); padding: 10px 14px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                        <input type="radio" name="mcq_${item.id}" value="${oIdx}" ${appState.mcqSubmitted ? "disabled" : ""}>
+                        <span style="direction: ltr; unicode-bidi: embed;">${opt}</span>
+                    </label>
+                `).join("")}
+            </div>
+            <div id="mcq-exp-${item.id}" style="display: none; margin-top: 10px; padding: 10px; border-radius: 8px; background: rgba(16,185,129,0.12); color: #a7f3d0; font-size: 0.9rem;">
+                <strong>پاسخ تشریحی:</strong> ${item.explain}
+            </div>
+        </div>
+    `).join("");
+
+    // ۲. رندر آزمون نیمه‌تشریحی
+    const semiBox = document.getElementById("semi-questions-box");
+    semiBox.innerHTML = SEMI_BANK.map(item => `
+        <div class="glass-card" style="margin-bottom: 14px;">
+            <label style="display: block; font-weight: 700; margin-bottom: 8px;">${item.q}</label>
+            <input type="text" id="semi_ans_${item.id}" class="input-control" placeholder="پاسخ کوتاه، عدد یا عبارت را تایپ کنید..." ${appState.semiSubmitted ? "disabled" : ""}>
+            <div id="semi-exp-${item.id}" style="display: none; margin-top: 10px; padding: 10px; border-radius: 8px; font-size: 0.9rem;"></div>
+        </div>
+    `).join("");
+
+    // ۳. رندر آزمون تشریحی با نوار ابزار کامل فرمول و کیبورد آزاد
+    const descBox = document.getElementById("desc-questions-box");
+    descBox.innerHTML = DESC_BANK.map(item => `
+        <div class="glass-card" style="margin-bottom: 18px;">
+            <p style="font-weight: 700; margin-bottom: 10px;">${item.q} <span style="color: var(--primary); font-size: 0.85rem;">(۵ نمره)</span></p>
+            <div class="symbol-toolbar">
+                ${PHYSICS_SYMBOLS.map(sym => `
+                    <button type="button" class="sym-btn" onclick="insertSymbolIntoTextarea('desc_ans_${item.id}', '${sym.insert}')">${sym.label}</button>
+                `).join("")}
+            </div>
+            <textarea id="desc_ans_${item.id}" class="desc-textarea" placeholder="فرمول، راه‌حل عددی و توضیحات خود را با کیبورد دستگاه یا دکمه‌های نوار بالا بنویسید..." ${appState.descSubmitted ? "disabled" : ""}></textarea>
+            <div id="desc-feedback-${item.id}" style="display: none; margin-top: 10px; padding: 12px; border-radius: 10px; background: rgba(15,23,42,0.9); border: 1px solid var(--border-glass); font-size: 0.92rem;"></div>
+        </div>
+    `).join("");
+}
+
+function insertSymbolIntoTextarea(textareaId, textToInsert) {
+    const area = document.getElementById(textareaId);
+    if (!area || area.disabled) return;
+    const start = area.selectionStart;
+    const end = area.selectionEnd;
+    const current = area.value;
+    area.value = current.substring(0, start) + textToInsert + current.substring(end);
+    area.focus();
+    area.selectionStart = area.selectionEnd = start + textToInsert.length;
+    playBeep(660, 0.04);
+}
+
+function switchExamTab(tab) {
+    ["mcq", "semi", "desc"].forEach(t => {
+        document.getElementById("exam-tab-" + t).style.display = (t === tab) ? "block" : "none";
+        document.getElementById("exam-tab-btn-" + t).className = (t === tab) ? "btn" : "btn btn-outline";
+    });
+}
+
+/* =========================================================================
+   موتور تصحیح هوشمند (تستی، نیمه‌تشریحی و تشریحی مفهومی/مرحله‌ای)
+   ========================================================================= */
+function normalizePersianAndMath(str) {
+    if (!str) return "";
+    return str
+        .toLowerCase()
+        .replace(/ي/g, "ی")
+        .replace(/ك/g, "ک")
+        .replace(/\u200c/g, " ")
+        .replace(/[۰-۹]/g, d => "۰۱۲۳۴۵۶۷۸۹".indexOf(d))
+        .trim();
+}
+
+function gradeMCQExam() {
+    if (appState.mcqSubmitted) {
+        showToast("آزمون تستی قبلاً ثبت شده است.");
+        return;
+    }
+    let correctCount = 0;
+    MCQ_BANK.forEach(item => {
+        const chosen = document.querySelector(`input[name="mcq_${item.id}"]:checked`);
+        if (chosen && parseInt(chosen.value) === item.correct) {
+            correctCount++;
+        }
+        document.getElementById(`mcq-exp-${item.id}`).style.display = "block";
+    });
+
+    appState.mcqSubmitted = true;
+    appState.mcqScore20 = Number(((correctCount / MCQ_BANK.length) * 20).toFixed(2));
+    document.getElementById("btn-submit-mcq").disabled = true;
+
+    const panel = document.getElementById("mcq-result-panel");
+    panel.style.display = "block";
+    panel.innerHTML = `<h4 style="color: var(--success);">نتیجه آزمون تستی: ${correctCount} صحیح از ${MCQ_BANK.length} سؤال | نمره معادل از ۲۰: <strong>${appState.mcqScore20}</strong></h4>`;
+
+    checkExamXPAward();
+    saveState();
+}
+
+function gradeSemiExam() {
+    if (appState.semiSubmitted) {
+        showToast("آزمون نیمه‌تشریحی قبلاً ثبت شده است.");
+        return;
+    }
+    let correctCount = 0;
+    SEMI_BANK.forEach(item => {
+        const raw = document.getElementById(`semi_ans_${item.id}`).value;
+        const norm = normalizePersianAndMath(raw);
+        const isOk = item.accepted.some(acc => norm.includes(normalizePersianAndMath(acc)));
+        if (isOk) correctCount++;
+
+        const expEl = document.getElementById(`semi-exp-${item.id}`);
+        expEl.style.display = "block";
+        expEl.style.background = isOk ? "rgba(16,185,129,0.15)" : "rgba(239,68,68,0.15)";
+        expEl.innerHTML = `${isOk ? "✓ پاسخ صحیح" : "✗ نیاز به اصلاح"} | ${item.explain}`;
+        document.getElementById(`semi_ans_${item.id}`).disabled = true;
+    });
+
+    appState.semiSubmitted = true;
+    appState.semiScore20 = Number(((correctCount / SEMI_BANK.length) * 20).toFixed(2));
+    document.getElementById("btn-submit-semi").disabled = true;
+
+    const panel = document.getElementById("semi-result-panel");
+    panel.style.display = "block";
+    panel.innerHTML = `<h4 style="color: var(--success);">نمره آزمون نیمه‌تشریحی از ۲۰: <strong>${appState.semiScore20}</strong></h4>`;
+
+    checkExamXPAward();
+    saveState();
+}
+
+function gradeDescExam() {
+    if (appState.descSubmitted) {
+        showToast("آزمون تشریحی قبلاً ثبت شده است.");
+        return;
+    }
+    let totalDescScore = 0;
+
+    DESC_BANK.forEach(item => {
+        const raw = document.getElementById(`desc_ans_${item.id}`).value;
+        const norm = normalizePersianAndMath(raw);
+        let qScore = 0;
+        let stepFeedback = [];
+
+        item.groups.forEach(grp => {
+            const matched = grp.keys.some(k => norm.includes(normalizePersianAndMath(k)));
+            if (matched) {
+                qScore += grp.weight;
+                stepFeedback.push(`<span style="color: var(--success);">✓ ${grp.label} (+${grp.weight})</span>`);
+            } else {
+                stepFeedback.push(`<span style="color: var(--warning);">○ ${grp.label} (ذکر نشده)</span>`);
+            }
+        });
+
+        totalDescScore += qScore;
+        const fbEl = document.getElementById(`desc-feedback-${item.id}`);
+        fbEl.style.display = "block";
+        fbEl.innerHTML = `
+            <div style="margin-bottom: 6px;"><strong>نمره کسب‌شده در این سؤال: ${qScore} از 5</strong></div>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 8px;">${stepFeedback.join(" | ")}</div>
+            <div style="color: #93c5fd;"><strong>پاسخ استاندارد نمونه:</strong> ${item.sampleAnswer}</div>
+        `;
+        document.getElementById(`desc_ans_${item.id}`).disabled = true;
+    });
+
+    appState.descSubmitted = true;
+    appState.descScore20 = Number(totalDescScore.toFixed(2));
+    document.getElementById("btn-submit-desc").disabled = true;
+
+    const panel = document.getElementById("desc-result-panel");
+    panel.style.display = "block";
+    panel.innerHTML = `<h4 style="color: var(--success);">نمره کل آزمون تشریحی هوشمند از ۲۰: <strong>${appState.descScore20}</strong></h4>`;
+
+    checkExamXPAward();
+    saveState();
+}
+
+function checkExamXPAward() {
+    if (appState.mcqSubmitted || appState.semiSubmitted || appState.descSubmitted) {
+        awardXPOnce("exam", 50, "اتمام آزمون‌ها");
+    }
+}
+
+/* =========================================================================
+   پیش‌نمایش گزارش و ارسال مستقیم به جدول Students در Supabase
+   ========================================================================= */
+function computeFinalScoreOutOf20() {
+    // میانگین وزنی از آزمون‌های انجام‌شده
+    const mcq = appState.mcqScore20 || 0;
+    const semi = appState.semiScore20 || 0;
+    const desc = appState.descScore20 || 0;
+    return Number(((mcq * 0.35) + (semi * 0.25) + (desc * 0.40)).toFixed(2));
+}
+
+function populateReportPreview() {
+    document.getElementById("rep-name").textContent = appState.studentName;
+    document.getElementById("rep-school").textContent = `${PROJECT_CONFIG.grade} - ${PROJECT_CONFIG.schoolName}`;
+    document.getElementById("rep-subject").textContent = `${PROJECT_CONFIG.subject} (دبیر: ${PROJECT_CONFIG.teacherName})`;
+    document.getElementById("rep-xp").textContent = `${appState.xp} XP`;
+    document.getElementById("rep-progress").textContent = `${calculateProgressPercent()}%`;
+    document.getElementById("rep-time").textContent = `ورود: ${appState.entryTimeISO} | مدت مطالعه: ${Math.floor(appState.studySeconds / 60)} دقیقه و ${appState.studySeconds % 60} ثانیه`;
+    document.getElementById("rep-viewed").textContent = appState.viewedSections.join(" ، ") || "هیچ بخشی ثبت نشده";
+    document.getElementById("rep-exams").textContent = `تستی: ${appState.mcqScore20}/20 | نیمه‌تشریحی: ${appState.semiScore20}/20 | تشریحی: ${appState.descScore20}/20`;
+    document.getElementById("rep-final-score").textContent = `${computeFinalScoreOutOf20()} از 20`;
+
+    if (appState.reportSent) {
+        const btn = document.getElementById("btn-send-supabase");
+        btn.disabled = true;
+        btn.textContent = "گزارش قبلاً با موفقیت در سرور ثبت شده است";
+    }
+}
+
+async function submitFinalReportToSupabase() {
+    if (appState.reportSent) {
+        showToast("گزارش شما قبلاً ارسال شده و فقط یک‌بار قابل ارسال است.");
+        return;
+    }
+
+    const btn = document.getElementById("btn-send-supabase");
+    const statusEl = document.getElementById("supabase-status-msg");
+    btn.disabled = true;
+    btn.textContent = "در حال ارسال اطلاعات به پایگاه داده Supabase...";
+    statusEl.style.color = "#38bdf8";
+    statusEl.textContent = "لطفاً چند لحظه صبر کنید...";
+
+    const exitTime = new Date().toLocaleString("fa-IR");
+    const finalScore = computeFinalScoreOutOf20();
+
+    const detailsSummary = [
+        `زمان ورود: ${appState.entryTimeISO}`,
+        `زمان ثبت گزارش: ${exitTime}`,
+        `مدت حضور: ${Math.floor(appState.studySeconds / 60)} دقیقه و ${appState.studySeconds % 60} ثانیه`,
+        `دفعات ورود: ${appState.loginCount}`,
+        `بخش‌های مشاهده‌شده: ${appState.viewedSections.join(",")}`,
+        `حضور و غیاب دیجی‌فرم: ${appState.attendanceClicked ? "کلیک شده" : "مشاهده نشده"}`,
+        `نمره تستی: ${appState.mcqScore20}/20`,
+        `نمره نیمه‌تشریحی: ${appState.semiScore20}/20`,
+        `نمره تشریحی: ${appState.descScore20}/20`,
+        `XP کل: ${appState.xp}`,
+        `درصد پیشرفت: ${calculateProgressPercent()}%`,
+        `تعداد نشان‌ها (Badges): ${appState.badges.length} (${appState.badges.join("، ") || "-"})`
+    ].join(" | ");
+
+    // ساختار دقیق ستون‌های جدول Students در Supabase
+    const payload = {
+        Student_name: appState.studentName,
+        School_name: `${PROJECT_CONFIG.grade} - ${PROJECT_CONFIG.schoolName}`,
+        Subject: "فیزیک دوازدهم تجربی",
+        Score: Number(finalScore),
+        Total_score: 20,
+        Details: detailsSummary
+    };
+
+    try {
+        const response = await fetch(`${PROJECT_CONFIG.supabaseUrl}/rest/v1/${PROJECT_CONFIG.supabaseTable}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "apikey": PROJECT_CONFIG.supabaseKey,
+                "Authorization": `Bearer ${PROJECT_CONFIG.supabaseKey}`,
+                "Prefer": "return=minimal"
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (response.ok) {
+            appState.reportSent = true;
+            saveState();
+            playBeep(880, 0.2);
+            btn.textContent = "✓ گزارش عملکرد با موفقیت در سرور ثبت شد";
+            statusEl.style.color = "#10b981";
+            statusEl.textContent = "کارنامه و جزئیات عملکرد شما با موفقیت در جدول Students ثبت گردید.";
+            showToast("گزارش نهایی با موفقیت ارسال شد.");
+        } else {
+            const errText = await response.text();
+            throw new Error(errText || `کد وضعیت: ${response.status}`);
+        }
+    } catch (err) {
+        btn.disabled = false;
+        btn.textContent = "تلاش مجدد برای ثبت و ارسال گزارش";
+        statusEl.style.color = "#ef4444";
+        statusEl.textContent = "خطا در برقراری ارتباط با سرور: لطفاً اتصال اینترنت خود را بررسی کرده و مجدداً دکمه را بزنید. (" + err.message + ")";
+    }
+}
+
+/* =========================================================================
+   گرافیک پس‌زمینه زنده (Particle System 60FPS)
+   ========================================================================= */
+function initBackgroundParticles() {
+    const canvas = document.getElementById("bg-canvas");
+    const ctx = canvas.getContext("2d");
+    let w = canvas.width = window.innerWidth;
+    let h = canvas.height = window.innerHeight;
+
+    window.addEventListener("resize", () => {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+    });
+
+    const particles = Array.from({ length: 42 }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.55,
+        vy: (Math.random() - 0.5) * 0.55,
+        r: Math.random() * 2 + 1
+    }));
+
+    function animate() {
+        ctx.clearRect(0, 0, w, h);
+        for (let i = 0; i < particles.length; i++) {
+            const p = particles[i];
+            p.x += p.vx;
+            p.y += p.vy;
+            if (p.x < 0 || p.x > w) p.vx *= -1;
+            if (p.y < 0 || p.y > h) p.vy *= -1;
+
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fillStyle = "rgba(0, 242, 254, 0.35)";
+            ctx.fill();
+
+            for (let j = i + 1; j < particles.length; j++) {
+                const p2 = particles[j];
+                const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+                if (dist < 130) {
+                    ctx.beginPath();
+                    ctx.moveTo(p.x, p.y);
+                    ctx.lineTo(p2.x, p2.y);
+                    ctx.strokeStyle = `rgba(79, 172, 254, ${0.14 * (1 - dist / 130)})`;
+                    ctx.stroke();
+                }
+            }
+        }
+        requestAnimationFrame(animate);
+    }
+    animate();
+}
+
+/* راه‌اندازی اولیه */
+window.addEventListener("DOMContentLoaded", () => {
+    loadState();
+    initBackgroundParticles();
+    initLockScreen();
+});
+</script>
+</body>
+</html>
