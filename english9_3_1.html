@@ -1,0 +1,2323 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>سامانه آموزش و ارزشیابی هوشمند - زبان انگلیسی نهم (درس سوم - جلسه اول)</title>
+<style>
+:root {
+  --bg-dark: #060916;
+  --bg-card: rgba(16, 23, 44, 0.82);
+  --bg-glass: rgba(255, 255, 255, 0.05);
+  --border-glass: rgba(255, 255, 255, 0.14);
+  --neon-blue: #00e5ff;
+  --neon-purple: #8b5cf6;
+  --neon-green: #10b981;
+  --neon-amber: #f59e0b;
+  --neon-red: #ef4444;
+  --text-main: #f1f5f9;
+  --text-muted: #94a3b8;
+  --font-main: system-ui, -apple-system, 'Segoe UI', Roboto, Tahoma, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-main);
+}
+
+html, body {
+  width: 100%;
+  min-height: 100vh;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  line-height: 1.75;
+}
+
+#bg-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Lock Screen */
+#lock-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: radial-gradient(circle at center, #0f172a 0%, #050814 100%);
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 28px 16px 70px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.lock-container {
+  width: 100%;
+  max-width: 800px;
+  background: var(--bg-card);
+  backdrop-filter: blur(22px);
+  border: 1px solid var(--border-glass);
+  border-radius: 22px;
+  padding: 32px 24px;
+  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.75), 0 0 35px rgba(0, 229, 255, 0.12);
+  margin: auto;
+}
+
+.lock-header {
+  text-align: center;
+  border-bottom: 1px solid var(--border-glass);
+  padding-bottom: 20px;
+  margin-bottom: 24px;
+}
+
+.lock-badge {
+  display: inline-block;
+  padding: 6px 18px;
+  border-radius: 30px;
+  background: rgba(0, 229, 255, 0.12);
+  border: 1px solid var(--neon-blue);
+  color: var(--neon-blue);
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.lock-title {
+  font-size: 1.45rem;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.lock-meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.meta-item {
+  background: var(--bg-glass);
+  border: 1px solid var(--border-glass);
+  padding: 12px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+.meta-label {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  display: block;
+}
+
+.meta-val {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--neon-blue);
+  margin-top: 4px;
+}
+
+.countdown-box {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin: 26px 0;
+  direction: ltr;
+}
+
+.time-segment {
+  background: rgba(0, 229, 255, 0.08);
+  border: 1px solid rgba(0, 229, 255, 0.35);
+  border-radius: 14px;
+  min-width: 74px;
+  padding: 14px 10px;
+  text-align: center;
+  box-shadow: 0 0 15px rgba(0, 229, 255, 0.1);
+}
+
+.time-num {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: #fff;
+  display: block;
+}
+
+.time-lbl {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.guide-section {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-glass);
+  border-radius: 14px;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+.guide-title {
+  font-size: 1.08rem;
+  color: var(--neon-blue);
+  margin-bottom: 12px;
+  font-weight: 700;
+  border-right: 3px solid var(--neon-blue);
+  padding-right: 10px;
+}
+
+.guide-list {
+  list-style: none;
+  font-size: 0.92rem;
+  color: var(--text-main);
+}
+
+.guide-list li {
+  margin-bottom: 10px;
+  position: relative;
+  padding-right: 18px;
+}
+
+.guide-list li::before {
+  content: "•";
+  color: var(--neon-blue);
+  position: absolute;
+  right: 0;
+  font-weight: bold;
+}
+
+.xp-table-guide {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+  font-size: 0.88rem;
+}
+
+.xp-table-guide th, .xp-table-guide td {
+  border: 1px solid var(--border-glass);
+  padding: 8px 12px;
+  text-align: right;
+}
+
+.xp-table-guide th {
+  background: rgba(0, 229, 255, 0.1);
+  color: var(--neon-blue);
+}
+
+/* Stealth Secret Input - Completely invisible to students */
+.stealth-zone {
+  margin-top: 22px;
+  display: flex;
+  justify-content: center;
+}
+
+.stealth-input {
+  width: 85px;
+  height: 20px;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: rgba(255, 255, 255, 0.08);
+  text-align: center;
+  font-size: 0.72rem;
+  letter-spacing: 3px;
+  caret-color: transparent;
+}
+
+/* Login Screen */
+#login-screen {
+  position: relative;
+  z-index: 10;
+  min-height: 100vh;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 490px;
+  background: var(--bg-card);
+  backdrop-filter: blur(22px);
+  border: 1px solid var(--border-glass);
+  border-radius: 20px;
+  padding: 32px 24px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.65);
+}
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 13px 16px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--border-glass);
+  border-radius: 12px;
+  color: #fff;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.25s;
+}
+
+.form-control:focus {
+  border-color: var(--neon-blue);
+  box-shadow: 0 0 12px rgba(0, 229, 255, 0.25);
+}
+
+.form-control[readonly] {
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+  color: #fff;
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 8px 20px rgba(0, 229, 255, 0.25);
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(0, 229, 255, 0.4);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-green {
+  background: linear-gradient(135deg, #10b981, #059669);
+  box-shadow: 0 8px 20px rgba(16, 185, 129, 0.28);
+}
+
+/* Main App Layout */
+#app-screen {
+  position: relative;
+  z-index: 10;
+  display: none;
+  min-height: 100vh;
+  padding-bottom: 60px;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(6, 9, 22, 0.9);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border-glass);
+  padding: 12px 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-info-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-badge {
+  background: rgba(0, 229, 255, 0.12);
+  border: 1px solid var(--neon-blue);
+  color: var(--neon-blue);
+  padding: 5px 12px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+
+.stats-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.stat-pill {
+  background: var(--bg-glass);
+  border: 1px solid var(--border-glass);
+  padding: 6px 13px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.stat-pill strong {
+  color: var(--neon-green);
+}
+
+.main-wrapper {
+  max-width: 1180px;
+  margin: 24px auto;
+  padding: 0 16px;
+}
+
+/* Dashboard Grid */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 18px;
+  margin-top: 20px;
+}
+
+.dash-card {
+  background: var(--bg-card);
+  backdrop-filter: blur(14px);
+  border: 1px solid var(--border-glass);
+  border-radius: 16px;
+  padding: 24px 20px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
+}
+
+.dash-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--neon-blue);
+  box-shadow: 0 12px 30px rgba(0, 229, 255, 0.18);
+}
+
+.dash-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.dash-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  background: rgba(0, 229, 255, 0.12);
+  border: 1px solid rgba(0, 229, 255, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  color: var(--neon-blue);
+}
+
+.xp-tag {
+  font-size: 0.78rem;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--neon-green);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  font-weight: 700;
+}
+
+.xp-tag.done {
+  background: rgba(139, 92, 246, 0.2);
+  color: #c4b5fd;
+  border-color: var(--neon-purple);
+}
+
+.dash-title {
+  font-size: 1.12rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+/* Section Views */
+.section-view {
+  display: none;
+  background: var(--bg-card);
+  backdrop-filter: blur(18px);
+  border: 1px solid var(--border-glass);
+  border-radius: 20px;
+  padding: 28px 22px;
+  margin-top: 16px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-glass);
+  padding-bottom: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.btn-back {
+  padding: 8px 18px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid var(--border-glass);
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.btn-back:hover {
+  background: rgba(0, 229, 255, 0.2);
+  border-color: var(--neon-blue);
+}
+
+/* Educational Content Styling */
+.edu-block {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-glass);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.edu-block h3 {
+  color: var(--neon-blue);
+  margin-bottom: 12px;
+  font-size: 1.15rem;
+  border-right: 4px solid var(--neon-blue);
+  padding-right: 10px;
+}
+
+.formula-box {
+  background: rgba(0, 229, 255, 0.07);
+  border: 1px solid rgba(0, 229, 255, 0.35);
+  border-radius: 12px;
+  padding: 16px;
+  margin: 14px 0;
+  font-weight: 700;
+  text-align: center;
+  color: #fff;
+  direction: ltr;
+}
+
+.formula-box-fa {
+  background: rgba(139, 92, 246, 0.12);
+  border: 1px solid rgba(139, 92, 246, 0.45);
+  border-radius: 12px;
+  padding: 14px;
+  margin: 12px 0;
+  font-weight: 700;
+  text-align: center;
+  color: #e2e8f0;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 16px 0;
+  font-size: 0.95rem;
+}
+
+.data-table th, .data-table td {
+  border: 1px solid var(--border-glass);
+  padding: 12px;
+  text-align: right;
+}
+
+.data-table th {
+  background: rgba(0, 229, 255, 0.12);
+  color: var(--neon-blue);
+}
+
+.ltr-cell {
+  direction: ltr;
+  text-align: left !important;
+  font-weight: 600;
+  color: #38bdf8;
+}
+
+/* Flashcards */
+.flashcard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.flashcard {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border-glass);
+  border-radius: 14px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s;
+  min-height: 130px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.flashcard:hover {
+  border-color: var(--neon-blue);
+  background: rgba(0, 229, 255, 0.08);
+}
+
+.fc-en {
+  font-size: 1.12rem;
+  font-weight: 700;
+  color: var(--neon-blue);
+  direction: ltr;
+}
+
+.fc-fa {
+  font-size: 1rem;
+  color: var(--neon-green);
+  margin-top: 8px;
+  display: none;
+}
+
+.flashcard.flipped .fc-fa {
+  display: block;
+}
+
+/* Virtual Lab */
+.lab-workspace {
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--border-glass);
+  border-radius: 16px;
+  padding: 20px;
+  margin-top: 16px;
+}
+
+.word-bank, .drop-zone {
+  min-height: 64px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px dashed var(--border-glass);
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 16px;
+  direction: ltr;
+}
+
+.word-chip {
+  padding: 8px 16px;
+  background: rgba(0, 229, 255, 0.15);
+  border: 1px solid var(--neon-blue);
+  border-radius: 8px;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+  user-select: none;
+  transition: transform 0.15s;
+}
+
+.word-chip:hover {
+  transform: scale(1.05);
+}
+
+/* Quiz Components */
+.question-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--border-glass);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 18px;
+}
+
+.q-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 14px;
+  color: #fff;
+}
+
+.options-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.option-btn {
+  text-align: right;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--border-glass);
+  border-radius: 10px;
+  color: var(--text-main);
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+}
+
+.option-btn:hover {
+  border-color: var(--neon-blue);
+}
+
+.option-btn.selected {
+  background: rgba(0, 229, 255, 0.18);
+  border-color: var(--neon-blue);
+  color: #fff;
+  font-weight: 700;
+}
+
+.feedback-box {
+  margin-top: 12px;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  display: none;
+}
+
+.feedback-box.correct {
+  display: block;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid var(--neon-green);
+  color: #a7f3d0;
+}
+
+.feedback-box.partial {
+  display: block;
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid var(--neon-amber);
+  color: #fde68a;
+}
+
+.feedback-box.wrong {
+  display: block;
+  background: rgba(239, 68, 68, 0.15);
+  border: 1px solid var(--neon-red);
+  color: #fecaca;
+}
+
+@media (max-width: 600px) {
+  .countdown-box { gap: 8px; }
+  .time-segment { min-width: 60px; padding: 10px 6px; }
+  .time-num { font-size: 1.35rem; }
+}
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+
+<!-- ================= LOCK SCREEN ================= -->
+<div id="lock-screen">
+  <div class="lock-container">
+    <div class="lock-header">
+      <span class="lock-badge">سامانه رسمی آموزش و ارزشیابی هوشمند</span>
+      <h1 class="lock-title" id="lock-course-title">زبان انگلیسی نهم - درس سوم (جلسه اول)</h1>
+      <p style="color: var(--text-muted); font-size: 0.92rem;">دسترسی به محتوای آموزشی، فرم حضور و غیاب، آزمایشگاه و آزمون‌ها در زمان مقرر فعال می‌گردد.</p>
+    </div>
+
+    <div class="lock-meta">
+      <div class="meta-item">
+        <span class="meta-label">نام مدرسه</span>
+        <span class="meta-val" id="lock-school">مدرسه حکمت گوری</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">پایه تحصیلی</span>
+        <span class="meta-val" id="lock-grade">نهم</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">نام دبیر</span>
+        <span class="meta-val" id="lock-teacher">برزگری</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">زمان فعال‌سازی</span>
+        <span class="meta-val" id="lock-start-text">سه‌شنبه ۳ آذر - ساعت ۱۱:۰۰</span>
+      </div>
+    </div>
+
+    <div class="countdown-box" id="countdown-box">
+      <div class="time-segment">
+        <span class="time-num" id="cd-days">00</span>
+        <span class="time-lbl">روز</span>
+      </div>
+      <div class="time-segment">
+        <span class="time-num" id="cd-hours">00</span>
+        <span class="time-lbl">ساعت</span>
+      </div>
+      <div class="time-segment">
+        <span class="time-num" id="cd-mins">00</span>
+        <span class="time-lbl">دقیقه</span>
+      </div>
+      <div class="time-segment">
+        <span class="time-num" id="cd-secs">00</span>
+        <span class="time-lbl">ثانیه</span>
+      </div>
+    </div>
+
+    <div id="lock-status-msg" style="text-align:center; font-weight:700; color:var(--neon-amber); margin-bottom:16px;">
+      سامانه در انتظار فرارسیدن زمان شروع جلسه است. پس از فعال‌سازی، دسترسی برای همیشه باز خواهد ماند.
+    </div>
+
+    <!-- راهنمای جامع کار با سامانه در صفحه قفل -->
+    <div class="guide-section">
+      <div class="guide-title">راهنمای کار با سامانه آموزشی</div>
+      <ul class="guide-list">
+        <li>پس از فرارسیدن زمان شروع جلسه، قفل سامانه به‌صورت خودکار باز شده و صفحه ورود نمایش داده می‌شود.</li>
+        <li>در صفحه ورود، وارد کردن «نام و نام خانوادگی» کامل الزامی است. سایر مشخصات (پایه، مدرسه و درس) از پیش تنظیم شده‌اند.</li>
+        <li>پس از ورود به داشبورد، ابتدا وارد بخش «حضور و غیاب» شوید و از طریق لینک دیجی‌فرم حضور خود را ثبت نمایید، سپس بخش‌های آموزش، خلاصه، آزمایشگاه و آزمون را تکمیل کنید.</li>
+        <li>در بخش آزمون‌ها، صفحه‌کلید کامل گوشی (شامل حروف فارسی، انگلیسی، اعداد و علائم) برای تایپ پاسخ‌های تشریحی و نیمه‌تشریحی فعال است.</li>
+      </ul>
+    </div>
+
+    <div class="guide-section">
+      <div class="guide-title">جدول نحوه کسب امتیاز (XP) و قوانین ضدتقلب</div>
+      <p style="font-size:0.88rem; color:var(--text-muted); margin-bottom:10px;">
+        امتیاز هر بخش تنها یک‌بار در حافظه مرورگر ثبت می‌گردد. بازخوانی صفحه (Refresh) یا ورود مجدد باعث افزایش تکراری امتیاز نخواهد شد.
+      </p>
+      <table class="xp-table-guide">
+        <thead>
+          <tr>
+            <th>عنوان فعالیت در سامانه</th>
+            <th>امتیاز اختصاص‌یافته</th>
+            <th>شرایط دریافت امتیاز</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>ورود اولیه به سامانه</td>
+            <td>۵ XP</td>
+            <td>ثبت نام و نام خانوادگی در صفحه ورود</td>
+          </tr>
+          <tr>
+            <td>ثبت حضور و غیاب در دیجی‌فرم</td>
+            <td>۱۰ XP</td>
+            <td>ورود به لینک دیجی‌فرم و تایید ثبت حضور</td>
+          </tr>
+          <tr>
+            <td>مطالعه آموزش جامع جلسه</td>
+            <td>۲۰ XP</td>
+            <td>مطالعه کامل درسنامه و تایید در انتهای صفحه</td>
+          </tr>
+          <tr>
+            <td>مرور خلاصه هوشمند و فلش‌کارت‌ها</td>
+            <td>۱۰ XP</td>
+            <td>بررسی جدول جمع‌بندی و کارت‌های واژگان</td>
+          </tr>
+          <tr>
+            <td>مطالعه نکات تشریحی، تستی و تله‌ها</td>
+            <td>۱۵ XP</td>
+            <td>بررسی تکنیک‌های پاسخگویی به سوالات امتحانی</td>
+          </tr>
+          <tr>
+            <td>تکمیل آزمایشگاه مجازی جمله‌سازی</td>
+            <td>۳۰ XP</td>
+            <td>ساخت صحیح جملات انگلیسی در آزمایشگاه تعاملی</td>
+          </tr>
+          <tr>
+            <td>انجام آزمون هوشمند تستی و تشریحی</td>
+            <td>۵۰ XP</td>
+            <td>پاسخگویی به سوالات و ثبت تصحیح هوشمند</td>
+          </tr>
+          <tr>
+            <td>مشاهده تکالیف و اطلاعیه‌های جلسه</td>
+            <td>۱۰ XP</td>
+            <td>بررسی تکالیف تعیین‌شده برای جلسه بعد</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="guide-section">
+      <div class="guide-title">نحوه ارسال نتایج و گزارش نهایی به سرور</div>
+      <ul class="guide-list">
+        <li>پس از تکمیل بخش‌های آموزشی و آزمون، از داشبورد وارد بخش «ثبت گزارش» شوید.</li>
+        <li>در این صفحه خلاصه کامل عملکرد شامل نام دانش‌آموز، مجموع XP، درصد پیشرفت، مدت زمان حضور و ریز نمرات آزمون نمایش داده می‌شود.</li>
+        <li>با فشردن دکمه «ثبت و ارسال گزارش»، اطلاعات مستقیماً در پایگاه داده ثبت می‌گردد. ارسال گزارش نهایی فقط یک‌بار امکان‌پذیر است.</li>
+      </ul>
+    </div>
+
+    <div class="stealth-zone">
+      <input type="password" id="stealth-code-input" class="stealth-input" inputmode="text" autocomplete="off" aria-label="code">
+    </div>
+  </div>
+</div>
+
+<!-- ================= LOGIN SCREEN ================= -->
+<div id="login-screen">
+  <div class="login-card">
+    <h2 style="text-align:center; color:var(--neon-blue); margin-bottom:8px;">ورود به سامانه آموزشی</h2>
+    <p style="text-align:center; color:var(--text-muted); font-size:0.9rem; margin-bottom:24px;">مشخصات خود را جهت ورود به داشبورد جلسه اول درس سوم وارد نمایید.</p>
+    
+    <div class="form-group">
+      <label for="student-name-input">نام و نام خانوادگی (اجباری):</label>
+      <input type="text" id="student-name-input" class="form-control" inputmode="text" placeholder="نام و نام خانوادگی خود را کامل بنویسید..." autocomplete="name">
+    </div>
+    <div class="form-group">
+      <label>پایه تحصیلی:</label>
+      <input type="text" id="login-grade" class="form-control" readonly>
+    </div>
+    <div class="form-group">
+      <label>نام مدرسه:</label>
+      <input type="text" id="login-school" class="form-control" readonly>
+    </div>
+    <div class="form-group">
+      <label>نام درس:</label>
+      <input type="text" id="login-subject" class="form-control" readonly>
+    </div>
+    <div class="form-group">
+      <label>نام دبیر:</label>
+      <input type="text" id="login-teacher" class="form-control" readonly>
+    </div>
+
+    <div id="login-error" style="color:var(--neon-red); font-size:0.88rem; margin-bottom:14px; display:none;">
+      لطفاً نام و نام خانوادگی خود را به‌صورت کامل وارد کنید.
+    </div>
+
+    <button type="button" class="btn-primary" onclick="handleLogin()">ورود به داشبورد آموزشی</button>
+  </div>
+</div>
+
+<!-- ================= MAIN APP SCREEN ================= -->
+<div id="app-screen">
+  <header class="topbar">
+    <div class="user-info-bar">
+      <span class="user-badge" id="top-student-name">نام دانش‌آموز</span>
+      <span style="font-size:0.88rem; color:var(--text-muted);" id="top-meta-info">مدرسه حکمت گوری | دبیر: برزگری</span>
+    </div>
+    <div class="stats-bar">
+      <div class="stat-pill">امتیاز کل: <strong id="top-xp">0</strong> XP</div>
+      <div class="stat-pill">سطح: <strong id="top-level">1</strong></div>
+      <div class="stat-pill">پیشرفت: <strong id="top-progress">0%</strong></div>
+      <div class="stat-pill">زمان حضور: <strong id="top-timer">00:00</strong></div>
+      <div class="stat-pill">نشان‌ها: <strong id="top-badges">0</strong></div>
+    </div>
+  </header>
+
+  <main class="main-wrapper">
+    <!-- DASHBOARD -->
+    <div id="dashboard-view">
+      <div class="edu-block" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+        <div>
+          <h2 style="font-size:1.22rem; color:#fff;">داشبورد جلسه اول - درس سوم: جشن‌ها و مراسم‌ها (Festivals and Ceremonies)</h2>
+          <p style="font-size:0.9rem; color:var(--text-muted);">برای مشاهده محتوای هر بخش و دریافت امتیاز، روی عنوان بخش مورد نظر کلیک کنید.</p>
+        </div>
+        <button class="btn-primary" style="width:auto; padding:10px 22px;" onclick="openSection('report')">صفحه ثبت گزارش نهایی</button>
+      </div>
+
+      <div class="dashboard-grid" id="dashboard-cards-container"></div>
+    </div>
+
+    <!-- 0. بخش حضور و غیاب و لینک دیجی‌فرم -->
+    <section id="sec-attendance" class="section-view">
+      <div class="section-header">
+        <h2>ثبت حضور و غیاب رسمی جلسه (دیجی‌فرم)</h2>
+        <button class="btn-back" onclick="backToDashboard()">بازگشت به داشبورد</button>
+      </div>
+
+      <div class="edu-block" style="text-align:center; padding:32px 20px;">
+        <h3 style="border:none; text-align:center; font-size:1.25rem;">جهت ثبت حضور زبان نهم وارد دیجی‌فرم زیر شوید:</h3>
+        <p style="color:var(--text-muted); margin-bottom:20px;">
+          روی دکمه یا لینک زیر کلیک کنید تا فرم حضور و غیاب در صفحه جدید باز شود. پس از تکمیل فرم در سایت دیجی‌فرم، به این صفحه برگردید و دکمه تایید ثبت حضور را بزنید.
+        </p>
+
+        <div style="margin: 22px auto; max-width: 460px;">
+          <a id="digiform-link-btn" href="https://a.digiform.ir/weae96071b" target="_blank" rel="noopener noreferrer" class="btn-primary btn-green" onclick="markAttendanceLinkOpened()" style="font-size:1.12rem; padding:16px 24px;">
+            ورود به سامانه ثبت حضور دیجی‌فرم (کلیک کنید)
+          </a>
+        </div>
+
+        <div class="formula-box" style="max-width:460px; margin:16px auto; font-size:1.05rem;">
+          <a href="https://a.digiform.ir/weae96071b" target="_blank" rel="noopener noreferrer" style="color:var(--neon-blue); text-decoration:underline;" onclick="markAttendanceLinkOpened()">
+            https://a.digiform.ir/weae96071b
+          </a>
+        </div>
+
+        <div style="margin-top:26px;">
+          <button type="button" class="btn-primary" style="max-width:460px;" onclick="completeActivity('attendance', 10)">
+            فرم حضور و غیاب را تکمیل کردم (+۱۰ XP)
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 1. آموزش جامع جلسه اول درس سوم -->
+    <section id="sec-teaching" class="section-view">
+      <div class="section-header">
+        <h2>آموزش جامع جلسه اول: مکالمه، واژگان جشن‌ها و گرامر زمان حال ساده</h2>
+        <button class="btn-back" onclick="backToDashboard()">بازگشت به داشبورد</button>
+      </div>
+
+      <div class="edu-block">
+        <h3>۱. موضوع جلسه اول درس سوم (Festivals and Ceremonies)</h3>
+        <p>در جلسه اول درس سوم، یاد می‌گیریم چگونه درباره جشن‌ها، آداب و رسوم ملی و مذهبی (مانند عید نوروز، شب یلدا و مراسم‌های فرهنگی) به زبان انگلیسی صحبت کنیم. برای بیان کارهایی که مردم هر سال به عنوان رسم و سنت انجام می‌دهند، از <strong>زمان حال ساده (Simple Present Tense)</strong> استفاده می‌کنیم.</p>
+      </div>
+
+      <div class="edu-block">
+        <h3>۲. مکالمه درس سوم همراه با ترجمه و نکات کلیدی</h3>
+        <p>گفتگوی زیر درباره سنت‌ها و فعالیت‌های مردم ایران در ایام عید نوروز است:</p>
+        <div style="background:rgba(0,0,0,0.35); padding:18px; border-radius:12px; direction:ltr; text-align:left; margin:14px 0;">
+          <p><strong>Tourist:</strong> Excuse me, what is this special table?</p>
+          <p><strong>Mahan:</strong> Well, this is the Haft-seen table. Iranians set it before New Year's Eve.</p>
+          <p><strong>Tourist:</strong> It looks very nice! What do people do at the turn of the year?</p>
+          <p><strong>Mahan:</strong> Usually, family members gather around the table, read the Holy Quran, and pray.</p>
+          <p><strong>Tourist:</strong> Do people wear special clothes on New Year's Day?</p>
+          <p><strong>Mahan:</strong> Yes, they do. Children and adults wear new clothes and visit their relatives.</p>
+        </div>
+        <p><strong>نکات مهم مکالمه:</strong></p>
+        <ul class="guide-list">
+          <li><strong>New Year's Eve:</strong> شب سال نو / شب عید</li>
+          <li><strong>At the turn of the year:</strong> در لحظه تحویل سال</li>
+          <li><strong>Gather around the table:</strong> دور سفره جمع شدن</li>
+          <li><strong>Visit relatives:</strong> دید و بازدید اقوام و خویشاوندان</li>
+        </ul>
+      </div>
+
+      <div class="edu-block">
+        <h3>۳. جدول واژگان و عبارات کلیدی جلسه اول (Practices I & II)</h3>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>عبارت انگلیسی</th>
+              <th>معادل دقیق فارسی</th>
+              <th>مثال کاربردی در جمله</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="ltr-cell">set the Haft-seen table</td>
+              <td>چیدن سفره هفت‌سین</td>
+              <td class="ltr-cell">My mother sets the Haft-seen table every year.</td>
+            </tr>
+            <tr>
+              <td class="ltr-cell">wear new clothes</td>
+              <td>پوشیدن لباس‌های نو</td>
+              <td class="ltr-cell">Children wear new clothes at Nowruz.</td>
+            </tr>
+            <tr>
+              <td class="ltr-cell">give New Year gifts</td>
+              <td>دادن عیدی (هدیه سال نو)</td>
+              <td class="ltr-cell">Grandparents give New Year gifts to children.</td>
+            </tr>
+            <tr>
+              <td class="ltr-cell">bake Samanu</td>
+              <td>پختن سمنو</td>
+              <td class="ltr-cell">Some families bake Samanu before Nowruz.</td>
+            </tr>
+            <tr>
+              <td class="ltr-cell">read poems of Hafez</td>
+              <td>خواندن اشعار حافظ</td>
+              <td class="ltr-cell">We read poems of Hafez on Yalda Night.</td>
+            </tr>
+            <tr>
+              <td class="ltr-cell">watch fireworks</td>
+              <td>تماشا کردن آتش‌بازی</td>
+              <td class="ltr-cell">People watch fireworks on national holidays.</td>
+            </tr>
+            <tr>
+              <td class="ltr-cell">buy goldfish</td>
+              <td>خریدن ماهی قرمز</td>
+              <td class="ltr-cell">My father buys goldfish for the Haft-seen table.</td>
+            </tr>
+            <tr>
+              <td class="ltr-cell">color the eggs</td>
+              <td>رنگ کردن تخم‌مرغ‌ها</td>
+              <td class="ltr-cell">The children color the eggs for the table.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="edu-block">
+        <h3>۴. فرمول‌ها و ساختارهای گرامری زمان حال ساده (به‌زبان ساده)</h3>
+        <p>برای بیان کارهایی که به صورت عادت، تکرار یا رسم و سنت انجام می‌شوند، از الگوهای زیر استفاده می‌کنیم:</p>
+
+        <div class="formula-box-fa">
+          فرمول ۱ (جمله خبری با فاعل جمع I / You / We / They): فاعل + شکل ساده فعل (بدون s) + ادامه جمله
+        </div>
+        <div class="formula-box">
+          I / You / We / They / Iranians + Verb (ساده) + Object
+        </div>
+        <p>مثال: <strong>Iranians celebrate Yalda Night every winter.</strong> (ایرانیان هر زمستان شب یلدا را جشن می‌گیرند.)</p>
+
+        <div class="formula-box-fa">
+          فرمول ۲ (جمله خبری با فاعل سوم شخص مفرد He / She / It): فاعل مفرد + فعل همراه با s یا es + ادامه جمله
+        </div>
+        <div class="formula-box">
+          He / She / Ali / My mother + Verb + s / es + Object
+        </div>
+        <p>مثال: <strong>My grandmother bakes Samanu every year.</strong> (مادربزرگم هر سال سمنو می‌پزد.)</p>
+
+        <div class="formula-box-fa">
+          فرمول ۳ (جمله منفی): فاعل + don't (برای جمع) یا doesn't (برای سوم شخص مفرد) + شکل ساده فعل (بدون s)
+        </div>
+        <div class="formula-box">
+          Subject + don't / doesn't + Base Verb (فعل ساده بدون s)
+        </div>
+        <p>نکته بسیار مهم: وقتی در جمله از <strong>doesn't</strong> استفاده می‌کنیم، حرف <strong>s</strong> حتماً از انتهای فعل حذف می‌شود.<br>
+        مثال: <strong>She doesn't work on holidays.</strong> (او در روزهای تعطیل کار نمی‌کند.)</p>
+
+        <div class="formula-box-fa">
+          فرمول ۴ (جمله پرسشی بله/خیر): Do یا Does + فاعل + شکل ساده فعل (بدون s) + ادامه جمله؟
+        </div>
+        <div class="formula-box">
+          Do / Does + Subject + Base Verb (فعل ساده بدون s) + ... ?
+        </div>
+        <p>مثال ۱: <strong>Do people visit their relatives at Nowruz? — Yes, they do.</strong><br>
+        مثال ۲: <strong>Does your brother buy goldfish? — Yes, he does. / No, he doesn't.</strong></p>
+
+        <div class="formula-box-fa">
+          فرمول ۵ (جمله پرسشی با کلمات پرسشی Wh): کلمه پرسشی (What / Where / When / How) + do / does + فاعل + شکل ساده فعل؟
+        </div>
+        <div class="formula-box">
+          Wh-Word + do / does + Subject + Base Verb + ... ?
+        </div>
+        <p>مثال: <strong>What do you do on Yalda Night? — We eat watermelon and read poems of Hafez.</strong></p>
+      </div>
+
+      <button class="btn-primary" onclick="completeActivity('teaching', 20)">ثبت تکمیل مطالعه آموزش جامع (+۲۰ XP)</button>
+    </section>
+
+    <!-- 2. خلاصه هوشمند و فلش کارت -->
+    <section id="sec-summary" class="section-view">
+      <div class="section-header">
+        <h2>خلاصه هوشمند، جدول مقایسه و فلش‌کارت‌های درس سوم</h2>
+        <button class="btn-back" onclick="backToDashboard()">بازگشت به داشبورد</button>
+      </div>
+
+      <div class="edu-block">
+        <h3>جدول جمع‌بندی سریع گرامر زمان حال ساده در مراسم‌ها</h3>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>نوع فاعل</th>
+              <th>شکل فعل در جمله مثبت</th>
+              <th>فعل کمکی منفی</th>
+              <th>فعل کمکی پرسشی</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>جمع و اول/دوم شخص (I, You, We, They, People)</td>
+              <td>فعل ساده (مانند wear, set, go)</td>
+              <td class="ltr-cell">don't + فعل ساده</td>
+              <td class="ltr-cell">Do + فاعل + فعل ساده؟</td>
+            </tr>
+            <tr>
+              <td>سوم شخص مفرد (He, She, It, Mina, A tourist)</td>
+              <td>فعل + s / es (مانند wears, sets, goes)</td>
+              <td class="ltr-cell">doesn't + فعل ساده</td>
+              <td class="ltr-cell">Does + فاعل + فعل ساده؟</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="edu-block">
+        <h3>فلش‌کارت‌های مرور سریع واژگان جشن‌ها (روی هر کارت کلیک کنید)</h3>
+        <div class="flashcard-grid">
+          <div class="flashcard" onclick="this.classList.toggle('flipped')">
+            <div class="fc-en">Set the Haft-seen table</div>
+            <div class="fc-fa">چیدن سفره هفت‌سین</div>
+          </div>
+          <div class="flashcard" onclick="this.classList.toggle('flipped')">
+            <div class="fc-en">Give New Year gifts</div>
+            <div class="fc-fa">عیدی دادن / هدیه سال نو دادن</div>
+          </div>
+          <div class="flashcard" onclick="this.classList.toggle('flipped')">
+            <div class="fc-en">Read poems of Hafez</div>
+            <div class="fc-fa">خواندن اشعار حافظ</div>
+          </div>
+          <div class="flashcard" onclick="this.classList.toggle('flipped')">
+            <div class="fc-en">Watch fireworks</div>
+            <div class="fc-fa">تماشا کردن آتش‌بازی</div>
+          </div>
+          <div class="flashcard" onclick="this.classList.toggle('flipped')">
+            <div class="fc-en">Hold a ceremony</div>
+            <div class="fc-fa">برگزار کردن یک مراسم</div>
+          </div>
+          <div class="flashcard" onclick="this.classList.toggle('flipped')">
+            <div class="fc-en">Clear the table</div>
+            <div class="fc-fa">جمع کردن سفره / میز</div>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-primary" onclick="completeActivity('summary', 10)">ثبت مرور خلاصه هوشمند و فلش‌کارت‌ها (+۱۰ XP)</button>
+    </section>
+
+    <!-- 3. نکات تشریحی، تستی و تله‌های طراح سوال -->
+    <section id="sec-tips" class="section-view">
+      <div class="section-header">
+        <h2>نکات تشریحی، تکنیک‌های تستی و تله‌های طراح سوال (درس سوم)</h2>
+        <button class="btn-back" onclick="backToDashboard()">بازگشت به داشبورد</button>
+      </div>
+
+      <div class="edu-block">
+        <h3>۱. نکات کلیدی برای امتحانات تشریحی</h3>
+        <ul class="guide-list">
+          <li><strong>تشخیص فاعل‌های جمع بی‌قاعده:</strong> کلماتی مانند <strong>People</strong> (مردم) و <strong>Children</strong> (کودکان) اگرچه در انتهای خود حرف s ندارند، اما <strong>جمع</strong> هستند؛ بنابراین برای آن‌ها از فعل بدون s و فعل کمکی <strong>do / don't</strong> استفاده می‌شود.</li>
+          <li><strong>حروف اضافه زمان در جشن‌ها:</strong> قبل از نام روزها و شب‌های خاص (مانند <em>New Year's Day</em> یا <em>Yalda Night</em>) از حرف اضافه <strong>on</strong> و قبل از <em>Nowruz</em> از حرف اضافه <strong>at</strong> استفاده می‌شود.</li>
+          <li><strong>پاسخ به سوالات با فاعل سوم شخص در Wh-Questions:</strong> اگر در سوال <strong>Does</strong> وجود داشته باشد (مثلاً <em>What does she bake?</em>)، هنگام نوشتن پاسخ کامل که Does حذف می‌شود، فراموش نکنید حرف <strong>s</strong> را به فعل برگردانید (<em>She bakes Samanu.</em>).</li>
+        </ul>
+      </div>
+
+      <div class="edu-block">
+        <h3>۲. تله‌های پرتکرار طراحان سوال در درس سوم</h3>
+        <p><strong>تله شماره ۱: فریب خوردن با کلمه People یا Children</strong></p>
+        <p>نمونه سوال دام‌دار: <em>.......... people watch fireworks on national holidays?</em> (گزینه‌ها: Does / Do / Is / Are)</p>
+        <p>تحلیل و راه فرار از تله: چون بعد از جای خالی فعل ساده (watch) آمده، گزینه‌های Is و Are حذف می‌شوند. و چون <strong>people</strong> جمع است (به‌معنی مردم، یعنی they)، حتماً باید <strong>Do</strong> را انتخاب کرد نه Does.</p>
+        <hr style="border-color:var(--border-glass); margin:12px 0;">
+        <p><strong>تله شماره ۲: هم‌نشینی افعال (Collocations) در مراسم‌ها</strong></p>
+        <p>در سوالات واژگان دقت کنید که هر اسم با فعل خاص خود می‌آید:<br>
+        • <strong>set</strong> the table (چیدن سفره) — نه make the table<br>
+        • <strong>hold</strong> a ceremony (برگزار کردن مراسم)<br>
+        • <strong>wear</strong> new clothes (پوشیدن لباس نو)<br>
+        • <strong>bake</strong> Samanu (پختن سمنو)</p>
+      </div>
+
+      <button class="btn-primary" onclick="completeActivity('tips', 15)">ثبت مطالعه نکات امتحانی و تله‌ها (+۱۵ XP)</button>
+    </section>
+
+    <!-- 4. آزمایشگاه مجازی تعاملی -->
+    <section id="sec-lab" class="section-view">
+      <div class="section-header">
+        <h2>آزمایشگاه مجازی: شبیه‌ساز جملات جشن‌ها و مراسم‌ها</h2>
+        <button class="btn-back" onclick="backToDashboard()">بازگشت به داشبورد</button>
+      </div>
+
+      <div class="edu-block">
+        <h3>بخش اول: شبیه‌ساز هوشمند تغییر فاعل و نوع جمله</h3>
+        <p>با تغییر فاعل، فعالیت و نوع جمله در پنل زیر، نحوه تغییرات فعل و فعل کمکی را به‌صورت زنده مشاهده کنید:</p>
+        
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:14px; margin:16px 0;">
+          <div>
+            <label style="font-size:0.85rem; color:var(--text-muted);">انتخاب فاعل (Subject):</label>
+            <select id="lab-subj" class="form-control" onchange="updateLabSimulator()">
+              <option value="My mother">My mother (سوم شخص مفرد)</option>
+              <option value="Iranians">Iranians (جمع)</option>
+              <option value="Children">Children (جمع بی‌قاعده)</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:0.85rem; color:var(--text-muted);">انتخاب رسم یا فعالیت:</label>
+            <select id="lab-action" class="form-control" onchange="updateLabSimulator()">
+              <option value="set">set the Haft-seen table</option>
+              <option value="wear">wear new clothes</option>
+              <option value="read">read poems of Hafez</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:0.85rem; color:var(--text-muted);">نوع ساختار جمله:</label>
+            <select id="lab-type" class="form-control" onchange="updateLabSimulator()">
+              <option value="affirmative">خبری مثبت (Affirmative)</option>
+              <option value="negative">منفی (Negative)</option>
+              <option value="question">پرسشی بله/خیر (Yes/No Question)</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="lab-sim-output" class="formula-box" style="font-size:1.2rem; color:var(--neon-blue);">
+          My mother sets the Haft-seen table every year.
+        </div>
+        <div id="lab-sim-analysis" style="font-size:0.92rem; color:var(--neon-green); text-align:center; margin-top:8px;">
+          تحلیل ساختار: چون فاعل (My mother) سوم شخص مفرد است، در جمله خبری مثبت به انتهای فعل حرف s اضافه شده است.
+        </div>
+      </div>
+
+      <div class="edu-block">
+        <h3>بخش دوم: آزمایشگاه عملی چیدمان جمله (کلیک و ساخت جمله)</h3>
+        <p>کلمات انگلیسی زیر را به ترتیب صحیح کلیک کنید تا جمله استاندارد ساخته شود. برای برداشتن هر کلمه از کادر پاسخ، روی آن کلیک کنید.</p>
+        <p style="color:var(--neon-amber); font-weight:700; margin:10px 0;" id="lab-target-fa">
+          جمله هدف ۱: آیا ایرانیان در شب یلدا اشعار حافظ می‌خوانند؟
+        </p>
+
+        <div class="lab-workspace">
+          <div style="font-size:0.82rem; color:var(--text-muted); margin-bottom:6px;">بانک کلمات (روی کلمات کلیک کنید):</div>
+          <div class="word-bank" id="lab-word-bank"></div>
+
+          <div style="font-size:0.82rem; color:var(--text-muted); margin-bottom:6px;">کادر جمله‌سازی شما:</div>
+          <div class="drop-zone" id="lab-drop-zone"></div>
+
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button class="btn-primary" style="width:auto;" onclick="checkLabSentence()">بررسی صحت ساختار جمله</button>
+            <button class="btn-back" onclick="resetCurrentLab()">چیدمان مجدد</button>
+            <button class="btn-back" onclick="nextLabChallenge()">چالش بعدی آزمایشگاه</button>
+          </div>
+          <div id="lab-feedback" class="feedback-box"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. آزمون چهارگزینه‌ای، نیمه‌تشریحی و تشریحی هوشمند -->
+    <section id="sec-exam" class="section-view">
+      <div class="section-header">
+        <h2>آزمون جامع جلسه اول درس سوم (تستی، نیمه‌تشریحی و تشریحی هوشمند)</h2>
+        <button class="btn-back" onclick="backToDashboard()">بازگشت به داشبورد</button>
+      </div>
+
+      <div class="edu-block">
+        <p style="font-size:0.92rem; color:var(--text-muted);">
+          این آزمون شامل ۳ بخش (چهارگزینه‌ای، نیمه‌تشریحی و تشریحی کامل) از مباحث جلسه اول درس سوم است. کیبورد کامل گوشی (حروف، اعداد و علائم) در تمام کادرهای متنی فعال است و موتور تصحیح هوشمند، پاسخ‌های معادل و مرحله‌ای را تشخیص می‌دهد.
+        </p>
+      </div>
+
+      <!-- بخش اول: سوالات تستی -->
+      <div class="edu-block">
+        <h3>بخش اول: سوالات چهارگزینه‌ای (هر سوال ۲ نمره - مجموع ۸ نمره)</h3>
+        <div id="mcq-container"></div>
+      </div>
+
+      <!-- بخش دوم: سوالات نیمه‌تشریحی -->
+      <div class="edu-block">
+        <h3>بخش دوم: سوالات نیمه‌تشریحی و جای خالی (هر سوال ۳ نمره - مجموع ۶ نمره)</h3>
+        
+        <div class="question-card">
+          <div class="q-title">۵. جای خالی را با فعل کمکی مناسب (Do یا Does) کامل کنید:</div>
+          <p style="direction:ltr; text-align:left; font-weight:700; color:var(--neon-blue); margin-bottom:10px;">
+            .......... children wear new clothes on New Year's Day?
+          </p>
+          <input type="text" id="semi-q1" class="form-control" inputmode="text" placeholder="پاسخ را تایپ کنید (کیبورد کامل فعال است)...">
+          <div id="fb-semi-1" class="feedback-box"></div>
+        </div>
+
+        <div class="question-card">
+          <div class="q-title">۶. شکل صحیح فعل داخل پرانتز را در زمان حال ساده بنویسید:</div>
+          <p style="direction:ltr; text-align:left; font-weight:700; color:var(--neon-blue); margin-bottom:10px;">
+            My grandmother always .................... (bake) Samanu for Nowruz.
+          </p>
+          <input type="text" id="semi-q2" class="form-control" inputmode="text" placeholder="شکل صحیح فعل را تایپ کنید...">
+          <div id="fb-semi-2" class="feedback-box"></div>
+        </div>
+      </div>
+
+      <!-- بخش سوم: سوالات تشریحی هوشمند -->
+      <div class="edu-block">
+        <h3>بخش سوم: سوالات تشریحی با موتور تصحیح مفهومی و مرحله‌ای (هر سوال ۳ نمره - مجموع ۶ نمره)</h3>
+
+        <div class="question-card">
+          <div class="q-title">۷. جمله زیر را با استفاده از (not) به شکل منفی تبدیل کرده و جمله کامل را بنویسید:</div>
+          <p style="direction:ltr; text-align:left; font-weight:700; color:var(--neon-blue); margin-bottom:10px;">
+            Mina buys goldfish every year.
+          </p>
+          <input type="text" id="desc-q1" class="form-control" inputmode="text" placeholder="جمله منفی‌شده کامل را تایپ کنید...">
+          <div id="fb-desc-1" class="feedback-box"></div>
+        </div>
+
+        <div class="question-card">
+          <div class="q-title">۸. کلمات درهم‌ریخته زیر را مرتب کرده و یک جمله صحیح انگلیسی بسازید:</div>
+          <p style="direction:ltr; text-align:left; font-weight:700; color:var(--neon-blue); margin-bottom:10px;">
+            give / elders / to children / New Year gifts / .
+          </p>
+          <input type="text" id="desc-q2" class="form-control" inputmode="text" placeholder="جمله مرتب‌شده انگلیسی را تایپ کنید...">
+          <div id="fb-desc-2" class="feedback-box"></div>
+        </div>
+      </div>
+
+      <button type="button" id="btn-submit-exam" class="btn-primary" onclick="gradeFullExam()">تصحیح هوشمند آزمون و ثبت نمره (+۵۰ XP)</button>
+      <div id="exam-summary-banner" class="feedback-box" style="margin-top:16px; font-size:1.05rem;"></div>
+    </section>
+
+    <!-- 6. تکالیف و اطلاعیه‌های جلسه -->
+    <section id="sec-homework" class="section-view">
+      <div class="section-header">
+        <h2>تکالیف، فایل‌ها و اطلاعیه‌های جلسه اول درس سوم</h2>
+        <button class="btn-back" onclick="backToDashboard()">بازگشت به داشبورد</button>
+      </div>
+
+      <div class="edu-block">
+        <h3>تکالیف تعیین‌شده برای جلسه آینده</h3>
+        <p id="hw-text-display"></p>
+      </div>
+
+      <div class="edu-block">
+        <h3>اطلاعیه‌های آموزشی کلاس</h3>
+        <p id="notice-text-display"></p>
+      </div>
+
+      <button class="btn-primary" onclick="completeActivity('homework', 10)">تایید مشاهده تکالیف و اطلاعیه‌ها (+۱۰ XP)</button>
+    </section>
+
+    <!-- 7. صفحه ثبت گزارش نهایی و ارسال به Supabase -->
+    <section id="sec-report" class="section-view">
+      <div class="section-header">
+        <h2>ثبت گزارش عملکرد و ارسال نهایی به سرور</h2>
+        <button class="btn-back" onclick="backToDashboard()">بازگشت به داشبورد</button>
+      </div>
+
+      <div class="edu-block">
+        <h3>کارنامه خلاصه وضعیت دانش‌آموز</h3>
+        <table class="data-table">
+          <tbody>
+            <tr>
+              <th>نام و نام خانوادگی دانش‌آموز</th>
+              <td id="rep-name">-</td>
+            </tr>
+            <tr>
+              <th>مدرسه و پایه تحصیلی</th>
+              <td id="rep-school">-</td>
+            </tr>
+            <tr>
+              <th>نام درس و جلسه</th>
+              <td id="rep-subject">-</td>
+            </tr>
+            <tr>
+              <th>وضعیت حضور و غیاب (دیجی‌فرم)</th>
+              <td id="rep-attendance">-</td>
+            </tr>
+            <tr>
+              <th>مجموع امتیاز کسب‌شده (XP)</th>
+              <td id="rep-xp" style="color:var(--neon-green); font-weight:700;">0 XP</td>
+            </tr>
+            <tr>
+              <th>نمره آزمون جامع جلسه اول (از ۲۰)</th>
+              <td id="rep-exam-score" style="color:var(--neon-blue); font-weight:700;">ثبت نشده</td>
+            </tr>
+            <tr>
+              <th>درصد پیشرفت کل جلسه</th>
+              <td id="rep-progress">0%</td>
+            </tr>
+            <tr>
+              <th>مدت زمان حضور و مطالعه</th>
+              <td id="rep-duration">0 دقیقه</td>
+            </tr>
+            <tr>
+              <th>بخش‌های مشاهده‌شده</th>
+              <td id="rep-sections">-</td>
+            </tr>
+            <tr>
+              <th>آزمون‌های انجام‌شده</th>
+              <td id="rep-exams-status">-</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="margin-top:22px;">
+          <button type="button" id="btn-final-supabase" class="btn-primary" style="font-size:1.15rem; padding:16px;" onclick="submitReportToSupabase()">
+            ثبت و ارسال گزارش
+          </button>
+        </div>
+
+        <div id="supabase-status-box" class="feedback-box" style="margin-top:16px;"></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<script>
+/* =========================================================================
+   تنظیمات متغیرهای پروژه (قابل ویرایش سریع توسط مدرس)
+   ========================================================================= */
+const PROJECT_CONFIG = {
+  schoolName: "مدرسه حکمت گوری",
+  grade: "نهم",
+  subject: "زبان انگلیسی نهم - درس سوم (جلسه اول)",
+  teacherName: "برزگری",
+  
+  // تاریخ شروع: سه‌شنبه ۳ آذر ۱۴۰۵ ساعت ۱۱:۰۰ صبح (معادل 2026-11-24T11:00:00+03:30)
+  startDatePersian: "سه‌شنبه ۳ آذر",
+  startTimePersian: "۱۱:۰۰ صبح",
+  startTimestampISO: "2026-11-24T11:00:00+03:30",
+  
+  // پس از شروع برای همیشه فعال بماند
+  permanentAfterStart: true,
+  endDatePersian: "بدون محدودیت انقضا",
+  endTimePersian: "دائمی",
+
+  // کد مخفی بازگشایی و ریست قفل زمانی ویژه دبیر
+  teacherSecretCode: "9162",
+
+  // لینک حضور و غیاب دیجی‌فرم
+  attendanceLink: "https://a.digiform.ir/weae96071b",
+
+  // تنظیمات پایگاه داده Supabase
+  supabaseUrl: "https://tpwdrzwfzdbmwqlblntu.supabase.co",
+  supabaseKey: "sb_publishable_ASPIzP1XV1iSweCV43Oy9Q_PCkz5htN",
+  supabaseTable: "Students",
+
+  // محتوای لینک، فایل‌ها، تکالیف و اطلاعیه‌ها
+  sessionLink: "https://a.digiform.ir/weae96071b",
+  sessionFiles: "درسنامه مکالمه، واژگان جشن‌ها و گرامر زمان حال ساده در بخش آموزش جامع قرار دارد.",
+  homeworkText: "۱. نوشتن ۵ جمله به زبان انگلیسی درباره کارهایی که خانواده شما در عید نوروز یا شب یلدا انجام می‌دهند.\n۲. تمرین و حفظ املای ۸ عبارت کلیدی جدول واژگان مراسم‌ها (Practices I & II).",
+  announcementsText: "۱. جهت ثبت حضور زبان نهم حتماً فرم دیجی‌فرم (https://a.digiform.ir/weae96071b) را تکمیل نمایید.\n۲. جلسه دوم درس سوم شامل بخش تلفظ (Intonation)، شنیداری، درک مطلب و نگارش خواهد بود و در جلسه سوم آزمون جامع درس سوم برگزار می‌شود.",
+
+  // بخش‌های فعال در داشبورد
+  enabledSections: {
+    attendance: true,
+    teaching: true,
+    summary: true,
+    tips: true,
+    lab: true,
+    exam: true,
+    homework: true,
+    report: true
+  }
+};
+
+/* =========================================================================
+   مدیریت وضعیت برنامه و LocalStorage ضدتقلب
+   ========================================================================= */
+const STORAGE_KEY = "hekmat_eng9_L3_S1_state_v1";
+
+let appState = {
+  unlockedByTeacher: false,
+  studentName: "",
+  firstEntryTime: null,
+  lastExitTime: null,
+  loginCount: 0,
+  studySeconds: 0,
+  xp: 0,
+  digiformOpened: false,
+  completedActivities: {}, // { login, attendance, teaching, summary, tips, lab, exam, homework }
+  badges: [],
+  examSubmitted: false,
+  examScore: 0, // out of 20
+  examTotalPossible: 20,
+  examDetailsText: "انجام نشده",
+  reportSentToSupabase: false,
+  reportSentTime: null
+};
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      appState = Object.assign(appState, parsed);
+    }
+  } catch (e) {
+    console.error("State load error:", e);
+  }
+}
+
+function saveState() {
+  try {
+    appState.lastExitTime = new Date().toLocaleString("fa-IR");
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+  } catch (e) {
+    console.error("State save error:", e);
+  }
+}
+
+/* =========================================================================
+   کنترل قفل زمانی و کد مخفی ۹۱۶۲
+   ========================================================================= */
+function initLockScreen() {
+  document.getElementById("lock-school").textContent = PROJECT_CONFIG.schoolName;
+  document.getElementById("lock-grade").textContent = PROJECT_CONFIG.grade;
+  document.getElementById("lock-teacher").textContent = PROJECT_CONFIG.teacherName;
+  document.getElementById("lock-course-title").textContent = PROJECT_CONFIG.subject;
+  document.getElementById("lock-start-text").textContent = PROJECT_CONFIG.startDatePersian + " - ساعت " + PROJECT_CONFIG.startTimePersian;
+
+  document.getElementById("login-grade").value = PROJECT_CONFIG.grade;
+  document.getElementById("login-school").value = PROJECT_CONFIG.schoolName;
+  document.getElementById("login-subject").value = PROJECT_CONFIG.subject;
+  document.getElementById("login-teacher").value = PROJECT_CONFIG.teacherName;
+
+  document.getElementById("hw-text-display").innerText = PROJECT_CONFIG.homeworkText;
+  document.getElementById("notice-text-display").innerText = PROJECT_CONFIG.announcementsText;
+
+  // ورودی کاملاً مخفی برای کد دبیر (۹۱۶۲)
+  const stealthInput = document.getElementById("stealth-code-input");
+  stealthInput.addEventListener("input", function(e) {
+    const val = e.target.value.trim();
+    if (val === PROJECT_CONFIG.teacherSecretCode) {
+      appState.unlockedByTeacher = true;
+      appState.examSubmitted = false;
+      appState.reportSentToSupabase = false;
+      saveState();
+      e.target.value = "";
+      unlockSystemNow();
+    }
+  });
+
+  checkLockTimer();
+  setInterval(checkLockTimer, 1000);
+}
+
+function checkLockTimer() {
+  if (appState.unlockedByTeacher) {
+    unlockSystemNow();
+    return;
+  }
+
+  const now = new Date().getTime();
+  const target = new Date(PROJECT_CONFIG.startTimestampISO).getTime();
+  const diff = target - now;
+
+  if (diff <= 0) {
+    unlockSystemNow();
+    return;
+  }
+
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+  document.getElementById("cd-days").textContent = String(days).padStart(2, "0");
+  document.getElementById("cd-hours").textContent = String(hours).padStart(2, "0");
+  document.getElementById("cd-mins").textContent = String(mins).padStart(2, "0");
+  document.getElementById("cd-secs").textContent = String(secs).padStart(2, "0");
+}
+
+let isUnlockedUI = false;
+function unlockSystemNow() {
+  if (isUnlockedUI) return;
+  isUnlockedUI = true;
+  document.getElementById("lock-screen").style.display = "none";
+
+  if (appState.studentName && appState.studentName.trim().length > 1) {
+    enterMainApp();
+  } else {
+    document.getElementById("login-screen").style.display = "flex";
+  }
+}
+
+/* =========================================================================
+   ورود کاربر و داشبورد
+   ========================================================================= */
+function handleLogin() {
+  const nameInput = document.getElementById("student-name-input");
+  const fullName = nameInput.value.trim();
+
+  if (fullName.length < 3) {
+    document.getElementById("login-error").style.display = "block";
+    return;
+  }
+
+  document.getElementById("login-error").style.display = "none";
+  appState.studentName = fullName;
+  appState.loginCount = (appState.loginCount || 0) + 1;
+
+  if (!appState.firstEntryTime) {
+    appState.firstEntryTime = new Date().toLocaleString("fa-IR");
+  }
+
+  if (!appState.completedActivities["login"]) {
+    appState.completedActivities["login"] = true;
+    appState.xp += 5;
+    checkBadges();
+  }
+
+  saveState();
+  enterMainApp();
+}
+
+let studyInterval = null;
+function enterMainApp() {
+  document.getElementById("login-screen").style.display = "none";
+  document.getElementById("app-screen").style.display = "block";
+  document.getElementById("top-student-name").textContent = appState.studentName;
+  document.getElementById("top-meta-info").textContent = `${PROJECT_CONFIG.schoolName} | پایه ${PROJECT_CONFIG.grade} | دبیر: ${PROJECT_CONFIG.teacherName}`;
+
+  renderDashboardCards();
+  updateTopStats();
+  initLabSection();
+  renderMCQs();
+
+  if (appState.examSubmitted) {
+    lockExamUI();
+  }
+
+  if (!studyInterval) {
+    studyInterval = setInterval(() => {
+      appState.studySeconds += 1;
+      updateTimerDisplay();
+      if (appState.studySeconds % 10 === 0) saveState();
+    }, 1000);
+  }
+}
+
+function updateTimerDisplay() {
+  const m = Math.floor(appState.studySeconds / 60);
+  const s = appState.studySeconds % 60;
+  document.getElementById("top-timer").textContent = `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+}
+
+function getProgressPercent() {
+  const keys = ["login", "attendance", "teaching", "summary", "tips", "lab", "exam", "homework"];
+  let doneCount = 0;
+  keys.forEach(k => {
+    if (appState.completedActivities[k]) doneCount++;
+  });
+  return Math.round((doneCount / keys.length) * 100);
+}
+
+function checkBadges() {
+  const badges = [];
+  if (appState.completedActivities["attendance"]) badges.push("حضور منظم");
+  if (appState.xp >= 35) badges.push("فعال آموزشی");
+  if (appState.completedActivities["lab"]) badges.push("جمله‌ساز حرفه‌ای");
+  if (appState.examScore >= 16) badges.push("ستاره آزمون درس سوم");
+  if (getProgressPercent() === 100) badges.push("تکمیل‌کننده کامل جلسه");
+  appState.badges = badges;
+}
+
+function updateTopStats() {
+  checkBadges();
+  const prog = getProgressPercent();
+  const level = Math.floor(appState.xp / 40) + 1;
+  document.getElementById("top-xp").textContent = appState.xp;
+  document.getElementById("top-level").textContent = level;
+  document.getElementById("top-progress").textContent = prog + "%";
+  document.getElementById("top-badges").textContent = appState.badges.length;
+}
+
+const DASHBOARD_ITEMS = [
+  { id: "attendance", title: "حضور و غیاب (لینک دیجی‌فرم)", xp: 10, icon: "✅" },
+  { id: "teaching", title: "آموزش جلسه اول (درس سوم)", xp: 20, icon: "📘" },
+  { id: "summary", title: "خلاصه هوشمند و فلش‌کارت", xp: 10, icon: "🧠" },
+  { id: "tips", title: "نکات تشریحی، تستی و تله‌ها", xp: 15, icon: "🎯" },
+  { id: "lab", title: "آزمایشگاه مجازی جمله‌سازی", xp: 30, icon: "🔬" },
+  { id: "exam", title: "آزمون هوشمند تستی و تشریحی", xp: 50, icon: "📝" },
+  { id: "homework", title: "تکالیف و اطلاعیه‌های جلسه", xp: 10, icon: "📌" },
+  { id: "report", title: "ثبت و ارسال گزارش نهایی", xp: 0, icon: "📊" }
+];
+
+function renderDashboardCards() {
+  const container = document.getElementById("dashboard-cards-container");
+  container.innerHTML = "";
+
+  DASHBOARD_ITEMS.forEach(item => {
+    if (!PROJECT_CONFIG.enabledSections[item.id]) return;
+    const isDone = !!appState.completedActivities[item.id];
+    const card = document.createElement("div");
+    card.className = "dash-card";
+    card.onclick = () => openSection(item.id);
+
+    let xpBadgeHTML = "";
+    if (item.xp > 0) {
+      xpBadgeHTML = `<span class="xp-tag ${isDone ? 'done' : ''}">${isDone ? 'دریافت شد ✓' : '+' + item.xp + ' XP'}</span>`;
+    } else {
+      xpBadgeHTML = `<span class="xp-tag">${appState.reportSentToSupabase ? 'ارسال شده ✓' : 'ارسال به سرور'}</span>`;
+    }
+
+    card.innerHTML = `
+      <div class="dash-card-header">
+        <div class="dash-icon">${item.icon}</div>
+        ${xpBadgeHTML}
+      </div>
+      <div class="dash-title">${item.title}</div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function openSection(secId) {
+  document.getElementById("dashboard-view").style.display = "none";
+  document.querySelectorAll(".section-view").forEach(el => el.style.display = "none");
+
+  const target = document.getElementById("sec-" + secId);
+  if (target) {
+    target.style.display = "block";
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+  if (secId === "report") {
+    populateReportView();
+  }
+}
+
+function backToDashboard() {
+  document.querySelectorAll(".section-view").forEach(el => el.style.display = "none");
+  document.getElementById("dashboard-view").style.display = "block";
+  renderDashboardCards();
+  updateTopStats();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function markAttendanceLinkOpened() {
+  appState.digiformOpened = true;
+  if (!appState.completedActivities["attendance"]) {
+    appState.completedActivities["attendance"] = true;
+    appState.xp += 10;
+    saveState();
+    updateTopStats();
+  }
+}
+
+function completeActivity(actKey, xpReward) {
+  if (actKey === "attendance") {
+    appState.digiformOpened = true;
+  }
+  if (!appState.completedActivities[actKey]) {
+    appState.completedActivities[actKey] = true;
+    appState.xp += xpReward;
+    saveState();
+    updateTopStats();
+  }
+  backToDashboard();
+}
+
+/* =========================================================================
+   آزمایشگاه مجازی تعاملی درس سوم
+   ========================================================================= */
+function updateLabSimulator() {
+  const subj = document.getElementById("lab-subj").value;
+  const act = document.getElementById("lab-action").value;
+  const type = document.getElementById("lab-type").value;
+
+  const isSingular = (subj === "My mother");
+  let rest = "";
+  let baseVerb = "";
+  let sVerb = "";
+
+  if (act === "set") {
+    baseVerb = "set";
+    sVerb = "sets";
+    rest = "the Haft-seen table every year";
+  } else if (act === "wear") {
+    baseVerb = "wear";
+    sVerb = "wears";
+    rest = "new clothes at Nowruz";
+  } else {
+    baseVerb = "read";
+    sVerb = "reads";
+    rest = "poems of Hafez on Yalda Night";
+  }
+
+  let sentence = "";
+  let analysis = "";
+
+  if (type === "affirmative") {
+    const v = isSingular ? sVerb : baseVerb;
+    sentence = `${subj} ${v} ${rest}.`;
+    analysis = isSingular
+      ? `تحلیل: فاعل (${subj}) سوم شخص مفرد است؛ بنابراین در جمله خبری مثبت، فعل حرف s گرفته است (${sVerb}).`
+      : `تحلیل: فاعل (${subj}) جمع است؛ بنابراین فعل به شکل ساده و بدون s (${baseVerb}) به کار رفته است.`;
+  } else if (type === "negative") {
+    const aux = isSingular ? "doesn't" : "don't";
+    sentence = `${subj} ${aux} ${baseVerb} ${rest}.`;
+    analysis = `تحلیل: برای منفی کردن از ${aux} استفاده شده و فعل اصلی به شکل کاملاً ساده بدون s (${baseVerb}) آمده است.`;
+  } else {
+    const aux = isSingular ? "Does" : "Do";
+    const sDisp = (subj === "My mother") ? "your mother" : subj.toLowerCase();
+    const finalSubj = (subj === "Iranians") ? "Iranians" : sDisp;
+    sentence = `${aux} ${finalSubj} ${baseVerb} ${rest}?`;
+    analysis = `تحلیل: سوال با ${aux} آغاز شده و فعل اصلی در حالت ساده (${baseVerb}) قرار گرفته است.`;
+  }
+
+  document.getElementById("lab-sim-output").textContent = sentence;
+  document.getElementById("lab-sim-analysis").textContent = analysis;
+}
+
+const LAB_CHALLENGES = [
+  {
+    fa: "جمله هدف ۱: آیا ایرانیان در شب یلدا اشعار حافظ می‌خوانند؟",
+    words: ["read", "on Yalda Night", "Do", "Iranians", "poems of Hafez", "?"],
+    answer: "Do Iranians read poems of Hafez on Yalda Night ?"
+  },
+  {
+    fa: "جمله هدف ۲: مادرم هر سال سفره هفت‌سین را می‌چیند.",
+    words: ["every year", "sets", "My mother", "the Haft-seen table", "."],
+    answer: "My mother sets the Haft-seen table every year ."
+  }
+];
+
+let currentLabIndex = 0;
+let labSelectedWords = [];
+
+function initLabSection() {
+  loadLabChallenge(0);
+}
+
+function loadLabChallenge(idx) {
+  currentLabIndex = idx;
+  labSelectedWords = [];
+  const ch = LAB_CHALLENGES[idx];
+  document.getElementById("lab-target-fa").textContent = ch.fa;
+  document.getElementById("lab-feedback").className = "feedback-box";
+  document.getElementById("lab-feedback").style.display = "none";
+  renderLabWorkspace();
+}
+
+function renderLabWorkspace() {
+  const ch = LAB_CHALLENGES[currentLabIndex];
+  const bankEl = document.getElementById("lab-word-bank");
+  const dropEl = document.getElementById("lab-drop-zone");
+
+  bankEl.innerHTML = "";
+  dropEl.innerHTML = "";
+
+  ch.words.forEach((w, i) => {
+    if (!labSelectedWords.includes(i)) {
+      const chip = document.createElement("span");
+      chip.className = "word-chip";
+      chip.textContent = w;
+      chip.onclick = () => {
+        labSelectedWords.push(i);
+        renderLabWorkspace();
+      };
+      bankEl.appendChild(chip);
+    }
+  });
+
+  labSelectedWords.forEach((wordIndex, pos) => {
+    const chip = document.createElement("span");
+    chip.className = "word-chip";
+    chip.style.borderColor = "var(--neon-green)";
+    chip.textContent = ch.words[wordIndex];
+    chip.onclick = () => {
+      labSelectedWords.splice(pos, 1);
+      renderLabWorkspace();
+    };
+    dropEl.appendChild(chip);
+  });
+}
+
+function resetCurrentLab() {
+  labSelectedWords = [];
+  renderLabWorkspace();
+}
+
+function nextLabChallenge() {
+  const nextIdx = (currentLabIndex + 1) % LAB_CHALLENGES.length;
+  loadLabChallenge(nextIdx);
+}
+
+function checkLabSentence() {
+  const ch = LAB_CHALLENGES[currentLabIndex];
+  const built = labSelectedWords.map(i => ch.words[i]).join(" ");
+  const fb = document.getElementById("lab-feedback");
+
+  if (built === ch.answer) {
+    fb.className = "feedback-box correct";
+    fb.style.display = "block";
+    fb.textContent = "آفرین! ساختار جمله کاملاً استاندارد و صحیح است (+۳۰ XP ثبت شد).";
+    if (!appState.completedActivities["lab"]) {
+      appState.completedActivities["lab"] = true;
+      appState.xp += 30;
+      saveState();
+      updateTopStats();
+    }
+  } else {
+    fb.className = "feedback-box wrong";
+    fb.style.display = "block";
+    fb.textContent = "ترتیب اجزای جمله هنوز دقیق نیست. به جایگاه فاعل، فعل، مفعول و قید زمان در انتهای جمله دقت کنید.";
+  }
+}
+
+/* =========================================================================
+   آزمون تستی، نیمه‌تشریحی و موتور تصحیح هوشمند تشریحی (درس سوم)
+   ========================================================================= */
+const MCQ_QUESTIONS = [
+  {
+    id: 1,
+    level: "سطح آسان (واژگان مراسم‌ها)",
+    q: "1. Iranians usually ............... the Haft-seen table before New Year's Eve.",
+    options: ["bake", "set", "wear", "read"],
+    correctIndex: 1,
+    explanation: "برای چیدن سفره هفت‌سین از فعل set استفاده می‌شود (set the Haft-seen table)."
+  },
+  {
+    id: 2,
+    level: "سطح متوسط (گرامر حال ساده)",
+    q: "2. Does your sister ............... the eggs for Nowruz every year?",
+    options: ["colors", "coloring", "color", "colored"],
+    correctIndex: 2,
+    explanation: "به دلیل حضور فعل کمکی Does در ابتدای سوال، فعل اصلی حتماً باید به شکل ساده و بدون s (یعنی color) بیاید."
+  },
+  {
+    id: 3,
+    level: "سطح متوسط (واژگان شب یلدا)",
+    q: "3. On Yalda Night, family members get together and ............... poems of Hafez.",
+    options: ["read", "watch", "buy", "color"],
+    correctIndex: 0,
+    explanation: "عبارت صحیح read poems of Hafez (خواندن اشعار حافظ) است."
+  },
+  {
+    id: 4,
+    level: "سطح سخت (پاسخ کوتاه و تشخیص فاعل جمع)",
+    q: "4. A: 'Do people watch fireworks on national holidays?'  B: 'Yes, ............... .'",
+    options: ["he does", "people do", "they do", "we are"],
+    correctIndex: 2,
+    explanation: "ضمیر مناسب برای people (مردم) کلمه they است و چون سوال با Do پرسیده شده، پاسخ کوتاه Yes, they do صحیح است."
+  }
+];
+
+let userMcqAnswers = {};
+
+function renderMCQs() {
+  const container = document.getElementById("mcq-container");
+  container.innerHTML = "";
+
+  MCQ_QUESTIONS.forEach(item => {
+    const card = document.createElement("div");
+    card.className = "question-card";
+
+    let optsHTML = "";
+    item.options.forEach((opt, oIdx) => {
+      const selClass = (userMcqAnswers[item.id] === oIdx) ? "selected" : "";
+      optsHTML += `
+        <button type="button" class="option-btn ${selClass}" onclick="selectMcqOption(${item.id}, ${oIdx})">
+          ${oIdx + 1}) <span style="direction:ltr; display:inline-block;">${opt}</span>
+        </button>
+      `;
+    });
+
+    card.innerHTML = `
+      <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+        <span style="font-size:0.8rem; color:var(--neon-blue);">${item.level}</span>
+        <span style="font-size:0.8rem; color:var(--text-muted);">۲ نمره</span>
+      </div>
+      <div class="q-title" style="direction:ltr; text-align:left;">${item.q}</div>
+      <div class="options-grid">${optsHTML}</div>
+      <div id="fb-mcq-${item.id}" class="feedback-box"></div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function selectMcqOption(qId, oIdx) {
+  if (appState.examSubmitted) return;
+  userMcqAnswers[qId] = oIdx;
+  renderMCQs();
+}
+
+function normalizeSmartText(str) {
+  if (!str) return "";
+  return str
+    .toLowerCase()
+    .replace(/[\u200B-\u200D\uFEFF]/g, " ")
+    .replace(/does\s+not/g, "doesn't")
+    .replace(/do\s+not/g, "don't")
+    .replace(/[.,?!؛،]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function gradeFullExam() {
+  if (appState.examSubmitted) return;
+
+  let totalScore = 0;
+  let breakdown = [];
+
+  // ۱. تصحیح ۴ سوال تستی (۸ نمره)
+  MCQ_QUESTIONS.forEach(item => {
+    const chosen = userMcqAnswers[item.id];
+    const fb = document.getElementById("fb-mcq-" + item.id);
+    if (chosen === item.correctIndex) {
+      totalScore += 2;
+      fb.className = "feedback-box correct";
+      fb.textContent = "پاسخ صحیح است (+۲ نمره). " + item.explanation;
+      breakdown.push(`سوال ${item.id} (تستی): ۲ از ۲`);
+    } else {
+      fb.className = "feedback-box wrong";
+      fb.textContent = `پاسخ نادرست (۰ نمره). گزینه صحیح: ${item.options[item.correctIndex]} | ${item.explanation}`;
+      breakdown.push(`سوال ${item.id} (تستی): ۰ از ۲`);
+    }
+  });
+
+  // ۲. تصحیح سوال ۵ نیمه‌تشریحی (۳ نمره)
+  const s1Raw = document.getElementById("semi-q1").value;
+  const s1Norm = normalizeSmartText(s1Raw);
+  const fbS1 = document.getElementById("fb-semi-1");
+  if (s1Norm === "do" || s1Norm.startsWith("do children")) {
+    totalScore += 3;
+    fbS1.className = "feedback-box correct";
+    fbS1.textContent = "پاسخ کاملاً صحیح است (+۳ نمره). چون children جمع است، فعل کمکی Do درست است.";
+    breakdown.push("سوال ۵ (نیمه‌تشریحی): ۳ از ۳");
+  } else if (s1Norm === "does") {
+    totalScore += 1;
+    fbS1.className = "feedback-box partial";
+    fbS1.textContent = "نمره جزئی (+۱ نمره): زمان حال ساده را درست تشخیص دادید، اما چون children (کودکان) جمع است باید از Do استفاده شود.";
+    breakdown.push("سوال ۵ (نیمه‌تشریحی): ۱ از ۳");
+  } else {
+    fbS1.className = "feedback-box wrong";
+    fbS1.textContent = "پاسخ نادرست (۰ نمره). پاسخ صحیح: Do";
+    breakdown.push("سوال ۵ (نیمه‌تشریحی): ۰ از ۳");
+  }
+
+  // ۳. تصحیح سوال ۶ نیمه‌تشریحی (۳ نمره)
+  const s2Raw = document.getElementById("semi-q2").value;
+  const s2Norm = normalizeSmartText(s2Raw);
+  const fbS2 = document.getElementById("fb-semi-2");
+  if (s2Norm === "bakes" || s2Norm.includes("always bakes")) {
+    totalScore += 3;
+    fbS2.className = "feedback-box correct";
+    fbS2.textContent = "پاسخ کاملاً صحیح است (+۳ نمره). برای فاعل سوم شخص مفرد (My grandmother) فعل s می‌گیرد (bakes).";
+    breakdown.push("سوال ۶ (نیمه‌تشریحی): ۳ از ۳");
+  } else if (s2Norm === "bake") {
+    totalScore += 1.5;
+    fbS2.className = "feedback-box partial";
+    fbS2.textContent = "نمره مرحله‌ای (+۱.۵ نمره): فعل را نوشته‌اید اما چون My grandmother سوم شخص مفرد است، باید حرف s به انتهای آن اضافه شود (bakes).";
+    breakdown.push("سوال ۶ (نیمه‌تشریحی): ۱.۵ از ۳");
+  } else {
+    fbS2.className = "feedback-box wrong";
+    fbS2.textContent = "پاسخ نادرست (۰ نمره). پاسخ صحیح: bakes";
+    breakdown.push("سوال ۶ (نیمه‌تشریحی): ۰ از ۳");
+  }
+
+  // ۴. تصحیح سوال ۷ تشریحی هوشمند (۳ نمره)
+  const d1Raw = document.getElementById("desc-q1").value;
+  const d1Norm = normalizeSmartText(d1Raw);
+  const fbD1 = document.getElementById("fb-desc-1");
+  if (d1Norm === "mina doesn't buy goldfish every year" || d1Norm === "she doesn't buy goldfish every year") {
+    totalScore += 3;
+    fbD1.className = "feedback-box correct";
+    fbD1.textContent = "عالی (+۳ نمره کامل)! هم از doesn't/does not استفاده کردید و هم حرف s را از انتهای buy حذف نمودید.";
+    breakdown.push("سوال ۷ (تشریحی): ۳ از ۳");
+  } else if (d1Norm.includes("doesn't buys")) {
+    totalScore += 2;
+    fbD1.className = "feedback-box partial";
+    fbD1.textContent = "نمره مرحله‌ای (+۲ نمره): استفاده از doesn't صحیح است، اما پس از آن باید حرف s از انتهای فعل حذف شود (doesn't buy).";
+    breakdown.push("سوال ۷ (تشریحی): ۲ از ۳");
+  } else if (d1Norm.includes("don't buy")) {
+    totalScore += 1.5;
+    fbD1.className = "feedback-box partial";
+    fbD1.textContent = "نمره مرحله‌ای (+۱.۵ نمره): جمله را منفی کرده‌اید اما برای فاعل سوم شخص مفرد (Mina) باید از doesn't استفاده شود.";
+    breakdown.push("سوال ۷ (تشریحی): ۱.۵ از ۳");
+  } else {
+    fbD1.className = "feedback-box wrong";
+    fbD1.textContent = "پاسخ صحیح: Mina doesn't buy goldfish every year.";
+    breakdown.push("سوال ۷ (تشریحی): ۰ از ۳");
+  }
+
+  // ۵. تصحیح سوال ۸ تشریحی هوشمند (۳ نمره)
+  const d2Raw = document.getElementById("desc-q2").value;
+  const d2Norm = normalizeSmartText(d2Raw);
+  const fbD2 = document.getElementById("fb-desc-2");
+  if (
+    d2Norm === "elders give new year gifts to children" ||
+    d2Norm === "the elders give new year gifts to children"
+  ) {
+    totalScore += 3;
+    fbD2.className = "feedback-box correct";
+    fbD2.textContent = "پاسخ تشریحی کاملاً استاندارد و صحیح است (+۳ نمره).";
+    breakdown.push("سوال ۸ (تشریحی): ۳ از ۳");
+  } else if (d2Norm.includes("elders give") || d2Norm.includes("give new year gifts")) {
+    totalScore += 1.5;
+    fbD2.className = "feedback-box partial";
+    fbD2.textContent = "نمره مرحله‌ای (+۱.۵ نمره): بخش اصلی فاعل و فعل را درست چیده‌اید. صورت کامل: Elders give New Year gifts to children.";
+    breakdown.push("سوال ۸ (تشریحی): ۱.۵ از ۳");
+  } else {
+    fbD2.className = "feedback-box wrong";
+    fbD2.textContent = "پاسخ صحیح: Elders give New Year gifts to children.";
+    breakdown.push("سوال ۸ (تشریحی): ۰ از ۳");
+  }
+
+  appState.examSubmitted = true;
+  appState.examScore = totalScore;
+  appState.examDetailsText = breakdown.join(" | ");
+
+  if (!appState.completedActivities["exam"]) {
+    appState.completedActivities["exam"] = true;
+    appState.xp += 50;
+  }
+
+  saveState();
+  updateTopStats();
+  lockExamUI();
+
+  const banner = document.getElementById("exam-summary-banner");
+  banner.className = "feedback-box correct";
+  banner.style.display = "block";
+  banner.innerHTML = `آزمون شما با موفقیت تصحیح و ثبت شد. <strong>نمره کسب‌شده: ${totalScore} از ۲۰</strong> (+۵۰ XP دریافت شد). اکنون می‌توانید از بخش «ثبت و ارسال گزارش نهایی» نتیجه را به سرور ارسال کنید.`;
+}
+
+function lockExamUI() {
+  const btn = document.getElementById("btn-submit-exam");
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = `آزمون ثبت شده است (نمره شما: ${appState.examScore} از ۲۰)`;
+  }
+  ["semi-q1", "semi-q2", "desc-q1", "desc-q2"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.readOnly = true;
+  });
+}
+
+/* =========================================================================
+   صفحه گزارش نهایی و ارسال مستقیم به جدول Students در Supabase
+   ========================================================================= */
+function populateReportView() {
+  updateTopStats();
+  const prog = getProgressPercent();
+  const studyMin = Math.max(1, Math.round(appState.studySeconds / 60));
+
+  const viewedList = [];
+  if (appState.completedActivities["attendance"]) viewedList.push("ثبت حضور دیجی‌فرم");
+  if (appState.completedActivities["teaching"]) viewedList.push("آموزش جامع");
+  if (appState.completedActivities["summary"]) viewedList.push("خلاصه هوشمند");
+  if (appState.completedActivities["tips"]) viewedList.push("نکات تشریحی و تستی");
+  if (appState.completedActivities["lab"]) viewedList.push("آزمایشگاه مجازی");
+  if (appState.completedActivities["homework"]) viewedList.push("تکالیف و اطلاعیه‌ها");
+
+  document.getElementById("rep-name").textContent = appState.studentName || "ثبت نشده";
+  document.getElementById("rep-school").textContent = `${PROJECT_CONFIG.schoolName} - پایه ${PROJECT_CONFIG.grade}`;
+  document.getElementById("rep-subject").textContent = PROJECT_CONFIG.subject;
+  document.getElementById("rep-attendance").textContent = appState.completedActivities["attendance"] ? "ثبت و تایید شده در دیجی‌فرم ✓" : "تایید نشده";
+  document.getElementById("rep-xp").textContent = `${appState.xp} XP`;
+  document.getElementById("rep-exam-score").textContent = appState.examSubmitted ? `${appState.examScore} از ۲۰` : "انجام نشده (۰ از ۲۰)";
+  document.getElementById("rep-progress").textContent = `${prog}%`;
+  document.getElementById("rep-duration").textContent = `${studyMin} دقیقه (${appState.studySeconds} ثانیه)`;
+  document.getElementById("rep-sections").textContent = viewedList.length > 0 ? viewedList.join("، ") : "هیچ بخشی تکمیل نشده";
+  document.getElementById("rep-exams-status").textContent = appState.examSubmitted ? `انجام شده (${appState.examDetailsText})` : "انجام نشده";
+
+  const sendBtn = document.getElementById("btn-final-supabase");
+  if (appState.reportSentToSupabase) {
+    sendBtn.disabled = true;
+    sendBtn.textContent = "گزارش نهایی قبلاً در سرور ثبت شده است ✓";
+  } else {
+    sendBtn.disabled = false;
+    sendBtn.textContent = "ثبت و ارسال گزارش";
+  }
+}
+
+async function submitReportToSupabase() {
+  if (appState.reportSentToSupabase) return;
+
+  const statusBox = document.getElementById("supabase-status-box");
+  const sendBtn = document.getElementById("btn-final-supabase");
+
+  sendBtn.disabled = true;
+  sendBtn.textContent = "در حال ارسال اطلاعات به سرور...";
+  statusBox.className = "feedback-box partial";
+  statusBox.style.display = "block";
+  statusBox.textContent = "در حال برقراری ارتباط با پایگاه داده و ثبت کارنامه...";
+
+  const nowStr = new Date().toLocaleString("fa-IR");
+  const studyMin = Math.max(1, Math.round(appState.studySeconds / 60));
+  const prog = getProgressPercent();
+
+  const detailsSummary = [
+    `زمان ورود: ${appState.firstEntryTime || nowStr}`,
+    `زمان خروج: ${nowStr}`,
+    `مدت حضور: ${studyMin} دقیقه (${appState.studySeconds} ثانیه)`,
+    `تعداد دفعات ورود: ${appState.loginCount}`,
+    `حضور دیجی‌فرم: ${appState.completedActivities["attendance"] ? "بله" : "خیر"}`,
+    `آموزش‌های مشاهده‌شده: ${appState.completedActivities["teaching"] ? "بله" : "خیر"}`,
+    `خلاصه‌های مطالعه‌شده: ${appState.completedActivities["summary"] ? "بله" : "خیر"}`,
+    `نکات امتحانی: ${appState.completedActivities["tips"] ? "بله" : "خیر"}`,
+    `آزمایشگاه‌های انجام‌شده: ${appState.completedActivities["lab"] ? "بله" : "خیر"}`,
+    `تکالیف مشاهده‌شده: ${appState.completedActivities["homework"] ? "بله" : "خیر"}`,
+    `آزمون‌های تستی و تشریحی: ${appState.examSubmitted ? "انجام شده" : "انجام نشده"}`,
+    `امتیاز آزمون از ۲۰: ${appState.examScore}`,
+    `ریز نمرات سوالات: ${appState.examDetailsText}`,
+    `XP کل: ${appState.xp} از 150`,
+    `درصد پیشرفت: ${prog}%`,
+    `تعداد Badge: ${appState.badges.length} (${appState.badges.join("، ") || "بدون نشان"})`,
+    `تعداد Achievement: ${Object.keys(appState.completedActivities).length}`,
+    `زمان ثبت گزارش: ${nowStr}`
+  ].join(" | ");
+
+  const payload = {
+    Student_name: appState.studentName,
+    School_name: `پایه ${PROJECT_CONFIG.grade} - ${PROJECT_CONFIG.schoolName}`,
+    Subject: PROJECT_CONFIG.subject,
+    Score: parseFloat(appState.examSubmitted ? appState.examScore : appState.xp),
+    Total_score: parseInt(appState.examSubmitted ? 20 : 150, 10),
+    Details: detailsSummary
+  };
+
+  try {
+    const response = await fetch(`${PROJECT_CONFIG.supabaseUrl}/rest/v1/${PROJECT_CONFIG.supabaseTable}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": PROJECT_CONFIG.supabaseKey,
+        "Authorization": `Bearer ${PROJECT_CONFIG.supabaseKey}`,
+        "Prefer": "return=minimal"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (response.ok) {
+      appState.reportSentToSupabase = true;
+      appState.reportSentTime = nowStr;
+      saveState();
+
+      sendBtn.textContent = "گزارش نهایی با موفقیت ثبت شد ✓";
+      statusBox.className = "feedback-box correct";
+      statusBox.textContent = "گزارش عملکرد، حضور، امتیازات و ریز نمرات شما با موفقیت در پایگاه داده ثبت گردید.";
+    } else {
+      const errText = await response.text();
+      throw new Error(`کد وضعیت ${response.status}: ${errText}`);
+    }
+  } catch (err) {
+    sendBtn.disabled = false;
+    sendBtn.textContent = "تلاش مجدد برای ثبت و ارسال گزارش";
+    statusBox.className = "feedback-box wrong";
+    statusBox.textContent = "خطا در ارسال گزارش به سرور. لطفاً اتصال اینترنت خود را بررسی کرده و دوباره دکمه را بزنید. جزئیات: " + err.message;
+  }
+}
+
+/* =========================================================================
+   انیمیشن پس‌زمینه ذرات (Particle System 60FPS)
+   ========================================================================= */
+function initCanvasParticles() {
+  const canvas = document.getElementById("bg-canvas");
+  const ctx = canvas.getContext("2d");
+  let w = canvas.width = window.innerWidth;
+  let h = canvas.height = window.innerHeight;
+
+  window.addEventListener("resize", () => {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  });
+
+  const particles = Array.from({ length: 45 }, () => ({
+    x: Math.random() * w,
+    y: Math.random() * h,
+    r: Math.random() * 2 + 0.8,
+    dx: (Math.random() - 0.5) * 0.45,
+    dy: (Math.random() - 0.5) * 0.45
+  }));
+
+  function animate() {
+    ctx.clearRect(0, 0, w, h);
+    ctx.fillStyle = "rgba(0, 229, 255, 0.35)";
+    particles.forEach(p => {
+      p.x += p.dx;
+      p.y += p.dy;
+      if (p.x < 0 || p.x > w) p.dx *= -1;
+      if (p.y < 0 || p.y > h) p.dy *= -1;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    requestAnimationFrame(animate);
+  }
+  animate();
+}
+
+/* =========================================================================
+   راه‌اندازی اولیه
+   ========================================================================= */
+window.addEventListener("DOMContentLoaded", () => {
+  loadState();
+  initCanvasParticles();
+  initLockScreen();
+});
+</script>
+</body>
+</html>
