@@ -1,0 +1,1668 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>آزمون آنلاین فیزیک (فشار) | برزگری</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --secondary: #0ea5e9;
+      --accent: #f59e0b;
+      --success: #10b981;
+      --danger: #ef4444;
+      --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #f8fafc 50%, #eff6ff 100%);
+      --glass-bg: rgba(255, 255, 255, 0.85);
+      --glass-border: rgba(255, 255, 255, 0.65);
+      --card-bg: rgba(255, 255, 255, 0.94);
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --input-bg: #ffffff;
+      --input-border: #cbd5e1;
+      --shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.08);
+      --kbd-bg: #f1f5f9;
+      --kbd-btn: #ffffff;
+    }
+
+    body.dark-mode {
+      --primary: #3b82f6;
+      --primary-dark: #60a5fa;
+      --secondary: #38bdf8;
+      --bg-gradient: linear-gradient(135deg, #090d16 0%, #0f172a 50%, #1e1b4b 100%);
+      --glass-bg: rgba(15, 23, 42, 0.88);
+      --glass-border: rgba(255, 255, 255, 0.12);
+      --card-bg: rgba(30, 41, 59, 0.9);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --input-bg: #0f172a;
+      --input-border: #334155;
+      --shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.45);
+      --kbd-bg: #1e293b;
+      --kbd-btn: #0f172a;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Vazirmatn', 'IRANSans', Tahoma, Arial, sans-serif;
+      transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background: var(--bg-gradient);
+      background-attachment: fixed;
+      color: var(--text-main);
+      overflow-x: hidden;
+    }
+
+    .glass {
+      background: var(--glass-bg);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--shadow);
+    }
+
+    .top-bar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      padding: 10px 20px;
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .top-bar-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .brand-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-logo {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 15px;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    .brand-text h1 {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .brand-text p {
+      margin: 2px 0 0;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .teacher-trigger {
+      cursor: pointer;
+      user-select: none;
+      font-weight: bold;
+      color: var(--primary);
+    }
+
+    .controls-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .timer-pill {
+      background: rgba(239, 68, 68, 0.12);
+      color: var(--danger);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-weight: bold;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      direction: ltr;
+    }
+
+    .icon-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--input-border);
+      color: var(--text-main);
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .icon-btn:hover {
+      transform: translateY(-2px);
+      border-color: var(--primary);
+    }
+
+    .progress-wrapper {
+      max-width: 1200px;
+      margin: 8px auto 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .progress-track {
+      flex: 1;
+      height: 7px;
+      background: rgba(148, 163, 184, 0.25);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--primary), var(--success));
+      border-radius: 999px;
+      transition: width 0.3s ease;
+    }
+
+    .progress-label {
+      font-size: 12px;
+      font-weight: bold;
+      color: var(--text-muted);
+      min-width: 85px;
+      text-align: left;
+    }
+
+    .math-keyboard-bar {
+      position: sticky;
+      top: 76px;
+      z-index: 990;
+      background: var(--kbd-bg);
+      border-bottom: 1px solid var(--input-border);
+      padding: 8px 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+      display: none;
+    }
+
+    .math-keyboard-bar.active {
+      display: block;
+    }
+
+    .kbd-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+    }
+
+    .kbd-title {
+      font-size: 12px;
+      font-weight: bold;
+      color: var(--text-muted);
+      margin-left: 8px;
+    }
+
+    .kbd-btn {
+      background: var(--kbd-btn);
+      color: var(--text-main);
+      border: 1px solid var(--input-border);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      min-width: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+      direction: ltr;
+    }
+
+    .kbd-btn:hover {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .kbd-btn.sym-var {
+      color: var(--primary);
+    }
+    .kbd-btn.sym-var:hover {
+      color: #fff;
+    }
+
+    .center-screen {
+      max-width: 680px;
+      margin: 35px auto;
+      padding: 30px;
+      border-radius: 24px;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .pill-badge {
+      background: rgba(37, 99, 235, 0.12);
+      color: var(--primary);
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: bold;
+    }
+
+    .countdown-box {
+      background: linear-gradient(135deg, #1e3a8a, #2563eb);
+      color: white;
+      padding: 20px;
+      border-radius: 18px;
+      text-align: center;
+      margin: 20px 0;
+      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.25);
+    }
+
+    .countdown-digits {
+      font-size: 32px;
+      font-weight: 900;
+      letter-spacing: 2px;
+      margin-top: 8px;
+      direction: ltr;
+    }
+
+    .guide-box {
+      background: var(--card-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+
+    .guide-box h3 {
+      margin-top: 0;
+      color: var(--primary);
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .guide-list {
+      margin: 0;
+      padding-right: 20px;
+      line-height: 1.9;
+      font-size: 14px;
+      color: var(--text-main);
+    }
+
+    .guide-list li {
+      margin-bottom: 8px;
+    }
+
+    .formula-banner {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      background: rgba(14, 165, 233, 0.1);
+      border: 1px dashed var(--secondary);
+      border-radius: 14px;
+      padding: 14px;
+      margin: 15px 0;
+      flex-wrap: wrap;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    select, input[type="text"], input[type="password"] {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1.5px solid var(--input-border);
+      background: var(--input-bg);
+      color: var(--text-main);
+      font-size: 14px;
+      outline: none;
+    }
+
+    select:focus, input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.25);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px rgba(37, 99, 235, 0.35);
+    }
+
+    .btn-primary:disabled {
+      background: #94a3b8;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .exam-layout {
+      max-width: 1200px;
+      margin: 20px auto 60px;
+      padding: 0 16px;
+      display: grid;
+      grid-template-columns: 1fr 270px;
+      gap: 20px;
+      align-items: start;
+    }
+
+    @media (max-width: 920px) {
+      .exam-layout {
+        grid-template-columns: 1fr;
+      }
+      .side-nav {
+        position: static !important;
+        order: -1;
+      }
+      .math-keyboard-bar {
+        top: 68px;
+      }
+    }
+
+    .q-card {
+      background: var(--card-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 22px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+      scroll-margin-top: 155px;
+    }
+
+    .q-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--input-border);
+    }
+
+    .q-num {
+      background: var(--primary);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 13px;
+    }
+
+    .q-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .q-tag {
+      font-size: 12px;
+      padding: 3px 10px;
+      border-radius: 8px;
+      background: rgba(14, 165, 233, 0.14);
+      color: var(--secondary);
+      font-weight: bold;
+    }
+
+    .q-score-badge {
+      font-size: 12px;
+      padding: 3px 10px;
+      border-radius: 8px;
+      background: rgba(16, 185, 129, 0.14);
+      color: var(--success);
+      font-weight: bold;
+    }
+
+    .q-text {
+      font-size: 15.5px;
+      line-height: 1.85;
+      margin-bottom: 18px;
+      font-weight: 600;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    @media (max-width: 640px) {
+      .steps-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .step-box {
+      background: rgba(148, 163, 184, 0.08);
+      border: 1px solid var(--input-border);
+      border-radius: 14px;
+      padding: 12px;
+    }
+
+    .step-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12.5px;
+      font-weight: bold;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .step-input {
+      direction: ltr;
+      text-align: center;
+      font-weight: bold;
+      font-size: 15px !important;
+      letter-spacing: 0.5px;
+    }
+
+    .step-feedback {
+      margin-top: 6px;
+      font-size: 12px;
+      font-weight: bold;
+      display: none;
+    }
+
+    .side-nav {
+      position: sticky;
+      top: 145px;
+      border-radius: 20px;
+      padding: 18px;
+    }
+
+    .nav-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin: 14px 0;
+    }
+
+    .nav-dot {
+      aspect-ratio: 1;
+      border-radius: 10px;
+      border: 1.5px solid var(--input-border);
+      background: var(--input-bg);
+      color: var(--text-main);
+      font-weight: bold;
+      font-size: 13px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-dot.answered {
+      background: rgba(37, 99, 235, 0.16);
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .nav-dot.correct-full {
+      background: var(--success);
+      border-color: var(--success);
+      color: white;
+    }
+
+    .nav-dot.partial {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: white;
+    }
+
+    .nav-dot.wrong {
+      background: var(--danger);
+      border-color: var(--danger);
+      color: white;
+    }
+
+    .result-banner {
+      background: linear-gradient(135deg, #065f46, #10b981);
+      color: white;
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 24px;
+      text-align: center;
+      display: none;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(5px);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-box {
+      background: var(--card-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      max-width: 440px;
+      width: 100%;
+      padding: 24px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- نوار بالای صفحه -->
+  <header class="top-bar glass">
+    <div class="top-bar-inner">
+      <div class="brand-info">
+        <div class="brand-logo">P=F/A</div>
+        <div class="brand-text">
+          <h1>آزمون آنلاین فیزیک دهم تجربی | مبحث فشار</h1>
+          <p>دبیرستان استاد شهریار دولاب • دبیر: <span class="teacher-trigger" id="teacher-secret-btn" title="مدیریت">برزگری</span></p>
+        </div>
+      </div>
+
+      <div class="controls-group">
+        <div class="timer-pill" id="header-timer" title="زمان باقی‌مانده آزمون">
+          <span>⏱</span>
+          <span id="timer-display">45:00</span>
+        </div>
+        <button class="icon-btn" id="theme-toggle" title="تغییر حالت شب و روز">🌓</button>
+      </div>
+    </div>
+
+    <div class="progress-wrapper" id="progress-container" style="display:none;">
+      <div class="progress-track">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <div class="progress-label" id="progress-text">۰٪ تکمیل</div>
+    </div>
+  </header>
+
+  <!-- کیبورد اختصاصی فرمول و علائم -->
+  <div class="math-keyboard-bar" id="math-keyboard">
+    <div class="kbd-container">
+      <span class="kbd-title">کیبورد علائم و فرمول:</span>
+      <button type="button" class="kbd-btn sym-var" data-val="P">P</button>
+      <button type="button" class="kbd-btn sym-var" data-val="F">F</button>
+      <button type="button" class="kbd-btn sym-var" data-val="F⊥">F⊥</button>
+      <button type="button" class="kbd-btn sym-var" data-val="A">A</button>
+      <button type="button" class="kbd-btn" data-val="=">=</button>
+      <button type="button" class="kbd-btn" data-val="/">/ (خط کسری)</button>
+      <button type="button" class="kbd-btn" data-val="×">×</button>
+      <button type="button" class="kbd-btn" data-val="÷">÷</button>
+      <button type="button" class="kbd-btn" data-val="+">+</button>
+      <button type="button" class="kbd-btn" data-val="-">-</button>
+      <button type="button" class="kbd-btn" data-val="(">(</button>
+      <button type="button" class="kbd-btn" data-val=")">)</button>
+      <button type="button" class="kbd-btn" data-val="^">^ (توان)</button>
+      <button type="button" class="kbd-btn" data-val="10^">10^</button>
+      <button type="button" class="kbd-btn" data-val="m²">m²</button>
+      <button type="button" class="kbd-btn" data-val="cm²">cm²</button>
+      <button type="button" class="kbd-btn" data-val="mm²">mm²</button>
+      <button type="button" class="kbd-btn" data-val="Pa">Pa</button>
+      <button type="button" class="kbd-btn" data-val="N">N</button>
+      <button type="button" class="kbd-btn" data-val=".">.</button>
+      <button type="button" class="kbd-btn" style="color:var(--danger)" id="kbd-backspace">⌫ پاک کردن</button>
+    </div>
+  </div>
+
+  <!-- صفحه قفل و راهنمای آزمون -->
+  <section id="lock-screen" class="center-screen glass hidden">
+    <div style="text-align:center;">
+      <div class="badge-row">
+        <span class="pill-badge">فیزیک دهم تجربی</span>
+        <span class="pill-badge">دبیرستان استاد شهریار دولاب</span>
+        <span class="pill-badge">دبیر: برزگری</span>
+      </div>
+      <h2 id="lock-title" style="margin:0 0 10px; font-size:22px;">🔒 سامانه آزمون در حال حاضر قفل است</h2>
+      <p id="lock-desc" style="color:var(--text-muted); font-size:14px; margin:0; line-height:1.8;">
+        زمان برگزاری آزمون امشب از ساعت <strong>۲۰:۰۰</strong> تا ساعت <strong>۲۱:۰۰</strong> است. پس از ساعت ۲۱:۰۰ ورود به آزمون بسته می‌شود.
+      </p>
+    </div>
+
+    <div class="countdown-box">
+      <div id="countdown-caption" style="font-size:13px; opacity:0.9;">زمان باقی‌مانده تا شروع آزمون:</div>
+      <div class="countdown-digits" id="lock-countdown">00:00:00</div>
+      <div style="font-size:12px; margin-top:6px; opacity:0.85;">بازه زمانی آزمون: امشب ساعت ۲۰:۰۰ تا ۲۱:۰۰</div>
+    </div>
+
+    <div class="formula-banner">
+      <svg width="130" height="75" viewBox="0 0 140 80">
+        <rect x="4" y="4" width="132" height="72" rx="10" fill="none" stroke="#0ea5e9" stroke-width="2.5"/>
+        <text x="22" y="47" font-family="serif" font-size="28" font-weight="bold" fill="currentColor">P =</text>
+        <text x="82" y="31" font-family="serif" font-size="26" font-weight="bold" fill="currentColor">F</text>
+        <text x="98" y="35" font-family="serif" font-size="16" font-weight="bold" fill="currentColor">⊥</text>
+        <line x1="74" y1="40" x2="120" y2="40" stroke="currentColor" stroke-width="2.5"/>
+        <text x="86" y="66" font-family="serif" font-size="26" font-weight="bold" fill="currentColor">A</text>
+      </svg>
+      <div style="font-size:13px; line-height:1.9;">
+        <strong>رابطه اصلی و تبدیل واحدهای مساحت:</strong><br>
+        • فشار برابر نیروی عمودی تقسیم بر مساحت است.<br>
+        • برای تبدیل سانتی‌متر مربع به متر مربع، در <strong>0.0001</strong> ضرب کنید.<br>
+        • برای تبدیل میلی‌متر مربع به متر مربع، در <strong>0.000001</strong> ضرب کنید.
+      </div>
+    </div>
+
+    <div class="guide-box">
+      <h3>📘 راهنمای جامع شرکت در آزمون</h3>
+      <ul class="guide-list">
+        <li><strong>مهلت زمانی آزمون:</strong> آزمون از ساعت <strong>۲۰:۰۰</strong> شروع شده و رأس ساعت <strong>۲۱:۰۰</strong> قفل می‌شود؛ پس از ساعت ۲۱ امکان ورود وجود ندارد.</li>
+        <li><strong>تعداد و بارم سوالات:</strong> آزمون شامل <strong>۲۰ سوال</strong> (هر سوال ۱ نمره، مجموع ۲۰ نمره) است که در هر سوال یکی از کمیت‌های فشار (P)، نیروی عمودی (F) یا مساحت (A) مجهول است.</li>
+        <li><strong>نمره‌دهی مرحله‌ای:</strong> هر سوال دارای ۴ بخش مجزا (فرمول، جایگذاری و تبدیل واحد، مقدار عددی نهایی و یکای اصلی) است و به هر مرحله نمره مستقل تعلق می‌گیرد.</li>
+        <li><strong>کیبورد فرمول‌نویس:</strong> با کلیک داخل هر کادر پاسخ، نوار علائم در بالای صفحه باز می‌شود تا بدون دردسر از نمادهای فرمول و واحدها استفاده کنید.</li>
+        <li><strong>پذیرش پاسخ‌های معادل:</strong> صورت‌های مختلف و معادل یک پاسخ صحیح به درستی تصحیح می‌شوند.</li>
+        <li><strong>ثبت نهایی:</strong> پس از زدن دکمه ثبت نهایی، نمره و جزئیات پاسخ‌ها به کارنامه دبیر ارسال شده و پاسخ‌ها قفل می‌شوند.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- صفحه ورود دانش‌آموز -->
+  <section id="login-screen" class="center-screen glass hidden">
+    <div style="text-align:center; margin-bottom:22px;">
+      <div class="badge-row">
+        <span class="pill-badge">درس: فیزیک</span>
+        <span class="pill-badge">دبیر: برزگری</span>
+        <span class="pill-badge">مدرسه: استاد شهریار دولاب</span>
+      </div>
+      <h2 style="margin:0 0 8px; font-size:22px;">ورود به جلسه آزمون آنلاین</h2>
+      <p style="color:var(--text-muted); font-size:14px; margin:0;">پایه دهم تجربی • مبحث فشار • ۲۰ سوال مرحله‌ای • پایان ورود: ساعت ۲۱:۰۰</p>
+    </div>
+
+    <div class="form-group">
+      <label for="grade-select">پایه و رشته تحصیلی:</label>
+      <select id="grade-select" disabled>
+        <option value="دهم تجربی" selected>دهم تجربی - دبیرستان استاد شهریار دولاب</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="student-select">نام و نام خانوادگی خود را از لیست کلاس انتخاب کنید:</label>
+      <select id="student-select">
+        <option value="">-- انتخاب نام دانش‌آموز --</option>
+      </select>
+    </div>
+
+    <div class="guide-box" style="margin-bottom:20px; padding:14px 18px;">
+      <h3 style="font-size:14px; margin-bottom:6px;">💡 نکات مهم پیش از شروع:</h3>
+      <ul class="guide-list" style="font-size:13px; line-height:1.7;">
+        <li>برای وارد کردن نمادها و واحدها از <strong>کیبورد بالای صفحه</strong> استفاده کنید.</li>
+        <li>پاسخ نهایی را با واحد اصلی در دستگاه استاندارد بنویسید (فشار با <strong>Pa</strong>، نیرو با <strong>N</strong> و مساحت با <strong>m²</strong>).</li>
+        <li>ثبت نهایی فقط <strong>یک بار</strong> انجام می‌شود.</li>
+      </ul>
+    </div>
+
+    <button type="button" class="btn-primary" id="start-exam-btn">ورود و شروع آزمون 🚀</button>
+    <p id="login-error" style="color:var(--danger); font-size:13px; font-weight:bold; text-align:center; margin-top:10px;"></p>
+  </section>
+
+  <!-- صفحه اصلی آزمون -->
+  <main id="exam-screen" class="exam-layout hidden">
+    <div id="questions-column">
+      <div class="q-card" style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:10px; padding:16px 22px;">
+        <div>
+          <span style="font-size:13px; color:var(--text-muted);">دانش‌آموز:</span>
+          <strong id="active-student-label" style="font-size:15px; color:var(--primary); margin-right:6px;">---</strong>
+        </div>
+        <div style="font-size:13px; color:var(--text-muted);">
+          تعداد کل: <strong>۲۰ سوال</strong> | بارم کل: <strong>۲۰ نمره</strong> | مهلت تا: <strong>۲۱:۰۰</strong>
+        </div>
+      </div>
+
+      <div class="result-banner" id="result-banner">
+        <h2 style="margin:0 0 8px;">🎉 آزمون شما با موفقیت ثبت و تصحیح شد</h2>
+        <div style="font-size:36px; font-weight:900; margin:10px 0;" id="final-score-display">۰ از ۲۰</div>
+        <p id="supabase-status-text" style="margin:6px 0 0; font-size:14px; opacity:0.95;"></p>
+      </div>
+
+      <div id="questions-list"></div>
+
+      <div class="q-card" id="submit-card" style="text-align:center;">
+        <p style="font-size:14px; color:var(--text-muted); margin-top:0;">
+          پس از بررسی پاسخ‌های هر ۲۰ سوال، دکمه زیر را بزنید تا نمره شما محاسبه و ثبت شود.
+        </p>
+        <button type="button" class="btn-primary" id="final-submit-btn">ثبت نهایی آزمون و ارسال نمره ✅</button>
+        <p id="submit-feedback" style="margin-top:12px; font-weight:bold; font-size:14px;"></p>
+      </div>
+    </div>
+
+    <aside class="side-nav glass">
+      <div style="font-weight:bold; font-size:14px; display:flex; justify-content:space-between;">
+        <span>نقشه سوالات</span>
+        <span id="answered-count" style="color:var(--primary);">۰ / ۲۰</span>
+      </div>
+      <div class="nav-grid" id="nav-grid"></div>
+      <div style="font-size:12px; color:var(--text-muted); line-height:1.7; border-top:1px solid var(--input-border); padding-top:10px;">
+        <div>🔵 آبی: پاسخ داده‌شده</div>
+        <div>🟢 سبز: نمره کامل</div>
+        <div>🟡 نارنجی: نمره جزئی</div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- پنجره مخفی مدیریت دبیر -->
+  <div class="modal-overlay" id="teacher-modal">
+    <div class="modal-box">
+      <h3 style="margin-top:0; color:var(--primary);">🔐 پنل مدیریت دبیر (برزگری)</h3>
+      <div id="teacher-auth-section">
+        <p style="font-size:13px; color:var(--text-muted);">رمز عبور دبیر را وارد کنید:</p>
+        <input type="password" id="teacher-pass-input" placeholder="رمز عبور..." style="margin-bottom:12px; text-align:center; letter-spacing:4px;">
+        <div style="display:flex; gap:10px;">
+          <button type="button" class="btn-primary" id="teacher-login-btn">تایید ورود</button>
+          <button type="button" class="icon-btn" style="width:auto; padding:0 16px;" onclick="closeTeacherModal()">انصراف</button>
+        </div>
+        <p id="teacher-auth-error" style="color:var(--danger); font-size:13px; margin-top:8px;"></p>
+      </div>
+
+      <div id="teacher-actions-section" class="hidden">
+        <p style="font-size:13px; color:var(--success); font-weight:bold;">✅ دسترسی دبیر تایید شد.</p>
+        <div style="display:flex; flex-direction:column; gap:10px; margin-top:14px;">
+          <button type="button" class="btn-primary" style="background:var(--success);" id="teacher-unlock-btn">🔓 باز کردن فوری قفل زمانی آزمون</button>
+          <button type="button" class="btn-primary" style="background:var(--danger);" id="teacher-reset-btn">🔄 ریست کامل آزمون و تایمر</button>
+          <button type="button" class="icon-btn" style="width:100%;" onclick="closeTeacherModal()">بستن پنجره</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  /********************************************************************
+   * تنظیمات پایه و بازه زمانی آزمون (شروع ۲۰:۰۰ - پایان ۲۱:۰۰)
+   ********************************************************************/
+  const ACTIVE_SCHOOL = "استاد شهریار دولاب";
+  const ACTIVE_SUBJECT = "فیزیک دهم تجربی (فشار)";
+  const TEACHER_NAME = "برزگری";
+  const TEACHER_SECRET_CODE = "9162";
+
+  const nowInit = new Date();
+  const yyyy = nowInit.getFullYear();
+  const mm = String(nowInit.getMonth() + 1).padStart(2, "0");
+  const dd = String(nowInit.getDate()).padStart(2, "0");
+  const todayStr = `${yyyy}-${mm}-${dd}`;
+
+  let EXAM_START_TIME = `${todayStr}T20:00:00`;
+  let EXAM_END_TIME   = `${todayStr}T21:00:00`;
+  const EXAM_DURATION_MINUTES = 45;
+
+  const SUPABASE_URL = "https://tpwdrzwfzdbmwqlblntu.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_ASPIzP1XV1iSweCV43Oy9Q_PCkz5htN";
+
+  const STUDENTS_LIST = [
+    "آرمین آبادی دولابی",
+    "شمس الدین آزاده",
+    "زعیم آزادی چاهونی",
+    "شایان اسلامی دولابی",
+    "احسان صالحی زاده",
+    "عارف نژاد باسعیدو",
+    "بنیامین نعمتی نژاد",
+    "محمدعرفان نیک خو"
+  ];
+
+  /********************************************************************
+   * بانک ۲۰ سوال مرحله‌ای بدون نمایش جواب در کادر پاسخ
+   ********************************************************************/
+  const QUESTIONS = [
+    {
+      id: 1,
+      unknown: "فشار (P)",
+      unitType: "متر مربع (m²)",
+      text: "نیروی عمودی ۴۰۰ نیوتن بر سطحی به مساحت ۲ متر مربع وارد می‌شود. فشار وارد بر این سطح چند پاسکال است؟",
+      steps: {
+        formula: { label: "۱. فرمول مناسب", ans: ["P=F/A", "P=F⊥/A", "F/A", "F⊥/A"], placeholder: "فرمول را بنویسید", score: 0.25 },
+        sub:     { label: "۲. جایگذاری اعداد", ans: ["400/2", "P=400/2"], placeholder: "عبارت جایگذاری را بنویسید", score: 0.25 },
+        val:     { label: "۳. عدد پاسخ نهایی", ans: ["200"], placeholder: "عدد را بنویسید", score: 0.30 },
+        unit:    { label: "۴. یکای اصلی", ans: ["Pa", "پاسکال", "N/m²", "N/m^2"], placeholder: "یکا را بنویسید", score: 0.20 }
+      }
+    },
+    {
+      id: 2,
+      unknown: "فشار (P)",
+      unitType: "سانتی‌متر مربع (cm²)",
+      text: "مکعبی به وزن ۶۰ نیوتن روی سطح افقی قرار دارد. اگر مساحت سطح تماس آن ۳۰۰ سانتی‌متر مربع باشد، فشار وارد بر سطح چند پاسکال است؟",
+      steps: {
+        formula: { label: "۱. فرمول مناسب", ans: ["P=F/A", "P=F⊥/A", "F/A", "F⊥/A"], placeholder: "فرمول را بنویسید", score: 0.25 },
+        sub:     { label: "۲. جایگذاری با تبدیل به متر مربع", ans: ["60/0.03", "60/(300×10^-4)", "60/300×10^-4", "60/0.0300", "60/(3×10^-2)"], placeholder: "عبارت جایگذاری را بنویسید", score: 0.25 },
+        val:     { label: "۳. عدد پاسخ نهایی", ans: ["2000", "2×10^3"], placeholder: "عدد را بنویسید", score: 0.30 },
+        unit:    { label: "۴. یکای اصلی", ans: ["Pa", "پاسکال", "N/m²"], placeholder: "یکا را بنویسید", score: 0.20 }
+      }
+    },
+    {
+      id: 3,
+      unknown: "فشار (P)",
+      unitType: "میلی‌متر مربع (mm²)",
+      text: "نوک یک سوزن با مساحت ۲ میلی‌متر مربع با نیروی عمودی ۱۰ نیوتن به یک سطح فشار می‌آورد. فشار ایجاد شده چند پاسکال است؟",
+      steps: {
+        formula: { label: "۱. فرمول مناسب", ans: ["P=F/A", "P=F⊥/A", "F/A"], placeholder: "فرمول را بنویسید", score: 0.25 },
+        sub:     { label: "۲. جایگذاری با تبدیل به متر مربع", ans: ["10/(2×10^-6)", "10/2×10^-6", "10/0.000002"], placeholder: "عبارت جایگذاری را بنویسید", score: 0.25 },
+        val:     { label: "۳. عدد پاسخ نهایی", ans: ["5000000", "5×10^6"], placeholder: "عدد را بنویسید", score: 0.30 },
+        unit:    { label: "۴. یکای اصلی", ans: ["Pa", "پاسکال", "N/m²"], placeholder: "یکا را بنویسید", score: 0.20 }
+      }
+    },
+    {
+      id: 4,
+      unknown: "نیروی عمودی (F)",
+      unitType: "متر مربع (m²)",
+      text: "فشار وارد بر کف یک استخر به مساحت ۱۵ متر مربع برابر با ۴۰۰۰ پاسکال است. نیروی عمودی وارد بر کف استخر چند نیوتن است؟",
+      steps: {
+        formula: { label: "۱. فرمول مناسب", ans: ["F=P×A", "F=PA", "F⊥=P×A", "P×A", "PA"], placeholder: "فرمول را بنویسید", score: 0.25 },
+        sub:     { label: "۲. جایگذاری اعداد", ans: ["4000×15", "15×4000", "F=4000×15"], placeholder: "عبارت جایگذاری را بنویسید", score: 0.25 },
+        val:     { label: "۳. عدد پاسخ نهایی", ans: ["60000", "6×10^4"], placeholder: "عدد را بنویسید", score: 0.30 },
+        unit:    { label: "۴. یکای اصلی", ans: ["N", "نیوتن"], placeholder: "یکا را بنویسید", score: 0.20 }
+      }
+    },
+    {
+      id: 5,
+      unknown: "نیروی عمودی (F)",
+      unitType: "سانتی‌متر مربع (cm²)",
+      text: "فشار هوا در یک روز برابر ۱۰۰۰۰۰ پاسکال است. نیروی عمودی وارد از طرف هوا بر سطحی به مساحت ۵۰ سانتی‌متر مربع چند نیوتن است؟",
+      steps: {
+        formula: { label: "۱. فرمول مناسب", ans: ["F=P×A", "F=PA", "F⊥=P×A", "P×A"], placeholder: "فرمول را بنویسید", score: 0.25 },
+        sub:     { label: "۲. جایگذاری با تبدیل به متر مربع", ans: ["100000×0.005", "10^5×50×10^-4", "100000×(50×10^-4)", "10^5×0.005"], placeholder: "عبارت جایگذاری را بنویسید", score: 0.25 },
+        val:     { label: "۳. عدد پاسخ نهایی", ans: ["500", "5×10^2"], placeholder: "عدد را بنویسید", score: 0.30 },
+        unit:    { label: "۴. یکای اصلی", ans: ["N", "نیوتن"], placeholder: "یکا را بنویسید", score: 0.20 }
+      }
+    },
+    {
+      id: 6,
+      unknown: "نیروی عمودی (F)",
+      unitType: "میلی‌متر مربع (mm²)",
+      text: "برای ایجاد فشار ۲۵۰۰۰۰۰ پاسکال روی سطحی به مساحت ۴ میلی‌متر مربع، به چه نیروی عمودی بر حسب نیوتن نیاز است؟",
+      steps: {
+        formula: { label: "۱. فرمول مناسب", ans: ["F=P×A", "F=PA", "F⊥=P×A", "P×A"], placeholder: "فرمول را بنویسید", score: 0.25 },
+        sub:     { label: "۲. جایگذاری با تبدیل به متر مربع", ans: ["2500000×(4×10^-6)", "2.5×10^6×4×10^-6", "2500000×0.000004"], placeholder: "عبارت جایگذاری را بنویسید", score: 0.25 },
+        val:     { label: "۳. عدد پاسخ نهایی", ans: ["10"], placeholder: "عدد را بنویسید", score: 0.30 },
+        unit:    { label: "۴. یکای اصلی", ans: ["N", "نیوتن"], placeholder: "یکا را بنویسید", score: 0.20 }
+      }
+    },
+    {
+      id: 7,
+      unknown: "مساحت (A)",
+      unitType: "متر مربع (m²)",
+      text: "نیروی عمودی ۹۰۰ نیوتن بر سطحی وارد می‌شود و فشار ۱۸۰ پاسکال ایجاد می‌کند. مساحت این سطح چند متر مربع است؟",
+      steps: {
+        formula: { label: "۱. فرمول مناسب", ans: ["A=F/P", "A=F⊥/P", "F/P", "F⊥/P"], placeholder: "فرمول را بنویسید", score: 0.25 },
+        sub:     { label: "۲. جایگذاری اعداد", ans: ["900/180", "A=900/180"], placeholder: "عبارت جایگذاری را بنویسید", score: 0.25 },
+        val:     { label: "۳. عدد پاسخ نهایی", ans: ["5"], placeholder: "عدد را بنویسید", score: 0.30 },
+        unit:    { label: "۴. یکای اصلی", ans: ["m²", "m^2", "متر مربع"], placeholder: "یکا را بنویسید", score: 0.20 }
+      }
+    },
+    {
+      id: 8,
+      unknown: "مساحت (A)",
+      unitType: "متر مربع (m²)",
+      text: "وزن یک مجسمه ۲۵۰ نیوتن است. اگر فشار وارد از طرف آن بر زمین ۱۲۵۰ پاسکال باشد، مساحت قاعده مجسمه چند متر مربع است؟",
+      steps: {
+        formula: { label: "۱. فرمول مناسب", ans: ["A=F/P", "A=F⊥/P", "F/P"], placeholder: "فرمول را بنویسید", score: 0.25 },
+        sub:     { label: "۲. جایگذاری اعداد", ans: ["250/1250", "A=250/1250"], placeholder: "عبارت جایگذاری را بنویسید", score: 0.25 },
+        val:     { label: "۳. عدد پاسخ نهایی", ans: ["0.2", "1/5", ".2"], placeholder: "عدد را بنویسید", score: 0.30 },
+        unit:    { label: "۴. یکای اصلی", ans: ["m²", "m^2", "متر مربع"], placeholder: "یکا را بنویسید", score: 0.20 }
+      }
+    },
+    {
+      id: 9,
+      unknown: "فشار (P)",
+      unitType: "سانتی‌متر مربع (cm²)",
+      text: "کفش یک فرد به وزن ۷۵۰ نیوتن دارای مساحت کل ۲۵۰ سانتی‌متر مربع است. فشار وارد بر زمین چند پاسکال است؟",
+      steps: {
+        formula: { label: "۱. فرمول مناسب", ans: ["P=F/A", "P=F⊥/A", "F/A"], placeholder: "فرمول را بنویسید", score: 0.25 },
+        sub:     { label: "۲. جایگذاری با تبدیل به متر مربع", ans: ["750/0.025", "750/(250×10^-4)", "750/250×10^-4"], placeholder: "عبارت جایگذاری را بنویسید", score: 0.25 },
+        val:     { label: "۳. عدد پاسخ نهایی", ans: ["30000", "3×10^4"], placeholder: "عدد را بنویسید", score: 0.30 },
+        unit:    { label: "۴. یکای اصلی", ans: ["Pa", "پاسکال", "N/m²"], placeholder: "یکا را بنویسید", score: 0.20 }
+      }
+    },
+    {
+      id: 10,
+      unknown: "فشار (P)",
+      unitType: "میلی‌متر مربع (mm²)",
+      text: "پونزی با مساحت نوک ۰/۵ میلی‌متر مربع با نیروی ۲۰ نیوتن به تخته فشار داده می‌شود. فشار در نوک پونز چند پاسکال است؟",
+      steps: {
+        formula: { label: "۱. فرمول مناسب", ans: ["P=F/A", "P=F⊥/A", "F/A"], placeholder: "فرمول را بنویسید", score: 0.25 },
+        sub:     { label: "۲. جایگذاری با تبدیل به متر مربع", ans: ["20/(0.5×10^-6)", "20/0.5×10^-6", "20/(5×10^-7)"], placeholder: "عبارت جایگذاری را بنویسید", score: 0.25 },
+        val:     { label: "۳. عدد پاسخ نهایی", ans: ["40000000", "4×10^7"], placeholder: "عدد را بنویسید", score: 0.30 },
+        unit:    { label: "۴. یکای اصلی", ans: ["Pa", "پاسکال", "N/m²"], placeholder: "یکا را بنویسید", score: 0.20 }
+      }
+    },
+    {
+      id: 11,
+      unknown: "نیروی عمودی (F)",
+      unitType: "سانتی‌متر مربع (cm²)",
+      text: "پیستونی به مساحت ۴۰ سانتی‌متر مربع تحت فشار ۵۰۰۰۰ پاسکال قرار دارد. نیروی عمودی وارد بر پیستون چند نیوتن است؟",
+      steps: {
+        formula: { label: "۱. فرمول مناسب", ans: ["F=P×A", "F=PA", "F⊥=P×A", "P×A"], placeholder: "فرمول را بنویسید", score: 0.25 },
+        sub:     { label: "۲. جایگذاری با تبدیل به متر مربع", ans: ["50000×0.004", "50000×(40×10^-4)", "50000×40×10^-4"], placeholder: "عبارت جایگذاری را بنویسید", score: 0.25 },
+        val:     { label: "۳. عدد پاسخ نهایی", ans: ["200"], placeholder: "عدد را بنویسید", score: 0.30 },
+        unit:    { label: "۴. یکای اصلی", ans: ["N", "نیوتن"], placeholder: "یکا را بنویسید", score: 0.20 }
+      }
+    },
+    {
+      id: 12,
+      unknown: "مساحت (A)",
+      unitType: "متر مربع (m²)",
+      text: "اگر نیروی عمودی ۴۵ نیوتن فشاری برابر ۹۰۰۰۰ پاسکال ایجاد کند، مساحت سطح تماس چند متر مربع است؟",
+      steps: {
+        formula: { label: "۱. فرمول مناسب", ans: ["A=F/P", "A=F⊥/P", "F/P"], placeholder: "فرمول را بنویسید", score: 0.25 },
+        sub:     { label: "۲. جایگذاری اعداد", ans: ["45/90000", "A=45/90000"], placeholder: "عبارت جایگذاری را بنویسید", score: 0.25 },
+        val:     { label: "۳. عدد پاسخ نهایی", ans: ["0.0005", "5×10^-4", "1/2000"], placeholder: "عدد را بنویسید", score: 0.30 },
+        unit:    { label: "۴. یکای اصلی", ans: ["m²", "m^2", "متر مربع"], placeholder: "یکا را بنویسید", score: 0.20 }
+      }
+    },
+    {
+      id: 13,
+      unknown: "فشار (P)",
+      unitType: "متر مربع (m²)",
+      text: "تانکی به وزن ۱۲۰۰۰۰ نیوتن روی شنی‌هایی به مساحت کل ۴ متر مربع قرار دارد. فشار وارد بر زمین چند پاسکال است؟",
+      steps: {
+        formula: { label: "۱. فرمول مناسب", ans: ["P=F/A", "P=F⊥/A", "F/A"], placeholder: "فرمول را بنویسید", score: 0.25 },
+        sub:     { label: "۲. جایگذاری اعداد", ans: ["120000/4", "P=120000/4"], placeholder: "عبارت جایگذاری را بنویسید", score: 0.25 },
+        val:     { label: "۳. عدد پاسخ نهایی", ans: ["30000", "3×10^4"], placeholder: "عدد را بنویسید", score: 0.30 },
+        unit:    { label: "۴. یکای اصلی", ans: ["Pa", "پاسکال", "N/m²"], placeholder: "یکا را بنویسید", score: 0.20 }
+      }
+    },
+    {
+      id: 14,
+      unknown: "نیروی عمودی (F)",
+      unitType: "میلی‌متر مربع (mm²)",
+      text: "فشار درون یک لوله با سطح مقطع ۱۰ میلی‌متر مربع برابر ۲۰۰۰۰۰ پاسکال است. نیروی عمودی وارد بر انتهای لوله چند نیوتن است؟",
+      steps: {
+        formula: { label: "۱. فرمول مناسب", ans: ["F=P×A", "F=PA", "F⊥=P×A", "P×A"], placeholder: "فرمول را بنویسید", score: 0.25 },
+        sub:     { label: "۲. جایگذاری با تبدیل به متر مربع", ans: ["200000×(10×10^-6)", "200000×10×10^-6", "200000×0.00001", "200000×10^-5"], placeholder: "عبارت جایگذاری را بنویسید", score: 0.25 },
+        val:     { label: "۳. عدد پاسخ نهایی", ans: ["2"], placeholder: "عدد را بنویسید", score: 0.30 },
+        unit:    { label: "۴. یکای اصلی", ans: ["N", "نیوتن"], placeholder: "یکا را بنویسید", score: 0.20 }
+      }
+    },
+    {
+      id: 15,
+      unknown: "فشار (P)",
+      unitType: "سانتی‌متر مربع (cm²)",
+      text: "کتابی به وزن ۱۵ نیوتن روی میز قرار دارد و مساحت تماس آن ۶۰۰ سانتی‌متر مربع است. فشار وارد بر میز چند پاسکال است؟",
+      steps: {
+        formula: { label: "۱. فرمول مناسب", ans: ["P=F/A", "P=F⊥/A", "F/A"], placeholder: "فرمول را بنویسید", score: 0.25 },
+        sub:     { label: "۲. جایگذاری با تبدیل به متر مربع", ans: ["15/0.06", "15/(600×10^-4)", "15/600×10^-4"], placeholder: "عبارت جایگذاری را بنویسید", score: 0.25 },
+        val:     { label: "۳. عدد پاسخ نهایی", ans: ["250"], placeholder: "عدد را بنویسید", score: 0.30 },
+        unit:    { label: "۴. یکای اصلی", ans: ["Pa", "پاسکال", "N/m²"], placeholder: "یکا را بنویسید", score: 0.20 }
+      }
+    },
+    {
+      id: 16,
+      unknown: "مساحت (A)",
+      unitType: "متر مربع (m²)",
+      text: "جعبه‌ای به وزن ۳۶۰ نیوتن فشاری برابر ۲۴۰۰ پاسکال به کف اتاق وارد می‌کند. مساحت سطح تماس جعبه چند متر مربع است؟",
+      steps: {
+        formula: { label: "۱. فرمول مناسب", ans: ["A=F/P", "A=F⊥/P", "F/P"], placeholder: "فرمول را بنویسید", score: 0.25 },
+        sub:     { label: "۲. جایگذاری اعداد", ans: ["360/2400", "A=360/2400"], placeholder: "عبارت جایگذاری را بنویسید", score: 0.25 },
+        val:     { label: "۳. عدد پاسخ نهایی", ans: ["0.15", "3/20", ".15"], placeholder: "عدد را بنویسید", score: 0.30 },
+        unit:    { label: "۴. یکای اصلی", ans: ["m²", "m^2", "متر مربع"], placeholder: "یکا را بنویسید", score: 0.20 }
+      }
+    },
+    {
+      id: 17,
+      unknown: "فشار (P)",
+      unitType: "میلی‌متر مربع (mm²)",
+      text: "تیغه یک چاقو با مساحت لبه ۵ میلی‌متر مربع با نیروی ۴۰ نیوتن روی جسمی قرار می‌گیرد. فشار وارد بر جسم چند پاسکال است؟",
+      steps: {
+        formula: { label: "۱. فرمول مناسب", ans: ["P=F/A", "P=F⊥/A", "F/A"], placeholder: "فرمول را بنویسید", score: 0.25 },
+        sub:     { label: "۲. جایگذاری با تبدیل به متر مربع", ans: ["40/(5×10^-6)", "40/5×10^-6", "40/0.000005"], placeholder: "عبارت جایگذاری را بنویسید", score: 0.25 },
+        val:     { label: "۳. عدد پاسخ نهایی", ans: ["8000000", "8×10^6"], placeholder: "عدد را بنویسید", score: 0.30 },
+        unit:    { label: "۴. یکای اصلی", ans: ["Pa", "پاسکال", "N/m²"], placeholder: "یکا را بنویسید", score: 0.20 }
+      }
+    },
+    {
+      id: 18,
+      unknown: "نیروی عمودی (F)",
+      unitType: "متر مربع (m²)",
+      text: "فشار گاز درون یک مخزن که بر دیواره‌ای به مساحت ۰/۴ متر مربع وارد می‌شود، برابر ۱۲۵۰۰ پاسکال است. نیروی عمودی وارد بر این دیواره چند نیوتن است؟",
+      steps: {
+        formula: { label: "۱. فرمول مناسب", ans: ["F=P×A", "F=PA", "F⊥=P×A", "P×A"], placeholder: "فرمول را بنویسید", score: 0.25 },
+        sub:     { label: "۲. جایگذاری اعداد", ans: ["12500×0.4", "0.4×12500", "F=12500×0.4"], placeholder: "عبارت جایگذاری را بنویسید", score: 0.25 },
+        val:     { label: "۳. عدد پاسخ نهایی", ans: ["5000", "5×10^3"], placeholder: "عدد را بنویسید", score: 0.30 },
+        unit:    { label: "۴. یکای اصلی", ans: ["N", "نیوتن"], placeholder: "یکا را بنویسید", score: 0.20 }
+      }
+    },
+    {
+      id: 19,
+      unknown: "نیروی عمودی (F)",
+      unitType: "سانتی‌متر مربع (cm²)",
+      text: "بر سطحی به مساحت ۸۰ سانتی‌متر مربع، فشاری برابر ۱۵۰۰ پاسکال وارد می‌شود. اندازه نیروی عمودی وارد بر این سطح چند نیوتن است؟",
+      steps: {
+        formula: { label: "۱. فرمول مناسب", ans: ["F=P×A", "F=PA", "F⊥=P×A", "P×A"], placeholder: "فرمول را بنویسید", score: 0.25 },
+        sub:     { label: "۲. جایگذاری با تبدیل به متر مربع", ans: ["1500×0.008", "1500×(80×10^-4)", "1500×80×10^-4"], placeholder: "عبارت جایگذاری را بنویسید", score: 0.25 },
+        val:     { label: "۳. عدد پاسخ نهایی", ans: ["12"], placeholder: "عدد را بنویسید", score: 0.30 },
+        unit:    { label: "۴. یکای اصلی", ans: ["N", "نیوتن"], placeholder: "یکا را بنویسید", score: 0.20 }
+      }
+    },
+    {
+      id: 20,
+      unknown: "مساحت (A)",
+      unitType: "متر مربع (m²)",
+      text: "نیروی عمودی ۷۵ نیوتن بر یک سطح وارد شده و فشاری معادل ۳۰۰۰۰ پاسکال ایجاد کرده است. مساحت این سطح چند متر مربع است؟",
+      steps: {
+        formula: { label: "۱. فرمول مناسب", ans: ["A=F/P", "A=F⊥/P", "F/P"], placeholder: "فرمول را بنویسید", score: 0.25 },
+        sub:     { label: "۲. جایگذاری اعداد", ans: ["75/30000", "A=75/30000"], placeholder: "عبارت جایگذاری را بنویسید", score: 0.25 },
+        val:     { label: "۳. عدد پاسخ نهایی", ans: ["0.0025", "2.5×10^-3", "1/400"], placeholder: "عدد را بنویسید", score: 0.30 },
+        unit:    { label: "۴. یکای اصلی", ans: ["m²", "m^2", "متر مربع"], placeholder: "یکا را بنویسید", score: 0.20 }
+      }
+    }
+  ];
+
+  const STORAGE_KEY = "barzegari_physics_pressure_exam_v3";
+  let state = {
+    started: false,
+    submitted: false,
+    studentName: "",
+    startTimeStamp: null,
+    forcedUnlock: false,
+    answers: {},
+    score: 0
+  };
+
+  let activeInputElement = null;
+  let timerInterval = null;
+
+  function loadState() {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) state = { ...state, ...JSON.parse(saved) };
+    } catch (e) {}
+  }
+
+  function saveState() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch (e) {}
+  }
+
+  function normalizeText(str) {
+    if (!str) return "";
+    let s = String(str).trim();
+    const persianDigits = [/۰/g, /۱/g, /۲/g, /۳/g, /۴/g, /۵/g, /۶/g, /۷/g, /۸/g, /۹/g];
+    const arabicDigits  = [/٠/g, /١/g, /٢/g, /٣/g, /٤/g, /٥/g, /٦/g, /٧/g, /٨/g, /٩/g];
+    for (let i = 0; i < 10; i++) {
+      s = s.replace(persianDigits[i], i).replace(arabicDigits[i], i);
+    }
+    s = s.replace(/٫/g, ".").replace(/،/g, ".");
+    s = s.replace(/\s+/g, "");
+    s = s.replace(/\*/g, "×").replace(/[xX]/g, "×");
+    s = s.replace(/÷/g, "/");
+    s = s.replace(/²/g, "^2");
+    s = s.replace(/−/g, "-").replace(/–/g, "-");
+    return s.toLowerCase();
+  }
+
+  function tryEvaluateNumeric(expr) {
+    if (!expr) return null;
+    let s = normalizeText(expr);
+    if (s.includes("=")) s = s.split("=").pop();
+    s = s.replace(/×/g, "*").replace(/\^/g, "**");
+    if (!/^[0-9+\-*/().eE*]+$/.test(s)) return null;
+    try {
+      const val = Function('"use strict";return (' + s + ')')();
+      if (typeof val === "number" && isFinite(val)) return val;
+    } catch (e) {
+      return null;
+    }
+    return null;
+  }
+
+  function checkStepAnswer(userRaw, acceptedList, stepKey) {
+    const userNorm = normalizeText(userRaw);
+    if (!userNorm) return false;
+
+    for (const acc of acceptedList) {
+      if (userNorm === normalizeText(acc)) return true;
+    }
+
+    if (stepKey === "val" || stepKey === "sub") {
+      const userNum = tryEvaluateNumeric(userRaw);
+      if (userNum !== null) {
+        for (const acc of acceptedList) {
+          const accNum = tryEvaluateNumeric(acc);
+          if (accNum !== null) {
+            const tolerance = Math.max(1e-9, Math.abs(accNum) * 0.005);
+            if (Math.abs(userNum - accNum) <= tolerance) return true;
+          }
+        }
+      }
+    }
+    return false;
+  }
+
+  function initUI() {
+    loadState();
+    const selectEl = document.getElementById("student-select");
+    STUDENTS_LIST.forEach(name => {
+      const opt = document.createElement("option");
+      opt.value = name;
+      opt.textContent = name;
+      selectEl.appendChild(opt);
+    });
+
+    renderQuestions();
+    setupKeyboard();
+    setupThemeToggle();
+    setupTeacherSecret();
+
+    checkScreenRouting();
+    setInterval(checkScreenRouting, 1000);
+  }
+
+  function formatHMS(diffSec) {
+    const safeSec = Math.max(0, Math.floor(diffSec));
+    const h = String(Math.floor(safeSec / 3600)).padStart(2, "0");
+    const m = String(Math.floor((safeSec % 3600) / 60)).padStart(2, "0");
+    const s = String(safeSec % 60).padStart(2, "0");
+    return `${h}:${m}:${s}`;
+  }
+
+  function checkScreenRouting() {
+    const lockScreen = document.getElementById("lock-screen");
+    const loginScreen = document.getElementById("login-screen");
+    const examScreen = document.getElementById("exam-screen");
+    const progressContainer = document.getElementById("progress-container");
+
+    const now = new Date();
+    const startObj = EXAM_START_TIME ? new Date(EXAM_START_TIME) : null;
+    const endObj = EXAM_END_TIME ? new Date(EXAM_END_TIME) : null;
+
+    const beforeStart = startObj && !isNaN(startObj.getTime()) && now < startObj;
+    const afterEnd = endObj && !isNaN(endObj.getTime()) && now >= endObj;
+    const canContinueActiveExam = state.started && (!afterEnd || state.submitted || state.forcedUnlock);
+
+    if (!state.forcedUnlock && !canContinueActiveExam && (beforeStart || afterEnd)) {
+      lockScreen.classList.remove("hidden");
+      loginScreen.classList.add("hidden");
+      examScreen.classList.add("hidden");
+      progressContainer.style.display = "none";
+
+      const lockTitle = document.getElementById("lock-title");
+      const lockDesc = document.getElementById("lock-desc");
+      const caption = document.getElementById("countdown-caption");
+      const digits = document.getElementById("lock-countdown");
+
+      if (beforeStart) {
+        lockTitle.textContent = "🔒 سامانه آزمون تا ساعت ۲۰:۰۰ قفل است";
+        lockDesc.innerHTML = "آزمون امشب رأس ساعت <strong>۲۰:۰۰</strong> باز می‌شود و تا ساعت <strong>۲۱:۰۰</strong> ادامه دارد.";
+        caption.textContent = "زمان باقی‌مانده تا باز شدن آزمون:";
+        digits.textContent = formatHMS((startObj - now) / 1000);
+      } else {
+        lockTitle.textContent = "🔒 مهلت آزمون در ساعت ۲۱:۰۰ به پایان رسید";
+        lockDesc.innerHTML = "زمان برگزاری آزمون (ساعت ۲۰:۰۰ تا ۲۱:۰۰) به پایان رسیده و سامانه قفل شده است.";
+        caption.textContent = "وضعیت آزمون:";
+        digits.textContent = "پایان‌یافته";
+      }
+      return;
+    }
+
+    lockScreen.classList.add("hidden");
+
+    if (!state.started) {
+      loginScreen.classList.remove("hidden");
+      examScreen.classList.add("hidden");
+      progressContainer.style.display = "none";
+    } else {
+      loginScreen.classList.add("hidden");
+      examScreen.classList.remove("hidden");
+      progressContainer.style.display = "flex";
+      document.getElementById("active-student-label").textContent = state.studentName;
+
+      if (!timerInterval) startExamTimer();
+      if (state.submitted) applySubmittedUI(false);
+    }
+  }
+
+  function renderQuestions() {
+    const listContainer = document.getElementById("questions-list");
+    const navGrid = document.getElementById("nav-grid");
+    listContainer.innerHTML = "";
+    navGrid.innerHTML = "";
+
+    QUESTIONS.forEach(q => {
+      const navBtn = document.createElement("button");
+      navBtn.type = "button";
+      navBtn.className = "nav-dot";
+      navBtn.id = `nav-dot-${q.id}`;
+      navBtn.textContent = q.id;
+      navBtn.onclick = () => {
+        document.getElementById(`q-card-${q.id}`).scrollIntoView({ behavior: "smooth" });
+      };
+      navGrid.appendChild(navBtn);
+
+      const card = document.createElement("div");
+      card.className = "q-card";
+      card.id = `q-card-${q.id}`;
+
+      let stepsHTML = "";
+      ["formula", "sub", "val", "unit"].forEach(stepKey => {
+        const st = q.steps[stepKey];
+        const fieldId = `${q.id}_${stepKey}`;
+        const savedVal = state.answers[fieldId] || "";
+        stepsHTML += `
+          <div class="step-box">
+            <div class="step-label">
+              <span>${st.label}</span>
+              <span>(${st.score} نمره)</span>
+            </div>
+            <input type="text"
+                   class="step-input"
+                   id="input_${fieldId}"
+                   data-qid="${q.id}"
+                   data-step="${stepKey}"
+                   placeholder="${st.placeholder}"
+                   value="${savedVal.replace(/"/g, '&quot;')}"
+                   autocomplete="off">
+            <div class="step-feedback" id="fb_${fieldId}"></div>
+          </div>
+        `;
+      });
+
+      card.innerHTML = `
+        <div class="q-header">
+          <span class="q-num">سوال ${q.id} از ۲۰</span>
+          <div class="q-meta">
+            <span class="q-tag">مجهول: ${q.unknown}</span>
+            <span class="q-tag">واحد سطح: ${q.unitType}</span>
+            <span class="q-score-badge" id="q-earned-${q.id}">۱ نمره</span>
+          </div>
+        </div>
+        <div class="q-text">${q.text}</div>
+        <div class="steps-grid">${stepsHTML}</div>
+      `;
+
+      listContainer.appendChild(card);
+    });
+
+    document.querySelectorAll(".step-input").forEach(inp => {
+      inp.addEventListener("focus", () => {
+        if (!state.submitted) {
+          activeInputElement = inp;
+          document.getElementById("math-keyboard").classList.add("active");
+        }
+      });
+
+      inp.addEventListener("input", () => {
+        const key = `${inp.dataset.qid}_${inp.dataset.step}`;
+        state.answers[key] = inp.value;
+        saveState();
+        updateProgressUI();
+      });
+    });
+
+    updateProgressUI();
+  }
+
+  function setupKeyboard() {
+    document.querySelectorAll(".kbd-btn[data-val]").forEach(btn => {
+      btn.addEventListener("mousedown", (e) => {
+        e.preventDefault();
+        if (!activeInputElement || state.submitted) return;
+        insertAtCursor(activeInputElement, btn.getAttribute("data-val"));
+      });
+    });
+
+    document.getElementById("kbd-backspace").addEventListener("mousedown", (e) => {
+      e.preventDefault();
+      if (!activeInputElement || state.submitted) return;
+      const el = activeInputElement;
+      const start = el.selectionStart;
+      const end = el.selectionEnd;
+      if (start !== end) {
+        el.value = el.value.slice(0, start) + el.value.slice(end);
+        el.setSelectionRange(start, start);
+      } else if (start > 0) {
+        el.value = el.value.slice(0, start - 1) + el.value.slice(start);
+        el.setSelectionRange(start - 1, start - 1);
+      }
+      el.dispatchEvent(new Event("input"));
+    });
+  }
+
+  function insertAtCursor(input, text) {
+    const start = input.selectionStart || 0;
+    const end = input.selectionEnd || 0;
+    const before = input.value.substring(0, start);
+    const after = input.value.substring(end);
+    input.value = before + text + after;
+    const newPos = start + text.length;
+    input.setSelectionRange(newPos, newPos);
+    input.dispatchEvent(new Event("input"));
+  }
+
+  function updateProgressUI() {
+    let answeredQuestions = 0;
+    QUESTIONS.forEach(q => {
+      const hasAny = ["formula", "sub", "val", "unit"].some(k => {
+        const v = state.answers[`${q.id}_${k}`];
+        return v && v.trim().length > 0;
+      });
+      const dot = document.getElementById(`nav-dot-${q.id}`);
+      if (hasAny) {
+        answeredQuestions++;
+        if (dot && !state.submitted) dot.classList.add("answered");
+      } else {
+        if (dot && !state.submitted) dot.classList.remove("answered");
+      }
+    });
+
+    const pct = Math.round((answeredQuestions / QUESTIONS.length) * 100);
+    document.getElementById("progress-fill").style.width = `${pct}%`;
+    document.getElementById("progress-text").textContent = `${pct}% (${answeredQuestions}/20)`;
+    document.getElementById("answered-count").textContent = `${answeredQuestions} / 20`;
+  }
+
+  document.getElementById("start-exam-btn").addEventListener("click", () => {
+    const selectedName = document.getElementById("student-select").value;
+    const errEl = document.getElementById("login-error");
+    if (!selectedName) {
+      errEl.textContent = "⚠️ لطفاً ابتدا نام و نام خانوادگی خود را از لیست انتخاب کنید.";
+      return;
+    }
+    errEl.textContent = "";
+    state.started = true;
+    state.studentName = selectedName;
+    if (!state.startTimeStamp) state.startTimeStamp = Date.now();
+    saveState();
+    checkScreenRouting();
+  });
+
+  function startExamTimer() {
+    updateTimerDisplay();
+    timerInterval = setInterval(() => {
+      if (state.submitted) {
+        clearInterval(timerInterval);
+        return;
+      }
+      const rem = updateTimerDisplay();
+      if (rem <= 0) {
+        clearInterval(timerInterval);
+        gradeAndSubmitExam(true);
+      }
+    }, 1000);
+  }
+
+  function updateTimerDisplay() {
+    const totalMs = EXAM_DURATION_MINUTES * 60 * 1000;
+    const elapsed = Date.now() - (state.startTimeStamp || Date.now());
+    let remainingSec = Math.max(0, Math.floor((totalMs - elapsed) / 1000));
+
+    if (EXAM_END_TIME && !state.forcedUnlock) {
+      const endObj = new Date(EXAM_END_TIME);
+      if (!isNaN(endObj.getTime())) {
+        const untilEndSec = Math.max(0, Math.floor((endObj - new Date()) / 1000));
+        remainingSec = Math.min(remainingSec, untilEndSec);
+      }
+    }
+
+    const mins = String(Math.floor(remainingSec / 60)).padStart(2, "0");
+    const secs = String(remainingSec % 60).padStart(2, "0");
+    document.getElementById("timer-display").textContent = `${mins}:${secs}`;
+    return remainingSec;
+  }
+
+  document.getElementById("final-submit-btn").addEventListener("click", () => {
+    if (state.submitted) return;
+    if (confirm("آیا از ثبت نهایی آزمون اطمینان دارید؟ پس از ثبت امکان تغییر پاسخ‌ها وجود ندارد.")) {
+      gradeAndSubmitExam(false);
+    }
+  });
+
+  async function gradeAndSubmitExam(isAutoTimeout) {
+    let totalScore = 0;
+    let detailsArray = [];
+
+    QUESTIONS.forEach(q => {
+      let qScore = 0;
+      ["formula", "sub", "val", "unit"].forEach(stepKey => {
+        const st = q.steps[stepKey];
+        const fieldId = `${q.id}_${stepKey}`;
+        const userAns = state.answers[fieldId] || "";
+        if (checkStepAnswer(userAns, st.ans, stepKey)) {
+          qScore += st.score;
+        }
+      });
+
+      qScore = Math.round(qScore * 100) / 100;
+      totalScore += qScore;
+      detailsArray.push(`سوال${q.id}:${qScore}`);
+    });
+
+    totalScore = Math.round(totalScore * 100) / 100;
+    state.score = totalScore;
+    state.submitted = true;
+    saveState();
+
+    applySubmittedUI(isAutoTimeout);
+
+    const statusEl = document.getElementById("supabase-status-text");
+    const submitFeedback = document.getElementById("submit-feedback");
+    statusEl.textContent = "⏳ در حال ارسال کارنامه به سامانه دبیر...";
+    submitFeedback.style.color = "var(--primary)";
+    submitFeedback.textContent = "⏳ در حال ارسال نمره...";
+
+    try {
+      await sendToSupabase(
+        state.studentName,
+        totalScore,
+        20,
+        `پایه دهم تجربی | ${detailsArray.join(" - ")}`
+      );
+      statusEl.textContent = "✅ کارنامه و نمره شما با موفقیت برای دبیر (برزگری) ثبت شد.";
+      submitFeedback.style.color = "var(--success)";
+      submitFeedback.textContent = "✅ نمره شما با موفقیت ثبت شد.";
+    } catch (err) {
+      statusEl.textContent = "⚠️ تصحیح انجام شد اما ارسال به سرور با خطا مواجه شد. لطفاً از نتیجه عکس بگیرید.";
+      submitFeedback.style.color = "var(--danger)";
+      submitFeedback.textContent = "❌ خطا در ارسال اطلاعات.";
+    }
+  }
+
+  function applySubmittedUI(isAutoTimeout) {
+    document.getElementById("math-keyboard").classList.remove("active");
+    document.getElementById("final-submit-btn").disabled = true;
+    document.getElementById("final-submit-btn").textContent = "آزمون ثبت نهایی شده است";
+
+    const banner = document.getElementById("result-banner");
+    banner.style.display = "block";
+    document.getElementById("final-score-display").textContent = `${state.score} از ۲۰`;
+    if (isAutoTimeout) {
+      banner.querySelector("h2").textContent = "⏰ زمان آزمون به پایان رسید و پاسخ‌ها ثبت شد";
+    }
+
+    QUESTIONS.forEach(q => {
+      let qScore = 0;
+      ["formula", "sub", "val", "unit"].forEach(stepKey => {
+        const st = q.steps[stepKey];
+        const fieldId = `${q.id}_${stepKey}`;
+        const inp = document.getElementById(`input_${fieldId}`);
+        const fb = document.getElementById(`fb_${fieldId}`);
+        const userAns = state.answers[fieldId] || "";
+        const isCorrect = checkStepAnswer(userAns, st.ans, stepKey);
+
+        if (inp) inp.disabled = true;
+        if (fb) {
+          fb.style.display = "block";
+          if (isCorrect) {
+            qScore += st.score;
+            fb.style.color = "var(--success)";
+            fb.textContent = `✓ صحیح (+${st.score})`;
+            if (inp) inp.style.borderColor = "var(--success)";
+          } else {
+            fb.style.color = "var(--danger)";
+            fb.textContent = `✗ پاسخ نمونه: ${st.ans[0]}`;
+            if (inp) inp.style.borderColor = "var(--danger)";
+          }
+        }
+      });
+
+      qScore = Math.round(qScore * 100) / 100;
+      const badge = document.getElementById(`q-earned-${q.id}`);
+      if (badge) badge.textContent = `${qScore} از ۱ نمره`;
+
+      const dot = document.getElementById(`nav-dot-${q.id}`);
+      if (dot) {
+        dot.classList.remove("answered");
+        if (qScore >= 0.99) dot.classList.add("correct-full");
+        else if (qScore > 0) dot.classList.add("partial");
+        else dot.classList.add("wrong");
+      }
+    });
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  async function sendToSupabase(studentName, score, totalScore, detailsText) {
+    const payload = {
+      Student_name: studentName,
+      School_name: ACTIVE_SCHOOL,
+      Subject: ACTIVE_SUBJECT,
+      Score: parseFloat(score),
+      Total_score: parseFloat(totalScore),
+      Details: detailsText
+    };
+
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/Students`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "apikey": SUPABASE_KEY,
+        "Authorization": `Bearer ${SUPABASE_KEY}`,
+        "Prefer": "return=minimal"
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!response.ok) {
+      throw new Error(`خطای سرور: ${response.status}`);
+    }
+    return true;
+  }
+
+  function setupThemeToggle() {
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+      document.body.classList.toggle("dark-mode");
+    });
+  }
+
+  function setupTeacherSecret() {
+    let clickCount = 0;
+    let clickTimer = null;
+
+    document.getElementById("teacher-secret-btn").addEventListener("click", () => {
+      clickCount++;
+      clearTimeout(clickTimer);
+      clickTimer = setTimeout(() => { clickCount = 0; }, 1500);
+      if (clickCount >= 5) {
+        clickCount = 0;
+        openTeacherModal();
+      }
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.ctrlKey && e.shiftKey && (e.key === "L" || e.key === "l")) {
+        e.preventDefault();
+        openTeacherModal();
+      }
+    });
+
+    document.getElementById("teacher-login-btn").addEventListener("click", () => {
+      const pass = document.getElementById("teacher-pass-input").value;
+      const err = document.getElementById("teacher-auth-error");
+      if (pass === TEACHER_SECRET_CODE) {
+        err.textContent = "";
+        document.getElementById("teacher-auth-section").classList.add("hidden");
+        document.getElementById("teacher-actions-section").classList.remove("hidden");
+      } else {
+        err.textContent = "❌ رمز عبور نادرست است.";
+      }
+    });
+
+    document.getElementById("teacher-unlock-btn").addEventListener("click", () => {
+      state.forcedUnlock = true;
+      saveState();
+      closeTeacherModal();
+      checkScreenRouting();
+      alert("قفل زمانی آزمون باز شد.");
+    });
+
+    document.getElementById("teacher-reset-btn").addEventListener("click", () => {
+      if (confirm("آیا مطمئن هستید که کل آزمون و تایمر ریست شود؟")) {
+        localStorage.removeItem(STORAGE_KEY);
+        location.reload();
+      }
+    });
+  }
+
+  function openTeacherModal() {
+    document.getElementById("teacher-pass-input").value = "";
+    document.getElementById("teacher-auth-error").textContent = "";
+    document.getElementById("teacher-auth-section").classList.remove("hidden");
+    document.getElementById("teacher-actions-section").classList.add("hidden");
+    document.getElementById("teacher-modal").style.display = "flex";
+  }
+
+  function closeTeacherModal() {
+    document.getElementById("teacher-modal").style.display = "none";
+  }
+
+  window.addEventListener("DOMContentLoaded", initUI);
+</script>
+</body>
+</html>
